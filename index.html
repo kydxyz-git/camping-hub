@@ -3,693 +3,552 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>공대남자의 캠핑장 추천</title>
-  <meta name="description" content="5년차 부부캠퍼 공대남자가 직접 가본 캠핑장 기록">
-
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css" />
-
+  <title>공대남자의 캠핑이야기</title>
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css" />
   <style>
-    :root[data-theme="B"] {
-      --bg: #FAFAFA;
-      --surface: #FFFFFF;
-      --text: #111111;
-      --text-sub: #666666;
-      --line: rgba(0, 0, 0, 0.08);
-      --accent: #333333;
-      --accent-soft: #EEEEEE;
-      --point: #5E6C4F;
-    }
-    :root[data-theme="BK"] {
-      --bg: #0D0D0D;
-      --surface: #1A1A1A;
-      --text: #F2F2F2;
-      --text-sub: #8A8A8A;
-      --line: rgba(255, 255, 255, 0.08);
-      --accent: #E5E5E5;
-      --accent-soft: rgba(255, 255, 255, 0.06);
-      --point: #E4A04A;
-    }
-
     :root {
-      --ocean-bg: #CCE5F1;       --ocean-fg: #2E8BC0;
-      --mountain-bg: #E0EAD4;    --mountain-fg: #5A7D4A;
-      --forest-bg: #D4E3D0;      --forest-fg: #3A6B3A;
-      --valley-bg: #DBEBFA;      --valley-fg: #4A90E2;
-      --river-bg: #D6EBE2;       --river-fg: #5BA896;
-      --lake-bg: #DDECF5;        --lake-fg: #6A9FC4;
+      --bg:#FAFAFA; --surface:#FFFFFF; --text:#111111; --text-sub:#666666;
+      --line:rgba(0,0,0,0.08); --accent-soft:#EEEEEE; --point:#5E6C4F;
+      --ocean-bg:#CCE5F1; --ocean-fg:#2E8BC0; --mountain-bg:#E0EAD4; --mountain-fg:#5A7D4A;
+      --forest-bg:#D4E3D0; --forest-fg:#3A6B3A; --valley-bg:#DBEBFA; --valley-fg:#4A90E2;
+      --river-bg:#D6EBE2; --river-fg:#5BA896; --lake-bg:#DDECF5; --lake-fg:#6A9FC4;
     }
-    :root[data-theme="BK"] {
-      --ocean-bg: rgba(46, 139, 192, 0.18);    --ocean-fg: #5AAEDC;
-      --mountain-bg: rgba(90, 125, 74, 0.22);  --mountain-fg: #8BB275;
-      --forest-bg: rgba(58, 107, 58, 0.22);    --forest-fg: #66A966;
-      --valley-bg: rgba(74, 144, 226, 0.18);   --valley-fg: #7AB5F0;
-      --river-bg: rgba(91, 168, 150, 0.18);    --river-fg: #7BC5B0;
-      --lake-bg: rgba(106, 159, 196, 0.18);    --lake-fg: #9BC9E3;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { overflow-x: hidden; }
-
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     body {
-      font-family: 'SUIT Variable', 'SUIT', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      font-weight: 400;
-      -webkit-font-smoothing: antialiased;
-      transition: background 0.3s, color 0.3s;
-      max-width: 420px;
-      margin: 0 auto;
-      min-height: 100vh;
-      border-left: 1px solid var(--line);
-      border-right: 1px solid var(--line);
+      font-family:'SUIT Variable','SUIT',-apple-system,sans-serif;
+      background:var(--bg); color:var(--text);
+      max-width:420px; margin:0 auto; min-height:100vh;
+      border-left:1px solid var(--line); border-right:1px solid var(--line);
+      -webkit-font-smoothing:antialiased;
     }
+    a { color:inherit; text-decoration:none; }
+    button { font-family:inherit; background:none; border:none; cursor:pointer; color:inherit; }
 
-    a { color: inherit; text-decoration: none; }
-    button { font-family: inherit; background: none; border: none; cursor: pointer; color: inherit; }
-
-    .theme-toggle {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--bg);
-      padding: 10px 16px;
-      display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--line);
+    /* ── 헤더: 타이틀 왼쪽, 부제목 오른쪽 ── */
+    .header {
+      padding: 22px 20px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 10px;
     }
-    .theme-label {
-      font-size: 10px; color: var(--text-sub);
-      letter-spacing: 0.15em; text-transform: uppercase;
-    }
-    .theme-btns { display: flex; gap: 4px; }
-    .theme-btn {
-      padding: 5px 11px;
-      border-radius: 100px;
-      border: 1px solid var(--line);
-      font-size: 10px; font-weight: 700;
-      color: var(--text-sub);
-      transition: all 0.15s;
-      letter-spacing: 0.05em;
-    }
-    .theme-btn.active {
-      background: var(--text); color: var(--bg); border-color: var(--text);
-    }
-
-    .header { padding: 36px 20px 24px; }
+    .header-left { flex-shrink: 0; }
     .header-label {
-      font-size: 11px; letter-spacing: 0.2em;
-      color: var(--point); font-weight: 600;
-      text-transform: uppercase; margin-bottom: 10px;
+      font-size: 10px; letter-spacing: 0.2em; color: var(--point);
+      font-weight: 600; text-transform: uppercase; margin-bottom: 6px;
     }
     .header-title {
-      font-size: 28px; font-weight: 800;
-      color: var(--text);
+      font-size: 24px; font-weight: 800;
       letter-spacing: -0.035em; line-height: 1.15;
-      margin-bottom: 8px;
+      white-space: nowrap;
     }
+    .header-right { flex-shrink: 1; text-align: right; }
     .header-sub {
-      font-size: 14px; color: var(--text-sub);
-      font-weight: 500; line-height: 1.55;
+      font-size: 11.5px; color: var(--text-sub);
+      font-weight: 500; line-height: 1.6;
+      word-break: keep-all;
     }
 
-    .env-section { padding: 0 16px 14px; }
-    .section-label {
-      font-size: 10px; letter-spacing: 0.2em;
-      color: var(--text-sub); font-weight: 700;
-      margin: 0 4px 10px; text-transform: uppercase;
-    }
-    .env-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 4px;
-    }
-    .env-btn {
+    /* ── 탭 바 (4개) ── */
+    .tab-bar {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      padding: 8px 2px 7px;
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: 10px;
-      transition: all 0.18s;
+      border-bottom: 1px solid var(--line);
+      padding: 0 2px;
+      background: var(--bg);
     }
-    .env-btn:hover .env-icon-wrap { transform: scale(1.06); }
-    .env-btn.active { background: var(--accent-soft); }
-    .env-icon-wrap {
-      width: 40px; height: 40px;
-      border-radius: 11px;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.22s;
+    .tab-btn {
+      flex: 1; padding: 11px 2px 9px;
+      font-size: 10.5px; font-weight: 700;
+      color: var(--text-sub); letter-spacing: -0.02em;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s; text-align: center;
+      line-height: 1.3; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
     }
-    .env-icon-wrap[data-type="ocean"]    { background: var(--ocean-bg); color: var(--ocean-fg); }
-    .env-icon-wrap[data-type="mountain"] { background: var(--mountain-bg); color: var(--mountain-fg); }
-    .env-icon-wrap[data-type="forest"]   { background: var(--forest-bg); color: var(--forest-fg); }
-    .env-icon-wrap[data-type="valley"]   { background: var(--valley-bg); color: var(--valley-fg); }
-    .env-icon-wrap[data-type="river"]    { background: var(--river-bg); color: var(--river-fg); }
-    .env-icon-wrap[data-type="lake"]     { background: var(--lake-bg); color: var(--lake-fg); }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
 
-    .env-btn.active .env-icon-wrap {
-      outline: 2px solid var(--text);
-      outline-offset: 2px;
-    }
-    .env-icon { width: 22px; height: 22px; }
-    .env-name {
-      font-size: 10px; font-weight: 600;
-      color: var(--text);
-      letter-spacing: -0.02em;
-    }
+    /* ── 탭 콘텐츠 ── */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
-    .filter-section { padding: 6px 20px 16px; }
-    .filter-box {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      overflow: hidden;
+    /* ── 파트너스 면책 문구 (2줄) ── */
+    .partners-notice {
+      margin: 16px 16px 0;
+      padding: 9px 12px;
+      background: #F5F5F5;
+      border-left: 3px solid #CCCCCC;
+      border-radius: 0 6px 6px 0;
+      font-size: 10px; color: var(--text-sub);
+      line-height: 1.6; letter-spacing: -0.01em;
     }
-    .filter-box > summary {
-      padding: 14px 16px;
-      font-size: 13px; font-weight: 600;
-      display: flex; justify-content: space-between; align-items: center;
-      cursor: pointer; list-style: none; user-select: none;
+    .partners-notice span { display: block; }
+
+    /* ── 상품 카드 그리드 ── */
+    .product-section { padding: 14px 16px 32px; }
+    .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+    .product-card {
+      display: block; background: var(--surface);
+      border: 1px solid var(--line); border-radius: 10px;
+      overflow: hidden; transition: transform 0.18s; cursor: pointer;
     }
-    .filter-box > summary::-webkit-details-marker { display: none; }
-    .filter-summary-left, .filter-summary-right {
-      display: flex; align-items: center; gap: 8px;
+    .product-card:active { transform: scale(0.97); }
+    .product-thumb { width: 100%; aspect-ratio: 1/1; background: var(--accent-soft); position: relative; overflow: hidden; }
+    .product-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .product-thumb.ph { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; }
+    .product-thumb.ph svg { width: 28px; height: 28px; opacity: 0.2; stroke: var(--text); fill: none; }
+    .product-thumb.ph span { font-size: 9px; color: var(--text-sub); opacity: 0.5; font-weight: 600; letter-spacing: 0.05em; }
+    .source-badge { position: absolute; top: 6px; left: 6px; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 100px; color: white; }
+    .badge-coupang { background: #FF4B4B; }
+    .badge-kurly   { background: #5D3CC7; }
+    .product-info { padding: 9px 10px 11px; }
+    .product-name {
+      font-size: 12px; font-weight: 700; color: var(--text);
+      line-height: 1.35; letter-spacing: -0.02em;
+      overflow: hidden; text-overflow: ellipsis;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      min-height: 32px; margin-bottom: 5px;
     }
-    .filter-summary-right { gap: 10px; }
-    .filter-icon {
-      width: 16px; height: 16px;
-      stroke: currentColor; fill: none; stroke-width: 1.8;
-    }
-    .filter-total {
-      font-size: 11px; padding: 2px 9px;
-      background: var(--text); color: var(--bg);
-      border-radius: 100px; font-weight: 700;
-    }
-    .filter-total.zero { display: none; }
-    .chevron {
-      transition: transform 0.2s;
-      width: 14px; height: 14px;
-      stroke: currentColor; fill: none; stroke-width: 2;
-    }
-    .filter-box[open] .chevron { transform: rotate(180deg); }
-    .filter-body { padding: 0 16px 12px; }
-    .filter-row {
-      padding: 14px 0 12px;
-      border-top: 1px solid var(--line);
-    }
-    .filter-row-head {
-      display: flex; align-items: center; gap: 8px;
+    .product-desc {
+      font-size: 10.5px; color: var(--text-sub); line-height: 1.4;
+      overflow: hidden; text-overflow: ellipsis;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
       margin-bottom: 8px;
     }
-    .filter-row-name {
-      font-size: 10px; letter-spacing: 0.2em;
-      color: var(--text-sub); font-weight: 700;
-      text-transform: uppercase;
-    }
-    .row-count {
-      font-size: 10px; padding: 1px 7px;
-      background: var(--accent-soft); color: var(--text);
-      border-radius: 100px; font-weight: 700;
-    }
-    .row-count.zero { display: none; }
-    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chip {
-      padding: 6px 12px;
-      background: transparent;
-      border: 1px solid var(--line);
-      border-radius: 100px;
-      font-size: 12px; color: var(--text);
-      transition: all 0.15s; font-weight: 500;
-    }
-    .chip:hover { border-color: var(--accent); }
-    .chip.active {
-      background: var(--text); color: var(--bg);
-      border-color: var(--text);
-    }
+    .product-link { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--point); }
+    .product-link svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2; }
+    .product-card.empty { border: 1.5px dashed var(--line); background: transparent; }
+    .product-card.empty .product-name { color: var(--text-sub); font-weight: 400; font-style: italic; }
 
-    .reset-row {
-      padding: 4px 20px 12px;
-      display: flex; justify-content: flex-end;
-    }
-    .reset-btn {
-      font-size: 11px; color: var(--text-sub);
-      text-decoration: underline; font-weight: 500;
-    }
-    .reset-btn:hover { color: var(--point); }
+    /* ── 시리즈 ── */
+    .series-section { padding: 20px 0 8px; }
+    .series-group { margin-bottom: 24px; }
+    .series-group-bar { height: 2px; margin: 0 20px 10px; border-radius: 100px; opacity: 0.45; }
+    .bar-1{background:#F5A623} .bar-2{background:#4A90E2} .bar-3{background:#5E6C4F}
+    .series-group-header { padding:0 20px 10px; display:flex; justify-content:space-between; align-items:baseline; }
+    .series-group-title { font-size:14px; font-weight:800; letter-spacing:-0.03em; }
+    .series-group-count { font-size:11px; color:var(--text-sub); font-weight:500; }
+    .series-scroll { display:flex; gap:8px; align-items:flex-start; overflow-x:auto; padding:0 20px 8px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    .series-scroll::-webkit-scrollbar { display:none; }
+    .ep-card { flex-shrink:0; width:96px; scroll-snap-align:start; cursor:pointer; transition:transform 0.18s; display:flex; flex-direction:column; }
+    .ep-card:active { transform:scale(0.96); }
+    .ep-thumb { width:96px; height:120px; border-radius:8px; overflow:hidden; background:var(--accent-soft); position:relative; margin-bottom:6px; flex-shrink:0; }
+    .ep-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .ep-thumb.empty { border:1.5px dashed var(--line); background:transparent; }
+    .ep-thumb-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+    .ep-thumb-ph svg { width:22px; height:22px; opacity:0.22; stroke:var(--text); fill:none; }
+    .ep-badge { position:absolute; top:5px; left:5px; font-size:9px; font-weight:800; padding:2px 6px; border-radius:100px; letter-spacing:0.03em; color:white; }
+    .ep-badge.dim { background:var(--accent-soft)!important; color:var(--text-sub); }
+    .ep-ig { position:absolute; bottom:5px; right:5px; width:20px; height:20px; background:rgba(0,0,0,0.42); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+    .ep-ig svg { width:11px; height:11px; fill:white; }
+    .ep-name { font-size:11px; font-weight:600; color:var(--text); line-height:1.3; letter-spacing:-0.01em; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; min-height:28px; }
+    .ep-name.dim { color:var(--text-sub); font-weight:400; }
 
-    .count-bar {
-      padding: 8px 20px 14px;
-      display: flex; justify-content: space-between; align-items: baseline;
-      border-top: 1px solid var(--line);
-    }
-    .count-num {
-      font-size: 20px; font-weight: 800;
-      color: var(--text); letter-spacing: -0.02em;
-    }
-    .count-num::after {
-      content: '개'; font-size: 12px; margin-left: 2px;
-      font-weight: 500; color: var(--text-sub);
-    }
-    .count-desc {
-      font-size: 11px; color: var(--text-sub);
-      letter-spacing: 0.05em;
-    }
+    /* ── 캠핑장 ── */
+    .env-section { padding:16px 16px 12px; }
+    .section-label { font-size:10px; letter-spacing:0.2em; color:var(--text-sub); font-weight:700; margin:0 4px 10px; text-transform:uppercase; display:block; }
+    .env-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; }
+    .env-btn { display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 2px 7px; border-radius:10px; transition:all 0.18s; }
+    .env-btn.active { background:var(--accent-soft); }
+    .env-btn.active .env-icon-wrap { outline:2px solid var(--text); outline-offset:2px; }
+    .env-icon-wrap { width:40px; height:40px; border-radius:11px; display:flex; align-items:center; justify-content:center; }
+    .env-icon-wrap[data-t="ocean"]    {background:var(--ocean-bg);color:var(--ocean-fg)}
+    .env-icon-wrap[data-t="mountain"]{background:var(--mountain-bg);color:var(--mountain-fg)}
+    .env-icon-wrap[data-t="forest"]  {background:var(--forest-bg);color:var(--forest-fg)}
+    .env-icon-wrap[data-t="valley"]  {background:var(--valley-bg);color:var(--valley-fg)}
+    .env-icon-wrap[data-t="river"]   {background:var(--river-bg);color:var(--river-fg)}
+    .env-icon-wrap[data-t="lake"]    {background:var(--lake-bg);color:var(--lake-fg)}
+    .env-icon { width:22px; height:22px; }
+    .env-name { font-size:10px; font-weight:600; color:var(--text); letter-spacing:-0.02em; }
+    .filter-section { padding:4px 20px 14px; }
+    .filter-box { background:var(--surface); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+    .filter-box > summary { padding:13px 16px; font-size:13px; font-weight:600; display:flex; justify-content:space-between; align-items:center; cursor:pointer; list-style:none; }
+    .filter-box > summary::-webkit-details-marker { display:none; }
+    .fsum-l,.fsum-r { display:flex; align-items:center; gap:8px; }
+    .filter-icon { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.8; }
+    .ftotal { font-size:11px; padding:2px 9px; background:var(--text); color:var(--bg); border-radius:100px; font-weight:700; }
+    .ftotal.z { display:none; }
+    .chevron { transition:transform 0.2s; width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; }
+    .filter-box[open] .chevron { transform:rotate(180deg); }
+    .filter-body { padding:0 16px 12px; }
+    .filter-row { padding:13px 0 10px; border-top:1px solid var(--line); }
+    .filter-row-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .filter-row-name { font-size:10px; letter-spacing:0.2em; color:var(--text-sub); font-weight:700; text-transform:uppercase; }
+    .row-cnt { font-size:10px; padding:1px 7px; background:var(--accent-soft); color:var(--text); border-radius:100px; font-weight:700; }
+    .row-cnt.z { display:none; }
+    .chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .chip { padding:6px 12px; background:transparent; border:1px solid var(--line); border-radius:100px; font-size:12px; color:var(--text); transition:all 0.15s; font-weight:500; cursor:pointer; }
+    .chip.active { background:var(--text); color:var(--bg); border-color:var(--text); }
+    .reset-row { padding:4px 20px 10px; display:flex; justify-content:flex-end; }
+    .reset-btn { font-size:11px; color:var(--text-sub); text-decoration:underline; font-weight:500; cursor:pointer; }
+    .count-bar { padding:6px 20px 12px; display:flex; justify-content:space-between; align-items:baseline; border-top:1px solid var(--line); }
+    .count-num { font-size:20px; font-weight:800; letter-spacing:-0.02em; }
+    .count-num::after { content:'개'; font-size:12px; margin-left:2px; font-weight:500; color:var(--text-sub); }
+    .count-desc { font-size:11px; color:var(--text-sub); letter-spacing:0.05em; }
+    .grid { padding:0 16px 32px; display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .camp-card { display:block; background:var(--surface); border-radius:8px; overflow:hidden; transition:transform 0.2s; animation:fadeUp 0.35s ease backwards; }
+    .camp-card:active { transform:scale(0.97); }
+    .camp-img { width:100%; aspect-ratio:1/1.25; overflow:hidden; background:var(--accent-soft); position:relative; }
+    .camp-img img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .camp-badge { position:absolute; top:6px; left:6px; background:var(--point); color:white; font-size:9px; padding:2px 6px; border-radius:100px; font-weight:700; z-index:2; }
+    .camp-info { padding:8px 8px 10px; }
+    .camp-name { font-size:12px; font-weight:700; line-height:1.25; letter-spacing:-0.02em; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; margin-bottom:2px; }
+    .camp-region { font-size:10px; color:var(--text-sub); }
+    .empty-msg { grid-column:1/-1; padding:60px 20px; text-align:center; color:var(--text-sub); font-size:13px; }
 
-    .grid {
-      padding: 0 16px 32px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-    .card {
-      display: block;
-      background: var(--surface);
-      border-radius: 8px;
-      overflow: hidden;
-      transition: transform 0.2s;
-      animation: fadeUp 0.35s ease backwards;
-    }
-    .card:active { transform: scale(0.97); }
-    .card-image {
-      width: 100%; aspect-ratio: 1 / 1.25;
-      overflow: hidden;
-      background: var(--accent-soft);
-      position: relative;
-    }
-    .card-image img {
-      position: absolute;
-      inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      opacity: 0;
-      transition: opacity 0.8s ease;
-    }
-    .card-image img.active {
-      opacity: 1;
-    }
-    .card-badge {
-      position: absolute; top: 6px; left: 6px;
-      background: var(--point); color: white;
-      font-size: 9px; padding: 2px 6px;
-      border-radius: 100px;
-      font-weight: 700; letter-spacing: 0.03em;
-      z-index: 2;
-    }
-    .card-dots {
-      position: absolute; bottom: 6px; left: 50%;
-      transform: translateX(-50%);
-      display: flex; gap: 3px;
-      z-index: 2;
-    }
-    .card-dot {
-      width: 4px; height: 4px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.5);
-      box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
-      transition: background 0.3s;
-    }
-    .card-dot.active {
-      background: rgba(255, 255, 255, 0.95);
-    }
-    .card-content { padding: 8px 8px 10px; }
-    .card-name {
-      font-size: 12px; font-weight: 700;
-      color: var(--text);
-      line-height: 1.25; letter-spacing: -0.02em;
-      overflow: hidden; text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      margin-bottom: 2px;
-    }
-    .card-region {
-      font-size: 10px; color: var(--text-sub);
-      letter-spacing: 0.02em;
-    }
-    .empty {
-      grid-column: 1 / -1;
-      padding: 60px 20px;
-      text-align: center;
-      color: var(--text-sub); font-size: 13px;
-    }
+    /* ── 푸터 ── */
+    .footer { background:var(--text); color:var(--bg); padding:24px 20px 20px; text-align:center; }
+    .footer-btn { display:block; padding:13px 20px; background:var(--bg); color:var(--text); border-radius:8px; font-size:13px; font-weight:700; margin:0 auto 14px; max-width:280px; }
+    .footer-collab { font-size:11px; opacity:0.55; letter-spacing:0.02em; margin-bottom:12px; }
+    .footer-credits { font-size:10px; opacity:0.35; letter-spacing:0.05em; padding-top:12px; border-top:1px solid rgba(255,255,255,0.08); }
 
-    .footer {
-      background: var(--text); color: var(--bg);
-      padding: 28px 20px 24px;
-      text-align: center;
-    }
-    .footer-actions {
-      display: flex; flex-direction: column; gap: 8px;
-      max-width: 280px; margin: 0 auto 18px;
-    }
-    .footer-btn {
-      padding: 13px 20px;
-      background: var(--bg); color: var(--text);
-      border-radius: 8px;
-      font-size: 13px; font-weight: 700;
-      letter-spacing: -0.01em;
-      transition: opacity 0.15s;
-    }
-    .footer-btn:active { opacity: 0.7; }
-    .footer-collab {
-      font-size: 11px; opacity: 0.6;
-      letter-spacing: 0.02em;
-      margin-bottom: 14px;
-    }
-    .footer-credits {
-      font-size: 10px; opacity: 0.4;
-      letter-spacing: 0.05em;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
   </style>
 </head>
-<body data-theme="B">
+<body>
 
-  <div class="theme-toggle">
-    <span class="theme-label">Theme</span>
-    <div class="theme-btns">
-      <button class="theme-btn active" data-theme="B">LIGHT</button>
-      <button class="theme-btn" data-theme="BK">BLACK</button>
-    </div>
-  </div>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   🔶 NOTION 동기화 영역 ① — 사이트 텍스트
+   노션 "인스타 프로필" 페이지 > 📢 사이트 텍스트 설정 토글에서 관리
+   마지막 동기화: 2026-04-22
+   ═══════════════════════════════════════════════════════════════════ */
+const siteConfig = {
+  headerLabel:    "· Auto Camping ·",
+  headerTitle:    "이번 주말,
+어디 갈까?",
+  headerSub:      "5년차 부부캠퍼 공대남자가
+직접 가본 곳만.",
+  tab1:           "캠핑이야기",
+  tab2:           "다녀온 캠핑장",
+  tab3:           "추천 음식",
+  tab4:           "추천 템",
+  partnersLine1:  "이 포스팅은 쿠팡 파트너스 활동의 일환으로,",
+  partnersLine2:  "이에 따른 일정액의 수수료를 제공받습니다.",
+  footerInstaBtn: "인스타 팔로우 @kyd_zm",
+  footerInstaUrl: "https://www.instagram.com/kyd_zm/",
+  footerCollab:   "캠핑 장비 · 식품 브랜드 협업 환영 · DM",
+  footerCredits:  "© 2026 공대남자"
+};
+/* ═══════════════════════════════════════════════════════════════════ */
 
+
+/* ═══════════════════════════════════════════════════════════════════
+   🔶 NOTION 동기화 영역 ② — 인스타 시리즈
+   노션 "인스타 시리즈 DB"에서 관리
+   마지막 동기화: 2026-04-22
+   ═══════════════════════════════════════════════════════════════════ */
+const series = [
+  {
+    "name": "여름에 가기 좋은 캠핑장",
+    "emoji": "☀️",
+    "color": "#F5A623",
+    "bar": "bar-1",
+    "eps": [
+      {
+        "ep": 1,
+        "title": "EP.01 밀양 구만산장",
+        "url": "https://www.instagram.com/p/DXYt1NME24U/",
+        "thumb": ""
+      }
+    ]
+  },
+  {
+    "name": "캠핑꿀팁",
+    "emoji": "💡",
+    "color": "#4A90E2",
+    "bar": "bar-2",
+    "eps": []
+  },
+  {
+    "name": "장비소개",
+    "emoji": "🎒",
+    "color": "#5E6C4F",
+    "bar": "bar-3",
+    "eps": []
+  }
+];
+/* ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   🔶 NOTION 동기화 영역 ③ — 추천 음식
+   노션 "추천 음식 DB"에서 관리
+   마지막 동기화: 2026-04-22
+   ═══════════════════════════════════════════════════════════════════ */
+const foods = [];
+/* ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   🔶 NOTION 동기화 영역 ④ — 추천 템
+   노션 "추천 템 DB"에서 관리
+   마지막 동기화: 2026-04-22
+   ═══════════════════════════════════════════════════════════════════ */
+const items = [];
+/* ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   🔶 NOTION 동기화 영역 ⑤ — 캠핑장 리스트
+   노션 "캠핑장 카탈로그 DB"에서 관리
+   ═══════════════════════════════════════════════════════════════════ */
+const camps = [
+  { name:"합천호코지캠핑장", region:"경남", seasons:["봄","가을"], landscape:["산"], extras:["벚꽃","글램핑"], graega:true, url:"https://m.site.naver.com/1Sbv3", imgs:["./images/hapcheonho.jpg"] },
+  { name:"캠프627 경호강", region:"경남", seasons:["봄","가을"], landscape:["강"], extras:["벚꽃","수영장","개별샤워실"], graega:true, url:"https://graega.short.gy/6973kydzm", imgs:["./images/camp627-1.jpg","./images/camp627-2.jpg","./images/camp627-3.jpg","./images/camp627-4.jpg","./images/camp627-5.jpg"] },
+  { name:"우니메이카 산청", region:"경남", seasons:["여름"], landscape:["계곡","산"], extras:["개별샤워실"], graega:true, url:"https://m.site.naver.com/1NdGk", imgs:["./images/unimeica-1.jpg","./images/unimeica-2.jpg"] },
+  { name:"문경 그린스톤", region:"경북", seasons:["봄","여름","가을"], landscape:["계곡","숲","산"], extras:["벚꽃","애견동반"], graega:true, url:"https://graega.short.gy/7048kydzm", imgs:["./images/mungyeong.jpg"] },
+  { name:"밀양 구만산장", region:"경남", seasons:["봄","여름","가을"], landscape:["계곡","숲","산"], extras:["벚꽃","수영장","펜션"], graega:true, url:"https://graega.short.gy/7130kydzm", imgs:["./images/milyang.jpg"] }
+];
+/* ═══════════════════════════════════════════════════════════════════ */
+</script>
+
+  <!-- 헤더: 타이틀 왼쪽 + 부제목 오른쪽 -->
   <header class="header">
-    <div class="header-label" id="header-label"></div>
-    <h1 class="header-title" id="header-title"></h1>
-    <p class="header-sub" id="header-sub"></p>
+    <div class="header-left">
+      <div class="header-label" id="header-label"></div>
+      <h1 class="header-title" id="header-title"></h1>
+    </div>
+    <div class="header-right">
+      <p class="header-sub" id="header-sub"></p>
+    </div>
   </header>
 
-  <section class="env-section">
-    <div class="section-label">Landscape</div>
-    <div class="env-grid" id="env-grid"></div>
-  </section>
+  <!-- 탭 바 -->
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="t1" id="tab-btn-1"></button>
+    <button class="tab-btn" data-tab="t2" id="tab-btn-2"></button>
+    <button class="tab-btn" data-tab="t3" id="tab-btn-3"></button>
+    <button class="tab-btn" data-tab="t4" id="tab-btn-4"></button>
+  </nav>
 
-  <section class="filter-section">
-    <details class="filter-box">
-      <summary>
-        <span class="filter-summary-left">
-          <svg class="filter-icon" viewBox="0 0 24 24" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-          <span>필터</span>
-        </span>
-        <span class="filter-summary-right">
-          <span class="filter-total zero" id="filter-total">0</span>
-          <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-      </summary>
-      <div class="filter-body">
-        <div class="filter-row">
-          <div class="filter-row-head">
-            <span class="filter-row-name">지역</span>
-            <span class="row-count zero" id="region-count">0</span>
-          </div>
-          <div class="chips" id="region-chips"></div>
-        </div>
-        <div class="filter-row">
-          <div class="filter-row-head">
-            <span class="filter-row-name">시즌</span>
-            <span class="row-count zero" id="season-count">0</span>
-          </div>
-          <div class="chips" id="season-chips"></div>
-        </div>
-        <div class="filter-row">
-          <div class="filter-row-head">
-            <span class="filter-row-name">기타</span>
-            <span class="row-count zero" id="extra-count">0</span>
-          </div>
-          <div class="chips" id="extra-chips"></div>
-        </div>
-      </div>
-    </details>
-  </section>
-
-  <div class="reset-row">
-    <button class="reset-btn" id="reset-btn">필터 초기화</button>
+  <!-- 탭 1: 캠핑이야기 -->
+  <div id="t1" class="tab-content active">
+    <section class="series-section" id="series-wrap"></section>
   </div>
 
-  <div class="count-bar">
-    <div class="count-num" id="result-count">0</div>
-    <div class="count-desc">Showing results</div>
+  <!-- 탭 2: 다녀온 캠핑장 -->
+  <div id="t2" class="tab-content">
+    <section class="env-section">
+      <span class="section-label">Landscape</span>
+      <div class="env-grid" id="env-grid"></div>
+    </section>
+    <section class="filter-section">
+      <details class="filter-box">
+        <summary>
+          <span class="fsum-l"><svg class="filter-icon" viewBox="0 0 24 24" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span>필터</span></span>
+          <span class="fsum-r"><span class="ftotal z" id="ftotal">0</span><svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </summary>
+        <div class="filter-body">
+          <div class="filter-row"><div class="filter-row-head"><span class="filter-row-name">지역</span><span class="row-cnt z" id="rcnt">0</span></div><div class="chips" id="region-chips"></div></div>
+          <div class="filter-row"><div class="filter-row-head"><span class="filter-row-name">시즌</span><span class="row-cnt z" id="scnt">0</span></div><div class="chips" id="season-chips"></div></div>
+          <div class="filter-row"><div class="filter-row-head"><span class="filter-row-name">기타</span><span class="row-cnt z" id="ecnt">0</span></div><div class="chips" id="extra-chips"></div></div>
+        </div>
+      </details>
+    </section>
+    <div class="reset-row"><button class="reset-btn" id="reset-btn">필터 초기화</button></div>
+    <div class="count-bar"><div class="count-num" id="result-count">5</div><div class="count-desc">Showing results</div></div>
+    <main class="grid" id="camp-grid"></main>
   </div>
 
-  <main class="grid" id="grid"></main>
-
-  <footer class="footer">
-    <div class="footer-actions">
-      <a href="https://www.instagram.com/kyd_zm/" target="_blank" class="footer-btn">인스타 팔로우 @kyd_zm</a>
+  <!-- 탭 3: 추천 음식 -->
+  <div id="t3" class="tab-content">
+    <div class="partners-notice">
+      <span id="partners-line1"></span>
+      <span id="partners-line2"></span>
     </div>
+    <section class="product-section">
+      <div class="product-grid" id="food-grid"></div>
+    </section>
+  </div>
+
+  <!-- 탭 4: 추천 템 -->
+  <div id="t4" class="tab-content">
+    <div class="partners-notice">
+      <span id="partners-line1b"></span>
+      <span id="partners-line2b"></span>
+    </div>
+    <section class="product-section">
+      <div class="product-grid" id="item-grid"></div>
+    </section>
+  </div>
+
+  <!-- 푸터 -->
+  <footer class="footer">
+    <a id="footer-insta-btn" target="_blank" class="footer-btn"></a>
     <div class="footer-collab" id="footer-collab"></div>
-    <div class="footer-credits">© 2026 공대남자</div>
+    <div class="footer-credits" id="footer-credits"></div>
   </footer>
 
-  <script>
-  /* ═══════════════════════════════════════════════════════════════
-     🔶 NOTION 동기화 영역 ① — 사이트 텍스트 (헤더 + 푸터)
-     마지막 동기화: 2026-04-22
-     ═══════════════════════════════════════════════════════════════ */
-  const siteConfig = {
-    headerLabel: "· Auto Camping ·",
-    headerTitle: "이번 주말,<br>어디 갈까?",
-    headerSub: "5년차 부부캠퍼 공대남자가<br>직접 가본 곳만.",
-    footerCollab: "캠핑 장비 · 식품 브랜드 협업 환영 · DM"
-  };
-  /* ═══════════════════════════════════════════════════════════════ */
+<script>
+/* ─── 캠핑장 필터/Landscape 데이터 ─── */
+const landscapeOpts = [
+  { key:"바다",  t:"ocean",    label:"바다",   svg:`<svg class="env-icon" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="7" r="2.5" fill="#F5C547"/><path d="M2 13Q5.5 11 9 13Q12.5 15 16 13Q19 11.5 22 13L22 20H2Z" fill="currentColor" opacity=".4"/><path d="M2 16Q6 14.5 10 16Q14 17.5 18 16Q20 15 22 16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>` },
+  { key:"산",    t:"mountain", label:"산",     svg:`<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M2 20L9 7l4 8 3-5 6 10H2Z" fill="currentColor" opacity=".65"/><path d="M7.5 11L9 7l1.5 4Z" fill="#fff" opacity=".85"/></svg>` },
+  { key:"숲",    t:"forest",   label:"숲",     svg:`<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3L7 11h3l-4 7h4v3h4v-3h4l-4-7h3Z" fill="currentColor" opacity=".7"/></svg>` },
+  { key:"계곡",  t:"valley",   label:"계곡",   svg:`<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M2 19L8 9l4 5 4-7 6 12Z" fill="currentColor" opacity=".25"/><path d="M3 19Q8 17 12 19Q16 21 21 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M2 19L8 9l4 5 4-7 6 12" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/></svg>` },
+  { key:"강",    t:"river",    label:"강",     svg:`<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M2 7Q6 5 10 7Q14 9 18 7Q20 6 22 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M2 12Q6 10 10 12Q14 14 18 12Q20 11 22 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".7"/><path d="M2 17Q6 15 10 17Q14 19 18 17Q20 16 22 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".45"/></svg>` },
+  { key:"호수",  t:"lake",     label:"호수",   svg:`<svg class="env-icon" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="15" rx="9" ry="4" fill="currentColor" opacity=".3"/><path d="M7 9l5-7 5 7Z" fill="currentColor" opacity=".8"/></svg>` }
+];
+const filterOpts = { region:["강원","경기","충북","충남","경북","경남","전북","전남","제주"], season:["봄","여름","가을","겨울"] };
+const state = { landscape:new Set(), region:new Set(), season:new Set(), extras:new Set() };
+const usedRegions = filterOpts.region.filter(r=>camps.some(c=>c.region===r));
+const usedSeasons = filterOpts.season.filter(s=>camps.some(c=>c.seasons.includes(s)));
+const autoExtras  = [...new Set(camps.flatMap(c=>c.extras))].sort((a,b)=>a.localeCompare(b,'ko'));
 
+/* ─── SVG 아이콘 ─── */
+const IG_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`;
+const PH_SVG = `<svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9l4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="14.5" r="1.5"/></svg>`;
+const ARROW_SVG = `<svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>`;
 
-  const landscapeOptions = [
-    { key: "바다", label: "바다", type: "ocean",
-      svg: `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="7" r="2.5" fill="#F5C547"/><path d="M2 13 Q5.5 11 9 13 Q12.5 15 16 13 Q19 11.5 22 13 L22 20 L2 20 Z" fill="currentColor" opacity="0.4"/><path d="M2 16 Q6 14.5 10 16 Q14 17.5 18 16 Q20 15 22 16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>` },
-    { key: "산", label: "산", type: "mountain",
-      svg: `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M2 20 L9 7 L14 15 L10 20 Z" fill="currentColor" opacity="0.75"/><path d="M10 20 L15 12 L22 20 Z" fill="currentColor" opacity="0.4"/><path d="M7.5 11 L9 7 L10.5 11 L9.5 11.5 Z" fill="#FFFFFF" opacity="0.95"/></svg>` },
-    { key: "숲", label: "숲", type: "forest",
-      svg: `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M6 19 L2 13 L4 13 L2 10 L4 10 L3 7 L6 7 L5 10 L7 10 L5 13 L7 13 Z" fill="currentColor" opacity="0.6"/><rect x="5.3" y="18" width="1.4" height="2.5" fill="currentColor" opacity="0.9"/><path d="M15 20 L10 13 L12 13 L10 10 L12 10 L11 6 L15 6 L14 10 L16 10 L14 13 L16 13 L15 20Z" fill="currentColor" opacity="0.9"/><rect x="14.3" y="18.5" width="1.4" height="2.5" fill="currentColor"/><path d="M21 19 L18 14 L19.5 14 L18 11 L19.5 11 L19 8 L22 8 L21 11 L22.5 11 L21 14 L22.5 14 Z" fill="currentColor" opacity="0.45"/></svg>` },
-    { key: "계곡", label: "계곡", type: "valley",
-      svg: `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M2 19 L8 9 L12 14 L16 8 L22 19 Z" fill="currentColor" opacity="0.3"/><path d="M3 19 Q8 17 12 19 Q16 21 21 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M2 19 L8 9 L12 14 L16 8 L22 19" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" fill="none"/></svg>` },
-    { key: "강", label: "강", type: "river",
-      svg: `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M2 7 Q6 5 10 7 Q14 9 18 7 Q20 6 22 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M2 12 Q6 10 10 12 Q14 14 18 12 Q20 11 22 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.75"/><path d="M2 17 Q6 15 10 17 Q14 19 18 17 Q20 16 22 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.5"/></svg>` },
-    { key: "호수", label: "호수", type: "lake",
-      svg: `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="15" rx="9" ry="4" fill="currentColor" opacity="0.35"/><path d="M5 14 Q8 13 11 14 Q14 15 17 14 Q18.5 13.5 19 14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/><path d="M7 8 L9 5 L11 8 Z" fill="currentColor" opacity="0.7"/><path d="M14 9 L17 5 L20 9 Z" fill="currentColor" opacity="0.85"/></svg>` }
-  ];
+/* ─── siteConfig 렌더 ─── */
+function renderConfig() {
+  document.getElementById('header-label').textContent = siteConfig.headerLabel;
+  document.getElementById('header-title').innerHTML = siteConfig.headerTitle.replace(/\n/g, '<br>');
+  document.getElementById('header-sub').innerHTML   = siteConfig.headerSub.replace(/\n/g, '<br>');
+  document.getElementById('tab-btn-1').textContent  = siteConfig.tab1;
+  document.getElementById('tab-btn-2').textContent  = siteConfig.tab2;
+  document.getElementById('tab-btn-3').textContent  = siteConfig.tab3;
+  document.getElementById('tab-btn-4').textContent  = siteConfig.tab4;
+  document.getElementById('partners-line1').textContent  = siteConfig.partnersLine1;
+  document.getElementById('partners-line2').textContent  = siteConfig.partnersLine2;
+  document.getElementById('partners-line1b').textContent = siteConfig.partnersLine1;
+  document.getElementById('partners-line2b').textContent = siteConfig.partnersLine2;
+  const footerBtn = document.getElementById('footer-insta-btn');
+  footerBtn.textContent = siteConfig.footerInstaBtn;
+  footerBtn.href = siteConfig.footerInstaUrl;
+  document.getElementById('footer-collab').textContent   = siteConfig.footerCollab;
+  document.getElementById('footer-credits').textContent  = siteConfig.footerCredits;
+}
 
+/* ─── 시리즈 렌더 ─── */
+function renderSeries() {
+  const wrap = document.getElementById('series-wrap');
+  wrap.innerHTML = series.map(s => {
+    const eps = s.eps.length ? s.eps : [
+      {ep:1, title:"게시물 준비 중", url:"", thumb:"", empty:true},
+      {ep:2, title:"곧 업로드 예정", url:"", thumb:"", empty:true}
+    ];
+    const cnt = s.eps.length ? `${s.eps.length}편` : "";
+    return `<div class="series-group">
+      <div class="series-group-bar ${s.bar}"></div>
+      <div class="series-group-header">
+        <span class="series-group-title">${s.emoji} ${s.name}</span>
+        <span class="series-group-count">${cnt}</span>
+      </div>
+      <div class="series-scroll">
+        ${eps.map(ep => {
+          const empty = ep.empty || !ep.url;
+          const tag = empty ? 'div' : 'a';
+          const attr = empty ? '' : `href="${ep.url}" target="_blank" rel="noopener"`;
+          return `<${tag} class="ep-card" ${attr}>
+            <div class="ep-thumb${empty?' empty':''}">
+              ${ep.thumb ? `<img src="${ep.thumb}" loading="lazy">` : `<div class="ep-thumb-ph">${PH_SVG}</div>`}
+              <span class="ep-badge${empty?' dim':''}" style="${empty?'':'background:'+s.color}">EP.${String(ep.ep).padStart(2,'0')}</span>
+              ${!empty ? `<div class="ep-ig">${IG_SVG}</div>` : ''}
+            </div>
+            <div class="ep-name${empty?' dim':''}">${ep.title}</div>
+          </${tag}>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
 
-  /* ═══════════════════════════════════════════════════════════════
-     🔶 NOTION 동기화 영역 ② — 지역 · 시즌 마스터 옵션
-     ═══════════════════════════════════════════════════════════════ */
-  const filterOptions = {
-    region: ["강원", "경기", "충북", "충남", "경북", "경남", "전북", "전남", "제주"],
-    season: ["봄", "여름", "가을", "겨울"]
-  };
-  /* ═══════════════════════════════════════════════════════════════ */
-
-
-  /* ═══════════════════════════════════════════════════════════════
-     🔶 NOTION 동기화 영역 ③ — 캠핑장 리스트
-     마지막 동기화: 2026-04-22 (살아있는 5개, 이미지 10장)
-     ═══════════════════════════════════════════════════════════════ */
-  const camps = [
-    { name: "합천호코지캠핑장", region: "경남", seasons: ["봄","가을"], landscape: ["산"], extras: ["벚꽃","글램핑"], graega: true, reservUrl: "https://m.site.naver.com/1Sbv3",
-      images: ["./images/hapcheonho.jpg"] },
-    { name: "캠프627 경호강", region: "경남", seasons: ["봄","가을"], landscape: ["강"], extras: ["벚꽃","수영장","개별샤워실"], graega: true, reservUrl: "https://graega.short.gy/6973kydzm",
-      images: ["./images/camp627-1.jpg","./images/camp627-2.jpg","./images/camp627-3.jpg","./images/camp627-4.jpg","./images/camp627-5.jpg"] },
-    { name: "우니메이카 산청", region: "경남", seasons: ["여름"], landscape: ["계곡","산"], extras: ["개별샤워실"], graega: true, reservUrl: "https://m.site.naver.com/1NdGk",
-      images: ["./images/unimeica-1.jpg","./images/unimeica-2.jpg"] },
-    { name: "문경 그린스톤", region: "경북", seasons: ["봄","여름","가을"], landscape: ["계곡","숲","산"], extras: ["벚꽃","애견동반"], graega: true, reservUrl: "https://graega.short.gy/7048kydzm",
-      images: ["./images/mungyeong.jpg"] },
-    { name: "밀양 구만산장", region: "경남", seasons: ["봄","여름","가을"], landscape: ["계곡","숲","산"], extras: ["벚꽃","수영장","펜션"], graega: true, reservUrl: "https://graega.short.gy/7130kydzm",
-      images: ["./images/milyang.jpg"] }
-  ];
-  /* ═══════════════════════════════════════════════════════════════ */
-
-
-  const usedRegions = new Set(camps.map(c => c.region));
-  const usedSeasons = new Set(camps.flatMap(c => c.seasons));
-  const visibleRegions = filterOptions.region.filter(r => usedRegions.has(r));
-  const visibleSeasons = filterOptions.season.filter(s => usedSeasons.has(s));
-  const autoExtraOptions = [...new Set(camps.flatMap(c => c.extras || []))]
-    .sort((a, b) => a.localeCompare(b, 'ko'));
-
-
-  const state = {
-    landscape: new Set(),
-    region: new Set(),
-    season: new Set(),
-    extras: new Set()
-  };
-
-  const SLIDE_INTERVAL = 3000;
-  const STAGGER_MS = 400;
-  let slideshowTimers = [];
-
-  function renderHeader() {
-    document.getElementById('header-label').textContent = siteConfig.headerLabel;
-    document.getElementById('header-title').innerHTML = siteConfig.headerTitle;
-    document.getElementById('header-sub').innerHTML = siteConfig.headerSub;
-    document.getElementById('footer-collab').textContent = siteConfig.footerCollab;
+/* ─── 상품 카드 렌더 ─── */
+function renderProducts(containerId, dataArr) {
+  const grid = document.getElementById(containerId);
+  if (!dataArr || !dataArr.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--text-sub);font-size:13px;">아직 등록된 항목이 없어요</div>`;
+    return;
   }
+  grid.innerHTML = dataArr.map(item => {
+    const bc = item.source==='coupang'?'badge-coupang':item.source==='kurly'?'badge-kurly':'';
+    const bl = item.source==='coupang'?'쿠팡':item.source==='kurly'?'컬리':'';
+    const empty = !item.url || item.url==='#';
+    return `<a class="product-card${empty?' empty':''}" href="${empty?'#':item.url}" ${empty?'':' target="_blank" rel="noopener"'}>
+      <div class="product-thumb${item.thumb?'':' ph'}">
+        ${item.thumb ? `<img src="${item.thumb}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
+        ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : ''}
+      </div>
+      <div class="product-info">
+        <div class="product-name">${item.name}</div>
+        ${item.desc ? `<div class="product-desc">${item.desc}</div>` : ''}
+        ${!empty ? `<span class="product-link">구매하기 ${ARROW_SVG}</span>` : ''}
+      </div>
+    </a>`;
+  }).join('');
+}
 
-  function renderEnvFilters() {
-    const container = document.getElementById('env-grid');
-    container.innerHTML = landscapeOptions.map(o => `
-      <button class="env-btn ${state.landscape.has(o.key) ? 'active' : ''}" data-key="${o.key}">
-        <div class="env-icon-wrap" data-type="${o.type}">${o.svg}</div>
-        <span class="env-name">${o.label}</span>
-      </button>
-    `).join('');
-    container.querySelectorAll('.env-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        toggleSet(state.landscape, btn.dataset.key);
-        renderEnvFilters();
-        renderGrid();
-      });
-    });
-  }
+/* ─── Landscape + 캠핑장 ─── */
+function renderEnv() {
+  document.getElementById('env-grid').innerHTML = landscapeOpts.map(o =>
+    `<button class="env-btn${state.landscape.has(o.key)?' active':''}" data-key="${o.key}">
+      <div class="env-icon-wrap" data-t="${o.t}">${o.svg}</div>
+      <span class="env-name">${o.label}</span>
+    </button>`).join('');
+  document.querySelectorAll('.env-btn').forEach(b =>
+    b.addEventListener('click', ()=>{ toggle(state.landscape,b.dataset.key); renderEnv(); renderGrid(); }));
+}
+function renderChips(id, opts, set, cntId) {
+  const el = document.getElementById(id);
+  el.innerHTML = opts.map(o => `<button class="chip${set.has(o)?' active':''}" data-v="${o}">${o}</button>`).join('');
+  el.querySelectorAll('.chip').forEach(c =>
+    c.addEventListener('click', ()=>{ toggle(set,c.dataset.v); renderChips(id,opts,set,cntId); updCnt(cntId,set.size); updTotal(); renderGrid(); }));
+  updCnt(cntId, set.size);
+}
+function updCnt(id, n) { const e=document.getElementById(id); e.textContent=n; e.classList.toggle('z',n===0); }
+function updTotal() { const n=state.region.size+state.season.size+state.extras.size; const e=document.getElementById('ftotal'); e.textContent=n; e.classList.toggle('z',n===0); }
+function toggle(set, k) { set.has(k)?set.delete(k):set.add(k); }
+function match(c) {
+  if(state.landscape.size && !c.landscape.some(l=>state.landscape.has(l))) return false;
+  if(state.region.size   && !state.region.has(c.region)) return false;
+  if(state.season.size   && !c.seasons.some(s=>state.season.has(s))) return false;
+  if(state.extras.size   && !c.extras.some(e=>state.extras.has(e))) return false;
+  return true;
+}
+function renderGrid() {
+  const filtered = camps.filter(match);
+  document.getElementById('result-count').textContent = filtered.length;
+  const grid = document.getElementById('camp-grid');
+  if(!filtered.length){ grid.innerHTML='<div class="empty-msg">조건에 맞는 캠핑장이 없어요.</div>'; return; }
+  grid.innerHTML = filtered.map((c,i) => `
+    <a href="${c.url||'#'}" ${c.url?'target="_blank" rel="noopener"':''} class="camp-card" style="animation-delay:${i*0.03}s">
+      <div class="camp-img">
+        ${c.imgs.map((src,j)=>`<img src="${src}" loading="lazy" style="opacity:${j===0?1:0}">`).join('')}
+        ${c.graega?'<span class="camp-badge">그래가</span>':''}
+      </div>
+      <div class="camp-info"><div class="camp-name">${c.name}</div><div class="camp-region">${c.region}</div></div>
+    </a>`).join('');
+}
 
-  function renderChips(containerId, options, set, countId) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = options.map(o => `
-      <button class="chip ${set.has(o) ? 'active' : ''}" data-key="${o}">${o}</button>
-    `).join('');
-    container.querySelectorAll('.chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        toggleSet(set, chip.dataset.key);
-        renderChips(containerId, options, set, countId);
-        updateRowCount(countId, set.size);
-        updateFilterTotal();
-        renderGrid();
-      });
-    });
-    updateRowCount(countId, set.size);
-  }
-
-  function updateRowCount(id, n) {
-    const el = document.getElementById(id);
-    el.textContent = n;
-    el.classList.toggle('zero', n === 0);
-  }
-
-  function updateFilterTotal() {
-    const total = state.region.size + state.season.size + state.extras.size;
-    const el = document.getElementById('filter-total');
-    el.textContent = total;
-    el.classList.toggle('zero', total === 0);
-  }
-
-  function toggleSet(set, key) {
-    if (set.has(key)) set.delete(key);
-    else set.add(key);
-  }
-
-  function match(camp) {
-    if (state.landscape.size > 0 && !camp.landscape.some(l => state.landscape.has(l))) return false;
-    if (state.region.size > 0 && !state.region.has(camp.region)) return false;
-    if (state.season.size > 0) {
-      const ok = camp.seasons.some(s => state.season.has(s)) || camp.seasons.includes("사계절");
-      if (!ok) return false;
-    }
-    if (state.extras.size > 0 && !(camp.extras || []).some(e => state.extras.has(e))) return false;
-    return true;
-  }
-
-  function clearSlideshows() {
-    slideshowTimers.forEach(t => clearInterval(t));
-    slideshowTimers = [];
-  }
-
-  function startSlideshow(cardEl, staggerIndex) {
-    const imgs = cardEl.querySelectorAll('.card-image img');
-    const dots = cardEl.querySelectorAll('.card-dot');
-    if (imgs.length < 2) return;
-
-    let idx = 0;
-    const delay = staggerIndex * STAGGER_MS;
-
-    const timeout = setTimeout(() => {
-      const interval = setInterval(() => {
-        imgs[idx].classList.remove('active');
-        if (dots[idx]) dots[idx].classList.remove('active');
-        idx = (idx + 1) % imgs.length;
-        imgs[idx].classList.add('active');
-        if (dots[idx]) dots[idx].classList.add('active');
-      }, SLIDE_INTERVAL);
-      slideshowTimers.push(interval);
-    }, delay);
-    slideshowTimers.push(timeout);
-  }
-
-  function renderGrid() {
-    clearSlideshows();
-    const filtered = camps.filter(match);
-    document.getElementById('result-count').textContent = filtered.length;
-    const grid = document.getElementById('grid');
-    if (filtered.length === 0) {
-      grid.innerHTML = '<div class="empty">조건에 맞는 캠핑장이 없어요.</div>';
-      return;
-    }
-    grid.innerHTML = filtered.map((c, i) => {
-      const href = c.reservUrl || '#';
-      const target = c.reservUrl ? 'target="_blank" rel="noopener"' : '';
-      const imgs = (c.images || []).map((src, imgIdx) => `
-        <img src="${src}" alt="${c.name} ${imgIdx + 1}" loading="lazy" class="${imgIdx === 0 ? 'active' : ''}">
-      `).join('');
-      const dots = c.images && c.images.length > 1 ? `
-        <div class="card-dots">
-          ${c.images.map((_, di) => `<span class="card-dot ${di === 0 ? 'active' : ''}"></span>`).join('')}
-        </div>
-      ` : '';
-      return `
-        <a href="${href}" ${target} class="card" style="animation-delay: ${i * 0.03}s">
-          <div class="card-image">
-            ${imgs}
-            ${c.graega ? '<span class="card-badge">그래가</span>' : ''}
-            ${dots}
-          </div>
-          <div class="card-content">
-            <div class="card-name">${c.name}</div>
-            <div class="card-region">${c.region}</div>
-          </div>
-        </a>
-      `;
-    }).join('');
-
-    // 슬라이드쇼 시작 (이미지 2장 이상인 카드만)
-    const cards = grid.querySelectorAll('.card');
-    cards.forEach((card, idx) => startSlideshow(card, idx));
-  }
-
-  document.querySelectorAll('.theme-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.documentElement.setAttribute('data-theme', btn.dataset.theme);
-      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
+/* ─── 탭 전환 ─── */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
   });
+});
+document.getElementById('reset-btn').addEventListener('click', () => {
+  state.landscape.clear(); state.region.clear(); state.season.clear(); state.extras.clear();
+  renderEnv();
+  renderChips('region-chips',usedRegions,state.region,'rcnt');
+  renderChips('season-chips',usedSeasons,state.season,'scnt');
+  renderChips('extra-chips',autoExtras,state.extras,'ecnt');
+  updTotal(); renderGrid();
+});
 
-  document.getElementById('reset-btn').addEventListener('click', () => {
-    state.landscape.clear();
-    state.region.clear();
-    state.season.clear();
-    state.extras.clear();
-    renderEnvFilters();
-    renderChips('region-chips', visibleRegions, state.region, 'region-count');
-    renderChips('season-chips', visibleSeasons, state.season, 'season-count');
-    renderChips('extra-chips', autoExtraOptions, state.extras, 'extra-count');
-    updateFilterTotal();
-    renderGrid();
-  });
-
-  document.documentElement.setAttribute('data-theme', 'B');
-  renderHeader();
-  renderEnvFilters();
-  renderChips('region-chips', visibleRegions, state.region, 'region-count');
-  renderChips('season-chips', visibleSeasons, state.season, 'season-count');
-  renderChips('extra-chips', autoExtraOptions, state.extras, 'extra-count');
-  updateFilterTotal();
-  renderGrid();
-  </script>
+/* ─── 초기화 ─── */
+renderConfig();
+renderSeries();
+renderEnv();
+renderChips('region-chips',usedRegions,state.region,'rcnt');
+renderChips('season-chips',usedSeasons,state.season,'scnt');
+renderChips('extra-chips',autoExtras,state.extras,'ecnt');
+renderGrid();
+renderProducts('food-grid', foods);
+renderProducts('item-grid', items);
+</script>
 </body>
 </html>
