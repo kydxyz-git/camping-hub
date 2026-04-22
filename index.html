@@ -135,7 +135,7 @@
     .series-scroll::-webkit-scrollbar { display:none; }
     .series-group-header { padding:0 20px 10px; display:flex; justify-content:space-between; align-items:baseline; }
     .series-scroll-wrap { position:relative; overflow:hidden; margin:0 20px; }
-    .sa-btn { position:absolute; width:20px; height:151px; background:rgba(255,255,255,0.88); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; color:#444; z-index:6; transition:background 0.15s; box-shadow:0 1px 6px rgba(0,0,0,0.1); }
+    .sa-btn { position:absolute; width:20px; height:44px; background:rgba(255,255,255,0.88); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; color:#444; z-index:6; transition:background 0.15s; box-shadow:0 1px 6px rgba(0,0,0,0.1); }
     .sa-btn:hover { background:rgba(255,255,255,1); }
     .sa-btn.sa-left  { left:0;  border-radius:0 8px 8px 0; }
     .sa-btn.sa-right { right:0; border-radius:8px 0 0 8px; }
@@ -151,7 +151,7 @@
     .ep-badge { position:absolute; bottom:6px; left:6px; font-size:9px; font-weight:800; padding:2px 7px; border-radius:100px; color:white; letter-spacing:0.03em; }
     .ep-ig { position:absolute; bottom:6px; right:6px; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
     .ep-ig svg { width:11px; height:11px; fill:white; }
-    .ep-name { font-size:11px; font-weight:600; color:var(--text); line-height:1.3; letter-spacing:-0.01em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .ep-name { font-size:11px; font-weight:600; color:var(--text); line-height:1.3; letter-spacing:-0.01em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:center; }
     .ep-name.dim { color:var(--text-sub); font-weight:400; }
 
     /* ── 캠핑장 ── */
@@ -522,11 +522,13 @@ function saUpdate(sc) {
   g.querySelector('.sa-right').classList.toggle('sa-hide', sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 2);
 }
 function saInit() {
+  const THUMB_H = 151, BTN_H = 44;
   document.querySelectorAll('.series-group').forEach(g => {
     const bar    = g.querySelector('.series-group-bar');
     const header = g.querySelector('.series-group-header');
-    const topPx  = (bar ? bar.offsetHeight : 0) + (header ? header.offsetHeight : 0);
-    const sc     = g.querySelector('.series-scroll');
+    const headerH = (bar ? bar.offsetHeight : 0) + (header ? header.offsetHeight : 0);
+    const topPx   = headerH + Math.round(THUMB_H / 2 - BTN_H / 2);
+    const sc      = g.querySelector('.series-scroll');
     const noScroll = sc.scrollWidth <= sc.clientWidth + 2;
     g.querySelectorAll('.sa-btn').forEach(b => b.style.top = topPx + 'px');
     g.querySelector('.sa-left').classList.toggle('sa-hide', noScroll || sc.scrollLeft <= 2);
