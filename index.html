@@ -129,17 +129,17 @@
     .series-group-count { font-size:11px; color:var(--text-sub); font-weight:500; }
     .series-scroll { display:flex; gap:8px; align-items:flex-start; overflow-x:auto; padding:0 20px 8px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
     .series-scroll::-webkit-scrollbar { display:none; }
-    .ep-card { flex-shrink:0; width:96px; scroll-snap-align:start; cursor:pointer; transition:transform 0.18s; display:flex; flex-direction:column; }
+    .ep-card { flex-shrink:0; width:121px; scroll-snap-align:start; cursor:pointer; transition:transform 0.18s; display:flex; flex-direction:column; }
     .ep-card:active { transform:scale(0.96); }
-    .ep-thumb { width:96px; height:120px; border-radius:8px; overflow:hidden; background:var(--accent-soft); position:relative; margin-bottom:6px; flex-shrink:0; }
+    .ep-thumb { width:121px; height:151px; border-radius:8px; overflow:hidden; background:var(--accent-soft); position:relative; margin-bottom:6px; flex-shrink:0; }
     .ep-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
     .ep-thumb.empty { border:1.5px dashed var(--line); background:transparent; }
     .ep-thumb-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
     .ep-thumb-ph svg { width:22px; height:22px; opacity:0.22; stroke:var(--text); fill:none; }
-
+    .ep-badge { position:absolute; top:6px; left:6px; font-size:9px; font-weight:800; padding:2px 7px; border-radius:100px; color:white; letter-spacing:0.03em; }
     .ep-ig { position:absolute; bottom:5px; right:5px; width:20px; height:20px; background:rgba(0,0,0,0.42); border-radius:50%; display:flex; align-items:center; justify-content:center; }
     .ep-ig svg { width:11px; height:11px; fill:white; }
-    .ep-name { font-size:11px; font-weight:600; color:var(--text); line-height:1.3; letter-spacing:-0.01em; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; min-height:28px; }
+    .ep-name { font-size:11px; font-weight:600; color:var(--text); line-height:1.3; letter-spacing:-0.01em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .ep-name.dim { color:var(--text-sub); font-weight:400; }
 
     /* ── 캠핑장 ── */
@@ -421,10 +421,11 @@ function renderSeries() {
           const empty = ep.empty || !ep.url;
           const tag = empty ? 'div' : 'a';
           const attr = empty ? '' : `href="${ep.url}" target="_blank" rel="noopener"`;
+          const epBadge = (ep.ep && ep.ep > 0) ? `<span class="ep-badge" style="background:${s.color}">EP.${String(ep.ep).padStart(2,'0')}</span>` : '';
           return `<${tag} class="ep-card" ${attr}>
             <div class="ep-thumb${empty?' empty':''}">
               ${ep.thumb ? `<img src="${ep.thumb}" loading="lazy">` : `<div class="ep-thumb-ph">${PH_SVG}</div>`}
-
+              ${epBadge}
               ${!empty ? `<div class="ep-ig">${IG_SVG}</div>` : ''}
             </div>
             <div class="ep-name${empty?' dim':''}">${ep.title}</div>
