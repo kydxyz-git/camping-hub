@@ -131,16 +131,18 @@
     .series-group-bar { height: 2px; margin: 0 20px 10px; border-radius: 100px; opacity: 0.45; }
     .series-group-title { font-size:14px; font-weight:800; letter-spacing:-0.03em; }
     .series-group-count { font-size:11px; color:var(--text-sub); font-weight:500; }
-    .series-scroll { display:flex; gap:8px; align-items:flex-start; overflow-x:auto; padding:0 28px 8px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    .series-scroll { display:flex; gap:8px; align-items:flex-start; overflow-x:auto; padding:0 0 8px 0; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
     .series-scroll::-webkit-scrollbar { display:none; }
     .series-group-header { padding:0 20px 10px; display:flex; justify-content:space-between; align-items:baseline; }
     .series-scroll-wrap { position:relative; overflow:hidden; }
-    .sa-btn { position:absolute; top:0; width:28px; height:151px; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; color:rgba(0,0,0,0.5); z-index:5; transition:opacity 0.2s; }
-    .sa-btn:hover { color:rgba(0,0,0,0.8); }
+    .sa-btn { position:absolute; top:0; width:20px; height:151px; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; color:rgba(0,0,0,0.45); z-index:5; transition:color 0.15s; }
+    .sa-btn:hover { color:rgba(0,0,0,0.75); }
     .sa-btn.sa-left  { left:0; }
     .sa-btn.sa-right { right:0; }
     .sa-btn.sa-hide  { visibility:hidden; pointer-events:none; }
     .ep-card { flex-shrink:0; width:121px; scroll-snap-align:start; cursor:pointer; transition:transform 0.18s; display:flex; flex-direction:column; }
+    .ep-card:first-child { margin-left:20px; }
+    .series-scroll::after { content:""; min-width:20px; flex-shrink:0; display:block; }
     .ep-card:active { transform:scale(0.96); }
     .ep-thumb { width:121px; height:151px; border-radius:8px; overflow:hidden; background:var(--accent-soft); position:relative; margin-bottom:6px; flex-shrink:0; }
     .ep-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
