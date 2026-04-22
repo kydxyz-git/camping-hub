@@ -115,6 +115,12 @@
       margin-bottom: 8px;
     }
     .product-link { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--point); }
+    .price-wrap { margin-bottom: 7px; }
+    .price-original { font-size: 10px; color: var(--text-sub); text-decoration: line-through; letter-spacing: -0.01em; }
+    .price-row { display: flex; align-items: baseline; gap: 5px; }
+    .price-discount-rate { font-size: 13px; font-weight: 800; color: #E44646; letter-spacing: -0.02em; }
+    .price-sale { font-size: 14px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
+    .price-only { font-size: 14px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
     .product-link svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2; }
     .product-card.empty { border: 1.5px dashed var(--line); background: transparent; }
     .product-card.empty .product-name { color: var(--text-sub); font-weight: 400; font-style: italic; }
@@ -256,12 +262,12 @@ const series = [
 
 
 /* ══ 🔶 NOTION ③ | 2026-04-22 ══ */
-const foods = [{"name": "툇골 오리 주물럭", "desc": "아는 사람만 아는", "source": "쿠팡", "url": "https://link.coupang.com/a/cGtreE", "thumb": "./images/products/food-01.jpg"}];
+const foods = [{"name": "툇골 오리 주물럭", "desc": "아는 사람만 아는", "source": "쿠팡", "url": "https://link.coupang.com/a/cGtreE", "thumb": "./images/products/food-01.jpg", "price_original": null, "price_sale": null, "discount_rate": null}];
 /* ═══════════════════════════════════════════════════════════════════ */
 
 
 /* ══ 🔶 NOTION ④ | 2026-04-22 ══ */
-const items = [{"name": "포레스트유 데크팩SET", "desc": "캠핑 필수템", "source": "쿠팡", "url": "https://link.coupang.com/a/et5HiO", "thumb": "./images/products/item-01.jpg"}];
+const items = [{"name": "포레스트유 데크팩SET", "desc": "캠핑 필수템", "source": "쿠팡", "url": "https://link.coupang.com/a/et5HiO", "thumb": "./images/products/item-01.jpg", "price_original": null, "price_sale": null, "discount_rate": null}];
 /* ═══════════════════════════════════════════════════════════════════ */
 
 
@@ -451,6 +457,14 @@ function renderProducts(containerId, dataArr) {
       <div class="product-info">
         <div class="product-name">${item.name}</div>
         ${item.desc ? `<div class="product-desc">${item.desc}</div>` : ''}
+        ${(item.price_sale || item.price_original) ? `
+        <div class="price-wrap">
+          ${item.price_original ? `<span class="price-original">${Number(item.price_original).toLocaleString()}원</span>` : ''}
+          <div class="price-row">
+            ${item.discount_rate ? `<span class="price-discount-rate">${item.discount_rate}%</span>` : ''}
+            ${item.price_sale ? `<span class="price-sale">${Number(item.price_sale).toLocaleString()}원</span>` : item.price_original ? `<span class="price-only">${Number(item.price_original).toLocaleString()}원</span>` : ''}
+          </div>
+        </div>` : ''}
         ${!empty ? `<span class="product-link">구매하기 ${ARROW_SVG}</span>` : ''}
       </div>
     </a>`;
