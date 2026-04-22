@@ -214,6 +214,8 @@
     .grid { padding:0 16px 32px; display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
     .camp-card { display:block; background:var(--surface); border-radius:8px; overflow:hidden; transition:transform 0.2s; animation:fadeUp 0.35s ease backwards; }
     .camp-card:active { transform:scale(0.97); }
+    .camp-card.no-link { cursor:default; }
+    .camp-card.no-link:active { transform:none; }
     .camp-img { width:100%; aspect-ratio:1/1.25; overflow:hidden; background:var(--accent-soft); position:relative; }
     .camp-img img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:opacity 0.7s ease; }
     .camp-badge { position:absolute; top:6px; left:6px; color:white; font-size:9px; padding:2px 6px; border-radius:100px; font-weight:700; z-index:2; letter-spacing:0.01em; }
@@ -321,6 +323,19 @@ const series = [
         "title": "도쿄크래프트 지카테이블2",
         "url": "https://www.instagram.com/p/DWkX9XuE7wz",
         "thumb": "./images/series/gear-01.jpg"
+      }
+    ]
+  },
+  {
+    "name": "또 해먹고 싶은 캠핑 음식",
+    "emoji": "🍳",
+    "color": "#C94A4A",
+    "eps": [
+      {
+        "ep": 1,
+        "title": "EP.01 야키토리 토리야 등",
+        "url": "https://www.instagram.com/p/DXUCu6vE6lw/",
+        "thumb": ""
       }
     ]
   }
@@ -712,8 +727,14 @@ function renderGrid() {
     if (u.includes('thankqcamping.com') || u.includes('camperstory.com')) return '<span class="camp-badge bg-thankq">땡큐캠핑</span>';
     return '<span class="camp-badge bg-etc">기타</span>';
   }
-  grid.innerHTML = filtered.map((c,i) => `
-    <a href="${c.url||'#'}" ${c.url?'target="_blank" rel="noopener"':''} class="camp-card" style="animation-delay:${i*0.03}s">
+  grid.innerHTML = filtered.map((c,i) => {
+    const hasUrl = !!c.url;
+    const tag = hasUrl ? 'a' : 'div';
+    const attrs = hasUrl ? `href="${c.url}" target="_blank" rel="noopener"` : '';
+    const nocursor = hasUrl ? '' : 'style="cursor:default;animation-delay:'+(i*0.03)+'s" ';
+    const style = hasUrl ? `style="animation-delay:${i*0.03}s"` : nocursor.slice(0,-1);
+    return `
+    <${tag} ${attrs} class="camp-card${hasUrl?'':' no-link'}" ${style}>
       <div class="camp-img">
         ${campThumb(c)}
         ${campPlatformBadge(c)}
@@ -729,7 +750,8 @@ function renderGrid() {
           ${c.visits ? `<span class="camp-visits">${c.visits}회</span>` : ''}
         </div>
       </div>
-    </a>`).join('');
+    </${tag}>`;
+  }).join('');
   setTimeout(initSlideshow, 80);
 }
 
