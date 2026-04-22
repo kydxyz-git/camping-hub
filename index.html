@@ -209,7 +209,7 @@
 /* ══ 🔶 NOTION ① | 2026-04-22 ══ */
 const siteConfig = {
   "headerLabel": "· Auto Camping ·",
-  "headerTitle": "이번 주말,\\n어디 갈까?",
+  "headerTitle": "이번 주말,\n어디 갈까?",
   "headerSub": "5년차 부부캠퍼 공대남자가\n직접 가보고 먹은 것 만!",
   "tab1": "캠핑이야기",
   "tab2": "다녀온 캠핑장",
@@ -260,12 +260,12 @@ const series = [
 
 
 /* ══ 🔶 NOTION ③ | 2026-04-22 ══ */
-const foods = [];
+const foods = [{"name": "툇골 오리 주물럭", "desc": "", "source": "쿠팡", "url": "https://link.coupang.com/a/cGtreE", "thumb": ""}];
 /* ═══════════════════════════════════════════════════════════════════ */
 
 
 /* ══ 🔶 NOTION ④ | 2026-04-22 ══ */
-const items = [];
+const items = [{"name": "포레스트유 데크팩SET", "desc": "", "source": "쿠팡", "url": "https://link.coupang.com/a/et5HiO", "thumb": ""}];
 /* ═══════════════════════════════════════════════════════════════════ */
 
 
@@ -384,8 +384,8 @@ const ARROW_SVG = `<svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/
 /* ─── siteConfig 렌더 ─── */
 function renderConfig() {
   document.getElementById('header-label').textContent = siteConfig.headerLabel;
-  document.getElementById('header-title').innerHTML = siteConfig.headerTitle.replace(/\n/g, '<br>');
-  document.getElementById('header-sub').innerHTML   = siteConfig.headerSub.replace(/\n/g, '<br>');
+  document.getElementById('header-title').innerHTML = siteConfig.headerTitle.replace(/\\n/g, '<br>');
+  document.getElementById('header-sub').innerHTML   = siteConfig.headerSub.replace(/\\n/g, '<br>');
   document.getElementById('tab-btn-1').textContent  = siteConfig.tab1;
   document.getElementById('tab-btn-2').textContent  = siteConfig.tab2;
   document.getElementById('tab-btn-3').textContent  = siteConfig.tab3;
