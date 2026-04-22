@@ -42,7 +42,7 @@
       letter-spacing: -0.035em; line-height: 1.15;
       white-space: nowrap;
     }
-    .header-right { flex-shrink: 1; text-align: right; margin-top: 20px; }
+    .header-right { flex-shrink: 1; text-align: right; margin-top: 22px; }
     .header-sub {
       font-size: 11.5px; color: var(--text-sub);
       font-weight: 500; line-height: 1.6;
@@ -97,7 +97,7 @@
     .product-thumb.ph { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; }
     .product-thumb.ph svg { width: 28px; height: 28px; opacity: 0.2; stroke: var(--text); fill: none; }
     .product-thumb.ph span { font-size: 9px; color: var(--text-sub); opacity: 0.5; font-weight: 600; letter-spacing: 0.05em; }
-    .source-badge { position: absolute; top: 6px; left: 6px; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 100px; color: white; }
+    .source-badge { position: absolute; bottom: 6px; right: 6px; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 100px; color: white; letter-spacing: -0.01em; }
     .badge-coupang { background: #FF4B4B; }
     .badge-kurly   { background: #5D3CC7; }
     .product-info { padding: 9px 10px 11px; }
@@ -440,8 +440,8 @@ function renderProducts(containerId, dataArr) {
     return;
   }
   grid.innerHTML = dataArr.map(item => {
-    const bc = item.source==='coupang'?'badge-coupang':item.source==='kurly'?'badge-kurly':'';
-    const bl = item.source==='coupang'?'쿠팡':item.source==='kurly'?'컬리':'';
+    const src = (item.source||'').toLowerCase(); const bc = (src==='쿠팡'||src==='coupang')?'badge-coupang':(src==='컬리'||src==='kurly')?'badge-kurly':'';
+    const bl = (src==='쿠팡'||src==='coupang')?'쿠팡':(src==='컬리'||src==='kurly')?'컬리':'';
     const empty = !item.url || item.url==='#';
     return `<a class="product-card${empty?' empty':''}" href="${empty?'#':item.url}" ${empty?'':' target="_blank" rel="noopener"'}>
       <div class="product-thumb${item.thumb?'':' ph'}">
