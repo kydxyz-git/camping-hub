@@ -127,7 +127,7 @@
 
     /* ── 시리즈 ── */
     .series-section { padding: 20px 0 8px; }
-    .series-group { margin-bottom: 24px; }
+    .series-group { margin-bottom:24px; position:relative; }
     .series-group-bar { height: 2px; margin: 0 20px 10px; border-radius: 100px; opacity: 0.45; }
     .series-group-title { font-size:14px; font-weight:800; letter-spacing:-0.03em; }
     .series-group-count { font-size:11px; color:var(--text-sub); font-weight:500; }
@@ -135,10 +135,10 @@
     .series-scroll::-webkit-scrollbar { display:none; }
     .series-group-header { padding:0 20px 10px; display:flex; justify-content:space-between; align-items:baseline; }
     .series-scroll-wrap { position:relative; overflow:hidden; margin:0 20px; }
-    .sa-btn { position:absolute; top:0; width:20px; height:151px; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; color:rgba(0,0,0,0.45); z-index:5; transition:color 0.15s; }
-    .sa-btn:hover { color:rgba(0,0,0,0.75); }
-    .sa-btn.sa-left  { left:0; }
-    .sa-btn.sa-right { right:0; }
+    .sa-btn { position:absolute; width:20px; height:151px; background:rgba(255,255,255,0.88); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; color:#444; z-index:6; transition:background 0.15s; box-shadow:0 1px 6px rgba(0,0,0,0.1); }
+    .sa-btn:hover { background:rgba(255,255,255,1); }
+    .sa-btn.sa-left  { left:0;  border-radius:0 8px 8px 0; }
+    .sa-btn.sa-right { right:0; border-radius:8px 0 0 8px; }
     .sa-btn.sa-hide  { visibility:hidden; pointer-events:none; }
     .ep-card { flex-shrink:0; width:121px; scroll-snap-align:start; cursor:pointer; transition:transform 0.18s; display:flex; flex-direction:column; }
 
@@ -487,8 +487,9 @@ function renderSeries() {
         <span class="series-group-title">${s.emoji} ${s.name}</span>
         <span class="series-group-count">${cnt}</span>
       </div>
+      <button class="sa-btn sa-left sa-hide" onclick="saScroll(this,-1)"><svg width="9" height="16" viewBox="0 0 7 13" fill="none"><path d="M6 1L1 6.5L6 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="sa-btn sa-right" onclick="saScroll(this,1)"><svg width="9" height="16" viewBox="0 0 7 13" fill="none"><path d="M1 1l5 5.5L1 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="series-scroll-wrap">
-        <button class="sa-btn sa-left sa-hide" onclick="saScroll(this,-1)"><svg width="9" height="16" viewBox="0 0 7 13" fill="none"><path d="M6 1L1 6.5L6 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="series-scroll" onscroll="saUpdate(this)">
           ${eps.map(ep => {
             const empty = ep.empty || !ep.url;
@@ -505,7 +506,6 @@ function renderSeries() {
             </${tag}>`;
           }).join('')}
         </div>
-        <button class="sa-btn sa-right" onclick="saScroll(this,1)"><svg width="9" height="16" viewBox="0 0 7 13" fill="none"><path d="M1 1l5 5.5L1 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       </div>
     </div>`;
   }).join('');
@@ -522,9 +522,13 @@ function saUpdate(sc) {
   g.querySelector('.sa-right').classList.toggle('sa-hide', sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 2);
 }
 function saInit() {
-  document.querySelectorAll('.series-scroll').forEach(sc => {
-    const g = sc.closest('.series-group');
+  document.querySelectorAll('.series-group').forEach(g => {
+    const bar    = g.querySelector('.series-group-bar');
+    const header = g.querySelector('.series-group-header');
+    const topPx  = (bar ? bar.offsetHeight : 0) + (header ? header.offsetHeight : 0);
+    const sc     = g.querySelector('.series-scroll');
     const noScroll = sc.scrollWidth <= sc.clientWidth + 2;
+    g.querySelectorAll('.sa-btn').forEach(b => b.style.top = topPx + 'px');
     g.querySelector('.sa-left').classList.toggle('sa-hide', noScroll || sc.scrollLeft <= 2);
     g.querySelector('.sa-right').classList.toggle('sa-hide', noScroll);
   });
