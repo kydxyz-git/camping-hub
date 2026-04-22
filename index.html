@@ -129,16 +129,16 @@
     .series-section { padding: 20px 0 8px; }
     .series-group { margin-bottom: 24px; }
     .series-group-bar { height: 2px; margin: 0 20px 10px; border-radius: 100px; opacity: 0.45; }
-    .series-group-header { padding:0 20px 10px; display:flex; justify-content:space-between; align-items:baseline; }
     .series-group-title { font-size:14px; font-weight:800; letter-spacing:-0.03em; }
-    .series-group-count { font-size:11px; color:var(--text-sub); font-weight:500; }
-    .series-scroll-wrap { position:relative; overflow:hidden; }
+    .series-group-count { font-size:11px; color:var(--text-sub); font-weight:500; margin:0 4px; }
+    .series-scroll-wrap { overflow:hidden; }
     .series-scroll { display:flex; gap:8px; align-items:flex-start; overflow-x:auto; padding:0 20px 8px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
     .series-scroll::-webkit-scrollbar { display:none; }
-    .sa-btn { position:absolute; top:50%; transform:translateY(-50%); width:26px; height:60px; background:rgba(255,255,255,0.82); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5; box-shadow:0 1px 6px rgba(0,0,0,0.1); transition:opacity 0.2s; font-size:15px; color:#444; padding:0; }
-    .sa-btn.sa-left  { left:0;  border-radius:0 8px 8px 0; }
-    .sa-btn.sa-right { right:0; border-radius:8px 0 0 8px; }
-    .sa-btn.sa-hide  { opacity:0; pointer-events:none; }
+    .series-group-header { padding:0 20px 10px; display:flex; justify-content:space-between; align-items:center; }
+    .sg-nav { display:flex; align-items:center; gap:2px; }
+    .sa-btn { width:22px; height:22px; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; color:var(--text-sub); transition:opacity 0.15s; border-radius:4px; }
+    .sa-btn:active { background:var(--accent-soft); }
+    .sa-btn.sa-hide { visibility:hidden; pointer-events:none; }
     .ep-card { flex-shrink:0; width:121px; scroll-snap-align:start; cursor:pointer; transition:transform 0.18s; display:flex; flex-direction:column; }
     .ep-card:active { transform:scale(0.96); }
     .ep-thumb { width:121px; height:151px; border-radius:8px; overflow:hidden; background:var(--accent-soft); position:relative; margin-bottom:6px; flex-shrink:0; }
@@ -483,10 +483,13 @@ function renderSeries() {
       <div class="series-group-bar" style="background:${s.color}"></div>
       <div class="series-group-header">
         <span class="series-group-title">${s.emoji} ${s.name}</span>
-        <span class="series-group-count">${cnt}</span>
+        <div class="sg-nav">
+          <button class="sa-btn sa-left sa-hide" onclick="saScroll(this,-1)"><svg width="7" height="13" viewBox="0 0 7 13" fill="none"><path d="M6 1L1 6.5L6 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <span class="series-group-count">${cnt}</span>
+          <button class="sa-btn sa-right" onclick="saScroll(this,1)"><svg width="7" height="13" viewBox="0 0 7 13" fill="none"><path d="M1 1l5 5.5L1 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
       </div>
       <div class="series-scroll-wrap">
-      <button class="sa-btn sa-left sa-hide" onclick="saScroll(this,-1)">&#8249;</button>
       <div class="series-scroll" onscroll="saUpdate(this)">
         ${eps.map(ep => {
           const empty = ep.empty || !ep.url;
@@ -503,7 +506,6 @@ function renderSeries() {
           </${tag}>`;
         }).join('')}
       </div>
-      <button class="sa-btn sa-right" onclick="saScroll(this,1)">&#8250;</button>
       </div>
     </div>`;
   }).join('');
@@ -511,21 +513,20 @@ function renderSeries() {
 
 /* ─── 시리즈 화살표 ─── */
 function saScroll(btn, dir) {
-  const sc = btn.parentElement.querySelector('.series-scroll');
+  const sc = btn.closest('.series-group').querySelector('.series-scroll');
   sc.scrollBy({left: dir * 240, behavior: 'smooth'});
 }
 function saUpdate(sc) {
-  const wrap = sc.parentElement;
-  wrap.querySelector('.sa-left').classList.toggle('sa-hide', sc.scrollLeft <= 2);
-  wrap.querySelector('.sa-right').classList.toggle('sa-hide', sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 2);
+  const g = sc.closest('.series-group');
+  g.querySelector('.sa-left').classList.toggle('sa-hide', sc.scrollLeft <= 2);
+  g.querySelector('.sa-right').classList.toggle('sa-hide', sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 2);
 }
 function saInit() {
   document.querySelectorAll('.series-scroll').forEach(sc => {
-    saUpdate(sc);
-    // 스크롤 없으면 오른쪽 화살표도 숨김
-    if (sc.scrollWidth <= sc.clientWidth + 2) {
-      sc.parentElement.querySelector('.sa-right').classList.add('sa-hide');
-    }
+    const g = sc.closest('.series-group');
+    const noScroll = sc.scrollWidth <= sc.clientWidth + 2;
+    g.querySelector('.sa-left').classList.toggle('sa-hide', noScroll || sc.scrollLeft <= 2);
+    g.querySelector('.sa-right').classList.toggle('sa-hide', noScroll);
   });
 }
 /* ─── 상품 카드 렌더 ─── */
