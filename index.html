@@ -529,7 +529,8 @@ function saInit() {
   document.querySelectorAll('.series-group').forEach(g => {
     const bar    = g.querySelector('.series-group-bar');
     const header = g.querySelector('.series-group-header');
-    const topPx  = (bar ? bar.offsetHeight : 0) + (header ? header.offsetHeight : 0);
+    const barMb  = bar ? parseInt(getComputedStyle(bar).marginBottom || 0) : 0;
+    const topPx  = (bar ? bar.offsetHeight + barMb : 0) + (header ? header.offsetHeight : 0);
     const sc      = g.querySelector('.series-scroll');
     const noScroll = sc.scrollWidth <= sc.clientWidth + 2;
     g.querySelectorAll('.sa-btn').forEach(b => b.style.top = topPx + 'px');
