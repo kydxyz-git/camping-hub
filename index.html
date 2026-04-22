@@ -123,7 +123,6 @@
     .series-section { padding: 20px 0 8px; }
     .series-group { margin-bottom: 24px; }
     .series-group-bar { height: 2px; margin: 0 20px 10px; border-radius: 100px; opacity: 0.45; }
-    .bar-1{background:#F5A623} .bar-2{background:#4A90E2} .bar-3{background:#5E6C4F}
     .series-group-header { padding:0 20px 10px; display:flex; justify-content:space-between; align-items:baseline; }
     .series-group-title { font-size:14px; font-weight:800; letter-spacing:-0.03em; }
     .series-group-count { font-size:11px; color:var(--text-sub); font-weight:500; }
@@ -231,7 +230,6 @@ const series = [
     "name": "여름에 가기 좋은 캠핑장",
     "emoji": "☀️",
     "color": "#F5A623",
-    "bar": "bar-1",
     "eps": [
       {
         "ep": 1,
@@ -245,14 +243,12 @@ const series = [
     "name": "캠핑꿀팁",
     "emoji": "💡",
     "color": "#4A90E2",
-    "bar": "bar-2",
     "eps": []
   },
   {
     "name": "장비소개",
     "emoji": "🎒",
     "color": "#5E6C4F",
-    "bar": "bar-3",
     "eps": []
   }
 ];
@@ -411,7 +407,7 @@ function renderSeries() {
     ];
     const cnt = s.eps.length ? `${s.eps.length}편` : "";
     return `<div class="series-group">
-      <div class="series-group-bar ${s.bar}"></div>
+      <div class="series-group-bar" style="background:${s.color}"></div>
       <div class="series-group-header">
         <span class="series-group-title">${s.emoji} ${s.name}</span>
         <span class="series-group-count">${cnt}</span>
