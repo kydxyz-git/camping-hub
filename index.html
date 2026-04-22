@@ -52,32 +52,27 @@
     /* ── 탭 바 (4개) ── */
     .tab-bar {
       display: flex;
+      padding: 6px 16px;
       background: var(--accent-soft);
-      padding: 8px 12px 0;
-      gap: 3px;
-      border-bottom: 2px solid var(--line);
+      border-bottom: 1px solid var(--line);
     }
     .tab-btn {
-      flex: 1; padding: 7px 4px 8px;
+      flex: 1; padding: 7px 4px;
       font-size: 12px; font-weight: 700;
       color: var(--text-sub); letter-spacing: -0.02em;
-      border: 1.5px solid transparent;
-      border-bottom: none;
-      border-radius: 8px 8px 0 0;
+      border: none;
+      border-radius: 8px;
       background: transparent;
       transition: all 0.18s; text-align: center;
       line-height: 1.3; white-space: nowrap;
       overflow: hidden; text-overflow: ellipsis;
       cursor: pointer;
-      position: relative; bottom: -2px;
     }
-    .tab-btn:hover { color:var(--text); background:rgba(255,255,255,0.6); }
+    .tab-btn:hover { color:var(--text); background:rgba(0,0,0,0.05); }
     .tab-btn.active {
       background: var(--point);
       color: #fff;
       font-weight: 800;
-      border-color: var(--line);
-      border-bottom-color: var(--point);
     }
 
     /* ── 탭 콘텐츠 ── */
@@ -367,6 +362,49 @@ const camps = [
   { name:"양남라라캠핑장", region:"경북", seasons:["여름"], landscape:["산","계곡"], extras:[], graega:false, url:"https://camfit.co.kr/camp/61406db98c8c0a001e7fd388", imgs:[], rating:3.0, visits:1 },
   { name:"칠곡보오토캠핑장", region:"경북", seasons:["봄","여름","가을"], landscape:["강"], extras:[], graega:false, url:"https://camp.xticket.kr/web/main?shopEncode=3b8dfd4fe83ef398626319d169929b5df473aafca57da427af869db901ce8b86", imgs:[], rating:3.0, visits:1 },
   { name:"포항백경오토캠핑장", region:"경북", seasons:["봄","여름","가을"], landscape:["바다"], extras:[], graega:false, url:"https://www.camfit.co.kr/camp/6345234e7c0322001ff37468", imgs:[], rating:3.0, visits:1 }
+
+  // ── 추가 캠핑장 (260422 노션 DB 동기화) ──────────────────────────
+  { name:"황매산오토캠핑장",    region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:10 },
+  { name:"황석산오토캠핑장",    region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:5 },
+  { name:"산중오토캠핑장",      region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:4 },
+  { name:"버드하우스캠핑장",    region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:3 },
+  { name:"합천정양오토캠핑장",  region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:3 },
+  { name:"든해솔계곡캠핑장",    region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:3 },
+  { name:"사천솔섬오토캠핑장",  region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:3 },
+  { name:"산청별천지캠핑장",    region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:3 },
+  { name:"청풍호반오토캠핑장",  region:"충북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:2 },
+  { name:"산청반달캠핑장",      region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:2 },
+  { name:"황매산별쿵캠핑장",    region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:2 },
+  { name:"경남밀양솔바람캠핑장",region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"구지강변오토캠핑장",  region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"함양라온캠핑장",      region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"바람이좋은저녁캠핑장",region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"거창강가펜션캠핑장",  region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"고아웃 안동",         region:"경북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"고흥나로힐링캠핑장",  region:"전남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"대경오토캠핑장",      region:"경북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"구례섬지캠핑장",      region:"전남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"안녕오토캠핑장",      region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"캠프하다",            region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"온새미로캠핑장",      region:"경북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"달서별빛캠핑장",      region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"덕풍계곡별빛야영장",  region:"경북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"단양소풍캠핑장",      region:"충북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"경산갓바위캠핑장",    region:"경북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"지리산365캠핑장",     region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"해피단밀오토캠핑장",  region:"경북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"캠핑느루",            region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"하늘하루펜션앤캠핑장",region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"남해버드하우스",      region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"양산무릉도원캠핑장",  region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"나조스트",            region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"장성편백힐치유의숲",  region:"전남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"너와두리농촌캠핑장",  region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"고성상족암캠핑장",    region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"고아웃캠핑(부여)",    region:"충남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"고아웃캠핑(몽산포)",  region:"충남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"산중오토계곡캠핑장",  region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"교육청수련원",        region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
 ];
 /* ═══════════════════════════════════════════════════════════════════ */
 </script>
