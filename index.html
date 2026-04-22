@@ -720,7 +720,8 @@ function sortCamps(arr) {
 function renderGrid() {
   const filtered = sortCamps(camps.filter(match));
   document.getElementById('result-count').textContent = filtered.length;
-  const totalVisits = filtered.reduce((sum, c) => sum + (c.visits || 0), 0);
+  // 고아웃 노지 등 삭제된 캠핑장 방문 기록 보정(+3회)
+  const totalVisits = filtered.reduce((sum, c) => sum + (c.visits || 0), 0) + 3;
   document.getElementById('result-visits').textContent = totalVisits ? ` / ${totalVisits}회` : '';
   const grid = document.getElementById('camp-grid');
   if(!filtered.length){ grid.innerHTML='<div class="empty-msg">조건에 맞는 캠핑장이 없어요.</div>'; return; }
