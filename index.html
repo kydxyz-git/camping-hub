@@ -52,26 +52,30 @@
     /* ── 탭 바 (4개) ── */
     .tab-bar {
       display: flex;
-      padding: 6px 16px;
-      background: var(--accent-soft);
       border-bottom: 1px solid var(--line);
+      padding: 0 2px;
+      background: var(--bg);
     }
     .tab-btn {
-      flex: 1; padding: 7px 4px;
+      flex: 1; padding: 8px 4px 9px;
       font-size: 12px; font-weight: 700;
       color: var(--text-sub); letter-spacing: -0.02em;
-      border: none;
-      border-radius: 8px;
+      border: 1.5px solid transparent;
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
       background: transparent;
-      transition: all 0.18s; text-align: center;
+      transition: all 0.15s; text-align: center;
       line-height: 1.3; white-space: nowrap;
       overflow: hidden; text-overflow: ellipsis;
       cursor: pointer;
+      position: relative; bottom: -2px;
     }
-    .tab-btn:hover { color:var(--text); background:rgba(0,0,0,0.05); }
+    .tab-btn:hover { color:var(--text); background:var(--accent-soft); }
     .tab-btn.active {
-      background: var(--point);
-      color: #fff;
+      background: var(--bg);
+      color: var(--point);
+      border-color: var(--line);
+      border-bottom-color: var(--bg);
       font-weight: 800;
     }
 
