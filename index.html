@@ -564,7 +564,16 @@ function renderConfig() {
 function renderSeries() {
   const wrap = document.getElementById('series-wrap');
   wrap.innerHTML = series.map(s => {
-    const eps = s.eps.length ? s.eps : [
+    // 정렬: ep>0은 내림차순(최신 우선), ep=0은 매 로드마다 랜덤
+    const sortedEps = [...s.eps].sort((a, b) => {
+      const aHasEp = (a.ep || 0) > 0;
+      const bHasEp = (b.ep || 0) > 0;
+      if (aHasEp && bHasEp) return b.ep - a.ep;
+      if (aHasEp) return -1;
+      if (bHasEp) return 1;
+      return Math.random() - 0.5;
+    });
+    const eps = sortedEps.length ? sortedEps : [
       {ep:1, title:"게시물 준비 중", url:"", thumb:"", empty:true},
       {ep:2, title:"곧 업로드 예정", url:"", thumb:"", empty:true}
     ];
