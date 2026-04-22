@@ -216,7 +216,12 @@
     .camp-card:active { transform:scale(0.97); }
     .camp-img { width:100%; aspect-ratio:1/1.25; overflow:hidden; background:var(--accent-soft); position:relative; }
     .camp-img img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:opacity 0.7s ease; }
-    .camp-badge { position:absolute; top:6px; left:6px; background:var(--point); color:white; font-size:9px; padding:2px 6px; border-radius:100px; font-weight:700; z-index:2; }
+    .camp-badge { position:absolute; top:6px; left:6px; color:white; font-size:9px; padding:2px 6px; border-radius:100px; font-weight:700; z-index:2; letter-spacing:0.01em; }
+    .camp-badge.bg-graega { background:#1a1a1a; }
+    .camp-badge.bg-naver  { background:#03C75A; }
+    .camp-badge.bg-camfit { background:#2D8F4C; }
+    .camp-badge.bg-thankq { background:#FF6B2C; }
+    .camp-badge.bg-etc    { background:#9e9e9e; }
     .camp-info { padding:8px 8px 10px; }
     .camp-name { font-size:12px; font-weight:700; line-height:1.25; letter-spacing:-0.02em; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; margin-bottom:2px; }
     .camp-region { font-size:10px; color:var(--text-sub); }
@@ -698,11 +703,20 @@ function renderGrid() {
     const nm = c.name.replace(/오토캠핑장|캠핑빌리지/g,'').replace(/펜션&|&펜션/g,'').trim();
     return `<div class="camp-noimg" style="background:linear-gradient(145deg,${g1},${g2})"><div class="camp-noimg-txt">${nm.split(' ').join('<br>')}</div></div>`;
   }
+  function campPlatformBadge(c) {
+    if (c.graega) return '<span class="camp-badge bg-graega">그래가</span>';
+    if (!c.url) return '';
+    const u = c.url.toLowerCase();
+    if (u.includes('naver.com'))          return '<span class="camp-badge bg-naver">네이버</span>';
+    if (u.includes('camfit.co.kr'))       return '<span class="camp-badge bg-camfit">캠핏</span>';
+    if (u.includes('thankqcamping.com') || u.includes('camperstory.com')) return '<span class="camp-badge bg-thankq">땡큐캠핑</span>';
+    return '<span class="camp-badge bg-etc">기타</span>';
+  }
   grid.innerHTML = filtered.map((c,i) => `
     <a href="${c.url||'#'}" ${c.url?'target="_blank" rel="noopener"':''} class="camp-card" style="animation-delay:${i*0.03}s">
       <div class="camp-img">
         ${campThumb(c)}
-        ${c.graega?'<span class="camp-badge">그래가</span>':''}
+        ${campPlatformBadge(c)}
       </div>
       <div class="camp-info">
         <div class="camp-name">${c.name}</div>
