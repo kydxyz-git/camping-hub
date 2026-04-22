@@ -386,8 +386,8 @@ const ARROW_SVG = `<svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/
 /* ─── siteConfig 렌더 ─── */
 function renderConfig() {
   document.getElementById('header-label').textContent = siteConfig.headerLabel;
-  document.getElementById('header-title').innerHTML = siteConfig.headerTitle.replace(/\\n/g, '<br>');
-  document.getElementById('header-sub').innerHTML   = siteConfig.headerSub.replace(/\\n/g, '<br>');
+  document.getElementById('header-title').innerHTML = siteConfig.headerTitle.replace(/\n/g, '<br>');
+  document.getElementById('header-sub').innerHTML   = siteConfig.headerSub.replace(/\n/g, '<br>');
   document.getElementById('tab-btn-1').textContent  = siteConfig.tab1;
   document.getElementById('tab-btn-2').textContent  = siteConfig.tab2;
   document.getElementById('tab-btn-3').textContent  = siteConfig.tab3;
@@ -423,7 +423,7 @@ function renderSeries() {
           const empty = ep.empty || !ep.url;
           const tag = empty ? 'div' : 'a';
           const attr = empty ? '' : `href="${ep.url}" target="_blank" rel="noopener"`;
-          const epBadge = (ep.ep && ep.ep > 0) ? `<span class="ep-badge" style="background:${s.color}">EP.${String(ep.ep).padStart(2,'0')}</span>` : '';
+          const epBadge = (ep.ep && ep.ep > 0 && !empty) ? `<span class="ep-badge" style="background:${s.color}">EP.${String(ep.ep).padStart(2,'0')}</span>` : '';
           return `<${tag} class="ep-card" ${attr}>
             <div class="ep-thumb${empty?' empty':''}">
               ${ep.thumb ? `<img src="${ep.thumb}" loading="lazy">` : `<div class="ep-thumb-ph">${PH_SVG}</div>`}
