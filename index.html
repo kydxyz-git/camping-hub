@@ -199,8 +199,10 @@
     .camp-region { font-size:10px; color:var(--text-sub); }
     .camp-meta { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
     .camp-noimg { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:10px; border-radius:var(--radius) var(--radius) 0 0; }
-    .camp-noimg-txt { color:rgba(255,255,255,0.95); font-size:11px; font-weight:800; text-align:center; line-height:1.45; letter-spacing:-0.02em; word-break:keep-all; text-shadow:0 1px 4px rgba(0,0,0,0.25); }
-    .camp-stars { font-size:9px; color:#F5A623; letter-spacing:0px; line-height:1; }
+    .camp-noimg-txt { color:#2a2a2a; font-size:11px; font-weight:800; text-align:center; line-height:1.45; letter-spacing:-0.02em; word-break:keep-all; }
+    .camp-stars { font-size:9px; color:#F5A623; letter-spacing:0px; line-height:1; display:inline-flex; align-items:center; gap:0; }
+    .camp-stars .sh { position:relative; display:inline-block; color:#e0e0e0; font-size:9px; }
+    .camp-stars .sh::before { content:'★'; color:#F5A623; position:absolute; left:0; width:50%; overflow:hidden; }
     .camp-visits { font-size:9px; color:var(--text-sub); font-weight:600; }
     .empty-msg { grid-column:1/-1; padding:60px 20px; text-align:center; color:var(--text-sub); font-size:13px; }
 
@@ -218,7 +220,7 @@
 <script>
 /* ══ 🔶 NOTION ① | 2026-04-22 ══ */
 const siteConfig = {
-  "headerLabel": "· 공 대 남 자 (@kyd_zm) ·",
+  "headerLabel": "· 공대남자 ·",
   "headerTitle": "캠핑 고민,\n여기서 끝",
   "headerSub": "5년차 부부캠퍼가\n직접 다녀본 캠핑장 리뷰와 현실 꿀팁",
   "tab1": "캠핑이야기",
@@ -555,7 +557,7 @@ function renderGrid() {
   document.getElementById('result-count').textContent = filtered.length;
   const grid = document.getElementById('camp-grid');
   if(!filtered.length){ grid.innerHTML='<div class="empty-msg">조건에 맞는 캠핑장이 없어요.</div>'; return; }
-  const NOIMG_GRAD = {'바다':['#1a6fad','#56aee6'],'강':['#2d7a8a','#5ab8c8'],'계곡':['#2e7d52','#5aaf7f'],'호수':['#1e5e8a','#4a9ac8'],'숲':['#3a6b2a','#6da05a'],'산':['#5a6b40','#8fa06a']};
+  const NOIMG_GRAD = {'바다':['#ddeef7','#c8e4f2'],'강':['#d8eef0','#c2e3e6'],'계곡':['#daeee0','#c5e5cd'],'호수':['#d8ecf4','#c2e0ed'],'숲':['#dceae0','#c8e0cc'],'산':['#ebebdf','#deded0']};
   function campThumb(c) {
     const hasImg = c.imgs && c.imgs.length;
     if (hasImg) return c.imgs.map((src,j)=>`<img src="${src}" loading="lazy" style="opacity:${j===0?1:0}" onerror="this.remove()">`).join('');
@@ -574,7 +576,10 @@ function renderGrid() {
         <div class="camp-name">${c.name}</div>
         <div class="camp-region">${c.region}</div>
         <div class="camp-meta">
-          ${c.rating ? `<span class="camp-stars">${'★'.repeat(Math.round(c.rating))}${'☆'.repeat(5-Math.round(c.rating))}</span>` : '<span></span>'}
+          ${c.rating ? (()=>{
+            const f=Math.floor(c.rating), h=(c.rating%1)>=0.5, e=5-f-(h?1:0);
+            return '<span class="camp-stars">'+'<span class="sf">★</span>'.repeat(f)+(h?'<span class="sh">☆</span>':'')+'<span style="color:#e0e0e0;font-size:9px">☆</span>'.repeat(e)+'</span>';
+          })() : '<span></span>'}
           ${c.visits ? `<span class="camp-visits">${c.visits}회</span>` : ''}
         </div>
       </div>
