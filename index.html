@@ -143,12 +143,20 @@
     .series-group-bar { height: 2px; margin: 0 20px 10px; border-radius: 100px; opacity: 0.45; }
     .series-group-title { font-size:14px; font-weight:800; letter-spacing:-0.03em; }
     .series-group-count { font-size:11px; color:var(--text-sub); font-weight:500; }
+    .series-group-header { padding:0 20px 10px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; }
+    .series-group-header:active { opacity:0.7; }
+    .series-group-header-right { display:flex; align-items:center; gap:8px; }
+    .series-chevron { width:12px; height:12px; color:var(--text-sub); transition:transform 0.28s ease; flex-shrink:0; }
+    .series-group.collapsed .series-chevron { transform:rotate(-90deg); }
+    .series-body { position:relative; display:grid; grid-template-rows:1fr; transition:grid-template-rows 0.3s ease, opacity 0.28s ease, margin 0.3s ease; opacity:1; }
+    .series-body > .series-body-inner { overflow:hidden; min-height:0; }
+    .series-group.collapsed .series-body { grid-template-rows:0fr; opacity:0; pointer-events:none; margin-bottom:-12px; }
     .series-scroll { display:flex; gap:8px; align-items:flex-start; overflow-x:auto; padding:0 0 8px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
     .series-scroll::-webkit-scrollbar { display:none; }
-    .series-group-header { padding:0 20px 10px; display:flex; justify-content:space-between; align-items:baseline; }
+
     .series-scroll-wrap { position:relative; overflow:hidden; margin:0 20px; }
-    .sa-btn { position:absolute; width:20px; height:151px; background:rgba(37,99,235,0.52); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; color:#fff; z-index:6; transition:background 0.15s; }
-    .sa-btn:hover { background:rgba(37,99,235,0.82); }
+    .sa-btn { position:absolute; width:20px; height:151px; top:0; background:var(--point); opacity:0.52; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; color:#fff; z-index:6; transition:opacity 0.15s; }
+    .sa-btn:hover { opacity:0.82; }
     @keyframes sa-bounce-r { 0%,100%{transform:translateX(0)} 40%{transform:translateX(4px)} }
     @keyframes sa-bounce-l { 0%,100%{transform:translateX(0)} 40%{transform:translateX(-4px)} }
     .sa-btn.sa-right:not(.sa-hide) svg { animation:sa-bounce-r 1.4s ease-in-out infinite; }
@@ -314,19 +322,6 @@ const series = [
     ]
   },
   {
-    "name": "장비소개",
-    "emoji": "🎒",
-    "color": "#5E6C4F",
-    "eps": [
-      {
-        "ep": 0,
-        "title": "도쿄크래프트 지카테이블2",
-        "url": "https://www.instagram.com/p/DWkX9XuE7wz",
-        "thumb": "./images/series/gear-01.jpg"
-      }
-    ]
-  },
-  {
     "name": "또 해먹고 싶은 캠핑 음식",
     "emoji": "🍖",
     "color": "#C94A4A",
@@ -336,6 +331,19 @@ const series = [
         "title": "EP.01 야키토리 토리야 등",
         "url": "https://www.instagram.com/p/DXUCu6vE6lw/",
         "thumb": "./images/series/food-ep01.jpg"
+      }
+    ]
+  },
+  {
+    "name": "장비소개",
+    "emoji": "🎒",
+    "color": "#5E6C4F",
+    "eps": [
+      {
+        "ep": 0,
+        "title": "도쿄크래프트 지카테이블2",
+        "url": "https://www.instagram.com/p/DWkX9XuE7wz",
+        "thumb": "./images/series/gear-01.jpg"
       }
     ]
   }
@@ -562,30 +570,35 @@ function renderSeries() {
     const cnt = s.eps.length ? `${s.eps.length}편` : "";
     return `<div class="series-group">
       <div class="series-group-bar" style="background:${s.color}"></div>
-      <div class="series-group-header">
+      <div class="series-group-header" onclick="toggleSeries(this)">
         <span class="series-group-title">${s.emoji} ${s.name}</span>
-        <span class="series-group-count">${cnt}</span>
-      </div>
-      <button class="sa-btn sa-left sa-hide" onclick="saScroll(this,-1)"><svg width="9" height="16" viewBox="0 0 7 13" fill="none"><path d="M6 1L1 6.5L6 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button class="sa-btn sa-right" onclick="saScroll(this,1)"><svg width="9" height="16" viewBox="0 0 7 13" fill="none"><path d="M1 1l5 5.5L1 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <div class="series-scroll-wrap">
-        <div class="series-scroll" onscroll="saUpdate(this)">
-          ${eps.map(ep => {
-            const empty = ep.empty || !ep.url;
-            const tag = empty ? 'div' : 'a';
-            const attr = empty ? '' : `href="${ep.url}" target="_blank" rel="noopener"`;
-            const epBadge = (ep.ep && ep.ep > 0 && !empty) ? `<span class="ep-badge" style="background:${s.color}">EP.${String(ep.ep).padStart(2,'0')}</span>` : '';
-            return `<${tag} class="ep-card" ${attr}>
-              <div class="ep-thumb${empty?' empty':''}">
-                ${ep.thumb ? `<img src="${ep.thumb}" loading="lazy">` : `<div class="ep-thumb-ph">${PH_SVG}</div>`}
-                ${epBadge}
-                ${!empty ? `<div class="ep-ig">${IG_SVG}</div>` : ''}
-              </div>
-              <div class="ep-name${empty?' dim':''}">${ep.title}</div>
-            </${tag}>`;
-          }).join('')}
+        <div class="series-group-header-right">
+          <span class="series-group-count">${cnt}</span>
+          <svg class="series-chevron" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>
+      <div class="series-body"><div class="series-body-inner">
+        <button class="sa-btn sa-left sa-hide" onclick="saScroll(this,-1)"><svg width="9" height="16" viewBox="0 0 7 13" fill="none"><path d="M6 1L1 6.5L6 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="sa-btn sa-right" onclick="saScroll(this,1)"><svg width="9" height="16" viewBox="0 0 7 13" fill="none"><path d="M1 1l5 5.5L1 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="series-scroll-wrap">
+          <div class="series-scroll" onscroll="saUpdate(this)">
+            ${eps.map(ep => {
+              const empty = ep.empty || !ep.url;
+              const tag = empty ? 'div' : 'a';
+              const attr = empty ? '' : `href="${ep.url}" target="_blank" rel="noopener"`;
+              const epBadge = (ep.ep && ep.ep > 0 && !empty) ? `<span class="ep-badge" style="background:${s.color}">EP.${String(ep.ep).padStart(2,'0')}</span>` : '';
+              return `<${tag} class="ep-card" ${attr}>
+                <div class="ep-thumb${empty?' empty':''}">
+                  ${ep.thumb ? `<img src="${ep.thumb}" loading="lazy">` : `<div class="ep-thumb-ph">${PH_SVG}</div>`}
+                  ${epBadge}
+                  ${!empty ? `<div class="ep-ig">${IG_SVG}</div>` : ''}
+                </div>
+                <div class="ep-name${empty?' dim':''}">${ep.title}</div>
+              </${tag}>`;
+            }).join('')}
+          </div>
+        </div>
+      </div></div>
     </div>`;
   }).join('');
 }
@@ -611,7 +624,11 @@ function initSlideshow() {
     _timers.push(tid);
   });
 }
-/* ─── 시리즈 화살표 ─── */
+/* ─── 시리즈 화살표 + 아코디언 ─── */
+function toggleSeries(header) {
+  const g = header.closest('.series-group');
+  g.classList.toggle('collapsed');
+}
 function saScroll(btn, dir) {
   const sc = btn.closest('.series-group').querySelector('.series-scroll');
   sc.scrollBy({left: dir * 240, behavior: 'smooth'});
@@ -623,13 +640,8 @@ function saUpdate(sc) {
 }
 function saInit() {
   document.querySelectorAll('.series-group').forEach(g => {
-    const bar    = g.querySelector('.series-group-bar');
-    const header = g.querySelector('.series-group-header');
-    const barMb  = bar ? parseInt(getComputedStyle(bar).marginBottom || 0) : 0;
-    const topPx  = (bar ? bar.offsetHeight + barMb : 0) + (header ? header.offsetHeight : 0);
-    const sc      = g.querySelector('.series-scroll');
+    const sc = g.querySelector('.series-scroll');
     const noScroll = sc.scrollWidth <= sc.clientWidth + 2;
-    g.querySelectorAll('.sa-btn').forEach(b => b.style.top = topPx + 'px');
     g.querySelector('.sa-left').classList.toggle('sa-hide', noScroll || sc.scrollLeft <= 2);
     g.querySelector('.sa-right').classList.toggle('sa-hide', noScroll);
   });
