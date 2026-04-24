@@ -716,12 +716,10 @@ function match(c) {
 }
 function sortCamps(arr) {
   return [...arr].sort((a, b) => {
-    if (a.graega !== b.graega) return (b.graega?1:0) - (a.graega?1:0); // 그래가 최우선
-    const ra = a.rating||0, rb = b.rating||0;
-    if (ra !== rb) return rb - ra;                                       // 별점 내림차순
+    if (a.graega !== b.graega) return (b.graega?1:0) - (a.graega?1:0); // 1. 그래가 최우선
     const va = a.visits||0, vb = b.visits||0;
-    if (va !== vb) return vb - va;                                       // 횟수 내림차순
-    return a.name.localeCompare(b.name, 'ko');                          // 가나다 순
+    if (va !== vb) return vb - va;                                       // 2. 방문 횟수 내림차순
+    return a.name.localeCompare(b.name, 'ko');                          // 3. 가나다 순
   });
 }
 function renderGrid() {
