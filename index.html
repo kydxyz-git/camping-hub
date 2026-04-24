@@ -234,7 +234,10 @@
     .camp-badge.bg-thankq { background:#FF6B2C; }
     .camp-badge.bg-etc    { background:#9e9e9e; }
     .camp-info { padding:8px 8px 10px; }
-    .camp-name { font-size:12px; font-weight:700; line-height:1.25; letter-spacing:-0.02em; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; margin-bottom:2px; }
+    .camp-name { font-size:12px; font-weight:700; line-height:1.25; letter-spacing:-0.02em; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-bottom:2px; }
+    .camp-name.scroll { text-overflow:clip; }
+    .camp-name.scroll .scroll-track { display:inline-flex; gap:24px; padding-right:24px; animation: marquee 12s linear infinite; will-change:transform; }
+    @keyframes marquee { from { transform:translateX(0); } to { transform:translateX(calc(-50% - 12px)); } }
     .camp-region { font-size:10px; color:var(--text-sub); }
     .camp-meta { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
     .camp-noimg { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:10px; border-radius:var(--radius) var(--radius) 0 0; }
@@ -1809,6 +1812,30 @@ function renderGrid() {
     </${tag}>`;
   }).join('');
   setTimeout(initSlideshow, 80);
+  setTimeout(applyMarquee, 100);
+}
+
+/* ─── 긴 캠핑장명 좌측 스크롤 마퀴 처리 ─── */
+function applyMarquee() {
+  document.querySelectorAll('.camp-info .camp-name').forEach(el => {
+    const text = el.dataset.fullName || el.textContent.trim();
+    el.dataset.fullName = text;
+    // 측정용 임시 span (CSS 동일 적용)
+    const probe = document.createElement('span');
+    probe.style.cssText = 'visibility:hidden;position:absolute;white-space:nowrap;font-size:12px;font-weight:700;letter-spacing:-0.02em;left:-9999px;top:0';
+    probe.textContent = text;
+    document.body.appendChild(probe);
+    const textWidth = probe.offsetWidth;
+    probe.remove();
+    const containerWidth = el.offsetWidth;
+    if (containerWidth > 0 && textWidth > containerWidth - 2) {
+      el.classList.add('scroll');
+      el.innerHTML = `<span class="scroll-track"><span>${text}</span><span>${text}</span></span>`;
+    } else {
+      el.classList.remove('scroll');
+      el.textContent = text;
+    }
+  });
 }
 
 /* ─── 탭 전환 ─── */
