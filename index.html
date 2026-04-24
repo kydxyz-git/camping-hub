@@ -239,9 +239,7 @@
     .camp-meta { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
     .camp-noimg { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:10px; border-radius:var(--radius) var(--radius) 0 0; }
     .camp-noimg-txt { color:#2a2a2a; font-size:11px; font-weight:800; text-align:center; line-height:1.45; letter-spacing:-0.02em; word-break:keep-all; }
-    .camp-stars { font-size:9px; color:#F5A623; letter-spacing:0px; line-height:1; display:inline-flex; align-items:center; gap:0; }
-    .camp-stars .sh { position:relative; display:inline-block; color:#e0e0e0; font-size:9px; }
-    .camp-stars .sh::before { content:'★'; color:#F5A623; position:absolute; left:0; width:50%; overflow:hidden; }
+    .camp-stars { display:none; }
     .camp-visits { font-size:9px; color:var(--text-sub); font-weight:600; }
     .empty-msg { grid-column:1/-1; padding:60px 20px; text-align:center; color:var(--text-sub); font-size:13px; }
 
@@ -603,7 +601,7 @@ function renderSeries() {
                   ${epBadge}
                   ${!empty ? `<div class="ep-ig">${IG_SVG}</div>` : ''}
                 </div>
-                <div class="ep-name${empty?' dim':''}">${ep.title}</div>
+                <div class="ep-name${empty?' dim':''}">${ep.title.replace(/^EP\.\d+\s*/i, '')}</div>
               </${tag}>`;
             }).join('')}
           </div>
