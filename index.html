@@ -1812,7 +1812,9 @@ function renderGrid() {
     </${tag}>`;
   }).join('');
   setTimeout(initSlideshow, 80);
-  setTimeout(applyMarquee, 100);
+  // 마퀴: 카드가 완전히 그려진 후 측정 (탭 전환 애니메이션 + layout)
+  requestAnimationFrame(() => requestAnimationFrame(applyMarquee));
+  setTimeout(applyMarquee, 400);
 }
 
 /* ─── 긴 캠핑장명 좌측 스크롤 마퀴 처리 ─── */
@@ -1845,6 +1847,11 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(btn.dataset.tab).classList.add('active');
+    // 다녀온 캠핑장 탭(t2) 진입 시 마퀴 재적용 (탭이 처음 보일 때 width 측정 가능)
+    if (btn.dataset.tab === 't2' && typeof applyMarquee === 'function') {
+      requestAnimationFrame(() => requestAnimationFrame(applyMarquee));
+      setTimeout(applyMarquee, 300);
+    }
   });
 });
 document.getElementById('reset-btn').addEventListener('click', () => {
