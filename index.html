@@ -1718,7 +1718,7 @@ function renderProducts(containerId, dataArr) {
         ${item.desc ? `<div class="product-desc">${item.desc}</div>` : ''}
         ${(item.price_sale || item.price_original) ? `
         <div class="price-wrap">
-          ${item.price_original ? `<span class="price-original">${Number(item.price_original).toLocaleString()}원</span>` : ''}
+          ${(item.price_original && item.price_sale) ? `<span class="price-original">${Number(item.price_original).toLocaleString()}원</span>` : ''}
           <div class="price-row">
             ${item.discount_rate ? `<span class="price-discount-rate">${item.discount_rate}%</span>` : ''}
             ${item.price_sale ? `<span class="price-sale">${Number(item.price_sale).toLocaleString()}원</span>` : item.price_original ? `<span class="price-only">${Number(item.price_original).toLocaleString()}원</span>` : ''}
