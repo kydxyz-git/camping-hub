@@ -369,7 +369,7 @@ const series = [
 
 
 /* ══ 🔶 NOTION ③ | 2026-04-27 ══ */
-const foods = [{"name": "툇골 오리 주물럭", "desc": "부추무집이 진짜 별미", "url": "https://link.coupang.com/a/cGtreE", "source": "쿠팡", "thumb": "./images/products/food-01.jpg", "price_original": 49400, "price_sale": null, "discount_rate": null}, {"name": "[성수동 분식] 수제 고추튀김 3종", "desc": "추억의 분식", "url": "https://lounge.kurly.com/link/wKIB-JIhf", "source": "컬리", "thumb": "./images/products/food-02.jpg", "price_original": 13900, "price_sale": 9729, "discount_rate": 30}, {"name": "[부산 이가네] 이가네 떡볶이", "desc": "부산 3대 떡볶이로 유명한", "url": "https://lounge.kurly.com/link/TNwe-lUVo", "source": "컬리", "thumb": "./images/products/food-03.jpg", "price_original": 7490, "price_sale": null, "discount_rate": null}, {"name": "[니뽕내뽕] 크뽕 (크림짬뽕)", "desc": "고소하고 꾸덕한 크림 짬뽕", "url": "https://lounge.kurly.com/link/ThTI-lkYv", "source": "컬리", "thumb": "./images/products/food-04.jpg", "price_original": 8900, "price_sale": 8100, "discount_rate": 10}];
+const foods = [{"name": "툇골 오리 주물럭", "desc": "부추무침이 진짜 별미", "url": "https://link.coupang.com/a/cGtreE", "source": "쿠팡", "thumb": "./images/products/food-01.jpg", "price_original": 49400, "price_sale": null, "discount_rate": null}, {"name": "[성수동 분식] 수제 고추튀김 3종", "desc": "추억의 분식", "url": "https://lounge.kurly.com/link/wKIB-JIhf", "source": "컬리", "thumb": "./images/products/food-02.jpg", "price_original": 13900, "price_sale": 9729, "discount_rate": 30}, {"name": "[부산 이가네] 이가네 떡볶이", "desc": "부산 3대 떡볶이", "url": "https://lounge.kurly.com/link/TNwe-lUVo", "source": "컬리", "thumb": "./images/products/food-03.jpg", "price_original": 7490, "price_sale": null, "discount_rate": null}, {"name": "[전주 베테랑] 김치만두", "desc": "전주 유명 맛집의 인기 메뉴", "url": "https://lounge.kurly.com/link/tbku-uJpL", "source": "컬리", "thumb": "./images/products/food-04.jpg", "price_original": 5980, "price_sale": null, "discount_rate": null}, {"name": "[니뽕내뽕] 크뽕 (크림짬뽕)", "desc": "고소하고 꾸덕한 크림 짬뽕", "url": "https://lounge.kurly.com/link/ThTI-lkYv", "source": "컬리", "thumb": "./images/products/food-05.jpg", "price_original": 8900, "price_sale": 8100, "discount_rate": 10}];
 /* ═══════════════════════════════════════════════════════════════════ */
 
 
@@ -1718,11 +1718,13 @@ function saInit() {
 /* ─── 상품 카드 렌더 ─── */
 function renderProducts(containerId, dataArr) {
   const grid = document.getElementById(containerId);
-  if (!dataArr || !dataArr.length) {
+  // 매 페이지 로드마다 랜덤 셔플 (캠핑이야기 시리즈 ep=0과 동일 방식)
+  const shuffled = (dataArr || []).slice().sort(() => Math.random() - 0.5);
+  if (!shuffled || !shuffled.length) {
     grid.innerHTML = `<div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--text-sub);font-size:13px;">아직 등록된 항목이 없어요</div>`;
     return;
   }
-  grid.innerHTML = dataArr.map(item => {
+  grid.innerHTML = shuffled.map(item => {
     const src = (item.source||'').toLowerCase(); const bc = (src==='쿠팡'||src==='coupang')?'badge-coupang':(src==='컬리'||src==='kurly')?'badge-kurly':'';
     const bl = (src==='쿠팡'||src==='coupang')?'쿠팡':(src==='컬리'||src==='kurly')?'컬리':'';
     const empty = !item.url || item.url==='#';
