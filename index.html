@@ -308,6 +308,19 @@ const series = [
     ]
   },
   {
+    "name": "봄·가을에 가기 좋은 캠핑장",
+    "emoji": "🌸",
+    "color": "#E89BB9",
+    "eps": [
+      {
+        "ep": 1,
+        "title": "철쭉 명소 바로 옆 캠핑장",
+        "url": "",
+        "thumb": "./images/series/spring-autumn-ep01.jpg"
+      }
+    ]
+  },
+  {
     "name": "캠핑꿀팁",
     "emoji": "💡",
     "color": "#4A90E2",
@@ -361,19 +374,6 @@ const series = [
         "title": "도쿄크래프트 지카테이블2",
         "url": "https://www.instagram.com/p/DWkX9XuE7wz",
         "thumb": "./images/series/gear-01.jpg"
-      }
-    ]
-  },
-  {
-    "name": "봄·가을에 가기 좋은 캠핑장",
-    "emoji": "🌸",
-    "color": "#E89BB9",
-    "eps": [
-      {
-        "ep": 1,
-        "title": "철쭉 명소 바로 옆 캠핑장",
-        "url": "",
-        "thumb": "./images/series/spring-autumn-ep01.jpg"
       }
     ]
   }
@@ -1668,12 +1668,15 @@ function renderSeries() {
               const empty = ep.empty || !ep.url;
               const tag = empty ? 'div' : 'a';
               const attr = empty ? '' : `href="${ep.url}" target="_blank" rel="noopener"`;
-              const epBadge = (ep.ep && ep.ep > 0 && !empty) ? `<span class="ep-badge" style="background:${s.color}">EP.${String(ep.ep).padStart(2,'0')}</span>` : '';
+              // EP 배지: url 유무와 무관하게 ep번호가 있으면 표시
+              const epBadge = (ep.ep && ep.ep > 0) ? `<span class="ep-badge" style="background:${s.color}">EP.${String(ep.ep).padStart(2,'0')}</span>` : '';
+              // 인스타 아이콘: 실제 인스타 주소가 입력된 경우에만
+              const isInsta = ep.url && /instagram\.com/i.test(ep.url);
               return `<${tag} class="ep-card" ${attr}>
                 <div class="ep-thumb${empty?' empty':''}">
                   ${ep.thumb ? `<img src="${ep.thumb}" loading="lazy">` : `<div class="ep-thumb-ph">${PH_SVG}</div>`}
                   ${epBadge}
-                  ${!empty ? `<div class="ep-ig">${IG_SVG}</div>` : ''}
+                  ${isInsta ? `<div class="ep-ig">${IG_SVG}</div>` : ''}
                 </div>
                 <div class="ep-name${empty?' dim':''}">${ep.title.replace(/^EP\.\d+\s*/i, '')}</div>
               </${tag}>`;
