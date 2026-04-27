@@ -89,15 +89,12 @@
       padding: 10px 16px;
       background: #F5F5F5;
       border-radius: 8px;
-      font-size: 12px; color: var(--text-sub);
-      line-height: 1.7; letter-spacing: -0.01em;
+      font-size: 11.5px; color: var(--text-sub);
+      line-height: 1.6; letter-spacing: -0.02em;
       text-align: center;
+      word-break: keep-all;
     }
     .partners-notice span { display: block; }
-    .partners-notice.split { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 12px; align-items: center; padding: 12px 14px; }
-    .partners-notice.split .col { font-size: 10px; line-height: 1.45; letter-spacing: -0.02em; }
-    .partners-notice.split .col span { display: block; }
-    .partners-notice.split .vline { width: 1px; height: 32px; background: rgba(0,0,0,0.12); align-self: center; }
 
     /* ── 상품 카드 그리드 ── */
     .product-section { padding: 14px 16px 32px; }
@@ -277,8 +274,8 @@ const siteConfig = {
   "footerInstaUrl": "https://www.instagram.com/kyd_zm/",
   "footerCollab": "캠핑장 · 캠핑장비 · 캠핑음식 협업 환영 · DM",
   "footerCredits": "© 2026 공대남자",
-  "kurlyLine1": "이 포스팅은 컬리 큐레이터의 일환으로,",
-  "kurlyLine2": "구매 시 일정액의 수수료를 제공받습니다."
+  "foodPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 컬리 큐레이터 제휴 링크가",
+  "foodPartnersLine2": "포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다."
 };
 /* ═══════════════════════════════════════════════════════════════════ */
 
@@ -1534,16 +1531,9 @@ const camps = [
 
   <!-- 탭 3: 추천 음식 -->
   <div id="t3" class="tab-content">
-    <div class="partners-notice split">
-      <div class="col">
-        <span id="partners-line1"></span>
-        <span id="partners-line2"></span>
-      </div>
-      <div class="vline"></div>
-      <div class="col">
-        <span id="partners-line3"></span>
-        <span id="partners-line4"></span>
-      </div>
+    <div class="partners-notice">
+      <span id="partners-line1"></span>
+      <span id="partners-line2"></span>
     </div>
     <section class="product-section">
       <div class="product-grid" id="food-grid"></div>
@@ -1598,10 +1588,10 @@ function renderConfig() {
   document.getElementById('tab-btn-2').textContent  = siteConfig.tab2;
   document.getElementById('tab-btn-3').textContent  = siteConfig.tab3;
   document.getElementById('tab-btn-4').textContent  = siteConfig.tab4;
-  document.getElementById('partners-line1').textContent  = siteConfig.partnersLine1;
-  document.getElementById('partners-line2').textContent  = siteConfig.partnersLine2;
-  document.getElementById('partners-line3').textContent  = siteConfig.kurlyLine1 || '';
-  document.getElementById('partners-line4').textContent  = siteConfig.kurlyLine2 || '';
+  // 추천 음식 탭(t3): 쿠팡 + 컬리 통합 문구
+  document.getElementById('partners-line1').textContent  = siteConfig.foodPartnersLine1 || siteConfig.partnersLine1;
+  document.getElementById('partners-line2').textContent  = siteConfig.foodPartnersLine2 || siteConfig.partnersLine2;
+  // 추천 템 탭(t4): 쿠팡 문구만
   document.getElementById('partners-line1b').textContent = siteConfig.partnersLine1;
   document.getElementById('partners-line2b').textContent = siteConfig.partnersLine2;
   const footerBtn = document.getElementById('footer-insta-btn');
