@@ -94,7 +94,10 @@
       text-align: center;
     }
     .partners-notice span { display: block; }
-    .partners-notice .divider { height: 1px; background: rgba(0,0,0,0.06); margin: 6px auto; max-width: 60%; }
+    .partners-notice.split { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 10px; align-items: center; padding: 10px 12px; }
+    .partners-notice.split .col { font-size: 10.5px; line-height: 1.5; }
+    .partners-notice.split .col span { display: block; }
+    .partners-notice.split .vline { width: 1px; height: 100%; background: rgba(0,0,0,0.1); align-self: stretch; }
 
     /* ── 상품 카드 그리드 ── */
     .product-section { padding: 14px 16px 32px; }
@@ -1531,12 +1534,16 @@ const camps = [
 
   <!-- 탭 3: 추천 음식 -->
   <div id="t3" class="tab-content">
-    <div class="partners-notice">
-      <span id="partners-line1"></span>
-      <span id="partners-line2"></span>
-      <div class="divider"></div>
-      <span id="partners-line3"></span>
-      <span id="partners-line4"></span>
+    <div class="partners-notice split">
+      <div class="col">
+        <span id="partners-line1"></span>
+        <span id="partners-line2"></span>
+      </div>
+      <div class="vline"></div>
+      <div class="col">
+        <span id="partners-line3"></span>
+        <span id="partners-line4"></span>
+      </div>
     </div>
     <section class="product-section">
       <div class="product-grid" id="food-grid"></div>
