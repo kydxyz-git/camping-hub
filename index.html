@@ -1695,24 +1695,13 @@ function renderSeries() {
 }
 
 /* ─── 캠핑장 슬라이드쇼 ─── */
-const _timers = [];
 function initSlideshow() {
-  _timers.forEach(t => { clearInterval(t); clearTimeout(t); });
-  _timers.length = 0;
-  document.querySelectorAll('.camp-img').forEach((el, cardIdx) => {
+  // 이미지가 여러 장인 카드는 페이지 로드마다 첫 이미지를 랜덤으로 선택해서 표시
+  document.querySelectorAll('.camp-img').forEach(el => {
     const imgs = el.querySelectorAll('img');
     if (imgs.length < 2) return;
-    let i = 0;
-    const delay = cardIdx * 700; // 카드마다 700ms 시차
-    const tid = setTimeout(() => {
-      const iv = setInterval(() => {
-        imgs[i].style.opacity = 0;
-        i = (i + 1) % imgs.length;
-        imgs[i].style.opacity = 1;
-      }, 3000);
-      _timers.push(iv);
-    }, delay);
-    _timers.push(tid);
+    const pick = Math.floor(Math.random() * imgs.length);
+    imgs.forEach((img, i) => { img.style.opacity = (i === pick) ? 1 : 0; });
   });
 }
 /* ─── 시리즈 화살표 + 아코디언 ─── */
