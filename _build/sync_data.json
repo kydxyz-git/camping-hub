@@ -292,7 +292,11 @@
       "graega": true,
       "url": "https://graega.short.gy/7048kydzm",
       "imgs": [
-        "./images/camps/d09b6195e9db.jpg"
+        "./images/camps/d09b6195e9db.jpg",
+        "./images/camps/d09b6195e9db-2.jpg",
+        "./images/camps/d09b6195e9db-3.jpg",
+        "./images/camps/d09b6195e9db-4.jpg",
+        "./images/camps/d09b6195e9db-5.jpg"
       ],
       "rating": 4,
       "visits": 1,
@@ -319,7 +323,11 @@
       "graega": true,
       "url": "https://graega.short.gy/7130kydzm",
       "imgs": [
-        "./images/camps/f3c04d3dd239.jpg"
+        "./images/camps/f3c04d3dd239.jpg",
+        "./images/camps/f3c04d3dd239-2.jpg",
+        "./images/camps/f3c04d3dd239-3.jpg",
+        "./images/camps/f3c04d3dd239-4.jpg",
+        "./images/camps/f3c04d3dd239-5.jpg"
       ],
       "rating": 3.5,
       "visits": 1,
@@ -1377,7 +1385,7 @@
     }
   ],
   "_metadata": {
-    "last_sync": "2026-04-28T22:07:26Z",
+    "last_sync": "2026-04-28T22:18:12Z",
     "page_id_index_complete": true,
     "notion_collections": {
       "series": "d867d959-4c1b-487c-b7e0-ae7d82987520",
