@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>공대남자의 캠핑이야기</title>
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css" />
+  <style>
+    :root {
+      --bg:#FAFAFA; --surface:#FFFFFF; --text:#111111; --text-sub:#666666;
+      --line:rgba(0,0,0,0.08); --accent-soft:#EEEEEE; --point:#5E6C4F;
+      --ocean-bg:#CCE5F1; --ocean-fg:#2E8BC0; --mountain-bg:#E0EAD4; --mountain-fg:#5A7D4A;
+      --forest-bg:#D4E3D0; --forest-fg:#3A6B3A; --valley-bg:#DBEBFA; --valley-fg:#4A90E2;
+      --river-bg:#D6EBE2; --river-fg:#5BA896; --lake-bg:#DDECF5; --lake-fg:#6A9FC4;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    body {
+      font-family:'SUIT Variable','SUIT',-apple-system,sans-serif;
+      background:var(--bg); color:var(--text);
+      max-width:420px; margin:0 auto; min-height:100vh;
+      border-left:1px solid var(--line); border-right:1px solid var(--line);
+      -webkit-font-smoothing:antialiased;
+    }
+    a { color:inherit; text-decoration:none; }
+    button { font-family:inherit; background:none; border:none; cursor:pointer; color:inherit; }
+
+    /* ── 헤더: 타이틀 왼쪽, 부제목 오른쪽 ── */
+    .header {
+      padding: 22px 20px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .header-left { flex-shrink: 0; }
+    .header-label {
+      font-size: 10px; letter-spacing: 0.2em; color: var(--point);
+      font-weight: 600; text-transform: uppercase; margin-bottom: 6px;
+    }
+    .header-title {
+      font-size: 24px; font-weight: 800;
+      letter-spacing: -0.035em; line-height: 1.15;
+      white-space: nowrap;
+    }
+    .header-right { flex-shrink: 1; text-align: right; margin-top: 22px; }
+    .header-sub {
+      font-size: 11.5px; color: var(--text-sub);
+      font-weight: 500; line-height: 1.6;
+      word-break: keep-all;
+    }
+
+    /* ── 탭 바 (4개) ── */
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--line);
+      padding: 0 2px;
+      background: var(--bg);
+    }
+    .tab-btn {
+      flex: 1; padding: 8px 4px 9px;
+      font-size: 12px; font-weight: 700;
+      color: var(--text-sub); letter-spacing: -0.02em;
+      border: 1.5px solid transparent;
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      background: transparent;
+      transition: all 0.15s; text-align: center;
+      line-height: 1.3; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+      cursor: pointer;
+      position: relative; bottom: -2px;
+    }
+    .tab-btn:hover { color:var(--text); background:var(--accent-soft); }
+    .tab-btn.active {
+      background: var(--point);
+      color: #fff;
+      border-color: var(--point);
+      border-bottom-color: var(--point);
+      font-weight: 800;
+    }
+
+    /* ── 탭 콘텐츠 ── */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── 파트너스 면책 문구 (2줄) ── */
+    .partners-notice {
+      margin: 16px 20px 0;
+      padding: 10px 16px;
+      background: #F5F5F5;
+      border-radius: 8px;
+      font-size: 11.5px; color: var(--text-sub);
+      line-height: 1.6; letter-spacing: -0.02em;
+      text-align: center;
+      word-break: keep-all;
+    }
+    .partners-notice span { display: block; }
+    .price-notice {
+      margin: 0 20px 24px;
+      padding: 9px 14px;
+      background: #FAFAFA;
+      border: 1px solid #EEE;
+      border-radius: 6px;
+      font-size: 10.5px; color: var(--text-sub);
+      line-height: 1.5; letter-spacing: -0.02em;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    /* ── 상품 카드 그리드 ── */
+    .product-section { padding: 14px 16px 32px; }
+    .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+    .product-card {
+      display: block; background: var(--surface);
+      border: 1px solid var(--line); border-radius: 10px;
+      overflow: hidden; transition: transform 0.18s; cursor: pointer;
+    }
+    .product-card:active { transform: scale(0.97); }
+    .product-thumb { width: 100%; aspect-ratio: 1/1; background: var(--accent-soft); position: relative; overflow: hidden; }
+    .product-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .product-thumb.ph { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; }
+    .product-thumb.ph svg { width: 24px; height: 24px; opacity: 0.2; stroke: var(--text); fill: none; }
+    .product-thumb.ph span { font-size: 8px; color: var(--text-sub); opacity: 0.5; font-weight: 600; letter-spacing: 0.05em; }
+    .source-badge { position: absolute; bottom: 5px; right: 5px; font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 100px; color: white; letter-spacing: -0.01em; }
+    .badge-coupang { background: #FF4B4B; }
+    .badge-kurly   { background: #5D3CC7; }
+    .product-info { padding: 7px 8px 9px; }
+    .product-name {
+      font-size: 11px; font-weight: 700; color: var(--text);
+      line-height: 1.3; letter-spacing: -0.02em;
+      overflow: hidden; text-overflow: ellipsis;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      min-height: 28px; margin-bottom: 4px;
+    }
+    .product-desc {
+      font-size: 9.5px; color: var(--text-sub); line-height: 1.35;
+      overflow: hidden; text-overflow: ellipsis;
+      display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;
+      margin-bottom: 6px;
+    }
+    .product-link { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; color: var(--point); }
+    .price-wrap { margin-bottom: 5px; }
+    .price-original { font-size: 9px; color: var(--text-sub); text-decoration: line-through; letter-spacing: -0.01em; }
+    .price-row { display: flex; align-items: baseline; gap: 3px; }
+    .price-discount-rate { font-size: 11px; font-weight: 800; color: #E44646; letter-spacing: -0.02em; }
+    .price-sale { font-size: 12px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
+    .price-only { font-size: 12px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
+    .product-link svg { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 2; }
+    .product-card.empty { border: 1.5px dashed var(--line); background: transparent; }
+    .product-card.empty .product-name { color: var(--text-sub); font-weight: 400; font-style: italic; }
+
+    /* ── 시리즈 ── */
+    .series-section { padding: 20px 0 8px; }
+    .series-group { margin-bottom:24px; position:relative; }
+    .series-group-bar { height: 2px; margin: 0 20px 10px; border-radius: 100px; opacity: 0.45; }
+    .series-group-title { font-size:14px; font-weight:800; letter-spacing:-0.03em; }
+    .series-group-count { font-size:11px; color:var(--text-sub); font-weight:500; }
+    .series-group-header { padding:0 20px 10px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; }
+    .series-group-header:active { opacity:0.7; }
+    .series-group-header-right { display:flex; align-items:center; gap:8px; }
+    .series-chevron { width:12px; height:12px; color:var(--text-sub); transition:transform 0.28s ease; flex-shrink:0; }
+    .series-group.collapsed .series-chevron { transform:rotate(-90deg); }
+    .series-body { position:relative; display:grid; grid-template-rows:1fr; transition:grid-template-rows 0.3s ease, opacity 0.28s ease, margin 0.3s ease; opacity:1; }
+    .series-body > .series-body-inner { overflow:hidden; min-height:0; }
+    .series-group.collapsed .series-body { grid-template-rows:0fr; opacity:0; pointer-events:none; margin-bottom:-12px; }
+    .series-scroll { display:flex; gap:8px; align-items:flex-start; overflow-x:auto; padding:0 0 8px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    .series-scroll::-webkit-scrollbar { display:none; }
+
+    .series-scroll-wrap { position:relative; overflow:hidden; margin:0 20px; }
+    .sa-btn { position:absolute; width:20px; height:151px; top:0; background:var(--point); opacity:0.52; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; color:#fff; z-index:6; transition:opacity 0.15s; }
+    .sa-btn:hover { opacity:0.82; }
+    @keyframes sa-bounce-r { 0%,100%{transform:translateX(0)} 40%{transform:translateX(4px)} }
+    @keyframes sa-bounce-l { 0%,100%{transform:translateX(0)} 40%{transform:translateX(-4px)} }
+    .sa-btn.sa-right:not(.sa-hide) svg { animation:sa-bounce-r 1.4s ease-in-out infinite; }
+    .sa-btn.sa-left:not(.sa-hide)  svg { animation:sa-bounce-l 1.4s ease-in-out infinite; }
+    .sa-btn.sa-left  { left:0;  border-radius:0 8px 8px 0; }
+    .sa-btn.sa-right { right:0; border-radius:8px 0 0 8px; }
+    .sa-btn.sa-hide  { visibility:hidden; pointer-events:none; }
+    .ep-card { flex-shrink:0; width:121px; scroll-snap-align:start; cursor:pointer; transition:transform 0.18s; display:flex; flex-direction:column; }
+
+    .ep-card:active { transform:scale(0.96); }
+    .ep-thumb { width:121px; height:151px; border-radius:8px; overflow:hidden; background:var(--accent-soft); position:relative; margin-bottom:6px; flex-shrink:0; }
+    .ep-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .ep-thumb.empty { border:1.5px dashed var(--line); background:transparent; }
+    .ep-thumb-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+    .ep-thumb-ph svg { width:22px; height:22px; opacity:0.22; stroke:var(--text); fill:none; }
+    .ep-badge { position:absolute; bottom:6px; left:6px; font-size:9px; font-weight:800; padding:2px 7px; border-radius:100px; color:white; letter-spacing:0.03em; }
+    .ep-ig { position:absolute; bottom:6px; right:6px; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+    .ep-ig svg { width:11px; height:11px; fill:white; }
+    .ep-name { font-size:11px; font-weight:600; color:var(--text); line-height:1.3; letter-spacing:-0.01em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:center; }
+    .ep-name.dim { color:var(--text-sub); font-weight:400; }
+
+    /* ── 캠핑장 ── */
+    .env-section { padding:16px 16px 12px; }
+    .section-label { font-size:10px; letter-spacing:0.2em; color:var(--text-sub); font-weight:700; margin:0 4px 10px; text-transform:uppercase; display:block; }
+    .env-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; }
+    .env-btn { display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 2px 7px; border-radius:10px; transition:all 0.18s; }
+    .env-btn.active { background:var(--accent-soft); }
+    .env-btn.active .env-icon-wrap { outline:2px solid var(--text); outline-offset:2px; }
+    .env-icon-wrap { width:40px; height:40px; border-radius:11px; display:flex; align-items:center; justify-content:center; }
+    .env-icon-wrap[data-t="ocean"]    {background:var(--ocean-bg);color:var(--ocean-fg)}
+    .env-icon-wrap[data-t="mountain"]{background:var(--mountain-bg);color:var(--mountain-fg)}
+    .env-icon-wrap[data-t="forest"]  {background:var(--forest-bg);color:var(--forest-fg)}
+    .env-icon-wrap[data-t="valley"]  {background:var(--valley-bg);color:var(--valley-fg)}
+    .env-icon-wrap[data-t="river"]   {background:var(--river-bg);color:var(--river-fg)}
+    .env-icon-wrap[data-t="lake"]    {background:var(--lake-bg);color:var(--lake-fg)}
+    .env-icon { width:22px; height:22px; }
+    .env-name { font-size:10px; font-weight:600; color:var(--text); letter-spacing:-0.02em; }
+    .filter-section { padding:4px 20px 14px; }
+    .filter-box { background:var(--surface); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+    .filter-box > summary { padding:13px 16px; font-size:13px; font-weight:600; display:flex; justify-content:space-between; align-items:center; cursor:pointer; list-style:none; }
+    .filter-box > summary::-webkit-details-marker { display:none; }
+    .fsum-l,.fsum-r { display:flex; align-items:center; gap:8px; }
+    .filter-icon { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.8; }
+    .ftotal { font-size:11px; padding:2px 9px; background:var(--text); color:var(--bg); border-radius:100px; font-weight:700; }
+    .ftotal.z { display:none; }
+    .chevron { transition:transform 0.2s; width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; }
+    .filter-box[open] .chevron { transform:rotate(180deg); }
+    .filter-body { padding:0 16px 12px; }
+    .filter-row { padding:13px 0 10px; border-top:1px solid var(--line); }
+    .filter-row-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .filter-row-name { font-size:10px; letter-spacing:0.2em; color:var(--text-sub); font-weight:700; text-transform:uppercase; }
+    .row-cnt { font-size:10px; padding:1px 7px; background:var(--accent-soft); color:var(--text); border-radius:100px; font-weight:700; }
+    .row-cnt.z { display:none; }
+    .chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .chip { padding:6px 12px; background:transparent; border:1px solid var(--line); border-radius:100px; font-size:12px; color:var(--text); transition:all 0.15s; font-weight:500; cursor:pointer; }
+    .chip.active { background:var(--text); color:var(--bg); border-color:var(--text); }
+    .reset-row { padding:4px 20px 10px; display:flex; justify-content:flex-end; }
+    .reset-btn { font-size:11px; color:var(--text-sub); text-decoration:underline; font-weight:500; cursor:pointer; }
+    .count-bar { padding:6px 20px 12px; display:flex; justify-content:space-between; align-items:baseline; border-top:1px solid var(--line); }
+    .count-num { font-size:20px; font-weight:800; letter-spacing:-0.02em; }
+    .count-num::after { content:'개'; font-size:12px; margin-left:2px; font-weight:500; color:var(--text-sub); }
+    .count-visits { font-size:13px; font-weight:600; color:var(--text-sub); margin-left:6px; letter-spacing:-0.01em; }
+    .count-desc { font-size:11px; color:var(--text-sub); letter-spacing:0.05em; }
+    .grid { padding:0 16px 32px; display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .camp-card { display:block; background:var(--surface); border-radius:8px; overflow:hidden; transition:transform 0.2s; animation:fadeUp 0.35s ease backwards; }
+    .camp-card:active { transform:scale(0.97); }
+    .camp-card.no-link { cursor:default; }
+    .camp-card.no-link:active { transform:none; }
+    .camp-img { width:100%; aspect-ratio:1/1.25; overflow:hidden; background:var(--accent-soft); position:relative; }
+    .camp-img img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:opacity 0.7s ease; }
+    .camp-badge { position:absolute; top:6px; left:6px; color:white; font-size:9px; padding:2px 6px; border-radius:100px; font-weight:700; z-index:2; letter-spacing:0.01em; }
+    .camp-badge.bg-graega { background:#1a1a1a; }
+    .camp-badge.bg-naver  { background:#03C75A; }
+    .camp-badge.bg-camfit { background:#2D8F4C; }
+    .camp-badge.bg-thankq { background:#FF6B2C; }
+    .camp-badge.bg-etc    { background:#9e9e9e; }
+    .camp-info { padding:8px 8px 10px; }
+    .camp-name { font-size:12px; font-weight:700; line-height:1.25; letter-spacing:-0.02em; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-bottom:2px; }
+    .camp-name.scroll { text-overflow:clip; }
+    .camp-name.scroll .scroll-track { display:inline-flex; gap:24px; padding-right:24px; animation: marquee 12s linear infinite; will-change:transform; }
+    @keyframes marquee { from { transform:translateX(0); } to { transform:translateX(calc(-50% - 12px)); } }
+    .camp-region { font-size:10px; color:var(--text-sub); }
+    .camp-meta { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
+    .camp-noimg { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:10px; border-radius:var(--radius) var(--radius) 0 0; }
+    .camp-noimg-txt { color:#2a2a2a; font-size:11px; font-weight:800; text-align:center; line-height:1.45; letter-spacing:-0.02em; word-break:keep-all; }
+    .camp-stars { display:none; }
+    .camp-visits { font-size:9px; color:var(--text-sub); font-weight:600; }
+    .empty-msg { grid-column:1/-1; padding:60px 20px; text-align:center; color:var(--text-sub); font-size:13px; }
+
+    /* ── 푸터 ── */
+    .footer { background:var(--text); color:var(--bg); padding:24px 20px 20px; text-align:center; }
+    .footer-btn { display:block; padding:13px 20px; background:var(--bg); color:var(--text); border-radius:8px; font-size:13px; font-weight:700; margin:0 auto 14px; max-width:280px; }
+    .footer-collab { font-size:11px; opacity:0.55; letter-spacing:0.02em; margin-bottom:12px; }
+    .footer-credits { font-size:10px; opacity:0.35; letter-spacing:0.05em; padding-top:12px; border-top:1px solid rgba(255,255,255,0.08); }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  </style>
+</head>
+<body>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   🔶 NOTION 동기화 영역 ① — 사이트 텍스트
+   노션 "인스타 프로필" 페이지 > 📢 사이트 텍스트 설정 토글에서 관리
+   마지막 동기화: 2026-04-22
+   ═══════════════════════════════════════════════════════════════════ */
+const siteConfig = {
+  headerLabel:     "· Auto Camping ·",
+  headerTitle:     "이번 주말,\n어디 갈까?",
+  headerSub:       "5년차 부부캠퍼 공대남자가\n직접 가본 곳만.",
+  tab1:            "캠핑이야기",
+  tab2:            "다녀온 캠핑장",
+  tab3:            "추천 음식",
+  tab4:            "추천 템",
+  partnersLine1:   "이 포스팅은 쿠팡 파트너스 활동의 일환으로,",
+  partnersLine2:   "이에 따른 일정액의 수수료를 제공받습니다.",
+  footerInstaBtn:  "인스타 팔로우 @kyd_zm",
+  footerInstaUrl:  "https://www.instagram.com/kyd_zm/",
+  footerCollab:    "캠핑 장비 · 식품 브랜드 협업 환영 · DM",
+  footerCredits:   "© 2026 공대남자"
+};
+/* ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   🔶 NOTION 동기화 영역 ② — 인스타 시리즈
+   노션 "인스타 시리즈 DB"에서 관리
+   ═══════════════════════════════════════════════════════════════════ */
+const series = [
+  { name:"여름에 가기 좋은 캠핑장", emoji:"☀️", color:"#F5A623", bar:"bar-1",
+    eps:[{ ep:1, title:"밀양 구만산장", url:"https://www.instagram.com/kyd_zm/", thumb:"" }] },
+  { name:"캠핑꿀팁", emoji:"💡", color:"#4A90E2", bar:"bar-2", eps:[] },
+  { name:"장비소개", emoji:"🎒", color:"#5E6C4F", bar:"bar-3", eps:[] }
+];
+/* ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   🔶 NOTION 동기화 영역 ③ — 추천 음식
+   노션 "추천 음식 DB"에서 관리
+   필드: 상품명 / 한줄설명 / 쿠팡링크(또는 컬리링크) / 썸네일(자동추출)
+   ═══════════════════════════════════════════════════════════════════ */
+const foods = [
+  { name:"[예시] 캠핑용 간편 삼겹살 세트", desc:"불 위에 올리면 끝! 캠핑장 필수 아이템", source:"coupang", url:"#", thumb:"" },
+  { name:"[예시] 수제 소시지 모둠", desc:"아이들이 제일 좋아하는 캠핑 음식", source:"kurly", url:"#", thumb:"" },
+];
+/* ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   🔶 NOTION 동기화 영역 ④ — 추천 템
+   노션 "추천 템 DB"에서 관리
+   필드: 상품명 / 한줄설명 / 쿠팡링크(또는 컬리링크) / 썸네일(자동추출)
+   ═══════════════════════════════════════════════════════════════════ */
+const items = [
+  { name:"[예시] 접이식 캠핑 테이블", desc:"가볍고 튼튼한 알루미늄 테이블", source:"coupang", url:"#", thumb:"" },
+  { name:"[예시] 캠핑 랜턴 LED", desc:"야간 캠핑 필수템 — 충전식 200h", source:"coupang", url:"#", thumb:"" },
+];
+/* ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   🔶 NOTION 동기화 영역 ⑤ — 캠핑장 리스트
+   노션 "캠핑장 카탈로그 DB"에서 관리
+   ═══════════════════════════════════════════════════════════════════ */
+const camps = [
+  { name:"합천호코지캠핑장", region:"경남", seasons:["봄","가을"], landscape:["산"], extras:["벚꽃","글램핑"], graega:true, url:"https://m.site.naver.com/1Sbv3", imgs:["./images/hapcheonho.jpg"], rating:3, visits:15 },
+  { name:"캠프627 경호강", region:"경남", seasons:["봄","가을"], landscape:["강"], extras:["벚꽃","수영장","개별샤워실"], graega:true, url:"https://graega.short.gy/6973kydzm", imgs:["./images/camp627-1.jpg","./images/camp627-2.jpg","./images/camp627-3.jpg","./images/camp627-4.jpg","./images/camp627-5.jpg"], rating:5, visits:3 },
+  { name:"우니메이카 산청", region:"경남", seasons:["여름"], landscape:["계곡","산"], extras:["개별샤워실"], graega:true, url:"https://m.site.naver.com/1NdGk", imgs:["./images/unimeica-1.jpg","./images/unimeica-2.jpg"], rating:4.0, visits:2 },
+  { name:"문경 그린스톤", region:"경북", seasons:["봄","여름","가을"], landscape:["계곡","숲","산"], extras:["벚꽃","애견동반"], graega:true, url:"https://graega.short.gy/7048kydzm", imgs:["./images/mungyeong.jpg"], rating:4.0, visits:1 },
+  { name:"밀양 구만산장", region:"경남", seasons:["봄","여름","가을"], landscape:["계곡","숲","산"], extras:["벚꽃","수영장","펜션"], graega:true, url:"https://graega.short.gy/7130kydzm", imgs:["./images/milyang.jpg"], rating:3.5, visits:1 },
+  { name:"봉화별캠핑장", region:"경북", seasons:["봄","여름","가을"], landscape:["숲","계곡"], extras:["벚꽃","노키즈","애견동반","개별샤워실"], graega:false, url:"https://map.naver.com/p/entry/place/1383766957", imgs:[], rating:5.0, visits:26 },
+  { name:"왕피천모래언덕", region:"경북", seasons:["봄","여름"], landscape:["계곡"], extras:["벚꽃","수영장","펜션"], graega:false, url:"http://www.sanddune.co.kr", imgs:[], rating:4.5, visits:2 },
+  { name:"곤달비캠프", region:"경북", seasons:["봄","여름"], landscape:["계곡"], extras:["벚꽃","수영장","애견동반"], graega:false, url:"https://m.thankqcamping.com/resv/view.hbb?cseq=1583&chk=sns", imgs:[], rating:4.0, visits:5 },
+  { name:"창바우마을 해송피크닉장", region:"경북", seasons:["사계절"], landscape:["바다"], extras:["일출","펜션"], graega:false, url:"https://www.xn--9g3b27q0ne.kr/site/main", imgs:[], rating:4.0, visits:4 },
+  { name:"THE360캠핑장", region:"경북", seasons:["봄","여름","가을"], landscape:["산"], extras:["수영장"], graega:false, url:"https://camfit.co.kr/camp/667a192194080f001ee5c9f5", imgs:[], rating:4.0, visits:2 },
+  { name:"또바기캠핑장", region:"경북", seasons:["여름","가을"], landscape:["숲","계곡"], extras:["벚꽃"], graega:false, url:"https://map.naver.com/p/entry/place/1967001089", imgs:[], rating:4.0, visits:1 },
+  { name:"문경히든벨리캠핑장", region:"경북", seasons:["봄","여름","가을"], landscape:["숲","계곡"], extras:["벚꽃","수영장"], graega:false, url:"https://www.camfit.co.kr/camp/608ce389062220001dc64c8e", imgs:[], rating:4.0, visits:1 },
+  { name:"새움정", region:"경북", seasons:["봄","여름","가을"], landscape:[], extras:["수영장","애견동반"], graega:false, url:"https://www.camfit.co.kr/camp/6238355754c528001e4c9e81", imgs:[], rating:4.0, visits:1 },
+  { name:"왕피천숲속캠핑장", region:"경북", seasons:["여름"], landscape:["숲","계곡"], extras:[], graega:false, url:"https://xn--bm4bvl68khmiz2i.com/Reservation", imgs:[], rating:4.0, visits:1 },
+  { name:"상주우산오토캠핑장", region:"경북", seasons:["봄","가을"], landscape:[], extras:[], graega:false, url:"https://m.thankqcamping.com/resv/view.hbb?cseq=1596", imgs:[], rating:3.5, visits:3 },
+  { name:"구미캠핑장", region:"경북", seasons:["봄","여름","가을"], landscape:["강"], extras:[], graega:false, url:"https://www.gmuc.or.kr/camping/index.do", imgs:[], rating:3.5, visits:2 },
+  { name:"내를건너서숲으로", region:"경북", seasons:["봄","여름"], landscape:["계곡"], extras:["애견동반"], graega:false, url:"https://camfit.co.kr/camp/62f60d2d97e0c9001efe40b1", imgs:[], rating:3.5, visits:1 },
+  { name:"안동우니메이카", region:"경북", seasons:["봄","여름","가을","겨울"], landscape:["강"], extras:["펜션"], graega:false, url:"https://m.place.naver.com/accommodation/1995779427/home", imgs:[], rating:3.5, visits:1 },
+  { name:"월명612", region:"경북", seasons:["봄","여름","가을"], landscape:["산"], extras:["수영장","펜션"], graega:false, url:"https://camfit.co.kr/camp/62de520b8a560c001e6053b2", imgs:[], rating:3.5, visits:1 },
+  { name:"경주에덴펜션&오토캠핑장", region:"경북", seasons:["여름"], landscape:["바다"], extras:["수영장","펜션","일출"], graega:false, url:"https://booking.ddnayo.com/booking-calendar-status?accommodationId=4593", imgs:[], rating:3.5, visits:1 },
+  { name:"포항비손농장", region:"경북", seasons:["봄","여름","가을"], landscape:["산","바다"], extras:["수영장","애견동반"], graega:false, url:"https://booking.naver.com/booking/3/bizes/466168", imgs:[], rating:3.5, visits:1 },
+  { name:"무릉관광농원(캠핑빌리지)", region:"경북", seasons:["여름"], landscape:["숲"], extras:["수영장"], graega:false, url:"https://camfit.co.kr/camp/65efb03f0834af001ee12925", imgs:[], rating:3.5, visits:1 },
+  { name:"하늘아래첫동네", region:"경북", seasons:["여름"], landscape:["계곡","산"], extras:[], graega:false, url:"", imgs:[], rating:3.5, visits:1 },
+  { name:"휴앤락오토캠핑장", region:"경북", seasons:["봄","여름","가을","겨울"], landscape:["산"], extras:[], graega:false, url:"https://camfit.co.kr/camp/6553c1a5e3c0a5001e3e9f7a", imgs:[], rating:3.5, visits:1 },
+  { name:"경주가나캠핑장", region:"경북", seasons:["가을","겨울"], landscape:["산"], extras:[], graega:false, url:"https://camfit.co.kr/camp/65118dfa875975001e6f1631", imgs:[], rating:3.0, visits:1 },
+  { name:"라라캠핑장", region:"경북", seasons:["여름"], landscape:["산","계곡"], extras:[], graega:false, url:"https://camfit.co.kr/camp/61406db98c8c0a001e7fd388", imgs:[], rating:3.0, visits:1 },
+  { name:"칠곡보오토캠핑장", region:"경북", seasons:["봄","여름","가을"], landscape:["강"], extras:[], graega:false, url:"https://camp.xticket.kr/web/main?shopEncode=3b8dfd4fe83ef398626319d169929b5df473aafca57da427af869db901ce8b86", imgs:[], rating:3.0, visits:1 },
+  { name:"포항백경오토캠핑장", region:"경북", seasons:["봄","여름","가을"], landscape:["바다"], extras:[], graega:false, url:"https://www.camfit.co.kr/camp/6345234e7c0322001ff37468", imgs:[], rating:3.0, visits:1 },
+
+  // ── 추가 캠핑장 (260422 노션 DB 동기화) ──────────────────────────
+  { name:"황매산오토캠핑장",    region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"https://www.hc.go.kr/09464/09537.web", imgs:[], rating:0, visits:10 },
+  { name:"황석산오토캠핑장",    region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:5 },
+  { name:"산중오토캠핑장",      region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:4 },
+  { name:"버드하우스캠핑장",    region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:3 },
+  { name:"합천정양오토캠핑장",  region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"http://hcjypark.com/", imgs:[], rating:0, visits:3 },
+  { name:"든해솔계곡캠핑장",    region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"http://r.camperstory.com/?P2156", imgs:[], rating:0, visits:3 },
+  { name:"사천솔섬오토캠핑장",  region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"https://www.camfit.co.kr/camp/62c7d0649fa6e0001e270aa9", imgs:[], rating:0, visits:3 },
+  { name:"산청별천지캠핑장",    region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"https://m.thankqcamping.com/resv/view.hbb?cseq=1747", imgs:[], rating:0, visits:3 },
+  { name:"청풍호반오토캠핑장",  region:"충북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:2 },
+  { name:"산청반달캠핑장",      region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:2 },
+  { name:"황매산별쿵캠핑장",    region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:2 },
+  { name:"경남밀양솔바람캠핑장",region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"구지강변오토캠핑장",  region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"함양라온캠핑장",      region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"https://m.thankqcamping.com/resv/view.hbb?cseq=3634", imgs:[], rating:0, visits:1 },
+  { name:"바람이좋은저녁캠핑장",region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"거창강가펜션캠핑장",  region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"고아웃 안동",         region:"경북", seasons:[], landscape:[], extras:[], graega:false, url:"https://gooutcampkorea.com/", imgs:[], rating:0, visits:1 },
+  { name:"고흥나로힐링캠핑장",  region:"전남", seasons:[], landscape:[], extras:[], graega:false, url:"http://www.narohealing.kr/", imgs:[], rating:0, visits:1 },
+  { name:"대경오토캠핑장",      region:"경북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"구례섬지캠핑장",      region:"전남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"안녕오토캠핑장",      region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"캠프하다",            region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"온새미로캠핑장",      region:"경북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"달서별빛캠핑장",      region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"덕풍계곡별빛야영장",  region:"경북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"단양소풍캠핑장",      region:"충북", seasons:[], landscape:[], extras:[], graega:false, url:"https://camp.dytc.or.kr/", imgs:[], rating:0, visits:1 },
+  { name:"경산갓바위캠핑장",    region:"경북", seasons:[], landscape:[], extras:[], graega:false, url:"http://www.gatbawi-camp.co.kr/", imgs:[], rating:0, visits:1 },
+  { name:"지리산365캠핑장",     region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"https://m.thankqcamping.com/resv/view.hbb?cseq=3795", imgs:[], rating:0, visits:1 },
+  { name:"해피단밀오토캠핑장",  region:"경북", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"캠핑느루",            region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"하늘하루펜션앤캠핑장",region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"남해버드하우스",      region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"양산무릉도원캠핑장",  region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"https://www.xn--hq1bk3iuobz1y.net/", imgs:[], rating:0, visits:1 },
+  { name:"나조스트",            region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"장성편백힐치유의숲",  region:"전남", seasons:[], landscape:[], extras:[], graega:false, url:"https://heal3001.modoo.at/", imgs:[], rating:0, visits:1 },
+  { name:"너와두리농촌캠핑장",  region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"고성상족암캠핑장",    region:"경남", seasons:[], landscape:[], extras:[], graega:false, url:"http://www.sjacamping.com/", imgs:[], rating:0, visits:1 },
+  { name:"고아웃캠핑(부여)",    region:"충남", seasons:[], landscape:[], extras:[], graega:false, url:"https://gooutcampkorea.com/", imgs:[], rating:0, visits:1 },
+  { name:"고아웃캠핑(몽산포)",  region:"충남", seasons:[], landscape:[], extras:[], graega:false, url:"https://gooutcampkorea.com/", imgs:[], rating:0, visits:1 },
+  { name:"산중오토계곡캠핑장",  region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+  { name:"교육청수련원",        region:"",     seasons:[], landscape:[], extras:[], graega:false, url:"", imgs:[], rating:0, visits:1 },
+];
+/* ═══════════════════════════════════════════════════════════════════ */
+</script>
+
+  <!-- 헤더: 타이틀 왼쪽 + 부제목 오른쪽 -->
+  <header class="header">
+    <div class="header-left">
+      <div class="header-label" id="header-label"></div>
+      <h1 class="header-title" id="header-title"></h1>
+    </div>
+    <div class="header-right">
+      <p class="header-sub" id="header-sub"></p>
+    </div>
+  </header>
+
+  <!-- 탭 바 -->
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="t1" id="tab-btn-1"></button>
+    <button class="tab-btn" data-tab="t2" id="tab-btn-2"></button>
+    <button class="tab-btn" data-tab="t3" id="tab-btn-3"></button>
+    <button class="tab-btn" data-tab="t4" id="tab-btn-4"></button>
+  </nav>
+
+  <!-- 탭 1: 캠핑이야기 -->
+  <div id="t1" class="tab-content active">
+    <section class="series-section" id="series-wrap"></section>
+  </div>
+
+  <!-- 탭 2: 다녀온 캠핑장 -->
+  <div id="t2" class="tab-content">
+    <section class="env-section">
+      <span class="section-label">Landscape</span>
+      <div class="env-grid" id="env-grid"></div>
+    </section>
+    <section class="filter-section">
+      <details class="filter-box">
+        <summary>
+          <span class="fsum-l"><svg class="filter-icon" viewBox="0 0 24 24" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span>필터</span></span>
+          <span class="fsum-r"><span class="ftotal z" id="ftotal">0</span><svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </summary>
+        <div class="filter-body">
+          <div class="filter-row"><div class="filter-row-head"><span class="filter-row-name">지역</span><span class="row-cnt z" id="rcnt">0</span></div><div class="chips" id="region-chips"></div></div>
+          <div class="filter-row"><div class="filter-row-head"><span class="filter-row-name">시즌</span><span class="row-cnt z" id="scnt">0</span></div><div class="chips" id="season-chips"></div></div>
+          <div class="filter-row"><div class="filter-row-head"><span class="filter-row-name">기타</span><span class="row-cnt z" id="ecnt">0</span></div><div class="chips" id="extra-chips"></div></div>
+        </div>
+      </details>
+    </section>
+    <div class="reset-row"><button class="reset-btn" id="reset-btn">필터 초기화</button></div>
+    <div class="count-bar"><div><span class="count-num" id="result-count">5</span><span class="count-visits" id="result-visits"></span></div><div class="count-desc">Showing results</div></div>
+    <main class="grid" id="camp-grid"></main>
+  </div>
+
+  <!-- 탭 3: 추천 음식 -->
+  <div id="t3" class="tab-content">
+    <div class="partners-notice">
+      <span id="partners-line1"></span>
+      <span id="partners-line2"></span>
+    </div>
+    <section class="product-section">
+      <div class="product-grid" id="food-grid"></div>
+    </section>
+    <div class="price-notice" id="price-notice-food"></div>
+  </div>
+
+  <!-- 탭 4: 추천 템 -->
+  <div id="t4" class="tab-content">
+    <div class="partners-notice">
+      <span id="partners-line1b"></span>
+      <span id="partners-line2b"></span>
+    </div>
+    <section class="product-section">
+      <div class="product-grid" id="item-grid"></div>
+    </section>
+    <div class="price-notice" id="price-notice-item"></div>
+  </div>
+
+  <!-- 푸터 -->
+  <footer class="footer">
+    <a id="footer-insta-btn" target="_blank" class="footer-btn"></a>
+    <div class="footer-collab" id="footer-collab"></div>
+    <div class="footer-credits" id="footer-credits"></div>
+  </footer>
+
+<script>
+/* ─── 캠핑장 필터/Landscape 데이터 ─── */
+const landscapeOpts = [
+  { key:"바다",  t:"ocean",    label:"바다",   svg:`<svg class="env-icon" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="7" r="2.5" fill="#F5C547"/><path d="M2 13Q5.5 11 9 13Q12.5 15 16 13Q19 11.5 22 13L22 20H2Z" fill="currentColor" opacity=".4"/><path d="M2 16Q6 14.5 10 16Q14 17.5 18 16Q20 15 22 16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>` },
+  { key:"산",    t:"mountain", label:"산",     svg:`<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M2 20L9 7l4 8 3-5 6 10H2Z" fill="currentColor" opacity=".65"/><path d="M7.5 11L9 7l1.5 4Z" fill="#fff" opacity=".85"/></svg>` },
+  { key:"숲",    t:"forest",   label:"숲",     svg:`<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3L7 11h3l-4 7h4v3h4v-3h4l-4-7h3Z" fill="currentColor" opacity=".7"/></svg>` },
+  { key:"계곡",  t:"valley",   label:"계곡",   svg:`<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M2 19L8 9l4 5 4-7 6 12Z" fill="currentColor" opacity=".25"/><path d="M3 19Q8 17 12 19Q16 21 21 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M2 19L8 9l4 5 4-7 6 12" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/></svg>` },
+  { key:"강",    t:"river",    label:"강",     svg:`<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M2 7Q6 5 10 7Q14 9 18 7Q20 6 22 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M2 12Q6 10 10 12Q14 14 18 12Q20 11 22 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".7"/><path d="M2 17Q6 15 10 17Q14 19 18 17Q20 16 22 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".45"/></svg>` },
+  { key:"호수",  t:"lake",     label:"호수",   svg:`<svg class="env-icon" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="15" rx="9" ry="4" fill="currentColor" opacity=".3"/><path d="M7 9l5-7 5 7Z" fill="currentColor" opacity=".8"/></svg>` }
+];
+const filterOpts = { region:["강원","경기","충북","충남","경북","경남","전북","전남","제주"], season:["봄","여름","가을","겨울"] };
+const state = { landscape:new Set(), region:new Set(), season:new Set(), extras:new Set() };
+const usedRegions = filterOpts.region.filter(r=>camps.some(c=>c.region===r));
+const usedSeasons = filterOpts.season.filter(s=>camps.some(c=>c.seasons.includes(s)));
+const autoExtras  = [...new Set(camps.flatMap(c=>c.extras))].sort((a,b)=>a.localeCompare(b,'ko'));
+
+/* ─── SVG 아이콘 ─── */
+const IG_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`;
+const PH_SVG = `<svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9l4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="14.5" r="1.5"/></svg>`;
+const ARROW_SVG = `<svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>`;
+
+/* ─── siteConfig 렌더 ─── */
+function renderConfig() {
+  document.getElementById('header-label').textContent = siteConfig.headerLabel;
+  document.getElementById('header-title').innerHTML = siteConfig.headerTitle.replace(/\n/g, '<br>');
+  document.getElementById('header-sub').innerHTML   = siteConfig.headerSub.replace(/\n/g, '<br>');
+  document.getElementById('tab-btn-1').textContent  = siteConfig.tab1;
+  document.getElementById('tab-btn-2').textContent  = siteConfig.tab2;
+  document.getElementById('tab-btn-3').textContent  = siteConfig.tab3;
+  document.getElementById('tab-btn-4').textContent  = siteConfig.tab4;
+  // 추천 음식 탭(t3): 쿠팡 + 컬리 통합 문구
+  document.getElementById('partners-line1').textContent  = siteConfig.foodPartnersLine1 || siteConfig.partnersLine1;
+  document.getElementById('partners-line2').textContent  = siteConfig.foodPartnersLine2 || siteConfig.partnersLine2;
+  // 추천 템 탭(t4): 쿠팡 + 네이버 통합 문구
+  document.getElementById('partners-line1b').textContent = siteConfig.itemPartnersLine1 || siteConfig.partnersLine1;
+  document.getElementById('partners-line2b').textContent = siteConfig.itemPartnersLine2 || siteConfig.partnersLine2;
+  // 추천 음식/템 하단 가격 안내문
+  const priceNotice = siteConfig.priceNotice || '';
+  document.getElementById('price-notice-food').textContent = priceNotice;
+  document.getElementById('price-notice-item').textContent = priceNotice;
+  const footerBtn = document.getElementById('footer-insta-btn');
+  footerBtn.textContent = siteConfig.footerInstaBtn;
+  footerBtn.href = siteConfig.footerInstaUrl;
+  document.getElementById('footer-collab').textContent   = siteConfig.footerCollab;
+  document.getElementById('footer-credits').textContent  = siteConfig.footerCredits;
+}
+
+/* ─── 시리즈 렌더 ─── */
+function renderSeries() {
+  const wrap = document.getElementById('series-wrap');
+  wrap.innerHTML = series.map(s => {
+    // 정렬: ep>0은 내림차순(최신 우선), ep=0은 매 로드마다 랜덤
+    const sortedEps = [...s.eps].sort((a, b) => {
+      const aHasEp = (a.ep || 0) > 0;
+      const bHasEp = (b.ep || 0) > 0;
+      if (aHasEp && bHasEp) return b.ep - a.ep;
+      if (aHasEp) return -1;
+      if (bHasEp) return 1;
+      return Math.random() - 0.5;
+    });
+    const eps = sortedEps.length ? sortedEps : [
+      {ep:1, title:"게시물 준비 중", url:"", thumb:"", empty:true},
+      {ep:2, title:"곧 업로드 예정", url:"", thumb:"", empty:true}
+    ];
+    const cnt = s.eps.length ? `${s.eps.length}편` : "";
+    return `<div class="series-group">
+      <div class="series-group-bar" style="background:${s.color}"></div>
+      <div class="series-group-header" onclick="toggleSeries(this)">
+        <span class="series-group-title">${s.emoji} ${s.name}</span>
+        <div class="series-group-header-right">
+          <span class="series-group-count">${cnt}</span>
+          <svg class="series-chevron" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="series-body"><div class="series-body-inner">
+        <button class="sa-btn sa-left sa-hide" onclick="saScroll(this,-1)"><svg width="9" height="16" viewBox="0 0 7 13" fill="none"><path d="M6 1L1 6.5L6 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="sa-btn sa-right" onclick="saScroll(this,1)"><svg width="9" height="16" viewBox="0 0 7 13" fill="none"><path d="M1 1l5 5.5L1 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="series-scroll-wrap">
+          <div class="series-scroll" onscroll="saUpdate(this)">
+            ${eps.map(ep => {
+              const empty = ep.empty || !ep.url;
+              const tag = empty ? 'div' : 'a';
+              const attr = empty ? '' : `href="${ep.url}" target="_blank" rel="noopener"`;
+              // EP 배지: url 유무와 무관하게 ep번호가 있으면 표시
+              const epBadge = (ep.ep && ep.ep > 0) ? `<span class="ep-badge" style="background:${s.color}">EP.${String(ep.ep).padStart(2,'0')}</span>` : '';
+              // 인스타 아이콘: 실제 인스타 주소가 입력된 경우에만
+              const isInsta = ep.url && /instagram\.com/i.test(ep.url);
+              return `<${tag} class="ep-card" ${attr}>
+                <div class="ep-thumb${empty?' empty':''}">
+                  ${ep.thumb ? `<img src="${ep.thumb}" loading="lazy">` : `<div class="ep-thumb-ph">${PH_SVG}</div>`}
+                  ${epBadge}
+                  ${isInsta ? `<div class="ep-ig">${IG_SVG}</div>` : ''}
+                </div>
+                <div class="ep-name${empty?' dim':''}">${ep.title.replace(/^EP\.\d+\s*/i, '')}</div>
+              </${tag}>`;
+            }).join('')}
+          </div>
+        </div>
+      </div></div>
+    </div>`;
+  }).join('');
+}
+
+/* ─── 캠핑장 슬라이드쇼 ─── */
+const _timers = [];
+function initSlideshow() {
+  // 기존 타이머 모두 정리 (재호출 시 중복 방지)
+  _timers.forEach(t => { clearInterval(t); clearTimeout(t); });
+  _timers.length = 0;
+
+  document.querySelectorAll('.camp-img').forEach(el => {
+    const imgs = el.querySelectorAll('img');
+    if (imgs.length < 2) return;
+
+    // 1) 페이지 로드시 시작 이미지를 랜덤 1장 선택
+    let i = Math.floor(Math.random() * imgs.length);
+    imgs.forEach((img, j) => { img.style.opacity = (j === i) ? 1 : 0; });
+
+    // 3) 카드마다 0~5000ms 사이 랜덤 시차로 첫 전환 시작 → 동시 전환 방지
+    const startDelay = Math.random() * 5000;
+    const tid = setTimeout(() => {
+      const iv = setInterval(() => {
+        // 2) 5초마다 다음 이미지로 페이드 전환
+        const next = (i + 1) % imgs.length;
+        imgs[i].style.opacity = 0;
+        imgs[next].style.opacity = 1;
+        i = next;
+      }, 5000);
+      _timers.push(iv);
+    }, startDelay);
+    _timers.push(tid);
+  });
+}
+/* ─── 시리즈 화살표 + 아코디언 ─── */
+function toggleSeries(header) {
+  const g = header.closest('.series-group');
+  g.classList.toggle('collapsed');
+}
+function saScroll(btn, dir) {
+  const sc = btn.closest('.series-group').querySelector('.series-scroll');
+  sc.scrollBy({left: dir * 240, behavior: 'smooth'});
+}
+function saUpdate(sc) {
+  const g = sc.closest('.series-group');
+  g.querySelector('.sa-left').classList.toggle('sa-hide', sc.scrollLeft <= 2);
+  g.querySelector('.sa-right').classList.toggle('sa-hide', sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 2);
+}
+function saInit() {
+  document.querySelectorAll('.series-group').forEach(g => {
+    const sc = g.querySelector('.series-scroll');
+    const noScroll = sc.scrollWidth <= sc.clientWidth + 2;
+    g.querySelector('.sa-left').classList.toggle('sa-hide', noScroll || sc.scrollLeft <= 2);
+    g.querySelector('.sa-right').classList.toggle('sa-hide', noScroll);
+  });
+}
+/* ─── 상품 카드 렌더 ─── */
+function renderProducts(containerId, dataArr) {
+  const grid = document.getElementById(containerId);
+  // 매 페이지 로드마다 랜덤 셔플 (캠핑이야기 시리즈 ep=0과 동일 방식)
+  const shuffled = (dataArr || []).slice().sort(() => Math.random() - 0.5);
+  if (!shuffled || !shuffled.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--text-sub);font-size:13px;">아직 등록된 항목이 없어요</div>`;
+    return;
+  }
+  grid.innerHTML = shuffled.map(item => {
+    const src = (item.source||'').toLowerCase(); const bc = (src==='쿠팡'||src==='coupang')?'badge-coupang':(src==='컬리'||src==='kurly')?'badge-kurly':'';
+    const bl = (src==='쿠팡'||src==='coupang')?'쿠팡':(src==='컬리'||src==='kurly')?'컬리':'';
+    const empty = !item.url || item.url==='#';
+    return `<a class="product-card${empty?' empty':''}" href="${empty?'#':item.url}" ${empty?'':' target="_blank" rel="noopener"'}>
+      <div class="product-thumb${item.thumb?'':' ph'}">
+        ${item.thumb ? `<img src="${item.thumb}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
+        ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : ''}
+      </div>
+      <div class="product-info">
+        <div class="product-name">${item.name}</div>
+        ${item.desc ? `<div class="product-desc">${item.desc}</div>` : ''}
+        ${(item.price_sale || item.price_original) ? `
+        <div class="price-wrap">
+          ${(item.price_original && item.price_sale) ? `<span class="price-original">${Number(item.price_original).toLocaleString()}원</span>` : ''}
+          <div class="price-row">
+            ${item.discount_rate ? `<span class="price-discount-rate">${item.discount_rate}%</span>` : ''}
+            ${item.price_sale ? `<span class="price-sale">${Number(item.price_sale).toLocaleString()}원</span>` : item.price_original ? `<span class="price-only">${Number(item.price_original).toLocaleString()}원</span>` : ''}
+          </div>
+        </div>` : ''}
+        ${!empty ? `<span class="product-link">구매하기 ${ARROW_SVG}</span>` : ''}
+      </div>
+    </a>`;
+  }).join('');
+}
+
+/* ─── Landscape + 캠핑장 ─── */
+function renderEnv() {
+  document.getElementById('env-grid').innerHTML = landscapeOpts.map(o =>
+    `<button class="env-btn${state.landscape.has(o.key)?' active':''}" data-key="${o.key}">
+      <div class="env-icon-wrap" data-t="${o.t}">${o.svg}</div>
+      <span class="env-name">${o.label}</span>
+    </button>`).join('');
+  document.querySelectorAll('.env-btn').forEach(b =>
+    b.addEventListener('click', ()=>{ toggle(state.landscape,b.dataset.key); renderEnv(); renderGrid(); }));
+}
+function renderChips(id, opts, set, cntId) {
+  const el = document.getElementById(id);
+  el.innerHTML = opts.map(o => `<button class="chip${set.has(o)?' active':''}" data-v="${o}">${o}</button>`).join('');
+  el.querySelectorAll('.chip').forEach(c =>
+    c.addEventListener('click', ()=>{ toggle(set,c.dataset.v); renderChips(id,opts,set,cntId); updCnt(cntId,set.size); updTotal(); renderGrid(); }));
+  updCnt(cntId, set.size);
+}
+function updCnt(id, n) { const e=document.getElementById(id); e.textContent=n; e.classList.toggle('z',n===0); }
+function updTotal() { const n=state.region.size+state.season.size+state.extras.size; const e=document.getElementById('ftotal'); e.textContent=n; e.classList.toggle('z',n===0); }
+function toggle(set, k) { set.has(k)?set.delete(k):set.add(k); }
+function match(c) {
+  if(state.landscape.size && !c.landscape.some(l=>state.landscape.has(l))) return false;
+  if(state.region.size   && !state.region.has(c.region)) return false;
+  if(state.season.size   && !c.seasons.some(s=>state.season.has(s))) return false;
+  if(state.extras.size   && !c.extras.some(e=>state.extras.has(e))) return false;
+  return true;
+}
+function sortCamps(arr) {
+  return [...arr].sort((a, b) => {
+    if (a.graega !== b.graega) return (b.graega?1:0) - (a.graega?1:0); // 1. 그래가 최우선
+    const va = a.visits||0, vb = b.visits||0;
+    if (va !== vb) return vb - va;                                       // 2. 방문 횟수 내림차순
+    return a.name.localeCompare(b.name, 'ko');                          // 3. 가나다 순
+  });
+}
+function renderGrid() {
+  const filtered = sortCamps(camps.filter(match));
+  document.getElementById('result-count').textContent = filtered.length;
+  // 고아웃 노지 등 삭제된 캠핑장 방문 기록 보정(+3회)
+  const totalVisits = filtered.reduce((sum, c) => sum + (c.visits || 0), 0) + 3;
+  document.getElementById('result-visits').textContent = totalVisits ? ` / ${totalVisits}회` : '';
+  const grid = document.getElementById('camp-grid');
+  if(!filtered.length){ grid.innerHTML='<div class="empty-msg">조건에 맞는 캠핑장이 없어요.</div>'; return; }
+  const NOIMG_GRAD = {'바다':['#ddeef7','#c8e4f2'],'강':['#d8eef0','#c2e3e6'],'계곡':['#daeee0','#c5e5cd'],'호수':['#d8ecf4','#c2e0ed'],'숲':['#dceae0','#c8e0cc'],'산':['#ebebdf','#deded0']};
+  function campThumb(c) {
+    const hasImg = c.imgs && c.imgs.length;
+    if (hasImg) return c.imgs.map((src,j)=>`<img src="${src}" loading="lazy" style="opacity:${j===0?1:0}" onerror="this.remove()">`).join('');
+    const ls = (c.landscape && c.landscape[0]) || '산';
+    const [g1, g2] = NOIMG_GRAD[ls] || ['#5a6040','#8a9060'];
+    const nm = c.name.replace(/오토캠핑장|캠핑빌리지/g,'').replace(/펜션&|&펜션/g,'').trim();
+    return `<div class="camp-noimg" style="background:linear-gradient(145deg,${g1},${g2})"><div class="camp-noimg-txt">${nm.split(' ').join('<br>')}</div></div>`;
+  }
+  function campPlatformBadge(c) {
+    if (c.graega) return '<span class="camp-badge bg-graega">그래가</span>';
+    if (!c.url) return '';
+    const u = c.url.toLowerCase();
+    if (u.includes('naver.com'))          return '<span class="camp-badge bg-naver">네이버</span>';
+    if (u.includes('camfit.co.kr'))       return '<span class="camp-badge bg-camfit">캠핏</span>';
+    if (u.includes('thankqcamping.com') || u.includes('camperstory.com')) return '<span class="camp-badge bg-thankq">땡큐캠핑</span>';
+    return '<span class="camp-badge bg-etc">기타</span>';
+  }
+  grid.innerHTML = filtered.map((c,i) => {
+    const hasUrl = !!c.url;
+    const tag = hasUrl ? 'a' : 'div';
+    const attrs = hasUrl ? `href="${c.url}" target="_blank" rel="noopener"` : '';
+    const nocursor = hasUrl ? '' : 'style="cursor:default;animation-delay:'+(i*0.03)+'s" ';
+    const style = hasUrl ? `style="animation-delay:${i*0.03}s"` : nocursor.slice(0,-1);
+    return `
+    <${tag} ${attrs} class="camp-card${hasUrl?'':' no-link'}" ${style}>
+      <div class="camp-img">
+        ${campThumb(c)}
+        ${campPlatformBadge(c)}
+      </div>
+      <div class="camp-info">
+        <div class="camp-name">${c.name}</div>
+        <div class="camp-region">${c.region}</div>
+        <div class="camp-meta">
+          ${c.rating ? (()=>{
+            const f=Math.floor(c.rating), h=(c.rating%1)>=0.5, e=5-f-(h?1:0);
+            return '<span class="camp-stars">'+'<span class="sf">★</span>'.repeat(f)+(h?'<span class="sh">☆</span>':'')+'<span style="color:#e0e0e0;font-size:9px">☆</span>'.repeat(e)+'</span>';
+          })() : '<span></span>'}
+          ${c.visits ? `<span class="camp-visits">${c.visits}회</span>` : ''}
+        </div>
+      </div>
+    </${tag}>`;
+  }).join('');
+  setTimeout(initSlideshow, 80);
+  // 마퀴: 카드가 완전히 그려진 후 측정 (탭 전환 애니메이션 + layout)
+  requestAnimationFrame(() => requestAnimationFrame(applyMarquee));
+  setTimeout(applyMarquee, 400);
+}
+
+/* ─── 긴 캠핑장명 좌측 스크롤 마퀴 처리 ─── */
+function applyMarquee() {
+  document.querySelectorAll('.camp-info .camp-name').forEach(el => {
+    const text = el.dataset.fullName || el.textContent.trim();
+    el.dataset.fullName = text;
+    // 측정용 임시 span (CSS 동일 적용)
+    const probe = document.createElement('span');
+    probe.style.cssText = 'visibility:hidden;position:absolute;white-space:nowrap;font-size:12px;font-weight:700;letter-spacing:-0.02em;left:-9999px;top:0';
+    probe.textContent = text;
+    document.body.appendChild(probe);
+    const textWidth = probe.offsetWidth;
+    probe.remove();
+    const containerWidth = el.offsetWidth;
+    if (containerWidth > 0 && textWidth > containerWidth - 2) {
+      el.classList.add('scroll');
+      el.innerHTML = `<span class="scroll-track"><span>${text}</span><span>${text}</span></span>`;
+    } else {
+      el.classList.remove('scroll');
+      el.textContent = text;
+    }
+  });
+}
+
+/* ─── 탭 전환 ─── */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    // 다녀온 캠핑장 탭(t2) 진입 시 마퀴 재적용 (탭이 처음 보일 때 width 측정 가능)
+    if (btn.dataset.tab === 't2' && typeof applyMarquee === 'function') {
+      requestAnimationFrame(() => requestAnimationFrame(applyMarquee));
+      setTimeout(applyMarquee, 300);
+    }
+  });
+});
+document.getElementById('reset-btn').addEventListener('click', () => {
+  state.landscape.clear(); state.region.clear(); state.season.clear(); state.extras.clear();
+  renderEnv();
+  renderChips('region-chips',usedRegions,state.region,'rcnt');
+  renderChips('season-chips',usedSeasons,state.season,'scnt');
+  renderChips('extra-chips',autoExtras,state.extras,'ecnt');
+  updTotal(); renderGrid();
+});
+
+/* ─── 초기화 ─── */
+renderConfig();
+renderSeries(); setTimeout(saInit, 50);
+renderEnv();
+renderChips('region-chips',usedRegions,state.region,'rcnt');
+renderChips('season-chips',usedSeasons,state.season,'scnt');
+renderChips('extra-chips',autoExtras,state.extras,'ecnt');
+renderGrid();
+renderProducts('food-grid', foods);
+renderProducts('item-grid', items);
+</script>
+</body>
+</html>
