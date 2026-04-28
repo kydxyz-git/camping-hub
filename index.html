@@ -124,6 +124,7 @@
     .source-badge { position: absolute; bottom: 5px; right: 5px; font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 100px; color: white; letter-spacing: -0.01em; }
     .badge-coupang { background: #FF4B4B; }
     .badge-kurly   { background: #5D3CC7; }
+    .badge-naver   { background: #03C75A; }
     .product-info { padding: 7px 8px 9px; }
     .product-name {
       font-size: 11px; font-weight: 700; color: var(--text);
@@ -440,6 +441,16 @@ const foods = [
     "price_original": 8900,
     "price_sale": 8100,
     "discount_rate": 10
+  },
+  {
+    "name": "[야키토리 토리야] 닭꼬치 염통 파닭 츠쿠네 모듬 캠핑음식 요리 숯불 구이 메뉴",
+    "desc": "이번 주 고민되시면 그냥 이거 드세요!",
+    "url": "https://naver.me/xrzyoskO",
+    "source": "네이버",
+    "thumb": "./images/products/food-06.jpg",
+    "price_original": 14000,
+    "price_sale": 7400,
+    "discount_rate": 47
   }
 ];
 
@@ -772,8 +783,8 @@ function renderProducts(containerId, dataArr) {
     return;
   }
   grid.innerHTML = shuffled.map(item => {
-    const src = (item.source||'').toLowerCase(); const bc = (src==='쿠팡'||src==='coupang')?'badge-coupang':(src==='컬리'||src==='kurly')?'badge-kurly':'';
-    const bl = (src==='쿠팡'||src==='coupang')?'쿠팡':(src==='컬리'||src==='kurly')?'컬리':'';
+    const src = (item.source||'').toLowerCase(); const bc = (src==='쿠팡'||src==='coupang')?'badge-coupang':(src==='컬리'||src==='kurly')?'badge-kurly':(src==='네이버'||src==='naver')?'badge-naver':'';
+    const bl = (src==='쿠팡'||src==='coupang')?'쿠팡':(src==='컬리'||src==='kurly')?'컬리':(src==='네이버'||src==='naver')?'네이버':'';
     const empty = !item.url || item.url==='#';
     return `<a class="product-card${empty?' empty':''}" href="${empty?'#':item.url}" ${empty?'':' target="_blank" rel="noopener"'}>
       <div class="product-thumb${item.thumb?'':' ph'}">
