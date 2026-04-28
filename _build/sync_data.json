@@ -13,11 +13,11 @@
     "footerInstaUrl": "https://www.instagram.com/kyd_zm/",
     "footerCollab": "캠핑장 · 캠핑장비 · 캠핑음식 협업 환영 · DM",
     "footerCredits": "© 2026 공대남자",
-    "foodPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 컬리 큐레이터 제휴 링크가",
-    "foodPartnersLine2": "포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다.",
+    "foodPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 컬리 큐레이터, 네이버 쇼핑 커넥트",
+    "foodPartnersLine2": " 제휴 링크가 포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다.",
     "priceNotice": "해당 제품 금액은 등록 시기 금액으로 현재 금액이랑 상이할 수 있습니다.",
-    "itemPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 네이버 쇼핑 커넥트 제휴 링크가",
-    "itemPartnersLine2": "포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다."
+    "itemPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 컬리 큐레이터, 네이버 쇼핑 커넥트",
+    "itemPartnersLine2": " 제휴 링크가 포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다."
   },
   "series": [
     {
@@ -1366,7 +1366,7 @@
     }
   ],
   "_metadata": {
-    "last_sync": "2026-04-28T13:59:27Z",
+    "last_sync": "2026-04-28T21:58:40Z",
     "page_id_index_complete": true,
     "notion_collections": {
       "series": "d867d959-4c1b-487c-b7e0-ae7d82987520",
