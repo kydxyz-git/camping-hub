@@ -1695,13 +1695,33 @@ function renderSeries() {
 }
 
 /* ─── 캠핑장 슬라이드쇼 ─── */
+const _timers = [];
 function initSlideshow() {
-  // 이미지가 여러 장인 카드는 페이지 로드마다 첫 이미지를 랜덤으로 선택해서 표시
+  // 기존 타이머 모두 정리 (재호출 시 중복 방지)
+  _timers.forEach(t => { clearInterval(t); clearTimeout(t); });
+  _timers.length = 0;
+
   document.querySelectorAll('.camp-img').forEach(el => {
     const imgs = el.querySelectorAll('img');
     if (imgs.length < 2) return;
-    const pick = Math.floor(Math.random() * imgs.length);
-    imgs.forEach((img, i) => { img.style.opacity = (i === pick) ? 1 : 0; });
+
+    // 1) 페이지 로드시 시작 이미지를 랜덤 1장 선택
+    let i = Math.floor(Math.random() * imgs.length);
+    imgs.forEach((img, j) => { img.style.opacity = (j === i) ? 1 : 0; });
+
+    // 3) 카드마다 0~5000ms 사이 랜덤 시차로 첫 전환 시작 → 동시 전환 방지
+    const startDelay = Math.random() * 5000;
+    const tid = setTimeout(() => {
+      const iv = setInterval(() => {
+        // 2) 5초마다 다음 이미지로 페이드 전환
+        const next = (i + 1) % imgs.length;
+        imgs[i].style.opacity = 0;
+        imgs[next].style.opacity = 1;
+        i = next;
+      }, 5000);
+      _timers.push(iv);
+    }, startDelay);
+    _timers.push(tid);
   });
 }
 /* ─── 시리즈 화살표 + 아코디언 ─── */
