@@ -287,7 +287,9 @@ const siteConfig = {
   "footerCredits": "© 2026 공대남자",
   "foodPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 컬리 큐레이터 제휴 링크가",
   "foodPartnersLine2": "포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다.",
-  "priceNotice": "해당 제품 금액은 등록 시기 금액으로 현재 금액이랑 상이할 수 있습니다."
+  "priceNotice": "해당 제품 금액은 등록 시기 금액으로 현재 금액이랑 상이할 수 있습니다.",
+  "itemPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 네이버 쇼핑 커넥트 제휴 링크가",
+  "itemPartnersLine2": "포함되어 있으며, 판매 발생 시 일정액의 수수료를 제공받습니다."
 };
 /* ═══════════════════════════════════════════════════════════════════ */
 
@@ -1618,9 +1620,9 @@ function renderConfig() {
   // 추천 음식 탭(t3): 쿠팡 + 컬리 통합 문구
   document.getElementById('partners-line1').textContent  = siteConfig.foodPartnersLine1 || siteConfig.partnersLine1;
   document.getElementById('partners-line2').textContent  = siteConfig.foodPartnersLine2 || siteConfig.partnersLine2;
-  // 추천 템 탭(t4): 쿠팡 문구만
-  document.getElementById('partners-line1b').textContent = siteConfig.partnersLine1;
-  document.getElementById('partners-line2b').textContent = siteConfig.partnersLine2;
+  // 추천 템 탭(t4): 쿠팡 + 네이버 통합 문구
+  document.getElementById('partners-line1b').textContent = siteConfig.itemPartnersLine1 || siteConfig.partnersLine1;
+  document.getElementById('partners-line2b').textContent = siteConfig.itemPartnersLine2 || siteConfig.partnersLine2;
   // 추천 음식/템 하단 가격 안내문
   const priceNotice = siteConfig.priceNotice || '';
   document.getElementById('price-notice-food').textContent = priceNotice;
