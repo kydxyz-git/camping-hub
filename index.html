@@ -251,7 +251,7 @@
     .camp-name.scroll .scroll-track { display:inline-flex; gap:24px; padding-right:24px; animation: marquee 12s linear infinite; will-change:transform; }
     @keyframes marquee { from { transform:translateX(0); } to { transform:translateX(calc(-50% - 12px)); } }
     .camp-region { font-size:10px; color:var(--text-sub); }
-    .camp-meta { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
+    .camp-meta { display:flex; align-items:center; justify-content:flex-end; margin-top:4px; }
     .camp-noimg { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:10px; border-radius:var(--radius) var(--radius) 0 0; }
     .camp-noimg-txt { color:#2a2a2a; font-size:11px; font-weight:800; text-align:center; line-height:1.45; letter-spacing:-0.02em; word-break:keep-all; }
     .camp-stars { display:none; }
@@ -291,7 +291,6 @@ const siteConfig = {
   "itemPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 네이버 쇼핑 커넥트 제휴 링크가",
   "itemPartnersLine2": "포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다."
 };
-/* ═══════════════════════════════════════════════════════════════════ */
 
 
 /* ══ 🔶 NOTION ② | 2026-04-28 ══ */
@@ -388,1204 +387,145 @@ const series = [
     ]
   }
 ];
-/* ═══════════════════════════════════════════════════════════════════ */
 
 
 /* ══ 🔶 NOTION ③ | 2026-04-28 ══ */
-const foods = [{"name": "툇골 오리 주물럭", "desc": "부추무침이 진짜 별미", "url": "https://link.coupang.com/a/cGtreE", "source": "쿠팡", "thumb": "./images/products/food-01.jpg", "price_original": 49400, "price_sale": null, "discount_rate": null, "page_id": "34a02bbd-cd95-801c-8c88-dabfaa1c997a"}, {"name": "[성수동 분식] 수제 고추튀김 3종", "desc": "추억의 분식", "url": "https://lounge.kurly.com/link/wKIB-JIhf", "source": "컬리", "thumb": "./images/products/food-02.jpg", "price_original": 13900, "price_sale": 9729, "discount_rate": 30, "page_id": "34f02bbd-cd95-80f9-aedb-e2b10a1f837d"}, {"name": "[부산 이가네] 이가네 떡볶이", "desc": "부산 3대 떡볶이", "url": "https://lounge.kurly.com/link/TNwe-lUVo", "source": "컬리", "thumb": "./images/products/food-03.jpg", "price_original": 7490, "price_sale": null, "discount_rate": null, "page_id": "34f02bbd-cd95-8018-857b-e50758469884"}, {"name": "[전주 베테랑] 김치만두", "desc": "전주 유명 맛집의 인기 메뉴", "url": "https://lounge.kurly.com/link/tbku-uJpL", "source": "컬리", "thumb": "./images/products/food-04.jpg", "price_original": 5980, "price_sale": null, "discount_rate": null, "page_id": "34f02bbd-cd95-8092-9761-f35a96255133"}, {"name": "[니뽕내뽕] 크뽕 (크림짬뽕)", "desc": "고소하고 꾸덕한 크림 짬뽕", "url": "https://lounge.kurly.com/link/ThTI-lkYv", "source": "컬리", "thumb": "./images/products/food-05.jpg", "price_original": 8900, "price_sale": 8100, "discount_rate": 10, "page_id": "34f02bbd-cd95-80c9-a725-ed4b385436ae"}];
-/* ═══════════════════════════════════════════════════════════════════ */
+const foods = [
+  {
+    "name": "툇골 오리 주물럭",
+    "desc": "부추무침이 진짜 별미",
+    "url": "https://link.coupang.com/a/cGtreE",
+    "source": "쿠팡",
+    "thumb": "./images/products/food-01.jpg",
+    "price_original": 49400,
+    "price_sale": null,
+    "discount_rate": null
+  },
+  {
+    "name": "[성수동 분식] 수제 고추튀김 3종",
+    "desc": "추억의 분식",
+    "url": "https://lounge.kurly.com/link/wKIB-JIhf",
+    "source": "컬리",
+    "thumb": "./images/products/food-02.jpg",
+    "price_original": 13900,
+    "price_sale": 9729,
+    "discount_rate": 30
+  },
+  {
+    "name": "[부산 이가네] 이가네 떡볶이",
+    "desc": "부산 3대 떡볶이",
+    "url": "https://lounge.kurly.com/link/TNwe-lUVo",
+    "source": "컬리",
+    "thumb": "./images/products/food-03.jpg",
+    "price_original": 7490,
+    "price_sale": null,
+    "discount_rate": null
+  },
+  {
+    "name": "[전주 베테랑] 김치만두",
+    "desc": "전주 유명 맛집의 인기 메뉴",
+    "url": "https://lounge.kurly.com/link/tbku-uJpL",
+    "source": "컬리",
+    "thumb": "./images/products/food-04.jpg",
+    "price_original": 5980,
+    "price_sale": null,
+    "discount_rate": null
+  },
+  {
+    "name": "[니뽕내뽕] 크뽕 (크림짬뽕)",
+    "desc": "고소하고 꾸덕한 크림 짬뽕",
+    "url": "https://lounge.kurly.com/link/ThTI-lkYv",
+    "source": "컬리",
+    "thumb": "./images/products/food-05.jpg",
+    "price_original": 8900,
+    "price_sale": 8100,
+    "discount_rate": 10
+  }
+];
 
 
 /* ══ 🔶 NOTION ④ | 2026-04-28 ══ */
-const items = [{"name": "포레스트유 데크팩SET", "desc": "캠핑 필수템", "url": "https://link.coupang.com/a/et5HiO", "source": "쿠팡", "thumb": "./images/products/item-01.jpg", "price_original": null, "price_sale": null, "discount_rate": null, "page_id": "34a02bbd-cd95-8035-9142-f2ed8e0224a9"}];
-/* ═══════════════════════════════════════════════════════════════════ */
+const items = [
+  {
+    "name": "포레스트유 데크팩SET",
+    "desc": "캠핑 필수템",
+    "url": "https://link.coupang.com/a/et5HiO",
+    "source": "쿠팡",
+    "thumb": "./images/products/item-01.jpg",
+    "price_original": null,
+    "price_sale": null,
+    "discount_rate": null
+  }
+];
 
 
 /* ══ 🔶 NOTION ⑤ | 2026-04-28 ══ */
 const camps = [
-  {
-    "name": "합천호코지캠핑장",
-    "region": "경남",
-    "seasons": [
-      "봄",
-      "가을"
-    ],
-    "landscape": [
-      "산"
-    ],
-    "extras": [
-      "벚꽃",
-      "글램핑"
-    ],
-    "graega": true,
-    "url": "https://m.site.naver.com/1Sbv3",
-    "imgs": [
-      "./images/camps/d6c12adf4086.jpg",
-      "./images/camps/d6c12adf4086-2.jpg",
-      "./images/camps/d6c12adf4086-3.jpg",
-      "./images/camps/d6c12adf4086-4.jpg",
-      "./images/camps/d6c12adf4086-5.jpg"
-    ],
-    "rating": 3,
-    "visits": 15,
-    "page_id": "34902bbd-cd95-811d-88a0-d6c12adf4086"
-  },
-  {
-    "name": "캠프627 경호강",
-    "region": "경남",
-    "seasons": [
-      "봄",
-      "가을"
-    ],
-    "landscape": [
-      "강"
-    ],
-    "extras": [
-      "벚꽃",
-      "수영장",
-      "개별샤워실"
-    ],
-    "graega": true,
-    "url": "https://graega.short.gy/6973kydzm",
-    "imgs": [
-      "./images/camps/f8f79de34713.jpg",
-      "./images/camps/f8f79de34713-2.jpg",
-      "./images/camps/f8f79de34713-3.jpg",
-      "./images/camps/f8f79de34713-4.jpg",
-      "./images/camps/f8f79de34713-5.jpg"
-    ],
-    "rating": 5,
-    "visits": 3,
-    "page_id": "34902bbd-cd95-8183-9749-f8f79de34713"
-  },
-  {
-    "name": "우니메이카 산청",
-    "region": "경남",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "계곡",
-      "산"
-    ],
-    "extras": [
-      "개별샤워실"
-    ],
-    "graega": true,
-    "url": "https://m.site.naver.com/1NdGk",
-    "imgs": [
-      "./images/camps/f272648a6938.jpg",
-      "./images/camps/f272648a6938-2.jpg"
-    ],
-    "rating": 4,
-    "visits": 2,
-    "page_id": "34902bbd-cd95-81c6-a35a-f272648a6938"
-  },
-  {
-    "name": "문경 그린스톤",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "계곡",
-      "숲",
-      "산"
-    ],
-    "extras": [
-      "벚꽃",
-      "애견동반"
-    ],
-    "graega": true,
-    "url": "https://graega.short.gy/7048kydzm",
-    "imgs": [
-      "./images/camps/d09b6195e9db.jpg"
-    ],
-    "rating": 4,
-    "visits": 1,
-    "page_id": "34902bbd-cd95-812d-b11b-d09b6195e9db"
-  },
-  {
-    "name": "밀양 구만산장",
-    "region": "경남",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "계곡",
-      "숲",
-      "산"
-    ],
-    "extras": [
-      "벚꽃",
-      "수영장",
-      "펜션"
-    ],
-    "graega": true,
-    "url": "https://graega.short.gy/7130kydzm",
-    "imgs": [
-      "./images/camps/f3c04d3dd239.jpg"
-    ],
-    "rating": 3.5,
-    "visits": 1,
-    "page_id": "34902bbd-cd95-817b-904c-f3c04d3dd239"
-  },
-  {
-    "name": "봉화별캠핑장",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "숲",
-      "계곡"
-    ],
-    "extras": [
-      "벚꽃",
-      "노키즈",
-      "애견동반",
-      "개별샤워실"
-    ],
-    "graega": false,
-    "url": "https://map.naver.com/p/entry/place/1383766957",
-    "imgs": [
-      "./images/camps/f3baf09d2e72.jpg",
-      "./images/camps/f3baf09d2e72-2.jpg",
-      "./images/camps/f3baf09d2e72-3.jpg",
-      "./images/camps/f3baf09d2e72-4.jpg"
-    ],
-    "rating": 5,
-    "visits": 26,
-    "page_id": "34a02bbd-cd95-8182-a0fc-f3baf09d2e72"
-  },
-  {
-    "name": "왕피천모래언덕",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름"
-    ],
-    "landscape": [
-      "계곡"
-    ],
-    "extras": [
-      "벚꽃",
-      "수영장",
-      "펜션"
-    ],
-    "graega": false,
-    "url": "http://www.sanddune.co.kr",
-    "imgs": [],
-    "rating": 4.5,
-    "visits": 2,
-    "page_id": "34a02bbd-cd95-81fa-9a6d-d92c286290a8"
-  },
-  {
-    "name": "곤달비캠프",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름"
-    ],
-    "landscape": [
-      "계곡"
-    ],
-    "extras": [
-      "벚꽃",
-      "수영장",
-      "애견동반"
-    ],
-    "graega": false,
-    "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=1583&chk=sns",
-    "imgs": [],
-    "rating": 4,
-    "visits": 5,
-    "page_id": "34a02bbd-cd95-810b-ac94-c82ce9877ebd"
-  },
-  {
-    "name": "창바우마을 해송피크닉장",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "가을"
-    ],
-    "landscape": [
-      "바다"
-    ],
-    "extras": [
-      "일출",
-      "펜션"
-    ],
-    "graega": false,
-    "url": "https://www.xn--9g3b27q0ne.kr/site/main",
-    "imgs": [],
-    "rating": 4,
-    "visits": 4,
-    "page_id": "34a02bbd-cd95-810a-8037-fa9bca14f507"
-  },
-  {
-    "name": "THE360캠핑장",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "산"
-    ],
-    "extras": [
-      "수영장"
-    ],
-    "graega": false,
-    "url": "https://camfit.co.kr/camp/667a192194080f001ee5c9f5",
-    "imgs": [],
-    "rating": 4,
-    "visits": 2,
-    "page_id": "34a02bbd-cd95-81f7-ab86-d8bc41015aed"
-  },
-  {
-    "name": "또바기캠핑장",
-    "region": "경북",
-    "seasons": [
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "숲",
-      "계곡"
-    ],
-    "extras": [
-      "벚꽃"
-    ],
-    "graega": false,
-    "url": "https://map.naver.com/p/entry/place/1967001089",
-    "imgs": [],
-    "rating": 4,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8160-b888-cda88d6464aa"
-  },
-  {
-    "name": "문경히든벨리캠핑장",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "숲",
-      "계곡"
-    ],
-    "extras": [
-      "벚꽃",
-      "수영장"
-    ],
-    "graega": false,
-    "url": "https://www.camfit.co.kr/camp/608ce389062220001dc64c8e",
-    "imgs": [],
-    "rating": 4,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81ee-98a6-ee1b7568e78d"
-  },
-  {
-    "name": "새움정",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "폐교",
-      "잔디"
-    ],
-    "extras": [
-      "수영장",
-      "애견동반",
-      "잔디"
-    ],
-    "graega": false,
-    "url": "https://www.camfit.co.kr/camp/6238355754c528001e4c9e81",
-    "imgs": [],
-    "rating": 4,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81b5-912c-da1e82bc4b21"
-  },
-  {
-    "name": "왕피천숲속캠핑장",
-    "region": "경북",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "숲",
-      "계곡"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://xn--bm4bvl68khmiz2i.com/Reservation",
-    "imgs": [],
-    "rating": 4,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81bc-bbcc-da9973d1a6bb"
-  },
-  {
-    "name": "상주우산오토캠핑장",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "가을"
-    ],
-    "landscape": [
-      "폐교"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=1596",
-    "imgs": [],
-    "rating": 3.5,
-    "visits": 3,
-    "page_id": "34a02bbd-cd95-81bb-bab6-e2ded856c125"
-  },
-  {
-    "name": "구미캠핑장",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "강"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://www.gmuc.or.kr/camping/index.do",
-    "imgs": [],
-    "rating": 3.5,
-    "visits": 2,
-    "page_id": "34a02bbd-cd95-81f3-8402-c274e3b31359"
-  },
-  {
-    "name": "내를건너서숲으로",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름"
-    ],
-    "landscape": [
-      "계곡"
-    ],
-    "extras": [
-      "애견동반"
-    ],
-    "graega": false,
-    "url": "https://camfit.co.kr/camp/62f60d2d97e0c9001efe40b1",
-    "imgs": [],
-    "rating": 3.5,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81d9-9178-e3a886b2ca85"
-  },
-  {
-    "name": "안동우니메이카",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을",
-      "겨울"
-    ],
-    "landscape": [
-      "강"
-    ],
-    "extras": [
-      "펜션"
-    ],
-    "graega": false,
-    "url": "https://m.place.naver.com/accommodation/1995779427/home?businessCategory=camping",
-    "imgs": [],
-    "rating": 3.5,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8136-b1f2-d14de89fecd5"
-  },
-  {
-    "name": "월명612",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "산"
-    ],
-    "extras": [
-      "수영장",
-      "펜션"
-    ],
-    "graega": false,
-    "url": "https://camfit.co.kr/camp/62de520b8a560c001e6053b2",
-    "imgs": [],
-    "rating": 3.5,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81f4-b169-e51650e1c3b9"
-  },
-  {
-    "name": "경주에덴펜션&오토캠핑장",
-    "region": "경북",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "바다"
-    ],
-    "extras": [
-      "수영장",
-      "펜션",
-      "일출"
-    ],
-    "graega": false,
-    "url": "https://booking.ddnayo.com/booking-calendar-status?accommodationId=4593",
-    "imgs": [],
-    "rating": 3.5,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81dd-b770-c1f52c95566e"
-  },
-  {
-    "name": "포항비손농장",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "산",
-      "바다"
-    ],
-    "extras": [
-      "수영장",
-      "애견동반"
-    ],
-    "graega": false,
-    "url": "https://booking.naver.com/booking/3/bizes/466168",
-    "imgs": [],
-    "rating": 3.5,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81ff-aadb-ce06f6e07745"
-  },
-  {
-    "name": "무릉관광농원(캠핑빌리지)",
-    "region": "경북",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "숲"
-    ],
-    "extras": [
-      "수영장"
-    ],
-    "graega": false,
-    "url": "https://camfit.co.kr/camp/65efb03f0834af001ee12925",
-    "imgs": [],
-    "rating": 3.5,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8115-a0c0-f52952b89086"
-  },
-  {
-    "name": "하늘아래첫동네",
-    "region": "경북",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "계곡",
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 3.5,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8194-b4f3-cdf68e587cae"
-  },
-  {
-    "name": "휴앤락오토캠핑장",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을",
-      "겨울"
-    ],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://camfit.co.kr/camp/6553c1a5e3c0a5001e3e9f7a",
-    "imgs": [],
-    "rating": 3.5,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8123-a56a-d7502822d5db"
-  },
-  {
-    "name": "경주가나캠핑장",
-    "region": "경북",
-    "seasons": [
-      "가을",
-      "겨울"
-    ],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://camfit.co.kr/camp/65118dfa875975001e6f1631",
-    "imgs": [],
-    "rating": 3,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81bb-ab3d-c9685166d9ee"
-  },
-  {
-    "name": "라라캠핑장",
-    "region": "경북",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "산",
-      "계곡"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://camfit.co.kr/camp/61406db98c8c0a001e7fd388",
-    "imgs": [],
-    "rating": 3,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81a5-8cea-cf6379cd986c"
-  },
-  {
-    "name": "칠곡보오토캠핑장",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "강"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://camp.xticket.kr/web/main?shopEncode=3b8dfd4fe83ef398626319d169929b5df473aafca57da427af869db901ce8b86",
-    "imgs": [],
-    "rating": 3,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8160-a508-df9274741d38"
-  },
-  {
-    "name": "포항백경오토캠핑장",
-    "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "바다"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://www.camfit.co.kr/camp/6345234e7c0322001ff37468",
-    "imgs": [],
-    "rating": 3,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81ed-bbe8-e4400f118d0c"
-  },
-  {
-    "name": "황매산별쿵캠핑장",
-    "region": "경남",
-    "seasons": [
-      "봄",
-      "가을"
-    ],
-    "landscape": [
-      "산"
-    ],
-    "extras": [
-      "억새",
-      "철쭉"
-    ],
-    "graega": false,
-    "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=1855",
-    "imgs": [
-      "./images/camps/e7dae0d5b774.jpg",
-      "./images/camps/e7dae0d5b774-2.jpg",
-      "./images/camps/e7dae0d5b774-3.jpg",
-      "./images/camps/e7dae0d5b774-4.jpg",
-      "./images/camps/e7dae0d5b774-5.jpg"
-    ],
-    "rating": 5,
-    "visits": 13,
-    "page_id": "34a02bbd-cd95-8121-bb5d-e7dae0d5b774"
-  },
-  {
-    "name": "황석산라온오토캠핑장",
-    "region": "경남",
-    "seasons": [
-      "사계절"
-    ],
-    "landscape": [
-      "산",
-      "계곡"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=3639",
-    "imgs": [],
-    "rating": 0,
-    "visits": 6,
-    "page_id": "34a02bbd-cd95-812e-8a27-c699cfe85ff9"
-  },
-  {
-    "name": "산중오토캠핑장",
-    "region": "경남",
-    "seasons": [
-      "봄",
-      "가을"
-    ],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 4,
-    "page_id": "34a02bbd-cd95-8108-9422-d9bb82b8ee29"
-  },
-  {
-    "name": "산중오토계곡캠핑장",
-    "region": "",
-    "seasons": [],
-    "landscape": [
-      "계곡"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "http://sj-camping.com/bbs/board.php?bo_table=yb_booking02",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8107-825c-c44198e1c30b"
-  },
-  {
-    "name": "버드하우스캠핑장",
-    "region": "경남",
-    "seasons": [
-      "봄",
-      "가을",
-      "겨울"
-    ],
-    "landscape": [
-      "폐교"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 4,
-    "page_id": "34a02bbd-cd95-81ee-b2f3-d2a58051e86e"
-  },
-  {
-    "name": "합천정양오토캠핑장",
-    "region": "경남",
-    "seasons": [
-      "봄",
-      "가을",
-      "겨울"
-    ],
-    "landscape": [
-      "강"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "http://hcjypark.com/",
-    "imgs": [],
-    "rating": 0,
-    "visits": 3,
-    "page_id": "34a02bbd-cd95-81a6-9e36-f499f3da4660"
-  },
-  {
-    "name": "든해솔계곡캠핑장",
-    "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "계곡"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "http://r.camperstory.com/?P2156",
-    "imgs": [],
-    "rating": 0,
-    "visits": 3,
-    "page_id": "34a02bbd-cd95-81c2-91e1-c76de48320dc"
-  },
-  {
-    "name": "사천솔섬오토캠핑장",
-    "region": "경남",
-    "seasons": [
-      "봄",
-      "가을",
-      "겨울"
-    ],
-    "landscape": [
-      "바다"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://www.camfit.co.kr/camp/62c7d0649fa6e0001e270aa9",
-    "imgs": [],
-    "rating": 0,
-    "visits": 3,
-    "page_id": "34a02bbd-cd95-814b-9f48-e5b2671e9dd4"
-  },
-  {
-    "name": "산청별천지캠핑장",
-    "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=1747",
-    "imgs": [],
-    "rating": 0,
-    "visits": 3,
-    "page_id": "34a02bbd-cd95-81cc-8fdb-cf7ff04c1618"
-  },
-  {
-    "name": "청풍호반오토캠핑장",
-    "region": "충북",
-    "seasons": [],
-    "landscape": [
-      "호수"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 2,
-    "page_id": "34a02bbd-cd95-81e4-b83a-e1f4384e2604"
-  },
-  {
-    "name": "산청반달캠핑장",
-    "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "계곡"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 2,
-    "page_id": "34a02bbd-cd95-81ca-aa17-ecb9c7f96061"
-  },
-  {
-    "name": "경남밀양솔바람캠핑장",
-    "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8130-8d58-f64a42b6d807"
-  },
-  {
-    "name": "구지강변오토캠핑장",
-    "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "강"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81e5-8a8e-fe1a4443e21f"
-  },
-  {
-    "name": "바람이좋은저녁캠핑장",
-    "region": "",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8181-97a2-ead3da6ef162"
-  },
-  {
-    "name": "거창강가펜션캠핑장",
-    "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "산",
-      "계곡"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-819f-a1dc-c2370f19b747"
-  },
-  {
-    "name": "고흥나로힐링캠핑장",
-    "region": "전남",
-    "seasons": [],
-    "landscape": [
-      "바다"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "http://www.narohealing.kr/",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8131-bb1a-ca533e1634de"
-  },
-  {
-    "name": "대경오토캠핑장",
-    "region": "경북",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-813d-96be-d7acf091c85f"
-  },
-  {
-    "name": "구례섬지캠핑장",
-    "region": "전남",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-817c-b22e-c2a10840c70c"
-  },
-  {
-    "name": "안녕오토캠핑장",
-    "region": "",
-    "seasons": [],
-    "landscape": [
-      "바다"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8124-83a8-d24516b2042b"
-  },
-  {
-    "name": "캠프하다",
-    "region": "",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81ee-967d-d72c5b6b8fa0"
-  },
-  {
-    "name": "온새미로캠핑장",
-    "region": "경북",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81f0-9b02-f58cfba7d2e1"
-  },
-  {
-    "name": "달서별빛캠핑장",
-    "region": "",
-    "seasons": [],
-    "landscape": [
-      "기타"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8164-9221-cc614c53992a"
-  },
-  {
-    "name": "덕풍계곡별빛야영장",
-    "region": "경북",
-    "seasons": [],
-    "landscape": [
-      "계곡"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81e6-95cf-f5971fb1fb2c"
-  },
-  {
-    "name": "단양소풍캠핑장",
-    "region": "충북",
-    "seasons": [],
-    "landscape": [
-      "계곡"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://camp.dytc.or.kr/",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-816c-ae4c-d180772a4486"
-  },
-  {
-    "name": "경산갓바위캠핑장",
-    "region": "경북",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "http://www.gatbawi-camp.co.kr/",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8107-b5e6-ee2cafea12ed"
-  },
-  {
-    "name": "지리산365캠핑장",
-    "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "산",
-      "계곡"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=3795",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-814e-b89d-c89946dab019"
-  },
-  {
-    "name": "해피단밀오토캠핑장",
-    "region": "경북",
-    "seasons": [],
-    "landscape": [
-      "폐교"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8117-bbb8-ec64edbba767"
-  },
-  {
-    "name": "캠핑느루",
-    "region": "",
-    "seasons": [],
-    "landscape": [
-      "산",
-      "계곡"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-813b-8f5d-dc2334c59435"
-  },
-  {
-    "name": "하늘하루펜션앤캠핑장",
-    "region": "",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-814a-a435-f5c015a4daf2"
-  },
-  {
-    "name": "양산무릉도원캠핑장",
-    "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://www.xn--hq1bk3iuobz1y.net/",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8182-bd3f-cc6754572819"
-  },
-  {
-    "name": "나조스트",
-    "region": "",
-    "seasons": [],
-    "landscape": [
-      "숲",
-      "계곡"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81a3-bcd3-ee8fd8bc8db9"
-  },
-  {
-    "name": "장성편백힐치유의숲",
-    "region": "전남",
-    "seasons": [],
-    "landscape": [
-      "숲"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "https://heal3001.modoo.at/",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8128-b178-e48a15b4047b"
-  },
-  {
-    "name": "너와두리농촌캠핑장",
-    "region": "",
-    "seasons": [],
-    "landscape": [],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81c6-b762-f5fa9cdc2abb"
-  },
-  {
-    "name": "고성상족암캠핑장",
-    "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "바다"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "http://www.sjacamping.com/",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-8198-ba6e-c8a72c667923"
-  },
-  {
-    "name": "몽산포오션캠핑장",
-    "region": "충남",
-    "seasons": [],
-    "landscape": [
-      "바다"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 2,
-    "page_id": "34a02bbd-cd95-81f6-a016-e4fefb0bf888"
-  },
-  {
-    "name": "교육청수련원",
-    "region": "",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
-    "extras": [],
-    "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
-    "page_id": "34a02bbd-cd95-81d3-9aaa-de4221d131f8"
-  }
+  {"name": "합천호코지캠핑장", "region": "경남", "seasons": ["봄", "가을"], "landscape": ["산"], "extras": ["벚꽃", "글램핑"], "graega": true, "url": "https://m.site.naver.com/1Sbv3", "imgs": ["./images/camps/d6c12adf4086.jpg", "./images/camps/d6c12adf4086-2.jpg", "./images/camps/d6c12adf4086-3.jpg", "./images/camps/d6c12adf4086-4.jpg", "./images/camps/d6c12adf4086-5.jpg"], "rating": 3, "visits": 15},
+  {"name": "캠프627 경호강", "region": "경남", "seasons": ["봄", "가을"], "landscape": ["강"], "extras": ["벚꽃", "수영장", "개별샤워실"], "graega": true, "url": "https://graega.short.gy/6973kydzm", "imgs": ["./images/camps/f8f79de34713.jpg", "./images/camps/f8f79de34713-2.jpg", "./images/camps/f8f79de34713-3.jpg", "./images/camps/f8f79de34713-4.jpg", "./images/camps/f8f79de34713-5.jpg"], "rating": 5, "visits": 3},
+  {"name": "우니메이카 산청", "region": "경남", "seasons": ["여름"], "landscape": ["계곡", "산"], "extras": ["개별샤워실"], "graega": true, "url": "https://m.site.naver.com/1NdGk", "imgs": ["./images/camps/f272648a6938.jpg", "./images/camps/f272648a6938-2.jpg"], "rating": 4, "visits": 2},
+  {"name": "문경 그린스톤", "region": "경북", "seasons": ["봄", "여름", "가을"], "landscape": ["계곡", "숲", "산"], "extras": ["벚꽃", "애견동반"], "graega": true, "url": "https://graega.short.gy/7048kydzm", "imgs": ["./images/camps/d09b6195e9db.jpg"], "rating": 4, "visits": 1},
+  {"name": "밀양 구만산장", "region": "경남", "seasons": ["봄", "여름", "가을"], "landscape": ["계곡", "숲", "산"], "extras": ["벚꽃", "수영장", "펜션"], "graega": true, "url": "https://graega.short.gy/7130kydzm", "imgs": ["./images/camps/f3c04d3dd239.jpg"], "rating": 3.5, "visits": 1},
+  {"name": "봉화별캠핑장", "region": "경북", "seasons": ["봄", "여름", "가을"], "landscape": ["숲", "계곡"], "extras": ["벚꽃", "노키즈", "애견동반", "개별샤워실"], "graega": false, "url": "https://map.naver.com/p/entry/place/1383766957", "imgs": ["./images/camps/f3baf09d2e72.jpg", "./images/camps/f3baf09d2e72-2.jpg", "./images/camps/f3baf09d2e72-3.jpg", "./images/camps/f3baf09d2e72-4.jpg"], "rating": 5, "visits": 26},
+  {"name": "왕피천모래언덕", "region": "경북", "seasons": ["봄", "여름"], "landscape": ["계곡"], "extras": ["벚꽃", "수영장", "펜션"], "graega": false, "url": "http://www.sanddune.co.kr", "imgs": [], "rating": 4.5, "visits": 2},
+  {"name": "곤달비캠프", "region": "경북", "seasons": ["봄", "여름"], "landscape": ["계곡"], "extras": ["벚꽃", "수영장", "애견동반"], "graega": false, "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=1583&chk=sns", "imgs": [], "rating": 4, "visits": 5},
+  {"name": "창바우마을 해송피크닉장", "region": "경북", "seasons": ["봄", "가을"], "landscape": ["바다"], "extras": ["일출", "펜션"], "graega": false, "url": "https://www.xn--9g3b27q0ne.kr/site/main", "imgs": [], "rating": 4, "visits": 4},
+  {"name": "THE360캠핑장", "region": "경북", "seasons": ["봄", "여름", "가을"], "landscape": ["산"], "extras": ["수영장"], "graega": false, "url": "https://camfit.co.kr/camp/667a192194080f001ee5c9f5", "imgs": [], "rating": 4, "visits": 2},
+  {"name": "또바기캠핑장", "region": "경북", "seasons": ["여름", "가을"], "landscape": ["숲", "계곡"], "extras": ["벚꽃"], "graega": false, "url": "https://map.naver.com/p/entry/place/1967001089", "imgs": [], "rating": 4, "visits": 1},
+  {"name": "문경히든벨리캠핑장", "region": "경북", "seasons": ["봄", "여름", "가을"], "landscape": ["숲", "계곡"], "extras": ["벚꽃", "수영장"], "graega": false, "url": "https://www.camfit.co.kr/camp/608ce389062220001dc64c8e", "imgs": [], "rating": 4, "visits": 1},
+  {"name": "새움정", "region": "경북", "seasons": ["봄", "여름", "가을"], "landscape": ["폐교", "잔디"], "extras": ["수영장", "애견동반", "잔디"], "graega": false, "url": "https://www.camfit.co.kr/camp/6238355754c528001e4c9e81", "imgs": [], "rating": 4, "visits": 1},
+  {"name": "왕피천숲속캠핑장", "region": "경북", "seasons": ["여름"], "landscape": ["숲", "계곡"], "extras": [], "graega": false, "url": "https://xn--bm4bvl68khmiz2i.com/Reservation", "imgs": [], "rating": 4, "visits": 1},
+  {"name": "상주우산오토캠핑장", "region": "경북", "seasons": ["봄", "가을"], "landscape": ["폐교"], "extras": [], "graega": false, "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=1596", "imgs": [], "rating": 3.5, "visits": 3},
+  {"name": "구미캠핑장", "region": "경북", "seasons": ["봄", "여름", "가을"], "landscape": ["강"], "extras": [], "graega": false, "url": "https://www.gmuc.or.kr/camping/index.do", "imgs": [], "rating": 3.5, "visits": 2},
+  {"name": "내를건너서숲으로", "region": "경북", "seasons": ["봄", "여름"], "landscape": ["계곡"], "extras": ["애견동반"], "graega": false, "url": "https://camfit.co.kr/camp/62f60d2d97e0c9001efe40b1", "imgs": [], "rating": 3.5, "visits": 1},
+  {"name": "안동우니메이카", "region": "경북", "seasons": ["봄", "여름", "가을", "겨울"], "landscape": ["강"], "extras": ["펜션"], "graega": false, "url": "https://m.place.naver.com/accommodation/1995779427/home?businessCategory=camping", "imgs": [], "rating": 3.5, "visits": 1},
+  {"name": "월명612", "region": "경북", "seasons": ["봄", "여름", "가을"], "landscape": ["산"], "extras": ["수영장", "펜션"], "graega": false, "url": "https://camfit.co.kr/camp/62de520b8a560c001e6053b2", "imgs": [], "rating": 3.5, "visits": 1},
+  {"name": "경주에덴펜션&오토캠핑장", "region": "경북", "seasons": ["여름"], "landscape": ["바다"], "extras": ["수영장", "펜션", "일출"], "graega": false, "url": "https://booking.ddnayo.com/booking-calendar-status?accommodationId=4593", "imgs": [], "rating": 3.5, "visits": 1},
+  {"name": "포항비손농장", "region": "경북", "seasons": ["봄", "여름", "가을"], "landscape": ["산", "바다"], "extras": ["수영장", "애견동반"], "graega": false, "url": "https://booking.naver.com/booking/3/bizes/466168", "imgs": [], "rating": 3.5, "visits": 1},
+  {"name": "무릉관광농원(캠핑빌리지)", "region": "경북", "seasons": ["여름"], "landscape": ["숲"], "extras": ["수영장"], "graega": false, "url": "https://camfit.co.kr/camp/65efb03f0834af001ee12925", "imgs": [], "rating": 3.5, "visits": 1},
+  {"name": "하늘아래첫동네", "region": "경북", "seasons": ["여름"], "landscape": ["계곡", "산"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 3.5, "visits": 1},
+  {"name": "휴앤락오토캠핑장", "region": "경북", "seasons": ["봄", "여름", "가을", "겨울"], "landscape": ["산"], "extras": [], "graega": false, "url": "https://camfit.co.kr/camp/6553c1a5e3c0a5001e3e9f7a", "imgs": [], "rating": 3.5, "visits": 1},
+  {"name": "경주가나캠핑장", "region": "경북", "seasons": ["가을", "겨울"], "landscape": ["산"], "extras": [], "graega": false, "url": "https://camfit.co.kr/camp/65118dfa875975001e6f1631", "imgs": [], "rating": 3, "visits": 1},
+  {"name": "라라캠핑장", "region": "경북", "seasons": ["여름"], "landscape": ["산", "계곡"], "extras": [], "graega": false, "url": "https://camfit.co.kr/camp/61406db98c8c0a001e7fd388", "imgs": [], "rating": 3, "visits": 1},
+  {"name": "칠곡보오토캠핑장", "region": "경북", "seasons": ["봄", "여름", "가을"], "landscape": ["강"], "extras": [], "graega": false, "url": "https://camp.xticket.kr/web/main?shopEncode=3b8dfd4fe83ef398626319d169929b5df473aafca57da427af869db901ce8b86", "imgs": [], "rating": 3, "visits": 1},
+  {"name": "포항백경오토캠핑장", "region": "경북", "seasons": ["봄", "여름", "가을"], "landscape": ["바다"], "extras": [], "graega": false, "url": "https://www.camfit.co.kr/camp/6345234e7c0322001ff37468", "imgs": [], "rating": 3, "visits": 1},
+  {"name": "황매산별쿵캠핑장", "region": "경남", "seasons": ["봄", "가을"], "landscape": ["산"], "extras": ["억새", "철쭉"], "graega": false, "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=1855", "imgs": ["./images/camps/e7dae0d5b774.jpg", "./images/camps/e7dae0d5b774-2.jpg", "./images/camps/e7dae0d5b774-3.jpg", "./images/camps/e7dae0d5b774-4.jpg", "./images/camps/e7dae0d5b774-5.jpg"], "rating": 5, "visits": 13},
+  {"name": "황석산라온오토캠핑장", "region": "경남", "seasons": ["사계절"], "landscape": ["산", "계곡"], "extras": [], "graega": false, "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=3639", "imgs": [], "rating": 0, "visits": 6},
+  {"name": "산중오토캠핑장", "region": "경남", "seasons": ["봄", "가을"], "landscape": ["산"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 4},
+  {"name": "산중오토계곡캠핑장", "region": "", "seasons": [], "landscape": ["계곡"], "extras": [], "graega": false, "url": "http://sj-camping.com/bbs/board.php?bo_table=yb_booking02", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "버드하우스캠핑장", "region": "경남", "seasons": ["봄", "가을", "겨울"], "landscape": ["폐교"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 4},
+  {"name": "합천정양오토캠핑장", "region": "경남", "seasons": ["봄", "가을", "겨울"], "landscape": ["강"], "extras": [], "graega": false, "url": "http://hcjypark.com/", "imgs": [], "rating": 0, "visits": 3},
+  {"name": "든해솔계곡캠핑장", "region": "경남", "seasons": [], "landscape": ["계곡"], "extras": [], "graega": false, "url": "http://r.camperstory.com/?P2156", "imgs": [], "rating": 0, "visits": 3},
+  {"name": "사천솔섬오토캠핑장", "region": "경남", "seasons": ["봄", "가을", "겨울"], "landscape": ["바다"], "extras": [], "graega": false, "url": "https://www.camfit.co.kr/camp/62c7d0649fa6e0001e270aa9", "imgs": [], "rating": 0, "visits": 3},
+  {"name": "산청별천지캠핑장", "region": "경남", "seasons": [], "landscape": ["산"], "extras": [], "graega": false, "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=1747", "imgs": [], "rating": 0, "visits": 3},
+  {"name": "청풍호반오토캠핑장", "region": "충북", "seasons": [], "landscape": ["호수"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 2},
+  {"name": "산청반달캠핑장", "region": "경남", "seasons": [], "landscape": ["계곡"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 2},
+  {"name": "경남밀양솔바람캠핑장", "region": "경남", "seasons": [], "landscape": ["산"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "구지강변오토캠핑장", "region": "경남", "seasons": [], "landscape": ["강"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "바람이좋은저녁캠핑장", "region": "", "seasons": [], "landscape": ["산"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "거창강가펜션캠핑장", "region": "경남", "seasons": [], "landscape": ["산", "계곡"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "고흥나로힐링캠핑장", "region": "전남", "seasons": [], "landscape": ["바다"], "extras": [], "graega": false, "url": "http://www.narohealing.kr/", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "대경오토캠핑장", "region": "경북", "seasons": [], "landscape": ["산"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "구례섬지캠핑장", "region": "전남", "seasons": [], "landscape": ["산"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "안녕오토캠핑장", "region": "", "seasons": [], "landscape": ["바다"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "캠프하다", "region": "", "seasons": [], "landscape": ["산"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "온새미로캠핑장", "region": "경북", "seasons": [], "landscape": ["산"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "달서별빛캠핑장", "region": "", "seasons": [], "landscape": ["기타"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "덕풍계곡별빛야영장", "region": "경북", "seasons": [], "landscape": ["계곡"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "단양소풍캠핑장", "region": "충북", "seasons": [], "landscape": ["계곡"], "extras": [], "graega": false, "url": "https://camp.dytc.or.kr/", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "경산갓바위캠핑장", "region": "경북", "seasons": [], "landscape": ["산"], "extras": [], "graega": false, "url": "http://www.gatbawi-camp.co.kr/", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "지리산365캠핑장", "region": "경남", "seasons": [], "landscape": ["산", "계곡"], "extras": [], "graega": false, "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=3795", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "해피단밀오토캠핑장", "region": "경북", "seasons": [], "landscape": ["폐교"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "캠핑느루", "region": "", "seasons": [], "landscape": ["산", "계곡"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "하늘하루펜션앤캠핑장", "region": "", "seasons": [], "landscape": ["산"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "양산무릉도원캠핑장", "region": "경남", "seasons": [], "landscape": ["산"], "extras": [], "graega": false, "url": "https://www.xn--hq1bk3iuobz1y.net/", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "나조스트", "region": "", "seasons": [], "landscape": ["숲", "계곡"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "장성편백힐치유의숲", "region": "전남", "seasons": [], "landscape": ["숲"], "extras": [], "graega": false, "url": "https://heal3001.modoo.at/", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "너와두리농촌캠핑장", "region": "", "seasons": [], "landscape": [], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "고성상족암캠핑장", "region": "경남", "seasons": [], "landscape": ["바다"], "extras": [], "graega": false, "url": "http://www.sjacamping.com/", "imgs": [], "rating": 0, "visits": 1},
+  {"name": "몽산포오션캠핑장", "region": "충남", "seasons": [], "landscape": ["바다"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 2},
+  {"name": "교육청수련원", "region": "", "seasons": [], "landscape": ["산"], "extras": [], "graega": false, "url": "", "imgs": [], "rating": 0, "visits": 1}
 ];
-/* ═══════════════════════════════════════════════════════════════════ */
 </script>
 
   <!-- 헤더: 타이틀 왼쪽 + 부제목 오른쪽 -->
