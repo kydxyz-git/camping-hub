@@ -26,6 +26,13 @@
       "color": "#F5A623",
       "eps": [
         {
+          "ep": 2,
+          "title": "물이 이렇게 맑다고?",
+          "url": "https://www.instagram.com/reel/DXv5NXvB08F/?igsh=Z25wcnczeTVleHVw",
+          "thumb": "./images/series/summer-ep02.jpg",
+          "page_id": "35202bbd-cd95-8082-b44c-da888a032c30"
+        },
+        {
           "ep": 1,
           "title": "여름 캠핑 고민 될 때",
           "url": "https://www.instagram.com/reel/DXYt1NME24U/?igsh=MTN0bDAwbXYxZTRpMg==",
@@ -1385,7 +1392,7 @@
     }
   ],
   "_metadata": {
-    "last_sync": "2026-04-28T22:18:12Z",
+    "last_sync": "2026-04-30T14:21:00Z",
     "page_id_index_complete": true,
     "notion_collections": {
       "series": "d867d959-4c1b-487c-b7e0-ae7d82987520",
