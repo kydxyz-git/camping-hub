@@ -96,6 +96,13 @@
       "color": "#C94A4A",
       "eps": [
         {
+          "ep": 2,
+          "title": "두릅 튀김, 등갈비 구이 등",
+          "url": "https://www.instagram.com/p/DX5BnxlE6hr/?igsh=amQzanpudnFjYzJs",
+          "thumb": "./images/series/food-ep02.jpg",
+          "page_id": "35502bbd-cd95-8014-8b29-fbe8aa605599"
+        },
+        {
           "ep": 1,
           "title": "야키토리 토리야 등",
           "url": "https://www.instagram.com/p/DXUCu6vE6lw/?igsh=eDlvdml3dzFmaHMw",
@@ -1392,7 +1399,7 @@
     }
   ],
   "_metadata": {
-    "last_sync": "2026-05-02T09:10:39Z",
+    "last_sync": "2026-05-03T21:21:02Z",
     "page_id_index_complete": true,
     "notion_collections": {
       "series": "d867d959-4c1b-487c-b7e0-ae7d82987520",
