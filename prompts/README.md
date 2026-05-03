@@ -4,12 +4,13 @@
 
 ## 사용 방법
 
-1. 원하는 프롬프트 파일을 GitHub에서 열기
-2. raw URL로 이동 → 텍스트 복사
-3. AI 도구(ChatGPT 등)에 붙여넣기
+**모바일에서**: `.html` 페이지 열기 → "복사하기" 버튼 한 번 → 끝
+
+**PC에서**: `.txt` raw URL 열기 → 전체 선택 + 복사
 
 ## 파일 목록
 
-| 파일명 | 용도 |
-|---|---|
-| `instagram-profile-3d-diorama.txt` | 인스타 프로필을 3D 입체 디오라마로 변환 (5:4 게시물용) |
+| 프롬프트 | 모바일용 (HTML) | 원본 (.txt) |
+|---|---|---|
+| 인스타 프로필 3D 디오라마 | [instagram-profile-3d-diorama.html](./instagram-profile-3d-diorama.html) | [instagram-profile-3d-diorama.txt](./instagram-profile-3d-diorama.txt) |
+
