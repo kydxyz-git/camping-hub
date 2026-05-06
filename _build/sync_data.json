@@ -1426,6 +1426,360 @@
       "items": "2e74ca8b-8cdf-45ea-b78c-0b885a2b1ee6",
       "profile": "34902bbd-cd95-81f8-b57d-e881825e992e"
     },
-    "instructions": "All series/foods/items/camps have page_id field. New chats can fetch by ID directly without searching. Compare page timestamp vs last_sync to detect changes."
+    "instructions": "All series/foods/items/camps have page_id field. New chats can fetch by ID directly without searching. Compare page timestamp vs last_sync to detect changes.",
+    "cached_pages": {
+      "series": [
+        {
+          "page_id": "35202bbd-cd95-8082-b44c-da888a032c30",
+          "title": "물이 이렇게 맑다고?",
+          "series_name": "여름에 가기 좋은 캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-816d-bf06-f0498e7d7419",
+          "title": "여름 캠핑 고민 될 때",
+          "series_name": "여름에 가기 좋은 캠핑장"
+        },
+        {
+          "page_id": "34f02bbd-cd95-80c9-a03a-f1b13356298a",
+          "title": "철쭉 명소 바로 옆 캠핑장",
+          "series_name": "봄·가을에 가기 좋은 캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-80e7-8c62-dd7ae01d8737",
+          "title": "캠핑고수처럼 타프 치는 방법",
+          "series_name": "캠핑꿀팁"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8010-a774-fa35c5bb8ce2",
+          "title": "일산화탄소 경보기 테스트",
+          "series_name": "캠핑꿀팁"
+        },
+        {
+          "page_id": "34a02bbd-cd95-80ce-9989-debe96852e1f",
+          "title": "캠핑박스 수납법",
+          "series_name": "캠핑꿀팁"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8096-9f3e-cb89f0a3e768",
+          "title": "우중철수 꿀팁",
+          "series_name": "캠핑꿀팁"
+        },
+        {
+          "page_id": "35502bbd-cd95-8014-8b29-fbe8aa605599",
+          "title": "두릅 튀김, 등갈비 구이 등",
+          "series_name": "또 해먹고 싶은 캠핑 음식"
+        },
+        {
+          "page_id": "34a02bbd-cd95-80a2-9894-c9bdb1d19f73",
+          "title": "야키토리 토리야 등",
+          "series_name": "또 해먹고 싶은 캠핑 음식"
+        },
+        {
+          "page_id": "35802bbd-cd95-802b-90e6-c82814ea57ad",
+          "title": "포켓4 악세사리 이거 하나면 끝!",
+          "series_name": "장비소개"
+        },
+        {
+          "page_id": "34a02bbd-cd95-80d5-add8-c0687a88924f",
+          "title": "도쿄크래프트 지카테이블2",
+          "series_name": "장비소개"
+        }
+      ],
+      "camps": [
+        {
+          "page_id": "34902bbd-cd95-811d-88a0-d6c12adf4086",
+          "name": "합천호코지캠핑장"
+        },
+        {
+          "page_id": "34902bbd-cd95-8183-9749-f8f79de34713",
+          "name": "캠프627 경호강"
+        },
+        {
+          "page_id": "34902bbd-cd95-81c6-a35a-f272648a6938",
+          "name": "우니메이카 산청"
+        },
+        {
+          "page_id": "34902bbd-cd95-812d-b11b-d09b6195e9db",
+          "name": "문경 그린스톤"
+        },
+        {
+          "page_id": "34902bbd-cd95-817b-904c-f3c04d3dd239",
+          "name": "밀양 구만산장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8182-a0fc-f3baf09d2e72",
+          "name": "봉화별캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81fa-9a6d-d92c286290a8",
+          "name": "왕피천모래언덕"
+        },
+        {
+          "page_id": "34a02bbd-cd95-810b-ac94-c82ce9877ebd",
+          "name": "곤달비캠프"
+        },
+        {
+          "page_id": "34a02bbd-cd95-810a-8037-fa9bca14f507",
+          "name": "창바우마을 해송피크닉장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81f7-ab86-d8bc41015aed",
+          "name": "THE360캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8160-b888-cda88d6464aa",
+          "name": "또바기캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81ee-98a6-ee1b7568e78d",
+          "name": "문경히든벨리캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81b5-912c-da1e82bc4b21",
+          "name": "새움정"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81bc-bbcc-da9973d1a6bb",
+          "name": "왕피천숲속캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81bb-bab6-e2ded856c125",
+          "name": "상주우산오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81f3-8402-c274e3b31359",
+          "name": "구미캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81d9-9178-e3a886b2ca85",
+          "name": "내를건너서숲으로"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8136-b1f2-d14de89fecd5",
+          "name": "안동우니메이카"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81f4-b169-e51650e1c3b9",
+          "name": "월명612"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81dd-b770-c1f52c95566e",
+          "name": "경주에덴펜션&오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81ff-aadb-ce06f6e07745",
+          "name": "포항비손농장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8115-a0c0-f52952b89086",
+          "name": "무릉관광농원(캠핑빌리지)"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8194-b4f3-cdf68e587cae",
+          "name": "하늘아래첫동네"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8123-a56a-d7502822d5db",
+          "name": "휴앤락오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81bb-ab3d-c9685166d9ee",
+          "name": "경주가나캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81a5-8cea-cf6379cd986c",
+          "name": "라라캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8160-a508-df9274741d38",
+          "name": "칠곡보오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81ed-bbe8-e4400f118d0c",
+          "name": "포항백경오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8121-bb5d-e7dae0d5b774",
+          "name": "황매산별쿵캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-812e-8a27-c699cfe85ff9",
+          "name": "황석산라온오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8108-9422-d9bb82b8ee29",
+          "name": "산중오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8107-825c-c44198e1c30b",
+          "name": "산중오토계곡캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81ee-b2f3-d2a58051e86e",
+          "name": "버드하우스캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81a6-9e36-f499f3da4660",
+          "name": "합천정양오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81c2-91e1-c76de48320dc",
+          "name": "든해솔계곡캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-814b-9f48-e5b2671e9dd4",
+          "name": "사천솔섬오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81cc-8fdb-cf7ff04c1618",
+          "name": "산청별천지캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81e4-b83a-e1f4384e2604",
+          "name": "청풍호반오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81ca-aa17-ecb9c7f96061",
+          "name": "산청반달캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8130-8d58-f64a42b6d807",
+          "name": "경남밀양솔바람캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81e5-8a8e-fe1a4443e21f",
+          "name": "구지강변오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8181-97a2-ead3da6ef162",
+          "name": "바람이좋은저녁캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-819f-a1dc-c2370f19b747",
+          "name": "거창강가펜션캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8131-bb1a-ca533e1634de",
+          "name": "고흥나로힐링캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-813d-96be-d7acf091c85f",
+          "name": "대경오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-817c-b22e-c2a10840c70c",
+          "name": "구례섬지캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8124-83a8-d24516b2042b",
+          "name": "안녕오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81ee-967d-d72c5b6b8fa0",
+          "name": "캠프하다"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81f0-9b02-f58cfba7d2e1",
+          "name": "온새미로캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8164-9221-cc614c53992a",
+          "name": "달서별빛캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81e6-95cf-f5971fb1fb2c",
+          "name": "덕풍계곡별빛야영장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-816c-ae4c-d180772a4486",
+          "name": "단양소풍캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8107-b5e6-ee2cafea12ed",
+          "name": "경산갓바위캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-814e-b89d-c89946dab019",
+          "name": "지리산365캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8117-bbb8-ec64edbba767",
+          "name": "해피단밀오토캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-813b-8f5d-dc2334c59435",
+          "name": "캠핑느루"
+        },
+        {
+          "page_id": "34a02bbd-cd95-814a-a435-f5c015a4daf2",
+          "name": "하늘하루펜션앤캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8182-bd3f-cc6754572819",
+          "name": "양산무릉도원캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81a3-bcd3-ee8fd8bc8db9",
+          "name": "나조스트"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8128-b178-e48a15b4047b",
+          "name": "장성편백힐치유의숲"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81c6-b762-f5fa9cdc2abb",
+          "name": "너와두리농촌캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-8198-ba6e-c8a72c667923",
+          "name": "고성상족암캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81f6-a016-e4fefb0bf888",
+          "name": "몽산포오션캠핑장"
+        },
+        {
+          "page_id": "34a02bbd-cd95-81d3-9aaa-de4221d131f8",
+          "name": "교육청수련원"
+        }
+      ],
+      "foods": [
+        {
+          "page_id": "34a02bbd-cd95-801c-8c88-dabfaa1c997a",
+          "name": "툇골 오리 주물럭"
+        },
+        {
+          "page_id": "34f02bbd-cd95-80f9-aedb-e2b10a1f837d",
+          "name": "[성수동 분식] 수제 고추튀김 3종"
+        },
+        {
+          "page_id": "34f02bbd-cd95-8018-857b-e50758469884",
+          "name": "[부산 이가네] 이가네 떡볶이"
+        },
+        {
+          "page_id": "34f02bbd-cd95-8092-9761-f35a96255133",
+          "name": "[전주 베테랑] 김치만두"
+        },
+        {
+          "page_id": "34f02bbd-cd95-80c9-a725-ed4b385436ae",
+          "name": "[니뽕내뽕] 크뽕 (크림짬뽕)"
+        },
+        {
+          "page_id": "35002bbd-cd95-80b7-a72c-f4f745137b8d",
+          "name": "[야키토리 토리야] 닭꼬치 염통 파닭 츠쿠네 모듬 캠핑"
+        }
+      ],
+      "items": [
+        {
+          "page_id": "34a02bbd-cd95-8035-9142-f2ed8e0224a9",
+          "name": "포레스트유 데크팩SET"
+        },
+        {
+          "page_id": "35002bbd-cd95-80a9-94c0-d615fbe5427b",
+          "name": "울란지 PM01 맥세이프 방식 연장 브라켓"
+        }
+      ]
+    },
+    "cached_pages_updated": "2026-05-06T23:50:24Z"
   }
 }
