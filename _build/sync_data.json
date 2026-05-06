@@ -201,9 +201,9 @@
       "url": "https://link.coupang.com/a/et5HiO",
       "source": "쿠팡",
       "thumb": "./images/products/item-01.jpg",
-      "price_original": null,
-      "price_sale": null,
-      "discount_rate": null,
+      "price_original": 22310,
+      "price_sale": 22050,
+      "discount_rate": 1,
       "page_id": "34a02bbd-cd95-8035-9142-f2ed8e0224a9"
     }
   ],
@@ -374,7 +374,7 @@
         "./images/camps/f3baf09d2e72-4.jpg"
       ],
       "rating": 5,
-      "visits": 26,
+      "visits": 27,
       "page_id": "34a02bbd-cd95-8182-a0fc-f3baf09d2e72"
     },
     {
@@ -1399,7 +1399,7 @@
     }
   ],
   "_metadata": {
-    "last_sync": "2026-05-04T23:19:46Z",
+    "last_sync": "2026-05-06T14:02:25Z",
     "page_id_index_complete": true,
     "notion_collections": {
       "series": "d867d959-4c1b-487c-b7e0-ae7d82987520",
