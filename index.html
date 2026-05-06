@@ -937,20 +937,44 @@ function applyMarquee() {
   });
 }
 
-/* ─── 탭 전환 ─── */
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
-    // 다녀온 캠핑장 탭(t2) 진입 시 마퀴 재적용 (탭이 처음 보일 때 width 측정 가능)
-    if (btn.dataset.tab === 't2' && typeof applyMarquee === 'function') {
-      requestAnimationFrame(() => requestAnimationFrame(applyMarquee));
-      setTimeout(applyMarquee, 300);
+/* ─── 탭 전환 + 해시 라우팅 ─── */
+const TAB_HASH_MAP = { 't1': 'stories', 't2': 'camps', 't3': 'foods', 't4': 'items' };
+const HASH_TAB_MAP = { 'stories': 't1', 'camps': 't2', 'foods': 't3', 'items': 't4' };
+
+function activateTab(tabId, updateHash) {
+  const btn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+  const content = document.getElementById(tabId);
+  if (!btn || !content) return;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  content.classList.add('active');
+  // 다녀온 캠핑장 탭(t2) 진입 시 마퀴 재적용
+  if (tabId === 't2' && typeof applyMarquee === 'function') {
+    requestAnimationFrame(() => requestAnimationFrame(applyMarquee));
+    setTimeout(applyMarquee, 300);
+  }
+  if (updateHash) {
+    const newHash = TAB_HASH_MAP[tabId];
+    if (newHash && window.location.hash !== '#' + newHash) {
+      history.replaceState(null, '', '#' + newHash);
     }
-  });
+  }
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => activateTab(btn.dataset.tab, true));
 });
+
+// 페이지 로드 시 URL 해시에 따라 초기 탭 결정
+function applyHashTab() {
+  const hash = (window.location.hash || '').replace(/^#/, '').toLowerCase();
+  const targetTab = HASH_TAB_MAP[hash];
+  if (targetTab) activateTab(targetTab, false);
+}
+applyHashTab();
+// 뒤로가기/앞으로가기 시 해시 변경 대응
+window.addEventListener('hashchange', applyHashTab);
 document.getElementById('reset-btn').addEventListener('click', () => {
   state.landscape.clear(); state.region.clear(); state.season.clear(); state.extras.clear();
   renderEnv();
