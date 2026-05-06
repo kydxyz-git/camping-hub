@@ -117,6 +117,13 @@
       "color": "#5E6C4F",
       "eps": [
         {
+          "title": "포켓4 악세사리 이거 하나면 끝!",
+          "url": "https://www.instagram.com/reel/DYAx2p_zTjk/?igsh=MW8xNmhqZmNoM2Y5aQ==",
+          "thumb": "./images/series/gear-02.jpg",
+          "page_id": "35802bbd-cd95-802b-90e6-c82814ea57ad",
+          "ep": 0
+        },
+        {
           "ep": 0,
           "title": "도쿄크래프트 지카테이블2",
           "url": "https://www.instagram.com/p/DWkX9XuE7wz",
@@ -1410,7 +1417,7 @@
     }
   ],
   "_metadata": {
-    "last_sync": "2026-05-06T14:07:06Z",
+    "last_sync": "2026-05-06T23:44:48Z",
     "page_id_index_complete": true,
     "notion_collections": {
       "series": "d867d959-4c1b-487c-b7e0-ae7d82987520",
