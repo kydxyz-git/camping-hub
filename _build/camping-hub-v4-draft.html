@@ -118,6 +118,17 @@
       font-weight: 500; line-height: 1.6;
       word-break: keep-all;
     }
+    .header-badge {
+      display: inline-flex; align-items: center;
+      margin-top: 6px;
+      padding: 3px 9px;
+      background: var(--point); color: #fff;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: -0.01em;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+    .header-badge:empty { display: none; }
 
     /* ── 탭 바 (4개) ── */
     .tab-bar {
@@ -489,6 +500,7 @@ const camps = [
     </div>
     <div class="header-right">
       <p class="header-sub" id="header-sub"></p>
+      <span class="header-badge" id="header-badge"></span>
     </div>
   </header>
 
@@ -586,6 +598,7 @@ function renderConfig() {
   document.getElementById('header-label').textContent = siteConfig.headerLabel;
   document.getElementById('header-title').innerHTML = siteConfig.headerTitle.replace(/\n/g, '<br>');
   document.getElementById('header-sub').innerHTML   = siteConfig.headerSub.replace(/\n/g, '<br>');
+  document.getElementById('header-badge').textContent = siteConfig.headerBadge || '';
   document.getElementById('tab-btn-1').textContent  = siteConfig.tab1;
   document.getElementById('tab-btn-2').textContent  = siteConfig.tab2;
   document.getElementById('tab-btn-3').textContent  = siteConfig.tab3;

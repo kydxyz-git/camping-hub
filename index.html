@@ -118,6 +118,17 @@
       font-weight: 500; line-height: 1.6;
       word-break: keep-all;
     }
+    .header-badge {
+      display: inline-flex; align-items: center;
+      margin-top: 6px;
+      padding: 3px 9px;
+      background: var(--point); color: #fff;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: -0.01em;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+    .header-badge:empty { display: none; }
 
     /* ── 탭 바 (4개) ── */
     .tab-bar {
@@ -360,7 +371,8 @@ const siteConfig = {
   "foodPartnersLine2": " 제휴 링크가 포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다.",
   "priceNotice": "해당 제품 금액은 등록 시기 금액으로 현재 금액이랑 상이할 수 있습니다.",
   "itemPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 컬리 큐레이터, 네이버 쇼핑 커넥트",
-  "itemPartnersLine2": " 제휴 링크가 포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다."
+  "itemPartnersLine2": " 제휴 링크가 포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다.",
+  "headerBadge": "🤝 그래가파트너스"
 };
 
 
@@ -648,6 +660,7 @@ const camps = [
     </div>
     <div class="header-right">
       <p class="header-sub" id="header-sub"></p>
+      <span class="header-badge" id="header-badge"></span>
     </div>
   </header>
 
@@ -745,6 +758,7 @@ function renderConfig() {
   document.getElementById('header-label').textContent = siteConfig.headerLabel;
   document.getElementById('header-title').innerHTML = siteConfig.headerTitle.replace(/\n/g, '<br>');
   document.getElementById('header-sub').innerHTML   = siteConfig.headerSub.replace(/\n/g, '<br>');
+  document.getElementById('header-badge').textContent = siteConfig.headerBadge || '';
   document.getElementById('tab-btn-1').textContent  = siteConfig.tab1;
   document.getElementById('tab-btn-2').textContent  = siteConfig.tab2;
   document.getElementById('tab-btn-3').textContent  = siteConfig.tab3;
