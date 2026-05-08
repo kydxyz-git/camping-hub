@@ -978,10 +978,12 @@ function applyMarquee() {
       const safariUrl = url.replace(/^https?:\/\//, 'x-safari-https://');
       window.location.href = safariUrl;
     } else if (isAndroid) {
-      // Android: intent:// 스킴으로 Chrome(또는 기본 브라우저) 강제 호출
+      // Android: intent:// 스킴으로 사용자 기본 브라우저(삼성 인터넷/Chrome/Whale 등)로 강제 호출
+      // package 미지정 → Android가 사용자가 설정한 기본 브라우저로 자동 열기
       // S.browser_fallback_url로 실패 시 원본 URL fallback
       const intentUrl = 'intent://' + url.replace(/^https?:\/\//, '') +
-        '#Intent;scheme=https;package=com.android.chrome;' +
+        '#Intent;scheme=https;action=android.intent.action.VIEW;' +
+        'category=android.intent.category.BROWSABLE;' +
         'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
       window.location.href = intentUrl;
     } else {
