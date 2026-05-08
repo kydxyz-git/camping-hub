@@ -1,0 +1,24 @@
+# robots.txt for kydz.kr
+# 공대남자의 캠핑이야기
+
+User-agent: *
+Allow: /
+
+# 네이버 검색
+User-agent: Yeti
+Allow: /
+
+# 구글 검색
+User-agent: Googlebot
+Allow: /
+
+# 빙 검색
+User-agent: Bingbot
+Allow: /
+
+# 다음 검색
+User-agent: Daumoa
+Allow: /
+
+# 사이트맵 위치
+Sitemap: https://kydz.kr/sitemap.xml
