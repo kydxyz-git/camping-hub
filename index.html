@@ -954,76 +954,49 @@ function applyMarquee() {
   });
 }
 
-/* ─── 인스타 링크 → 앱 우선 열기 (모바일) / 새 탭 (PC) ─── */
+/* ─── 인스타 링크 → 인앱 브라우저는 외부 브라우저로 강제 전환 ─── */
 /* 처리 케이스:
-   1. 인스타 인앱 브라우저(kydz.kr 들어왔을 때): instagram:// 스킴으로 앱 전환
-   2. 일반 모바일 브라우저(Chrome/Safari): instagram:// 우선 시도, 미설치 시 https fallback
-   3. PC: 그냥 새 탭으로 https 열기 */
+   1. 인스타 인앱 브라우저(인스타에서 kydz.kr 들어옴): 외부 기본 브라우저로 강제 열기
+      → 외부 브라우저에서 OS의 Universal Link가 인스타 앱 자동 호출 (팝업 없음)
+   2. 일반 모바일 브라우저(Chrome/Safari): 그대로 두기 (Universal Link 정상 작동)
+   3. PC: 그대로 두기 (target=_blank 새 탭) */
 (function() {
-  function isMobile() {
-    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  }
-  function buildAppScheme(url) {
-    // instagram.com/{username}/ → instagram://user?username={username}
-    // instagram.com/p/{id}/ → instagram://media?shortcode={id}
-    // instagram.com/reel/{id}/ → instagram://reels_share?shortcode={id} (대안: media?shortcode)
-    try {
-      const u = new URL(url);
-      if (!/instagram\.com$/i.test(u.hostname.replace(/^www\./, ''))) return null;
-      const parts = u.pathname.split('/').filter(Boolean);
-      if (parts.length === 0) return 'instagram://app';
-      if (parts[0] === 'p' && parts[1]) {
-        return 'instagram://media?shortcode=' + parts[1];
-      }
-      if (parts[0] === 'reel' && parts[1]) {
-        return 'instagram://media?shortcode=' + parts[1];
-      }
-      if (parts[0] === 'reels' && parts[1]) {
-        return 'instagram://media?shortcode=' + parts[1];
-      }
-      // 프로필: /{username}/
-      if (parts.length === 1 || (parts.length >= 1 && !['p','reel','reels','tv','stories','explore'].includes(parts[0]))) {
-        return 'instagram://user?username=' + parts[0];
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-  function openInstagramApp(url) {
-    const scheme = buildAppScheme(url);
-    if (!scheme) {
-      // 변환 실패 시 그냥 https로
+  const ua = navigator.userAgent || '';
+  const isIOS = /iPhone|iPad|iPod/i.test(ua);
+  const isAndroid = /Android/i.test(ua);
+  // 인스타 인앱 브라우저 감지 (UA에 'Instagram' 포함)
+  const isInstagramInApp = /Instagram/i.test(ua);
+  // 페북 인앱 브라우저(FBAN/FBAV)도 같은 처리 (메타 자회사라 동작 동일)
+  const isMetaInApp = isInstagramInApp || /FBAN|FBAV/i.test(ua);
+
+  // 인앱 브라우저가 아니면 아무것도 안 함 (브라우저 기본 동작 유지 → Universal Link 작동)
+  if (!isMetaInApp) return;
+
+  function openInExternalBrowser(url) {
+    if (isIOS) {
+      // iOS: x-safari-https:// 스킴으로 Safari 강제 호출
+      const safariUrl = url.replace(/^https?:\/\//, 'x-safari-https://');
+      window.location.href = safariUrl;
+    } else if (isAndroid) {
+      // Android: intent:// 스킴으로 Chrome(또는 기본 브라우저) 강제 호출
+      // S.browser_fallback_url로 실패 시 원본 URL fallback
+      const intentUrl = 'intent://' + url.replace(/^https?:\/\//, '') +
+        '#Intent;scheme=https;package=com.android.chrome;' +
+        'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+      window.location.href = intentUrl;
+    } else {
+      // 알 수 없는 인앱 브라우저: fallback으로 원본 URL
       window.open(url, '_blank', 'noopener');
-      return;
     }
-    // iOS/Android 모두에서 작동하는 방식: hidden iframe + setTimeout fallback
-    const startedAt = Date.now();
-    const fallback = setTimeout(function() {
-      // 1.2초 후에도 페이지가 살아있으면 앱 미설치 → 웹으로
-      if (Date.now() - startedAt < 2000 && !document.hidden) {
-        window.location.href = url;
-      }
-    }, 1200);
-    // 앱으로 전환되면 visibilitychange 발생 → fallback 취소
-    function cancelFallback() {
-      if (document.hidden) {
-        clearTimeout(fallback);
-        document.removeEventListener('visibilitychange', cancelFallback);
-      }
-    }
-    document.addEventListener('visibilitychange', cancelFallback);
-    // 스킴 호출
-    window.location.href = scheme;
   }
+
   document.addEventListener('click', function(e) {
     const a = e.target.closest('a[href]');
     if (!a) return;
     const href = a.getAttribute('href');
     if (!href || !/^https?:\/\/(www\.)?instagram\.com/i.test(href)) return;
-    if (!isMobile()) return;  // PC는 기본 동작 (target=_blank)
     e.preventDefault();
-    openInstagramApp(href);
+    openInExternalBrowser(href);
   }, true);
 })();
 
