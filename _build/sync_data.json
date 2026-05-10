@@ -27,6 +27,13 @@
       "color": "#F5A623",
       "eps": [
         {
+          "ep": 3,
+          "title": "4년 동안 27번 간 이유?",
+          "url": "https://www.instagram.com/reel/DYLENgzTkMj/?igsh=ZWh3bm4xbmpzcjRv",
+          "thumb": "./images/series/summer-ep03.jpg",
+          "page_id": "35c02bbd-cd95-8024-aa85-e08823bd611f"
+        },
+        {
           "ep": 2,
           "title": "물이 이렇게 맑다고?",
           "url": "https://www.instagram.com/reel/DXv5NXvB08F/?igsh=Z25wcnczeTVleHVw",
@@ -1418,7 +1425,7 @@
     }
   ],
   "_metadata": {
-    "last_sync": "2026-05-08T14:53:01Z",
+    "last_sync": "2026-05-10T22:49:58Z",
     "page_id_index_complete": true,
     "notion_collections": {
       "series": "d867d959-4c1b-487c-b7e0-ae7d82987520",
@@ -1430,6 +1437,11 @@
     "instructions": "All series/foods/items/camps have page_id field. New chats can fetch by ID directly without searching. Compare page timestamp vs last_sync to detect changes.",
     "cached_pages": {
       "series": [
+        {
+          "page_id": "35c02bbd-cd95-8024-aa85-e08823bd611f",
+          "title": "4년 동안 27번 간 이유?",
+          "series_name": "여름에 가기 좋은 캠핑장"
+        },
         {
           "page_id": "35202bbd-cd95-8082-b44c-da888a032c30",
           "title": "물이 이렇게 맑다고?",
