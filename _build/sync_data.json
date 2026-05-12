@@ -27,6 +27,13 @@
       "color": "#F5A623",
       "eps": [
         {
+          "ep": 4,
+          "title": "저장 안 하면 후회할 계곡",
+          "url": "https://www.instagram.com/reel/DYQSBYjTGH7/?igsh=MTZtdzRweG9zbGtpZA==",
+          "thumb": "./images/series/summer-ep04.jpg",
+          "page_id": "35e02bbd-cd95-8070-8a80-f4e601d7cb8b"
+        },
+        {
           "ep": 3,
           "title": "4년 동안 27번 간 이유?",
           "url": "https://www.instagram.com/reel/DYLENgzTkMj/?igsh=ZWh3bm4xbmpzcjRv",
@@ -1425,7 +1432,7 @@
     }
   ],
   "_metadata": {
-    "last_sync": "2026-05-10T22:49:58Z",
+    "last_sync": "2026-05-12T23:47:25Z",
     "page_id_index_complete": true,
     "notion_collections": {
       "series": "d867d959-4c1b-487c-b7e0-ae7d82987520",
@@ -1437,6 +1444,11 @@
     "instructions": "All series/foods/items/camps have page_id field. New chats can fetch by ID directly without searching. Compare page timestamp vs last_sync to detect changes.",
     "cached_pages": {
       "series": [
+        {
+          "page_id": "35e02bbd-cd95-8070-8a80-f4e601d7cb8b",
+          "title": "저장 안 하면 후회할 계곡",
+          "series_name": "여름에 가기 좋은 캠핑장"
+        },
         {
           "page_id": "35c02bbd-cd95-8024-aa85-e08823bd611f",
           "title": "4년 동안 27번 간 이유?",
