@@ -343,7 +343,8 @@
     /* ── 푸터 ── */
     .footer { background:var(--text); color:var(--bg); padding:24px 20px 20px; text-align:center; }
     .footer-btn { display:block; padding:13px 20px; background:var(--bg); color:var(--text); border-radius:8px; font-size:13px; font-weight:700; margin:0 auto 14px; max-width:280px; }
-    .footer-collab { font-size:11px; opacity:0.55; letter-spacing:0.02em; margin-bottom:12px; }
+    .footer-collab { font-size:11px; opacity:0.55; letter-spacing:0.02em; margin-bottom:12px; line-height:1.7; }
+    .footer-collab a { color:var(--bg); text-decoration:underline; text-underline-offset:2px; }
     .footer-credits { font-size:10px; opacity:0.35; letter-spacing:0.05em; padding-top:12px; border-top:1px solid rgba(255,255,255,0.08); }
 
     @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
@@ -365,7 +366,7 @@ const siteConfig = {
   "partnersLine2": "이에 따른 일정액의 수수료를 제공받습니다.",
   "footerInstaBtn": "인스타 @kyd_zm",
   "footerInstaUrl": "https://www.instagram.com/kyd_zm/",
-  "footerCollab": "캠핑장 · 캠핑장비 · 캠핑음식 협업 환영 · DM",
+  "footerCollab": "캠핑장 · 캠핑장비 · 캠핑음식 협업 환영<br><a href=\"https://ig.me/m/kyd_zm\" target=\"_blank\">DM</a> or <a href=\"mailto:kydzmm@gmail.com\">E-mail (kydzmm@gmail.com)</a>",
   "footerCredits": "© 2026 공대남자",
   "foodPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 컬리 큐레이터, 네이버 쇼핑 커넥트",
   "foodPartnersLine2": " 제휴 링크가 포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다.",
@@ -790,7 +791,7 @@ function renderConfig() {
   const footerBtn = document.getElementById('footer-insta-btn');
   footerBtn.textContent = siteConfig.footerInstaBtn;
   footerBtn.href = siteConfig.footerInstaUrl;
-  document.getElementById('footer-collab').textContent   = siteConfig.footerCollab;
+  document.getElementById('footer-collab').innerHTML   = siteConfig.footerCollab;
   document.getElementById('footer-credits').textContent  = siteConfig.footerCredits;
 }
 
