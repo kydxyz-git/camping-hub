@@ -341,10 +341,13 @@
     .empty-msg { grid-column:1/-1; padding:60px 20px; text-align:center; color:var(--text-sub); font-size:13px; }
 
     /* ── 푸터 ── */
-    .footer { background:var(--text); color:var(--bg); padding:24px 20px 20px; text-align:center; }
-    .footer-btn { display:block; padding:13px 20px; background:var(--bg); color:var(--text); border-radius:8px; font-size:13px; font-weight:700; margin:0 auto 14px; max-width:280px; }
-    .footer-collab { font-size:11px; opacity:0.55; letter-spacing:0.02em; margin-bottom:12px; line-height:1.7; }
-    .footer-collab a { color:var(--bg); text-decoration:underline; text-underline-offset:2px; }
+    .footer { background:var(--text); color:var(--bg); padding:28px 20px 20px; text-align:center; }
+    .footer-collab-label { font-size:11px; opacity:0.55; letter-spacing:0.02em; margin-bottom:14px; line-height:1.6; }
+    .footer-cta-row { display:flex; gap:8px; max-width:320px; margin:0 auto 18px; }
+    .footer-cta { flex:1; padding:13px 12px; background:var(--bg); color:var(--text); border-radius:8px; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .footer-cta-icon { font-size:14px; line-height:1; }
+    .footer-insta-link { display:inline-block; font-size:12px; opacity:0.6; letter-spacing:0.02em; margin-bottom:14px; color:var(--bg); }
+    .footer-insta-link:hover { opacity:0.85; }
     .footer-credits { font-size:10px; opacity:0.35; letter-spacing:0.05em; padding-top:12px; border-top:1px solid rgba(255,255,255,0.08); }
 
     @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
@@ -364,9 +367,11 @@ const siteConfig = {
   "tab4": "추천 템",
   "partnersLine1": "이 포스팅은 쿠팡 파트너스 활동의 일환으로,",
   "partnersLine2": "이에 따른 일정액의 수수료를 제공받습니다.",
-  "footerInstaBtn": "인스타 @kyd_zm",
+  "footerInstaLink": "@kyd_zm · 인스타 프로필 →",
   "footerInstaUrl": "https://www.instagram.com/kyd_zm/",
-  "footerCollab": "캠핑장 · 캠핑장비 · 캠핑음식 협업 환영<br><a href=\"https://ig.me/m/kyd_zm\" target=\"_blank\">DM</a> or <a href=\"mailto:kydzmm@gmail.com\">E-mail (kydzmm@gmail.com)</a>",
+  "footerCollab": "캠핑장 · 캠핑장비 · 캠핑음식 협업 환영",
+  "footerDmUrl": "https://ig.me/m/kyd_zm",
+  "footerEmail": "kydzmm@gmail.com",
   "footerCredits": "© 2026 공대남자",
   "foodPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 컬리 큐레이터, 네이버 쇼핑 커넥트",
   "foodPartnersLine2": " 제휴 링크가 포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다.",
@@ -742,8 +747,16 @@ const camps = [
 
   <!-- 푸터 -->
   <footer class="footer">
-    <a id="footer-insta-btn" target="_blank" class="footer-btn"></a>
-    <div class="footer-collab" id="footer-collab"></div>
+    <div class="footer-collab-label" id="footer-collab"></div>
+    <div class="footer-cta-row">
+      <a id="footer-dm-btn" target="_blank" class="footer-cta">
+        <span class="footer-cta-icon">💬</span><span>DM 보내기</span>
+      </a>
+      <a id="footer-email-btn" class="footer-cta">
+        <span class="footer-cta-icon">✉</span><span>메일 보내기</span>
+      </a>
+    </div>
+    <a id="footer-insta-link" target="_blank" class="footer-insta-link"></a>
     <div class="footer-credits" id="footer-credits"></div>
   </footer>
 
@@ -788,10 +801,15 @@ function renderConfig() {
   const priceNotice = siteConfig.priceNotice || '';
   document.getElementById('price-notice-food').textContent = priceNotice;
   document.getElementById('price-notice-item').textContent = priceNotice;
-  const footerBtn = document.getElementById('footer-insta-btn');
-  footerBtn.textContent = siteConfig.footerInstaBtn;
-  footerBtn.href = siteConfig.footerInstaUrl;
-  document.getElementById('footer-collab').innerHTML   = siteConfig.footerCollab;
+  // 푸터 ─ DM/메일 CTA + 인스타 프로필 보조 링크
+  const dmBtn = document.getElementById('footer-dm-btn');
+  dmBtn.href = siteConfig.footerDmUrl;
+  const emailBtn = document.getElementById('footer-email-btn');
+  emailBtn.href = 'mailto:' + siteConfig.footerEmail;
+  const instaLink = document.getElementById('footer-insta-link');
+  instaLink.textContent = siteConfig.footerInstaLink;
+  instaLink.href = siteConfig.footerInstaUrl;
+  document.getElementById('footer-collab').textContent   = siteConfig.footerCollab;
   document.getElementById('footer-credits').textContent  = siteConfig.footerCredits;
 }
 
