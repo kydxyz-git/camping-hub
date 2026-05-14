@@ -350,6 +350,27 @@
     .footer-insta-link:hover { opacity:0.85; }
     .footer-credits { font-size:10px; opacity:0.35; letter-spacing:0.05em; padding-top:12px; border-top:1px solid rgba(255,255,255,0.08); }
 
+    /* ── 이메일 모달 ── */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:9999; padding:20px; }
+    .modal-overlay.is-open { display:flex; animation:fadeIn 0.18s ease-out; }
+    .modal-card { background:var(--bg); color:var(--text); border-radius:14px; max-width:340px; width:100%; padding:28px 24px 22px; position:relative; animation:modalUp 0.22s ease-out; }
+    .modal-close { position:absolute; top:10px; right:10px; width:32px; height:32px; background:transparent; border:none; cursor:pointer; font-size:20px; line-height:1; color:var(--text); opacity:0.4; }
+    .modal-close:hover { opacity:0.9; }
+    .modal-label { font-size:11px; opacity:0.55; letter-spacing:0.02em; text-align:center; margin-bottom:6px; }
+    .modal-email { font-size:16px; font-weight:700; text-align:center; margin-bottom:20px; word-break:break-all; letter-spacing:-0.01em; }
+    .modal-btn-row { display:flex; flex-direction:column; gap:8px; }
+    .modal-btn { padding:13px 16px; border-radius:8px; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; border:none; }
+    .modal-btn-primary { background:var(--text); color:var(--bg); }
+    .modal-btn-secondary { background:#f0f0ee; color:var(--text); }
+    .modal-btn-icon { font-size:14px; line-height:1; }
+
+    /* ── 토스트 ── */
+    .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:10px 18px; border-radius:100px; font-size:13px; font-weight:600; z-index:10000; opacity:0; pointer-events:none; transition:opacity 0.2s; }
+    .toast.is-visible { opacity:1; }
+
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    @keyframes modalUp { from{opacity:0;transform:translateY(12px) scale(0.98)} to{opacity:1;transform:translateY(0) scale(1)} }
+
     @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
   </style>
 </head>
@@ -752,13 +773,33 @@ const camps = [
       <a id="footer-dm-btn" target="_blank" class="footer-cta">
         <span class="footer-cta-icon">💬</span><span>DM 보내기</span>
       </a>
-      <a id="footer-email-btn" class="footer-cta">
+      <button type="button" id="footer-email-btn" class="footer-cta">
         <span class="footer-cta-icon">✉</span><span>메일 보내기</span>
-      </a>
+      </button>
     </div>
     <a id="footer-insta-link" target="_blank" class="footer-insta-link"></a>
     <div class="footer-credits" id="footer-credits"></div>
   </footer>
+
+  <!-- 이메일 모달 -->
+  <div class="modal-overlay" id="email-modal" role="dialog" aria-modal="true" aria-labelledby="email-modal-label">
+    <div class="modal-card">
+      <button type="button" class="modal-close" id="email-modal-close" aria-label="닫기">×</button>
+      <div class="modal-label" id="email-modal-label">협업 메일 주소</div>
+      <div class="modal-email" id="email-modal-address"></div>
+      <div class="modal-btn-row">
+        <button type="button" class="modal-btn modal-btn-primary" id="email-modal-copy">
+          <span class="modal-btn-icon">📋</span><span>복사하기</span>
+        </button>
+        <button type="button" class="modal-btn modal-btn-secondary" id="email-modal-mailto">
+          <span class="modal-btn-icon">✉</span><span>메일 앱 열기</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 토스트 -->
+  <div class="toast" id="toast"></div>
 
 <script>
 /* ─── 캠핑장 필터/Landscape 데이터 ─── */
@@ -805,12 +846,59 @@ function renderConfig() {
   const dmBtn = document.getElementById('footer-dm-btn');
   dmBtn.href = siteConfig.footerDmUrl;
   const emailBtn = document.getElementById('footer-email-btn');
-  emailBtn.href = 'mailto:' + siteConfig.footerEmail;
+  emailBtn.addEventListener('click', openEmailModal);
   const instaLink = document.getElementById('footer-insta-link');
   instaLink.textContent = siteConfig.footerInstaLink;
   instaLink.href = siteConfig.footerInstaUrl;
   document.getElementById('footer-collab').textContent   = siteConfig.footerCollab;
   document.getElementById('footer-credits').textContent  = siteConfig.footerCredits;
+
+  // 이메일 모달 — 주소 주입 + 이벤트 바인딩
+  const modal = document.getElementById('email-modal');
+  const modalAddress = document.getElementById('email-modal-address');
+  const modalCopy = document.getElementById('email-modal-copy');
+  const modalMailto = document.getElementById('email-modal-mailto');
+  const modalClose = document.getElementById('email-modal-close');
+  modalAddress.textContent = siteConfig.footerEmail;
+  modalCopy.addEventListener('click', copyEmail);
+  modalMailto.addEventListener('click', () => {
+    window.location.href = 'mailto:' + siteConfig.footerEmail;
+    closeEmailModal();
+  });
+  modalClose.addEventListener('click', closeEmailModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeEmailModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('is-open')) closeEmailModal(); });
+}
+
+function openEmailModal() {
+  document.getElementById('email-modal').classList.add('is-open');
+}
+function closeEmailModal() {
+  document.getElementById('email-modal').classList.remove('is-open');
+}
+async function copyEmail() {
+  const email = siteConfig.footerEmail;
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(email);
+    } else {
+      // 폴백: execCommand
+      const ta = document.createElement('textarea');
+      ta.value = email; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    }
+    showToast('복사됐어요!');
+  } catch (e) {
+    showToast('복사에 실패했어요');
+  }
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('is-visible');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('is-visible'), 1800);
 }
 
 /* ─── 시리즈 렌더 ─── */
