@@ -59,7 +59,16 @@ ls /home/claude/sync_data.json /home/claude/gh-camping-hub  # 환경 확인
 3. `last_sync` 갱신
 4. `_build/sync_data.json`에도 동일하게 저장
 
-### Step 6 — 빌드 + 검증 + push
+### Step 6 — sitemap.xml 갱신 (SEO)
+```bash
+python3 tools/update_sitemap.py
+# → 모든 <lastmod>를 오늘 KST 날짜로 일괄 갱신
+# 검색엔진(네이버/구글)이 사이트 변경을 빠르게 감지하도록
+```
+- 콘텐츠가 실제로 추가/변경됐을 때만 실행 (CSS·문구만 바꾼 경우 생략 가능)
+- 특정 날짜로 지정: `python3 tools/update_sitemap.py --date 2026-05-18`
+
+### Step 7 — 빌드 + 검증 + push
 ```bash
 python3 /home/claude/build.py
 # JSON 파싱 검증, CSS/JS 변경 반영 확인
@@ -74,6 +83,7 @@ git add -A && git commit -m "sync: ..."
 - ❌ 캐시된 page_id를 무시하고 search만으로 비교 (search는 보조 수단)
 - ❌ 사용자가 "X 추가했어" 라고 말했는데 1\~2개 키워드만 시도하고 포기
 - ❌ cached_pages 갱신 빠뜨리기 (다음 동기화 때 그 ep가 또 안 잡힘)
+- ❌ 콘텐츠 추가했는데 sitemap.xml lastmod 갱신 빠뜨리기 (검색 노출 지연)
 
 ## 향후 확장
 
