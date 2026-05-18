@@ -118,9 +118,12 @@
       font-weight: 500; line-height: 1.6;
       word-break: keep-all;
     }
+    .header-badges {
+      display: inline-flex; flex-wrap: wrap; gap: 5px;
+      margin-top: 6px; justify-content: flex-end;
+    }
     .header-badge {
       display: inline-flex; align-items: center;
-      margin-top: 6px;
       padding: 3px 9px;
       background: #1a1a1a; color: #fff;
       font-size: 10px; font-weight: 700;
@@ -129,6 +132,11 @@
       white-space: nowrap;
     }
     .header-badge:empty { display: none; }
+    .header-badge-naver {
+      background: #03C75A;
+    }
+    .header-badge-naver:hover { background: #02b551; }
+    a.header-badge { text-decoration: none; }
 
     /* ── 탭 바 (4개) ── */
     .tab-bar {
@@ -399,7 +407,9 @@ const siteConfig = {
   "priceNotice": "해당 제품 금액은 등록 시기 금액으로 현재 금액이랑 상이할 수 있습니다.",
   "itemPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 컬리 큐레이터, 네이버 쇼핑 커넥트",
   "itemPartnersLine2": " 제휴 링크가 포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다.",
-  "headerBadge": "🤝 그래가파트너스"
+  "headerBadge": "🤝 그래가파트너스",
+  "headerBadgeNaver": "🎬 네이버클립크리에이터",
+  "headerBadgeNaverUrl": "https://naver.me/F5sDt9uw"
 };
 
 
@@ -708,7 +718,10 @@ const camps = [
     </div>
     <div class="header-right">
       <p class="header-sub" id="header-sub"></p>
-      <span class="header-badge" id="header-badge"></span>
+      <div class="header-badges">
+        <span class="header-badge" id="header-badge"></span>
+        <a class="header-badge header-badge-naver" id="header-badge-naver" target="_blank" rel="noopener"></a>
+      </div>
     </div>
   </header>
 
@@ -835,6 +848,13 @@ function renderConfig() {
   document.getElementById('header-title').innerHTML = siteConfig.headerTitle.replace(/\n/g, '<br>');
   document.getElementById('header-sub').innerHTML   = siteConfig.headerSub.replace(/\n/g, '<br>');
   document.getElementById('header-badge').textContent = siteConfig.headerBadge || '';
+  const naverBadge = document.getElementById('header-badge-naver');
+  if (siteConfig.headerBadgeNaver && siteConfig.headerBadgeNaverUrl) {
+    naverBadge.textContent = siteConfig.headerBadgeNaver;
+    naverBadge.href = siteConfig.headerBadgeNaverUrl;
+  } else {
+    naverBadge.style.display = 'none';
+  }
   document.getElementById('tab-btn-1').textContent  = siteConfig.tab1;
   document.getElementById('tab-btn-2').textContent  = siteConfig.tab2;
   document.getElementById('tab-btn-3').textContent  = siteConfig.tab3;
