@@ -136,6 +136,12 @@
     .header-badge-naver {
       background: #03C75A;
     }
+    .header-badge-naver-icon {
+      display: inline-block;
+      margin-right: 4px;
+      /* 이모지를 흰색 단색으로 변환 + 살짝 밝게 */
+      filter: brightness(0) invert(1);
+    }
     a.header-badge.header-badge-naver:hover { background: #02b551; }
     a.header-badge { text-decoration: none; }
 
@@ -410,7 +416,8 @@ const siteConfig = {
   "itemPartnersLine2": " 제휴 링크가 포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다.",
   "headerBadge": "🤝 그래가파트너스",
   "headerBadgeUrl": "https://graega.short.gy/membership-kydzm",
-  "headerBadgeNaver": "📎 네이버클립크리에이터",
+  "headerBadgeNaver": "네이버클립크리에이터",
+  "headerBadgeNaverIcon": "📎",
   "headerBadgeNaverUrl": "https://naver.me/F5sDt9uw"
 };
 
@@ -859,7 +866,10 @@ function renderConfig() {
   }
   const naverBadge = document.getElementById('header-badge-naver');
   if (siteConfig.headerBadgeNaver && siteConfig.headerBadgeNaverUrl) {
-    naverBadge.textContent = siteConfig.headerBadgeNaver;
+    // 이모지는 별도 span으로 감싸서 흰색 필터 적용
+    const icon = siteConfig.headerBadgeNaverIcon || '';
+    const text = siteConfig.headerBadgeNaver;
+    naverBadge.innerHTML = (icon ? `<span class="header-badge-naver-icon">${icon}</span>` : '') + text;
     naverBadge.href = siteConfig.headerBadgeNaverUrl;
   } else {
     naverBadge.style.display = 'none';
