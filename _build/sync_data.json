@@ -388,6 +388,37 @@
       "page_id": "34902bbd-cd95-817b-904c-f3c04d3dd239"
     },
     {
+      "page_id": "36502bbd-cd95-8033-bc8f-de7f3ac087c5",
+      "name": "상우농장",
+      "region": "강원",
+      "seasons": [
+        "봄",
+        "여름",
+        "가을"
+      ],
+      "landscape": [
+        "계곡",
+        "산"
+      ],
+      "extras": [],
+      "graega": true,
+      "url": "https://graega.short.gy/31kydzm",
+      "imgs": [
+        "./images/camps/bed3417c309e.jpg",
+        "./images/camps/bed3417c309e-2.jpg",
+        "./images/camps/bed3417c309e-3.jpg",
+        "./images/camps/bed3417c309e-4.jpg",
+        "./images/camps/bed3417c309e-5.jpg",
+        "./images/camps/bed3417c309e-6.jpg",
+        "./images/camps/bed3417c309e-7.jpg",
+        "./images/camps/bed3417c309e-8.jpg",
+        "./images/camps/bed3417c309e-9.jpg",
+        "./images/camps/bed3417c309e-10.jpg"
+      ],
+      "rating": 5,
+      "visits": 1
+    },
+    {
       "name": "봉화별캠핑장",
       "region": "경북",
       "seasons": [
@@ -1439,7 +1470,7 @@
     }
   ],
   "_metadata": {
-    "last_sync": "2026-05-17T21:41:12Z",
+    "last_sync": "2026-05-19T13:31:12Z",
     "page_id_index_complete": true,
     "notion_collections": {
       "series": "d867d959-4c1b-487c-b7e0-ae7d82987520",
@@ -1523,6 +1554,10 @@
         }
       ],
       "camps": [
+        {
+          "page_id": "36502bbd-cd95-8033-bc8f-de7f3ac087c5",
+          "title": "상우농장"
+        },
         {
           "page_id": "34902bbd-cd95-811d-88a0-d6c12adf4086",
           "name": "합천호코지캠핑장"
