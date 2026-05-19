@@ -136,7 +136,8 @@
     .header-badge-naver {
       background: #03C75A;
     }
-    .header-badge-naver-icon {
+    .header-badge-naver-icon,
+    .header-badge-icon {
       display: inline-block;
       width: 12px; height: 12px;
       margin-right: 4px;
@@ -414,7 +415,8 @@ const siteConfig = {
   "priceNotice": "해당 제품 금액은 등록 시기 금액으로 현재 금액이랑 상이할 수 있습니다.",
   "itemPartnersLine1": "이 게시물에는 쿠팡 파트너스 및 컬리 큐레이터, 네이버 쇼핑 커넥트",
   "itemPartnersLine2": " 제휴 링크가 포함되어 있으며, 구매 시 일정액의 수수료를 제공받습니다.",
-  "headerBadge": "🤝 그래가파트너스",
+  "headerBadge": "그래가파트너스",
+  "headerBadgeIcon": "./images/refs/graega-icon.png",
   "headerBadgeUrl": "https://graega.short.gy/membership-kydzm",
   "headerBadgeNaver": "Clip Creators",
   "headerBadgeNaverIcon": "./images/refs/clipcreators-icon.png",
@@ -856,31 +858,38 @@ function renderConfig() {
   document.getElementById('header-label').textContent = siteConfig.headerLabel;
   document.getElementById('header-title').innerHTML = siteConfig.headerTitle.replace(/\n/g, '<br>');
   document.getElementById('header-sub').innerHTML   = siteConfig.headerSub.replace(/\n/g, '<br>');
-  const graegaBadge = document.getElementById('header-badge');
-  graegaBadge.textContent = siteConfig.headerBadge || '';
-  if (siteConfig.headerBadgeUrl) {
-    graegaBadge.href = siteConfig.headerBadgeUrl;
-  } else {
-    graegaBadge.removeAttribute('href');
-    graegaBadge.style.cursor = 'default';
-  }
-  const naverBadge = document.getElementById('header-badge-naver');
-  if (siteConfig.headerBadgeNaver && siteConfig.headerBadgeNaverUrl) {
-    const icon = siteConfig.headerBadgeNaverIcon || '';
-    const text = siteConfig.headerBadgeNaver;
-    // 아이콘이 이미지 경로인지 이모지인지 판별
+  // 헤더 뱃지 — 그래가 + 네이버클립 (아이콘 이미지/이모지 자동 분기)
+  function renderBadge(el, text, icon, url, iconClass) {
+    if (!text) { el.style.display = 'none'; return; }
     const isImage = icon && (icon.startsWith('./') || icon.startsWith('/') || icon.startsWith('http'));
     let iconHtml = '';
     if (isImage) {
-      iconHtml = `<img class="header-badge-naver-icon" src="${icon}" alt="">`;
+      iconHtml = `<img class="${iconClass}" src="${icon}" alt="">`;
     } else if (icon) {
-      iconHtml = `<span class="header-badge-naver-icon">${icon}</span>`;
+      iconHtml = `<span class="${iconClass}">${icon}</span>`;
     }
-    naverBadge.innerHTML = iconHtml + text;
-    naverBadge.href = siteConfig.headerBadgeNaverUrl;
-  } else {
-    naverBadge.style.display = 'none';
+    el.innerHTML = iconHtml + text;
+    if (url) {
+      el.href = url;
+    } else {
+      el.removeAttribute('href');
+      el.style.cursor = 'default';
+    }
   }
+  renderBadge(
+    document.getElementById('header-badge'),
+    siteConfig.headerBadge,
+    siteConfig.headerBadgeIcon,
+    siteConfig.headerBadgeUrl,
+    'header-badge-icon'
+  );
+  renderBadge(
+    document.getElementById('header-badge-naver'),
+    siteConfig.headerBadgeNaver,
+    siteConfig.headerBadgeNaverIcon,
+    siteConfig.headerBadgeNaverUrl,
+    'header-badge-naver-icon'
+  );
   document.getElementById('tab-btn-1').textContent  = siteConfig.tab1;
   document.getElementById('tab-btn-2').textContent  = siteConfig.tab2;
   document.getElementById('tab-btn-3').textContent  = siteConfig.tab3;
