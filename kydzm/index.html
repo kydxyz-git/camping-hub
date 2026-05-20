@@ -106,8 +106,63 @@
   .container { max-width: 960px; margin: 0 auto; padding: 24px 20px; }
   .section-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; letter-spacing: -0.01em; }
 
+  /* ── 콘텐츠 탭 바 (시리즈/캠핑장/음식/장비 빠른 이동) ── */
+  .content-tabs {
+    position: sticky;
+    top: 48px;  /* topbar 높이 아래 */
+    z-index: 99;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding: 0 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .content-tabs::-webkit-scrollbar { display: none; }
+  .content-tabs-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    gap: 4px;
+    padding: 8px 0;
+  }
+  .content-tab {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+  .content-tab:hover { background: var(--accent-soft); color: var(--text); }
+  .content-tab.is-active {
+    background: var(--text);
+    color: var(--bg);
+  }
+  .content-tab.is-active:hover { color: var(--bg); }
+  .content-tab-icon { font-size: 14px; }
+
   /* ── 토큰 설정 카드 ── */
   .token-card { margin-bottom: 20px; }
+  .token-card.is-collapsed { padding: 12px 18px; }
+  .token-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
+  .token-card.is-collapsed .token-card-header { cursor: pointer; }
+  .token-card.is-expanded .token-card-header { cursor: pointer; margin-bottom: 12px; }
+  .token-card-header-left {
+    display: flex; align-items: center; gap: 10px;
+    flex: 1;
+  }
+  .token-card-chevron {
+    color: var(--muted); font-size: 14px;
+    user-select: none;
+  }
   .token-status {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 4px 10px; border-radius: 100px;
@@ -904,6 +959,7 @@
       <button class="topbar-btn" id="topbar-logout">로그아웃</button>
     </div>
   </div>
+  <div class="content-tabs" id="content-tabs" style="display:none;"></div>
   <div class="container" id="app-content">
     <!-- 화면 내용이 라우터에 의해 렌더됨 -->
   </div>
@@ -1370,6 +1426,9 @@ async function router() {
   const hash = (location.hash || '').replace(/^#/, '');
   const parts = hash ? hash.split('/').filter(Boolean) : [];
 
+  // 콘텐츠 탭 바: 리스트 화면(시리즈/캠핑장/음식/장비)에서만 표시
+  renderContentTabs(parts);
+
   if (parts.length === 0) {
     renderDashboard();
   } else if (parts[0] === 'camps') {
@@ -1404,34 +1463,86 @@ async function router() {
 // ════════════════════════════════════════════════════════════════════
 // 대시보드
 // ════════════════════════════════════════════════════════════════════
+let _tokenCardExpanded = false; // 토큰 카드 펼침 상태 (대시보드 재렌더 시 유지)
+
+// ════════════════════════════════════════════════════════════════════
+// 콘텐츠 탭 바 (시리즈/캠핑장/음식/장비 빠른 이동)
+// ════════════════════════════════════════════════════════════════════
+const CONTENT_TABS = [
+  { key: 'series',  icon: '🎬', label: '시리즈',   hash: 'series' },
+  { key: 'camps',   icon: '🏕', label: '캠핑장',   hash: 'camps' },
+  { key: 'foods',   icon: '🍖', label: '음식',     hash: 'foods' },
+  { key: 'items',   icon: '🛠', label: '장비',     hash: 'items' },
+];
+
+// 리스트 화면에서만 탭 표시. parts: location.hash split 결과
+// 리스트 뷰: parts === [tabKey] (정확히 1개) → 탭 표시
+// 폼/상세/대시보드: 탭 숨김
+function renderContentTabs(parts) {
+  const el = document.getElementById('content-tabs');
+  if (!el) return;
+  // 리스트 뷰가 아니면 숨김
+  const isListView = parts.length === 1 && CONTENT_TABS.some(t => t.key === parts[0]);
+  if (!isListView) {
+    el.style.display = 'none';
+    return;
+  }
+  const activeKey = parts[0];
+  el.style.display = 'block';
+  el.innerHTML = `
+    <div class="content-tabs-inner">
+      ${CONTENT_TABS.map(t => `
+        <a class="content-tab ${t.key === activeKey ? 'is-active' : ''}" href="#${t.hash}">
+          <span class="content-tab-icon">${t.icon}</span>
+          <span>${t.label}</span>
+        </a>
+      `).join('')}
+    </div>
+  `;
+}
+function hideContentTabs() {
+  const el = document.getElementById('content-tabs');
+  if (el) el.style.display = 'none';
+}
+
 function renderDashboard() {
+  hideContentTabs();
   document.getElementById('topbar-title').innerHTML = '🛠 kydz.kr 관리자';
   const c = document.getElementById('app-content');
   const token = localStorage.getItem(STORAGE_KEYS.token);
   const tokenConnected = !!token;
+  // 토큰 있으면 기본 접힌 상태, 없으면 펼친 상태 (입력 유도)
+  const tokenExpanded = _tokenCardExpanded || !tokenConnected;
   c.innerHTML = `
     <!-- 토큰 카드 -->
-    <div class="card token-card">
-      <div class="section-title">🔑 GitHub 토큰</div>
-      <div class="token-status ${tokenConnected ? 'connected' : 'disconnected'}">${tokenConnected ? '연결됨' : '미설정'}</div>
-      ${tokenConnected ? `
-        <div class="help">현재 저장된 토큰</div>
-        <div class="token-preview">${escapeHtml(maskToken(token))}</div>
-        <div style="display:flex;gap:8px;margin-top:12px;">
-          <button class="btn btn-secondary" id="token-edit" style="flex:1;">변경</button>
-          <button class="btn btn-danger" id="token-remove" style="flex:1;">삭제</button>
+    <div class="card token-card ${tokenExpanded ? 'is-expanded' : 'is-collapsed'}" id="token-card">
+      <div class="token-card-header" id="token-card-toggle">
+        <div class="token-card-header-left">
+          <span class="section-title" style="margin:0;">🔑 GitHub 토큰</span>
+          <div class="token-status ${tokenConnected ? 'connected' : 'disconnected'}">${tokenConnected ? '연결됨' : '미설정'}</div>
         </div>
-      ` : `
-        <label class="label" for="token-input">Personal Access Token</label>
-        <div class="row">
-          <input type="password" id="token-input" class="input" placeholder="ghp_... or github_pat_...">
-          <button class="btn" id="token-save">저장</button>
-        </div>
-        <div class="help">
-          GitHub Settings → Developer settings → Personal access tokens<br>
-          권한: <code>Contents: Read and write</code> 이 브라우저에만 저장됩니다.
-        </div>
-      `}
+        ${tokenConnected ? `<span class="token-card-chevron">${tokenExpanded ? '▴' : '▾'}</span>` : ''}
+      </div>
+      <div class="token-card-body" ${tokenExpanded ? '' : 'style="display:none;"'}>
+        ${tokenConnected ? `
+          <div class="help">현재 저장된 토큰</div>
+          <div class="token-preview">${escapeHtml(maskToken(token))}</div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="btn btn-secondary" id="token-edit" style="flex:1;">변경</button>
+            <button class="btn btn-danger" id="token-remove" style="flex:1;">삭제</button>
+          </div>
+        ` : `
+          <label class="label" for="token-input">Personal Access Token</label>
+          <div class="row">
+            <input type="password" id="token-input" class="input" placeholder="ghp_... or github_pat_...">
+            <button class="btn" id="token-save">저장</button>
+          </div>
+          <div class="help">
+            GitHub Settings → Developer settings → Personal access tokens<br>
+            권한: <code>Contents: Read and write</code> 이 브라우저에만 저장됩니다.
+          </div>
+        `}
+      </div>
     </div>
 
     <!-- 메뉴 -->
@@ -1464,15 +1575,27 @@ function renderDashboard() {
     </div>
   `;
 
+  // 토큰 카드 헤더 클릭 → 펼침/접힘 토글 (연결된 상태일 때만)
+  if (tokenConnected) {
+    document.getElementById('token-card-toggle').onclick = (e) => {
+      // 헤더 안 버튼 클릭 시엔 토글 안 함
+      if (e.target.closest('button')) return;
+      _tokenCardExpanded = !_tokenCardExpanded;
+      renderDashboard();
+    };
+  }
+
   // 토큰 핸들러 바인딩
   if (tokenConnected) {
     document.getElementById('token-edit').onclick = () => {
       localStorage.removeItem(STORAGE_KEYS.token);
+      _tokenCardExpanded = true; // 입력 받아야 하므로 펼친 상태
       renderDashboard();
     };
     document.getElementById('token-remove').onclick = () => {
       if (!confirm('저장된 토큰을 삭제할까요?')) return;
       localStorage.removeItem(STORAGE_KEYS.token);
+      _tokenCardExpanded = true;
       renderDashboard();
     };
   } else {
@@ -1483,6 +1606,7 @@ function renderDashboard() {
         if (!confirm('GitHub 토큰 형식이 아닌 것 같아요. 그래도 저장할까요?')) return;
       }
       localStorage.setItem(STORAGE_KEYS.token, v);
+      _tokenCardExpanded = false; // 저장 후 자동 접힘
       renderDashboard();
     };
   }
