@@ -155,7 +155,7 @@
     "name": "테스트 시리즈",
     "emoji": "ㅁ",
     "color": "#6B8FB8",
-    "published": true,
+    "published": false,
     "eps": [
       {
         "ep": 1,
