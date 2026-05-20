@@ -103,7 +103,7 @@
     "emoji": "💡",
     "color": "#4A90E2",
     "published": true,
-    "sort": "ep_asc",
+    "sort": "ep_desc",
     "eps": [
       {
         "ep": 0,
