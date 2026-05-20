@@ -39,8 +39,8 @@
     "source": "컬리",
     "thumb": "./images/products/food-04.jpg",
     "price_original": 5980,
-    "price_sale": null,
-    "discount_rate": null,
+    "price_sale": 5382,
+    "discount_rate": 10,
     "published": true
   },
   {
