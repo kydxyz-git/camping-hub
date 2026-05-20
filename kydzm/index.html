@@ -544,6 +544,26 @@
   .drag-handle:active { cursor: grabbing; }
   .drag-handle:hover { color: var(--text); }
 
+  /* EP용 드래그 핸들 (좀 더 작고 톤다운) */
+  .drag-handle--ep {
+    width: 20px; height: 20px;
+    font-size: 12px;
+    opacity: 0.6;
+    margin: -4px 2px -4px -6px;
+    padding: 4px;
+  }
+  .drag-handle--ep:hover { opacity: 1; }
+
+  /* EP 저장 바 (시리즈 내부 → 톤다운) */
+  .save-bar--ep {
+    position: static;
+    margin: 4px 0 8px 0;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  .save-bar--ep .save-bar-text { font-size: 12px; }
+  .save-bar--ep .btn { padding: 6px 12px; font-size: 12px; }
+
   /* 드래그 중 미리보기 (SortableJS .sortable-ghost) */
   .sortable-ghost {
     opacity: 0.4;
@@ -1119,12 +1139,21 @@ async function router() {
 
   // 시리즈 화면 떠날 때 미저장 순서 변경 경고
   const newHash = (location.hash || '').replace(/^#/, '');
-  if (_seriesDragOrder !== null && !newHash.startsWith('series')) {
-    if (!confirm('저장하지 않은 시리즈 순서 변경이 있어요. 그래도 떠나시겠어요?')) {
-      history.back();
-      return;
+  if (!newHash.startsWith('series')) {
+    if (_seriesDragOrder !== null) {
+      if (!confirm('저장하지 않은 시리즈 순서 변경이 있어요. 그래도 떠나시겠어요?')) {
+        history.back();
+        return;
+      }
+      _seriesDragOrder = null;
     }
-    _seriesDragOrder = null;
+    if (_epDragOrder !== null) {
+      if (!confirm('저장하지 않은 EP 순서 변경이 있어요. 그래도 떠나시겠어요?')) {
+        history.back();
+        return;
+      }
+      _epDragOrder = null;
+    }
   }
 
   const content = document.getElementById('app-content');
@@ -1356,7 +1385,8 @@ function renderCampDetail(idx) {
 // 시리즈 리스트 (2레벨: 시리즈 그룹 → EP)
 // ════════════════════════════════════════════════════════════════════
 const _seriesOpen = new Set([0]); // 첫 시리즈는 기본 펼침
-let _seriesDragOrder = null; // 드래그로 변경된 순서 (null이면 변경 없음)
+let _seriesDragOrder = null; // 드래그로 변경된 시리즈 순서 (null이면 변경 없음)
+let _epDragOrder = null;     // EP 수동 정렬 변경 상태 { si: number, newOrder: number[] }
 
 function renderSeriesList() {
   document.getElementById('topbar-title').innerHTML = '🎬 시리즈 EP';
@@ -1400,19 +1430,32 @@ function renderSeriesList() {
                 ${SORT_MODES.map(m => `<option value="${m.value}" ${(s.sort || 'ep_desc') === m.value ? 'selected' : ''}>${m.label}</option>`).join('')}
               </select>
             </div>
-            ${s.eps.map((ep, ei) => {
-              const epPub = ep.published !== false;
-              return `
-              <div class="series-ep-item ${epPub ? '' : 'is-unpublished'}">
-                <a class="series-ep-link" href="#series/${si}/${ei}">
-                  <span class="series-ep-num">${ep.ep > 0 ? 'EP.' + String(ep.ep).padStart(2, '0') : '단편'}</span>
-                  <span class="series-ep-title">${escapeHtml(ep.title)}</span>
-                </a>
-                ${toggleHtml(epPub, `data-ep-toggle="${si}-${ei}"`)}
-                <a class="series-ep-arrow" href="#series/${si}/${ei}">›</a>
+            ${(_epDragOrder && _epDragOrder.si === si) ? `
+              <div class="save-bar save-bar--ep">
+                <div class="save-bar-text">🔀 EP 순서가 변경되었어요</div>
+                <div class="save-bar-actions">
+                  <button class="btn btn-secondary" data-cancel-ep="${si}">취소</button>
+                  <button class="btn" data-save-ep="${si}">저장</button>
+                </div>
               </div>
-              `;
-            }).join('')}
+            ` : ''}
+            <div class="ep-sortable" data-ep-sortable="${si}">
+              ${s.eps.map((ep, ei) => {
+                const epPub = ep.published !== false;
+                const isManual = (s.sort || 'ep_desc') === 'manual';
+                return `
+                <div class="series-ep-item ${epPub ? '' : 'is-unpublished'}" data-ei="${ei}">
+                  ${isManual ? `<span class="drag-handle drag-handle--ep" title="드래그해서 순서 변경">⋮⋮</span>` : ''}
+                  <a class="series-ep-link" href="#series/${si}/${ei}">
+                    <span class="series-ep-num">${ep.ep > 0 ? 'EP.' + String(ep.ep).padStart(2, '0') : '단편'}</span>
+                    <span class="series-ep-title">${escapeHtml(ep.title)}</span>
+                  </a>
+                  ${toggleHtml(epPub, `data-ep-toggle="${si}-${ei}"`)}
+                  <a class="series-ep-arrow" href="#series/${si}/${ei}">›</a>
+                </div>
+                `;
+              }).join('')}
+            </div>
           </div>
         </div>
         `;
@@ -1480,7 +1523,7 @@ function renderSeriesList() {
   const sortableEl = document.getElementById('series-sortable');
   if (sortableEl && typeof Sortable !== 'undefined') {
     Sortable.create(sortableEl, {
-      handle: '.drag-handle',
+      handle: '.series-group > .series-group-header > .drag-handle', // 시리즈 헤더의 핸들만 (EP 핸들과 분리)
       animation: 180,
       delay: 200,           // 모바일 길게 누르기 (스크롤 충돌 방지)
       delayOnTouchOnly: true, // PC는 즉시 드래그
@@ -1501,6 +1544,54 @@ function renderSeriesList() {
     });
   }
 
+  // EP 드래그&드롭 정렬 (sort=manual인 시리즈만)
+  if (typeof Sortable !== 'undefined') {
+    c.querySelectorAll('[data-ep-sortable]').forEach(epContainer => {
+      const si = +epContainer.dataset.epSortable;
+      const series = cache.series[si];
+      if (!series || (series.sort || 'ep_desc') !== 'manual') return; // manual이 아니면 비활성
+
+      Sortable.create(epContainer, {
+        handle: '.drag-handle--ep',
+        animation: 180,
+        delay: 200,
+        delayOnTouchOnly: true,
+        ghostClass: 'sortable-ghost',
+        dragClass: 'sortable-drag',
+        onEnd: (evt) => {
+          // 새 순서 계산
+          const newOrder = Array.from(epContainer.querySelectorAll('.series-ep-item[data-ei]'))
+            .map(el => +el.dataset.ei);
+          const originalOrder = series.eps.map((_, i) => i);
+          const changed = newOrder.some((v, i) => v !== originalOrder[i]);
+          if (!changed) return;
+          // 다른 시리즈의 미저장 변경이 있으면 경고
+          if (_epDragOrder && _epDragOrder.si !== si) {
+            if (!confirm('다른 시리즈에 저장 안 한 EP 순서 변경이 있어요. 이번 변경을 시작하면 그 변경은 폐기됩니다. 계속하시겠어요?')) {
+              renderSeriesList();
+              return;
+            }
+          }
+          _epDragOrder = { si, newOrder };
+          renderSeriesList();
+        }
+      });
+    });
+  }
+
+  // EP 순서 저장/취소 버튼
+  c.querySelectorAll('[data-save-ep]').forEach(btn => {
+    btn.onclick = () => saveEpOrder(+btn.dataset.saveEp);
+  });
+  c.querySelectorAll('[data-cancel-ep]').forEach(btn => {
+    btn.onclick = () => {
+      if (confirm('EP 순서 변경을 취소할까요?')) {
+        _epDragOrder = null;
+        renderSeriesList();
+      }
+    };
+  });
+
   // 저장/취소 버튼 핸들러
   const saveBtn = document.getElementById('save-order');
   const cancelBtn = document.getElementById('cancel-order');
@@ -1520,6 +1611,14 @@ async function changeSeriesSort(si, newSort, selectEl) {
     selectEl.value = cache.series[si].sort || 'ep_desc'; // 원복
     return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
   }
+  // 미저장 EP 순서 변경이 있는 시리즈를 다른 모드로 변경 시 경고
+  if (_epDragOrder && _epDragOrder.si === si && newSort !== 'manual') {
+    if (!confirm('이 시리즈에 저장 안 한 EP 순서 변경이 있어요. 정렬 모드를 바꾸면 그 변경은 폐기됩니다. 계속하시겠어요?')) {
+      selectEl.value = 'manual';
+      return;
+    }
+    _epDragOrder = null;
+  }
   selectEl.disabled = true;
   try {
     const newSeries = JSON.parse(JSON.stringify(cache.series));
@@ -1533,6 +1632,10 @@ async function changeSeriesSort(si, newSort, selectEl) {
     cache.loadedAt = Date.now();
     selectEl.disabled = false;
     showToast(`정렬: ${modeLabel}`, 'success', 2000);
+    // manual로 바뀐 경우, 드래그 핸들 노출 위해 재렌더
+    if (newSort === 'manual') {
+      renderSeriesList();
+    }
   } catch (e) {
     console.error(e);
     selectEl.disabled = false;
@@ -1585,10 +1688,60 @@ async function saveSeriesOrder() {
   }
 }
 
+// EP 수동 순서 저장
+async function saveEpOrder(si) {
+  if (!_epDragOrder || _epDragOrder.si !== si) return;
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+
+  const series = cache.series[si];
+  if (!series) return;
+
+  // 새 EP 배열 구성
+  const newEps = _epDragOrder.newOrder.map(ei => series.eps[ei]);
+
+  // 진행 오버레이
+  const progress = document.createElement('div');
+  progress.className = 'submit-progress is-active';
+  progress.innerHTML = `
+    <div class="submit-progress-card">
+      <div class="submit-progress-spinner"></div>
+      <div class="submit-progress-text">EP 순서 저장 중...</div>
+      <div class="submit-progress-sub">GitHub 업로드</div>
+    </div>
+  `;
+  document.body.appendChild(progress);
+
+  try {
+    const newSeries = JSON.parse(JSON.stringify(cache.series));
+    newSeries[si].eps = newEps;
+    const message = `reorder(admin): '${series.name}' EP 수동 순서 변경 (${newEps.length}편)`;
+    await ghCommitMultipleFiles([
+      { path: 'data/series.json', content: JSON.stringify(newSeries, null, 2) + '\n', encoding: 'utf-8' },
+    ], message);
+
+    cache.series = newSeries;
+    cache.loadedAt = Date.now();
+    _epDragOrder = null;
+
+    progress.remove();
+    showToast(`'${series.name}' EP 순서 저장됨!`, 'success', 3500);
+    renderSeriesList();
+  } catch (e) {
+    progress.remove();
+    console.error(e);
+    showToast('저장 실패: ' + e.message, 'error', 5000);
+  }
+}
+
 // 시리즈 목록에서 떠날 때 미저장 변경사항 경고
 function checkUnsavedSeriesOrder() {
   if (_seriesDragOrder !== null) {
     return confirm('저장하지 않은 시리즈 순서 변경이 있어요. 정말 떠나시겠어요?');
+  }
+  if (_epDragOrder !== null) {
+    return confirm('저장하지 않은 EP 순서 변경이 있어요. 정말 떠나시겠어요?');
   }
   return true;
 }
