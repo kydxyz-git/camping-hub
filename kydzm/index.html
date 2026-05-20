@@ -449,15 +449,20 @@
   .submit-progress-text { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
   .submit-progress-sub { font-size: 12px; color: var(--muted); }
 
-  /* "+추가" 플로팅 액션 버튼 */
+  /* "+추가" 플로팅 액션 버튼
+     PC: 콘텐츠 영역(max-width 960px) 오른쪽 가장자리에 맞춤
+     모바일: 화면 우하단 (기본값)
+     계산: 콘텐츠 중앙(50%) - 절반(480px) + 콘텐츠 너비(960px) - 76(56 + 20 여백) = 우측 가장자리에서 20px 안쪽
+   */
   a.fab,
   .fab {
     position: fixed;
-    bottom: 20px; right: 20px;
+    bottom: 24px;
+    right: max(20px, calc(50% - 480px + 20px));
     width: 56px; height: 56px;
     border-radius: 50%;
     background: var(--text);
-    color: var(--bg) !important;  /* 전역 a 스타일(inherit) 우회 */
+    color: var(--bg) !important;
     border: none;
     cursor: pointer;
     box-shadow: 0 4px 14px rgba(0,0,0,0.25);
@@ -469,6 +474,72 @@
   }
   a.fab:hover,
   .fab:hover { opacity: 0.9; color: var(--bg) !important; }
+
+  /* 시리즈 그룹 좌측 컬러 띠 */
+  .series-group { position: relative; }
+  .series-group-header {
+    padding-left: 22px;  /* 컬러 띠 공간 */
+  }
+  .series-group-bar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--accent-soft);
+    border-radius: 10px 0 0 10px;
+  }
+  .series-group-bar { height: 100%; }
+
+  /* "새 시리즈 만들기" 점선 카드 */
+  .series-add-card {
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px;
+    padding: 16px;
+    margin-top: 12px;
+    border: 1.5px dashed var(--line);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted) !important;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .series-add-card:hover {
+    border-color: var(--text);
+    color: var(--text) !important;
+    background: var(--bg);
+  }
+  .series-add-icon {
+    font-size: 16px; font-weight: 700;
+  }
+
+  /* 컬러 프리셋 선택 (시리즈 추가 폼) */
+  .color-presets {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .color-preset {
+    aspect-ratio: 1.6/1;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.12s;
+  }
+  .color-preset:hover { transform: scale(1.05); }
+  .color-preset.is-selected {
+    border-color: var(--text);
+    box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--text);
+  }
+  .color-preset.is-selected::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 18px; font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
 
   /* ── 모바일 ── */
   @media (max-width: 480px) {
@@ -802,6 +873,7 @@ async function router() {
     parts[1] !== undefined ? renderCampDetail(+parts[1]) : renderCampList();
   } else if (parts[0] === 'series') {
     if (parts[1] === 'new') renderEpAddForm();
+    else if (parts[1] === 'new-series') renderSeriesAddForm();
     else if (parts[1] !== undefined && parts[2] !== undefined) renderEpDetail(+parts[1], +parts[2]);
     else renderSeriesList();
   } else if (parts[0] === 'foods') {
@@ -1006,6 +1078,7 @@ function renderSeriesList() {
     <div>
       ${cache.series.map((s, si) => `
         <div class="series-group ${_seriesOpen.has(si) ? 'is-open' : ''}" data-si="${si}">
+          <div class="series-group-bar" style="background:${escapeHtml(s.color || 'var(--accent-soft)')}"></div>
           <div class="series-group-header" data-toggle="${si}">
             <div><span class="series-group-emoji">${escapeHtml(s.emoji || '🎬')}</span>${escapeHtml(s.name)}<span class="series-group-count">${s.eps.length}편</span></div>
             <span class="series-group-arrow">›</span>
@@ -1021,6 +1094,11 @@ function renderSeriesList() {
           </div>
         </div>
       `).join('')}
+
+      <a class="series-add-card" href="#series/new-series">
+        <span class="series-add-icon">+</span>
+        <span>새 시리즈 만들기</span>
+      </a>
     </div>
     <a href="#series/new" class="fab" title="EP 추가">+</a>
   `;
@@ -1062,7 +1140,6 @@ function renderEpDetail(si, ei) {
         <div class="detail-row"><div class="detail-key">제목</div><div class="detail-val">${escapeHtml(ep.title)}</div></div>
         <div class="detail-row"><div class="detail-key">릴스 URL</div><div class="detail-val">${ep.url ? `<a href="${escapeHtml(ep.url)}" target="_blank" rel="noopener">${escapeHtml(ep.url)}</a>` : '-'}</div></div>
         <div class="detail-row"><div class="detail-key">썸네일</div><div class="detail-val">${escapeHtml(ep.thumb || '-')}</div></div>
-        ${ep.page_id ? `<div class="detail-row"><div class="detail-key">page_id</div><div class="detail-val" style="font-family:ui-monospace,monospace;font-size:11px;">${escapeHtml(ep.page_id)}</div></div>` : ''}
       </div>
     </div>
   `;
@@ -1077,7 +1154,6 @@ let _epForm = {
   ep: '',
   title: '',
   url: '',
-  pageId: '',
   imageBase64: null,
   imagePreviewUrl: null,
   imageSize: 0,
@@ -1144,12 +1220,6 @@ function renderEpAddForm() {
           <div id="f-image-preview"></div>
         </div>
 
-        <div class="form-field">
-          <label class="label" for="f-pageid">노션 page_id (선택)</label>
-          <input type="text" id="f-pageid" class="input" placeholder="36302bbd-cd95-..." value="${escapeHtml(_epForm.pageId)}">
-          <div class="help">노션 페이지에서 옮겨오는 경우만</div>
-        </div>
-
       </div>
       <div class="form-actions">
         <button class="btn btn-secondary" id="f-cancel">취소</button>
@@ -1180,7 +1250,6 @@ function renderEpAddForm() {
   $('f-ep').oninput = (e) => { _epForm.ep = e.target.value; };
   $('f-title').oninput = (e) => { _epForm.title = e.target.value; };
   $('f-url').oninput = (e) => { _epForm.url = e.target.value; };
-  $('f-pageid').oninput = (e) => { _epForm.pageId = e.target.value.trim(); };
 
   // 이미지 업로드 + 드래그&드롭
   const drop = $('f-image-drop');
@@ -1253,7 +1322,7 @@ function renderEpAddForm() {
 
 function resetEpForm() {
   _epForm = {
-    seriesIdx: 0, ep: '', title: '', url: '', pageId: '',
+    seriesIdx: 0, ep: '', title: '', url: '',
     imageBase64: null, imagePreviewUrl: null, imageSize: 0,
     _initialized: false,
   };
@@ -1282,7 +1351,6 @@ async function submitEpForm() {
     url: _epForm.url.trim(),
     thumb: `./${imagePath}`,
   };
-  if (_epForm.pageId) newEp.page_id = _epForm.pageId;
 
   // 진행 오버레이
   const progress = document.getElementById('submit-progress');
@@ -1340,6 +1408,160 @@ async function submitEpForm() {
       progress.classList.remove('is-active');
       resetEpForm();
       showToast('EP 추가 완료! (1~2분 후 사이트 반영)', 'success', 4000);
+      location.hash = 'series';
+    }, 1200);
+
+  } catch (e) {
+    progress.classList.remove('is-active');
+    console.error(e);
+    showToast('업로드 실패: ' + e.message, 'error', 5000);
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 시리즈 추가 폼
+// ════════════════════════════════════════════════════════════════════
+const COLOR_PRESETS = [
+  { hex: '#F5A623', label: '오렌지 (여름 톤)' },
+  { hex: '#E89BB9', label: '핑크 (봄가을 톤)' },
+  { hex: '#4A90E2', label: '파랑 (꿀팁 톤)' },
+  { hex: '#C94A4A', label: '빨강 (음식 톤)' },
+  { hex: '#5E6C4F', label: '올리브 (장비 톤)' },
+  { hex: '#6B8FB8', label: '블루 (겨울 톤)' },
+  { hex: '#7B5E3F', label: '브라운' },
+  { hex: '#9B6BC4', label: '퍼플' },
+];
+
+let _seriesForm = {
+  name: '',
+  emoji: '',
+  color: COLOR_PRESETS[0].hex,
+};
+
+function renderSeriesAddForm() {
+  document.getElementById('topbar-title').innerHTML = '📁 새 시리즈';
+  const c = document.getElementById('app-content');
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← 시리즈 목록</button>
+    </div>
+    <div class="card">
+      <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">새 시리즈 만들기</h2>
+      <div class="form-grid">
+
+        <div class="form-field">
+          <label class="label" for="sf-name">시리즈 이름 *</label>
+          <input type="text" id="sf-name" class="input" placeholder="예: 겨울에 가기 좋은 캠핑장" value="${escapeHtml(_seriesForm.name)}">
+          <div class="help">기존 형식: "○○에 가기 좋은 캠핑장" 같이 긴 형식으로 통일</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="sf-emoji">이모지 *</label>
+          <input type="text" id="sf-emoji" class="input" placeholder="❄️" maxlength="4" value="${escapeHtml(_seriesForm.emoji)}" style="font-size:18px;text-align:center;">
+          <div class="help">이모지 키보드로 입력 (예: ❄️ 🏕 ☀️ 🌸 🍖 💡 🎒)</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label">컬러 *</label>
+          <div class="color-presets" id="sf-colors">
+            ${COLOR_PRESETS.map(p => `
+              <div class="color-preset ${p.hex === _seriesForm.color ? 'is-selected' : ''}"
+                   style="background:${p.hex}" data-color="${p.hex}" title="${escapeHtml(p.label)}"></div>
+            `).join('')}
+          </div>
+          <div class="help">시리즈 그룹 좌측에 컬러 띠로 표시됩니다</div>
+        </div>
+
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="sf-cancel">취소</button>
+        <button class="btn" id="sf-submit">시리즈 만들기</button>
+      </div>
+    </div>
+
+    <div class="submit-progress" id="submit-progress">
+      <div class="submit-progress-card">
+        <div class="submit-progress-spinner"></div>
+        <div class="submit-progress-text" id="submit-progress-text">처리 중...</div>
+        <div class="submit-progress-sub" id="submit-progress-sub">잠시만 기다려주세요</div>
+      </div>
+    </div>
+  `;
+
+  const $ = (id) => document.getElementById(id);
+  $('back-btn').onclick = () => { resetSeriesForm(); location.hash = 'series'; };
+  $('sf-cancel').onclick = () => { resetSeriesForm(); location.hash = 'series'; };
+  $('sf-name').oninput = (e) => { _seriesForm.name = e.target.value; };
+  $('sf-emoji').oninput = (e) => { _seriesForm.emoji = e.target.value; };
+
+  // 컬러 프리셋 선택
+  $('sf-colors').querySelectorAll('.color-preset').forEach(el => {
+    el.onclick = () => {
+      _seriesForm.color = el.dataset.color;
+      $('sf-colors').querySelectorAll('.color-preset').forEach(x => x.classList.remove('is-selected'));
+      el.classList.add('is-selected');
+    };
+  });
+
+  $('sf-submit').onclick = submitSeriesForm;
+}
+
+function resetSeriesForm() {
+  _seriesForm = { name: '', emoji: '', color: COLOR_PRESETS[0].hex };
+}
+
+async function submitSeriesForm() {
+  // 검증
+  if (!_seriesForm.name.trim()) return showToast('시리즈 이름을 입력해주세요', 'error');
+  if (!_seriesForm.emoji.trim()) return showToast('이모지를 입력해주세요', 'error');
+  if (!_seriesForm.color) return showToast('컬러를 선택해주세요', 'error');
+
+  // 중복 이름 체크
+  if (cache.series.some(s => s.name === _seriesForm.name.trim())) {
+    return showToast('이미 같은 이름의 시리즈가 있어요', 'error');
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+
+  const newSeries = {
+    name: _seriesForm.name.trim(),
+    emoji: _seriesForm.emoji.trim(),
+    color: _seriesForm.color,
+    eps: [],
+  };
+
+  const progress = document.getElementById('submit-progress');
+  const ptext = document.getElementById('submit-progress-text');
+  const psub = document.getElementById('submit-progress-sub');
+  progress.classList.add('is-active');
+
+  try {
+    ptext.textContent = 'GitHub 업로드 중...';
+    psub.textContent = '시리즈 추가';
+
+    const updatedSeries = [...cache.series, newSeries];
+    const today = new Date().toISOString().slice(0, 10);
+    const sitemapResp = await fetch(`../sitemap.xml?v=${Date.now()}`);
+    const sitemapText = await sitemapResp.text();
+    const newSitemap = sitemapText.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g, `<lastmod>${today}</lastmod>`);
+
+    const message = `sync(admin): 시리즈 '${newSeries.emoji} ${newSeries.name}' 추가\n\n관리자 페이지에서 자동 생성`;
+    await ghCommitMultipleFiles([
+      { path: 'data/series.json', content: JSON.stringify(updatedSeries, null, 2) + '\n', encoding: 'utf-8' },
+      { path: 'sitemap.xml', content: newSitemap, encoding: 'utf-8' },
+    ], message);
+
+    cache.series = updatedSeries;
+    cache.loadedAt = Date.now();
+
+    ptext.textContent = '완료!';
+    psub.textContent = '1~2분 후 사이트에 반영됩니다';
+    setTimeout(() => {
+      progress.classList.remove('is-active');
+      resetSeriesForm();
+      showToast(`시리즈 '${newSeries.name}' 추가 완료!`, 'success', 4000);
       location.hash = 'series';
     }, 1200);
 
