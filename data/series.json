@@ -144,7 +144,7 @@
     "emoji": "🌸",
     "color": "#E89BB9",
     "published": true,
-    "sort": "random",
+    "sort": "ep_desc",
     "eps": [
       {
         "ep": 1,
