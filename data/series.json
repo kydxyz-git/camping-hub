@@ -74,6 +74,31 @@
     ]
   },
   {
+    "name": "장비소개",
+    "emoji": "🎒",
+    "color": "#5E6C4F",
+    "published": true,
+    "sort": "random",
+    "eps": [
+      {
+        "title": "포켓4 악세사리 이거 하나면 끝!",
+        "url": "https://www.instagram.com/reel/DYAx2p_zTjk/?igsh=MW8xNmhqZmNoM2Y5aQ==",
+        "thumb": "./images/series/gear-02.jpg",
+        "page_id": "35802bbd-cd95-802b-90e6-c82814ea57ad",
+        "ep": 0,
+        "published": true
+      },
+      {
+        "ep": 0,
+        "title": "도쿄크래프트 지카테이블2",
+        "url": "https://www.instagram.com/p/DWkX9XuE7wz",
+        "thumb": "./images/series/gear-01.jpg",
+        "page_id": "34a02bbd-cd95-80d5-add8-c0687a88924f",
+        "published": true
+      }
+    ]
+  },
+  {
     "name": "캠핑꿀팁",
     "emoji": "💡",
     "color": "#4A90E2",
@@ -110,31 +135,6 @@
         "url": "https://www.instagram.com/reel/DXxYOT1TeAz/?igsh=OXN2ajlyMmF5d2lj",
         "thumb": "./images/series/tips-04.jpg",
         "page_id": "34a02bbd-cd95-8096-9f3e-cb89f0a3e768",
-        "published": true
-      }
-    ]
-  },
-  {
-    "name": "장비소개",
-    "emoji": "🎒",
-    "color": "#5E6C4F",
-    "published": true,
-    "sort": "random",
-    "eps": [
-      {
-        "title": "포켓4 악세사리 이거 하나면 끝!",
-        "url": "https://www.instagram.com/reel/DYAx2p_zTjk/?igsh=MW8xNmhqZmNoM2Y5aQ==",
-        "thumb": "./images/series/gear-02.jpg",
-        "page_id": "35802bbd-cd95-802b-90e6-c82814ea57ad",
-        "ep": 0,
-        "published": true
-      },
-      {
-        "ep": 0,
-        "title": "도쿄크래프트 지카테이블2",
-        "url": "https://www.instagram.com/p/DWkX9XuE7wz",
-        "thumb": "./images/series/gear-01.jpg",
-        "page_id": "34a02bbd-cd95-80d5-add8-c0687a88924f",
         "published": true
       }
     ]
