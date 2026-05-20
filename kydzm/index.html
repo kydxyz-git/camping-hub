@@ -470,6 +470,77 @@
   }
   .form-image-preview-remove:hover { background: var(--accent-soft); }
 
+  /* 체크박스 그룹 (캠핑장 폼의 seasons/landscape) */
+  .chip-group {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .chip-check {
+    display: inline-flex; align-items: center;
+    cursor: pointer; user-select: none;
+  }
+  .chip-check input {
+    position: absolute; opacity: 0; pointer-events: none;
+  }
+  .chip-check span {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    font-size: 12px;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .chip-check input:checked + span {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+
+  /* 캠핑장 이미지 리스트 (멀티 업로드) */
+  .camp-image-list {
+    display: flex; flex-direction: column; gap: 6px;
+    margin-top: 8px;
+  }
+  .camp-image-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px;
+    background: var(--accent-soft);
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+  .camp-image-drag {
+    cursor: grab; color: var(--muted);
+    font-size: 14px; line-height: 1;
+    padding: 4px;
+    touch-action: none;
+  }
+  .camp-image-drag:active { cursor: grabbing; }
+  .camp-image-idx {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--text); color: var(--bg);
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .camp-image-item img {
+    width: 40px; height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .camp-image-label {
+    font-size: 11px; font-weight: 600;
+    flex: 1;
+  }
+  .camp-image-remove {
+    background: transparent; border: none; cursor: pointer;
+    color: var(--danger);
+    font-size: 18px; line-height: 1;
+    padding: 4px 8px;
+  }
+  .camp-image-remove:hover { background: var(--bg); border-radius: 4px; }
+
   .form-actions {
     display: flex; gap: 8px;
     margin-top: 18px;
@@ -1247,7 +1318,10 @@ async function router() {
   if (parts.length === 0) {
     renderDashboard();
   } else if (parts[0] === 'camps') {
-    parts[1] !== undefined ? renderCampDetail(+parts[1]) : renderCampList();
+    if (parts[1] === 'new') renderCampAddForm();
+    else if (parts[2] === 'edit' && parts[1] !== undefined) renderCampEditForm(+parts[1]);
+    else if (parts[1] !== undefined) renderCampDetail(+parts[1]);
+    else renderCampList();
   } else if (parts[0] === 'series') {
     if (parts[1] === 'new') renderEpAddForm();
     else if (parts[1] === 'new-series') renderSeriesAddForm();
@@ -1367,7 +1441,7 @@ function renderCampList() {
   c.innerHTML = `
     <div class="page-header">
       <button class="page-back" id="back-btn">← 대시보드</button>
-      <div class="page-title-h" style="text-align:right;"></div>
+      <a class="btn btn-sm" href="#camps/new" style="margin-left:auto;">+ 추가</a>
       <div class="page-count">${arr.length} / ${cache.camps.length}</div>
     </div>
     <div class="search-bar">
@@ -1454,9 +1528,497 @@ function renderCampDetail(idx) {
           `).join('')}
         </div>
       ` : '<div style="color:var(--muted);font-size:13px;padding:20px 0;">등록된 이미지가 없어요</div>'}
+      <div class="detail-actions">
+        <a class="btn btn-secondary" href="#camps/${idx}/edit">✏️ 수정</a>
+        <button class="btn btn-danger" id="camp-delete-btn">🗑 삭제</button>
+      </div>
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = 'camps';
+  document.getElementById('camp-delete-btn').onclick = () => deleteCamp(idx);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 캠핑장 추가/수정 폼 (통합)
+// ════════════════════════════════════════════════════════════════════
+const CAMP_REGIONS = ['강원', '경기', '경남', '경북', '대구', '대전', '부산', '서울', '울산', '인천', '광주', '전남', '전북', '제주', '충남', '충북', '세종'];
+const CAMP_SEASONS = ['봄', '여름', '가을', '겨울', '사계절'];
+const CAMP_LANDSCAPES = ['산', '바다', '강', '계곡', '호수', '숲', '잔디', '폐교', '기타'];
+const CAMP_EXTRAS_SUGGEST = ['벚꽃', '철쭉', '억새', '글램핑', '펜션', '수영장', '개별샤워실', '애견동반', '노키즈', '잔디', '일출'];
+
+let _campForm = {
+  mode: 'add',          // 'add' | 'edit'
+  editIdx: null,
+  name: '',
+  region: '',
+  seasons: [],
+  landscape: [],
+  extras: [],           // 자유 입력 (콤마 구분)
+  graega: false,
+  url: '',
+  rating: 0,
+  visits: 0,
+  // 이미지: 두 종류 혼재
+  //   { type: 'existing', src: './images/camps/xxx.jpg' }  ← 기존 이미지
+  //   { type: 'new', base64: '...', previewUrl: 'data:...', size: 123 }  ← 새로 업로드
+  images: [],
+};
+
+function _campImgIdBase() {
+  // 캠핑장 이름 + timestamp로 md5 12자 (간단 해시)
+  const str = (_campForm.name || 'camp') + Date.now();
+  // 간단 hash (md5 모듈 없으니 djb2 같은 거)
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) & 0xffffffff;
+  // 16진수 12자
+  const hex = (h >>> 0).toString(16).padStart(8, '0');
+  // 12자 필요 → 한 번 더 hash해서 채움
+  let h2 = 5381;
+  for (let i = 0; i < str.length; i++) h2 = ((h2 * 33) ^ str.charCodeAt(i)) & 0xffffffff;
+  return (hex + (h2 >>> 0).toString(16).padStart(8, '0')).slice(0, 12);
+}
+
+function renderCampAddForm() {
+  _campForm = {
+    mode: 'add', editIdx: null,
+    name: '', region: '', seasons: [], landscape: [], extras: [],
+    graega: false, url: '', rating: 0, visits: 0,
+    images: [],
+  };
+  _renderCampFormUI();
+}
+
+function renderCampEditForm(idx) {
+  const c = cache.camps[idx];
+  if (!c) { location.hash = 'camps'; return; }
+  _campForm = {
+    mode: 'edit', editIdx: idx,
+    name: c.name || '',
+    region: c.region || '',
+    seasons: [...(c.seasons || [])],
+    landscape: [...(c.landscape || [])],
+    extras: [...(c.extras || [])],
+    graega: !!c.graega,
+    url: c.url || '',
+    rating: c.rating || 0,
+    visits: c.visits || 0,
+    images: (c.imgs || []).map(src => ({ type: 'existing', src })),
+  };
+  _renderCampFormUI();
+}
+
+function _renderCampFormUI() {
+  const isEdit = _campForm.mode === 'edit';
+  document.getElementById('topbar-title').innerHTML = isEdit ? '🏕 캠핑장 수정' : '🏕 캠핑장 추가';
+  const c = document.getElementById('app-content');
+
+  const checkboxesHtml = (items, selected, fieldName) =>
+    items.map(v => `
+      <label class="chip-check">
+        <input type="checkbox" value="${escapeHtml(v)}" ${selected.includes(v) ? 'checked' : ''} data-field="${fieldName}">
+        <span>${escapeHtml(v)}</span>
+      </label>
+    `).join('');
+
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← ${isEdit ? '돌아가기' : '캠핑장 목록'}</button>
+    </div>
+    <div class="card">
+      <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">${isEdit ? '캠핑장 수정' : '새 캠핑장 추가'}</h2>
+      <div class="form-grid">
+
+        <div class="form-field">
+          <label class="label" for="cf-name">캠핑장 이름 *</label>
+          <input type="text" id="cf-name" class="input" placeholder="예: 합천호코지캠핑장" value="${escapeHtml(_campForm.name)}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="cf-region">지역 *</label>
+          <select id="cf-region">
+            <option value="">선택해주세요</option>
+            ${CAMP_REGIONS.map(r => `<option value="${r}" ${_campForm.region === r ? 'selected' : ''}>${r}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label class="label">시즌</label>
+          <div class="chip-group">${checkboxesHtml(CAMP_SEASONS, _campForm.seasons, 'seasons')}</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label">풍경</label>
+          <div class="chip-group">${checkboxesHtml(CAMP_LANDSCAPES, _campForm.landscape, 'landscape')}</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="cf-extras">추가 태그</label>
+          <input type="text" id="cf-extras" class="input" placeholder="콤마로 구분 (예: 벚꽃, 글램핑, 수영장)" value="${escapeHtml((_campForm.extras || []).join(', '))}">
+          <div class="help">자주 쓰는 태그: ${CAMP_EXTRAS_SUGGEST.join(', ')}</div>
+        </div>
+
+        <div class="form-field">
+          <label class="chip-check" style="display:inline-flex;">
+            <input type="checkbox" id="cf-graega" ${_campForm.graega ? 'checked' : ''}>
+            <span>그래가 직영</span>
+          </label>
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="cf-url">예약 URL</label>
+          <input type="text" id="cf-url" class="input" placeholder="https://..." value="${escapeHtml(_campForm.url)}">
+          <div class="help">그래가/네이버/캠핏/땡큐캠핑 등의 예약 페이지 URL</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="cf-rating">별점 (0~5, 0.5 단위)</label>
+          <input type="number" id="cf-rating" class="input" min="0" max="5" step="0.5" value="${_campForm.rating}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="cf-visits">다녀온 횟수</label>
+          <input type="number" id="cf-visits" class="input" min="0" value="${_campForm.visits}">
+        </div>
+
+        <div class="form-field">
+          <label class="label">이미지 (최대 10장)</label>
+          <label class="form-image-drop" id="cf-image-drop">
+            <input type="file" id="cf-image" accept="image/*" multiple>
+            <div class="form-image-drop-icon">📷</div>
+            <div class="form-image-drop-text">이미지 선택 또는 끌어다 놓기 (여러 장 가능)</div>
+            <div class="form-image-drop-sub">자동으로 4:5 비율로 크롭됩니다 · 첫 이미지가 카드 대표</div>
+          </label>
+          <div id="cf-image-list" class="camp-image-list"></div>
+        </div>
+
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="cf-cancel">취소</button>
+        <button class="btn" id="cf-submit">${isEdit ? '저장' : '캠핑장 추가'}</button>
+      </div>
+    </div>
+
+    <div class="submit-progress" id="submit-progress">
+      <div class="submit-progress-card">
+        <div class="submit-progress-spinner"></div>
+        <div class="submit-progress-text" id="submit-progress-text">처리 중...</div>
+        <div class="submit-progress-sub" id="submit-progress-sub">잠시만 기다려주세요</div>
+      </div>
+    </div>
+  `;
+
+  const $ = (id) => document.getElementById(id);
+  const backHash = isEdit ? `camps/${_campForm.editIdx}` : 'camps';
+  $('back-btn').onclick = () => { resetCampForm(); location.hash = backHash; };
+  $('cf-cancel').onclick = () => { resetCampForm(); location.hash = backHash; };
+
+  $('cf-name').oninput = (e) => { _campForm.name = e.target.value; };
+  $('cf-region').onchange = (e) => { _campForm.region = e.target.value; };
+  $('cf-url').oninput = (e) => { _campForm.url = e.target.value; };
+  $('cf-rating').oninput = (e) => { _campForm.rating = parseFloat(e.target.value) || 0; };
+  $('cf-visits').oninput = (e) => { _campForm.visits = parseInt(e.target.value) || 0; };
+  $('cf-graega').onchange = (e) => { _campForm.graega = e.target.checked; };
+
+  // extras 자유 입력
+  $('cf-extras').oninput = (e) => {
+    _campForm.extras = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+  };
+
+  // checkbox 그룹 (seasons / landscape)
+  c.querySelectorAll('input[type="checkbox"][data-field]').forEach(cb => {
+    cb.onchange = (e) => {
+      const field = e.target.dataset.field;
+      const val = e.target.value;
+      const arr = _campForm[field];
+      if (e.target.checked) {
+        if (!arr.includes(val)) arr.push(val);
+      } else {
+        const idx = arr.indexOf(val);
+        if (idx !== -1) arr.splice(idx, 1);
+      }
+    };
+  });
+
+  // 이미지 드래그&드롭 + 멀티 업로드
+  const drop = $('cf-image-drop');
+  const fileInput = $('cf-image');
+  const listEl = $('cf-image-list');
+
+  async function handleFiles(files) {
+    if (_campForm.images.length + files.length > 10) {
+      return showToast('이미지는 최대 10장까지 가능해요', 'error');
+    }
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) continue;
+      try {
+        const { base64, previewUrl, size } = await cropImage4to5(file);
+        _campForm.images.push({ type: 'new', base64, previewUrl, size, fileName: file.name });
+      } catch (err) {
+        showToast(`'${file.name}' 처리 실패: ${err.message}`, 'error');
+      }
+    }
+    renderImageList();
+  }
+
+  function renderImageList() {
+    if (_campForm.images.length === 0) {
+      listEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:8px 0;">아직 이미지가 없어요</div>';
+      return;
+    }
+    listEl.innerHTML = _campForm.images.map((img, i) => {
+      const src = img.type === 'existing' ? '../' + img.src.replace(/^\.\//, '') : img.previewUrl;
+      const label = img.type === 'existing' ? '기존' : '새';
+      const labelColor = img.type === 'existing' ? '#666' : '#2dab5e';
+      return `
+        <div class="camp-image-item" data-i="${i}" draggable="false">
+          <span class="camp-image-drag" title="드래그해서 순서 변경">⋮⋮</span>
+          <span class="camp-image-idx">${i+1}</span>
+          <img src="${src}" alt="">
+          <span class="camp-image-label" style="color:${labelColor};">${label}</span>
+          <button class="camp-image-remove" data-rm="${i}">×</button>
+        </div>
+      `;
+    }).join('');
+    // 제거 버튼
+    listEl.querySelectorAll('[data-rm]').forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        const idx = +btn.dataset.rm;
+        _campForm.images.splice(idx, 1);
+        renderImageList();
+      };
+    });
+    // 드래그&드롭 순서 변경 (SortableJS 활용)
+    if (typeof Sortable !== 'undefined') {
+      Sortable.create(listEl, {
+        handle: '.camp-image-drag',
+        animation: 180,
+        delay: 200,
+        delayOnTouchOnly: true,
+        ghostClass: 'sortable-ghost',
+        dragClass: 'sortable-drag',
+        onEnd: () => {
+          // DOM 순서대로 _campForm.images 재정렬
+          const newOrder = Array.from(listEl.querySelectorAll('.camp-image-item[data-i]'))
+            .map(el => +el.dataset.i);
+          _campForm.images = newOrder.map(oi => _campForm.images[oi]);
+          renderImageList(); // 인덱스 재표시
+        }
+      });
+    }
+  }
+
+  fileInput.onchange = (e) => { if (e.target.files.length) handleFiles(Array.from(e.target.files)); };
+  drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('is-dragover'); };
+  drop.ondragleave = () => drop.classList.remove('is-dragover');
+  drop.ondrop = (e) => {
+    e.preventDefault(); drop.classList.remove('is-dragover');
+    if (e.dataTransfer.files.length) handleFiles(Array.from(e.dataTransfer.files));
+  };
+
+  renderImageList();
+  $('cf-submit').onclick = submitCampForm;
+}
+
+function resetCampForm() {
+  _campForm = {
+    mode: 'add', editIdx: null,
+    name: '', region: '', seasons: [], landscape: [], extras: [],
+    graega: false, url: '', rating: 0, visits: 0,
+    images: [],
+  };
+}
+
+async function submitCampForm() {
+  const isEdit = _campForm.mode === 'edit';
+
+  // 검증
+  if (!_campForm.name.trim()) return showToast('캠핑장 이름을 입력해주세요', 'error');
+  if (!_campForm.region) return showToast('지역을 선택해주세요', 'error');
+
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+
+  const progress = document.getElementById('submit-progress');
+  const ptext = document.getElementById('submit-progress-text');
+  const psub = document.getElementById('submit-progress-sub');
+  progress.classList.add('is-active');
+
+  try {
+    ptext.textContent = '데이터 준비 중...';
+    psub.textContent = '이미지 경로 계산';
+
+    const newCamps = JSON.parse(JSON.stringify(cache.camps));
+
+    // 이미지 처리: 새 이미지의 경로 결정, 기존 이미지 경로 유지
+    // 기존 캠핑장에 새 이미지 추가 시: 기존 hash 재사용. 새 캠핑장이면 새 hash 생성.
+    let existingHash = null;
+    if (isEdit) {
+      // 기존 이미지에서 hash 추출 (없으면 새로 생성)
+      const firstExisting = _campForm.images.find(img => img.type === 'existing');
+      if (firstExisting) {
+        const m = firstExisting.src.match(/camps\/([a-f0-9]+)(?:-\d+)?\.jpg/);
+        if (m) existingHash = m[1];
+      }
+    }
+    const hash = existingHash || _campImgIdBase();
+
+    // 최종 imgs 배열 + 업로드할 새 이미지 + 삭제할 이미지 계산
+    const finalImgs = [];
+    const filesToUpload = [];
+    const filesToDelete = [];
+
+    // 이미지 순서대로 새 파일명 부여 (1번째: hash.jpg, 2번째: hash-2.jpg, ...)
+    // BUT 기존 이미지면 경로 그대로 유지 (이름 안 바꿈)
+    // 다만 첫 자리에 기존 이미지가 와야 하는 경우와 새 이미지가 와야 하는 경우가 섞이면 복잡
+    // 단순화: 모두 새 파일명 부여 + 기존 파일 다 삭제 + 모두 새로 업로드
+    // 이게 깔끔. base64 fetch 한 번 더 하는 비용은 작음.
+
+    // 1) 기존 imgs 전체를 일단 삭제 후보로 (실제로 쓰는지 나중에 결정)
+    const oldImgs = isEdit ? (cache.camps[_campForm.editIdx].imgs || []) : [];
+    const oldImgPaths = oldImgs.map(p => p.replace(/^\.\//, ''));
+
+    // 2) 새 imgs 배열 구성
+    for (let i = 0; i < _campForm.images.length; i++) {
+      const img = _campForm.images[i];
+      const fname = i === 0 ? `${hash}.jpg` : `${hash}-${i+1}.jpg`;
+      const newPath = `images/camps/${fname}`;
+      finalImgs.push(`./${newPath}`);
+
+      if (img.type === 'new') {
+        filesToUpload.push({ path: newPath, content: img.base64, encoding: 'base64' });
+      } else if (img.type === 'existing') {
+        // 같은 경로면 그대로 둠 (덮어쓸 필요 없음)
+        const oldNoDot = img.src.replace(/^\.\//, '');
+        if (oldNoDot === newPath) {
+          // 같음, 아무것도 안 함
+        } else {
+          // 경로가 바뀜 (순서 변경 때문) → 기존 파일을 fetch해서 새 경로에 업로드
+          ptext.textContent = `이미지 재배치 중... (${i+1}/${_campForm.images.length})`;
+          const url = '../' + oldNoDot;
+          const resp = await fetch(url);
+          const blob = await resp.blob();
+          const b64 = await new Promise((res, rej) => {
+            const r = new FileReader();
+            r.onload = () => res(r.result.split(',')[1]);
+            r.onerror = () => rej(new Error('fetch failed'));
+            r.readAsDataURL(blob);
+          });
+          filesToUpload.push({ path: newPath, content: b64, encoding: 'base64' });
+        }
+      }
+    }
+
+    // 3) 삭제할 파일: 기존 파일 중 새 finalImgs에 없는 것
+    const finalImgPaths = new Set(finalImgs.map(p => p.replace(/^\.\//, '')));
+    for (const oldPath of oldImgPaths) {
+      if (!finalImgPaths.has(oldPath)) {
+        filesToDelete.push(oldPath);
+      }
+    }
+
+    // 4) 캠핑장 객체 구성
+    const campObj = {
+      name: _campForm.name.trim(),
+      region: _campForm.region,
+      seasons: _campForm.seasons,
+      landscape: _campForm.landscape,
+      extras: _campForm.extras,
+      graega: _campForm.graega,
+      url: _campForm.url.trim(),
+      imgs: finalImgs,
+      rating: _campForm.rating,
+      visits: _campForm.visits,
+      published: isEdit ? (cache.camps[_campForm.editIdx].published !== false) : true,
+    };
+
+    if (isEdit) {
+      newCamps[_campForm.editIdx] = campObj;
+    } else {
+      newCamps.push(campObj);
+    }
+
+    const action = isEdit ? '수정' : '추가';
+    const message = `${isEdit ? 'update' : 'sync'}(admin): 캠핑장 '${campObj.name}' ${action}`;
+    ptext.textContent = 'GitHub 업로드 중...';
+    psub.textContent = `이미지 ${filesToUpload.length}장 · 데이터${filesToDelete.length ? ` · 삭제 ${filesToDelete.length}` : ''}`;
+
+    await ghCommitWithDeletions(
+      [
+        ...filesToUpload,
+        { path: 'data/camps.json', content: JSON.stringify(newCamps, null, 2) + '\n', encoding: 'utf-8' },
+      ],
+      filesToDelete,
+      message
+    );
+
+    cache.camps = newCamps;
+    cache.loadedAt = Date.now();
+
+    ptext.textContent = '완료!';
+    psub.textContent = '1~2분 후 사이트에 반영됩니다';
+    setTimeout(() => {
+      progress.classList.remove('is-active');
+      resetCampForm();
+      showToast(`캠핑장 '${campObj.name}' ${action} 완료!`, 'success', 3500);
+      location.hash = isEdit ? `camps/${_campForm.editIdx}` : 'camps';
+    }, 1000);
+
+  } catch (e) {
+    progress.classList.remove('is-active');
+    console.error(e);
+    showToast('업로드 실패: ' + e.message, 'error', 5000);
+  }
+}
+
+// 캠핑장 삭제
+async function deleteCamp(idx) {
+  const camp = cache.camps[idx];
+  if (!camp) return;
+
+  if (!confirm(`캠핑장 '${camp.name}'을(를) 삭제할까요?\n\n이미지 ${(camp.imgs || []).length}장도 함께 삭제됩니다. 되돌릴 수 없어요.`)) return;
+  if (!confirm(`정말로 삭제할까요? 마지막 확인입니다.`)) return;
+
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+
+  const progress = document.createElement('div');
+  progress.className = 'submit-progress is-active';
+  progress.innerHTML = `
+    <div class="submit-progress-card">
+      <div class="submit-progress-spinner"></div>
+      <div class="submit-progress-text">캠핑장 삭제 중...</div>
+      <div class="submit-progress-sub">GitHub 업로드</div>
+    </div>
+  `;
+  document.body.appendChild(progress);
+
+  try {
+    const newCamps = JSON.parse(JSON.stringify(cache.camps));
+    newCamps.splice(idx, 1);
+
+    const deletePaths = (camp.imgs || []).map(p => p.replace(/^\.\//, ''));
+
+    const message = `delete(admin): 캠핑장 '${camp.name}' 삭제`;
+    await ghCommitWithDeletions(
+      [{ path: 'data/camps.json', content: JSON.stringify(newCamps, null, 2) + '\n', encoding: 'utf-8' }],
+      deletePaths,
+      message
+    );
+
+    cache.camps = newCamps;
+    cache.loadedAt = Date.now();
+
+    progress.remove();
+    showToast(`캠핑장 '${camp.name}' 삭제됨`, 'success', 2500);
+    location.hash = 'camps';
+  } catch (e) {
+    progress.remove();
+    console.error(e);
+    showToast('삭제 실패: ' + e.message, 'error', 5000);
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════
