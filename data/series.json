@@ -52,7 +52,7 @@
     "name": "또 해먹고 싶은 캠핑 음식",
     "emoji": "🍖",
     "color": "#C94A4A",
-    "published": true,
+    "published": false,
     "sort": "ep_desc",
     "eps": [
       {
