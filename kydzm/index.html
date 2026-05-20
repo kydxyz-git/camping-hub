@@ -44,7 +44,8 @@
     padding: 24px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.04);
   }
-  .btn {
+  .btn,
+  a.btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     padding: 12px 18px;
     background: var(--text); color: var(--bg);
@@ -53,12 +54,13 @@
     cursor: pointer;
     transition: opacity 0.15s;
   }
-  .btn:hover { opacity: 0.85; }
+  .btn:hover, a.btn:hover { opacity: 0.85; color: var(--bg); }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-secondary { background: var(--accent-soft); color: var(--text); border: 1px solid var(--line); }
-  .btn-danger { background: var(--danger); color: #fff; }
-  .btn-sm { padding: 6px 12px; font-size: 12px; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-secondary, a.btn-secondary { background: var(--accent-soft); color: var(--text); border: 1px solid var(--line); }
+  .btn-secondary:hover, a.btn-secondary:hover { color: var(--text); }
+  .btn-danger, a.btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover, a.btn-danger:hover { color: #fff; }
+  .btn-sm, a.btn-sm { padding: 6px 12px; font-size: 12px; }
   .input {
     width: 100%;
     padding: 12px 14px;
