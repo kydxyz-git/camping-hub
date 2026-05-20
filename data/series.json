@@ -53,7 +53,7 @@
     "emoji": "🍖",
     "color": "#C94A4A",
     "published": true,
-    "sort": "ep_desc",
+    "sort": "random",
     "eps": [
       {
         "ep": 2,
@@ -99,28 +99,11 @@
     ]
   },
   {
-    "name": "봄·가을에 가기 좋은 캠핑장",
-    "emoji": "🌸",
-    "color": "#E89BB9",
-    "published": true,
-    "sort": "ep_desc",
-    "eps": [
-      {
-        "ep": 1,
-        "title": "철쭉 명소 바로 옆 캠핑장",
-        "url": "https://www.instagram.com/reel/DXoK6lqk38D/?igsh=MWZhcjEzdGMzNGxiZQ==",
-        "thumb": "./images/series/spring-autumn-ep01.jpg",
-        "page_id": "34f02bbd-cd95-80c9-a03a-f1b13356298a",
-        "published": true
-      }
-    ]
-  },
-  {
     "name": "캠핑꿀팁",
     "emoji": "💡",
     "color": "#4A90E2",
     "published": true,
-    "sort": "manual",
+    "sort": "ep_desc",
     "eps": [
       {
         "ep": 0,
@@ -152,6 +135,23 @@
         "url": "https://www.instagram.com/reel/DXxYOT1TeAz/?igsh=OXN2ajlyMmF5d2lj",
         "thumb": "./images/series/tips-04.jpg",
         "page_id": "34a02bbd-cd95-8096-9f3e-cb89f0a3e768",
+        "published": true
+      }
+    ]
+  },
+  {
+    "name": "봄·가을에 가기 좋은 캠핑장",
+    "emoji": "🌸",
+    "color": "#E89BB9",
+    "published": true,
+    "sort": "ep_desc",
+    "eps": [
+      {
+        "ep": 1,
+        "title": "철쭉 명소 바로 옆 캠핑장",
+        "url": "https://www.instagram.com/reel/DXoK6lqk38D/?igsh=MWZhcjEzdGMzNGxiZQ==",
+        "thumb": "./images/series/spring-autumn-ep01.jpg",
+        "page_id": "34f02bbd-cd95-80c9-a03a-f1b13356298a",
         "published": true
       }
     ]
