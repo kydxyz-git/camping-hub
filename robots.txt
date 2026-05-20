@@ -3,27 +3,27 @@
 
 User-agent: *
 Allow: /
-Disallow: /admin/
+Disallow: /kydzm/
 
 # 네이버 검색
 User-agent: Yeti
 Allow: /
-Disallow: /admin/
+Disallow: /kydzm/
 
 # 구글 검색
 User-agent: Googlebot
 Allow: /
-Disallow: /admin/
+Disallow: /kydzm/
 
 # 빙 검색
 User-agent: Bingbot
 Allow: /
-Disallow: /admin/
+Disallow: /kydzm/
 
 # 다음 검색
 User-agent: Daumoa
 Allow: /
-Disallow: /admin/
+Disallow: /kydzm/
 
 # 사이트맵 위치
 Sitemap: https://kydz.kr/sitemap.xml
