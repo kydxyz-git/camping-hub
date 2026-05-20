@@ -120,7 +120,7 @@
     "emoji": "💡",
     "color": "#4A90E2",
     "published": true,
-    "sort": "random",
+    "sort": "manual",
     "eps": [
       {
         "ep": 0,
