@@ -1646,6 +1646,13 @@ async function changeSeriesSort(si, newSort, selectEl) {
     }
     _epDragOrder = null;
   }
+  // 미저장 시리즈 그룹 순서 변경이 있을 때도 경고
+  if (_seriesDragOrder !== null) {
+    if (!confirm('저장하지 않은 시리즈 순서 변경이 있어요. 정렬 모드를 바꾸면 그 변경은 폐기됩니다. 계속하시겠어요?')) {
+      selectEl.value = cache.series[si].sort || 'ep_desc';
+      return;
+    }
+  }
 
   // 진행 오버레이 — 다른 클릭/조작 차단
   const progress = document.createElement('div');
@@ -1671,6 +1678,8 @@ async function changeSeriesSort(si, newSort, selectEl) {
     cache.loadedAt = Date.now();
     // 결과 즉시 확인 위해 해당 시리즈 자동 펼침
     _seriesOpen.add(si);
+    // 정렬 모드 변경은 자동 저장이므로, 드래그 저장 바 상태도 같이 정리
+    _seriesDragOrder = null;
     progress.remove();
     showToast(`정렬: ${modeLabel}`, 'success', 2000);
     // 항상 재렌더 (admin 화면도 즉시 새 정렬 결과 반영)
