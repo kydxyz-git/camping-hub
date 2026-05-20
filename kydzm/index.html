@@ -450,20 +450,25 @@
   .submit-progress-sub { font-size: 12px; color: var(--muted); }
 
   /* "+추가" 플로팅 액션 버튼 */
+  a.fab,
   .fab {
     position: fixed;
     bottom: 20px; right: 20px;
     width: 56px; height: 56px;
     border-radius: 50%;
-    background: var(--text); color: var(--bg);
+    background: var(--text);
+    color: var(--bg) !important;  /* 전역 a 스타일(inherit) 우회 */
     border: none;
     cursor: pointer;
     box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-    font-size: 24px; font-weight: 700;
+    font-size: 28px; font-weight: 700;
+    line-height: 1;
     z-index: 100;
     display: flex; align-items: center; justify-content: center;
+    text-decoration: none;
   }
-  .fab:hover { opacity: 0.9; }
+  a.fab:hover,
+  .fab:hover { opacity: 0.9; color: var(--bg) !important; }
 
   /* ── 모바일 ── */
   @media (max-width: 480px) {
