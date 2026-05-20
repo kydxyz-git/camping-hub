@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="robots" content="noindex, nofollow">
 <title>관리자 · kydz.kr</title>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
 <style>
   :root {
     --bg: #ffffff;
@@ -492,11 +493,58 @@
   .submit-progress-text { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
   .submit-progress-sub { font-size: 12px; color: var(--muted); }
 
-  /* "+추가" 플로팅 액션 버튼
-     PC: 콘텐츠 영역(max-width 960px) 오른쪽 가장자리에 맞춤
-     모바일: 화면 우하단 (기본값)
-     계산: 콘텐츠 중앙(50%) - 절반(480px) + 콘텐츠 너비(960px) - 76(56 + 20 여백) = 우측 가장자리에서 20px 안쪽
-   */
+  /* ── 드래그&드롭 정렬 (시리즈 그룹) ── */
+  .drag-handle {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    cursor: grab;
+    user-select: none;
+    margin-right: 4px;
+    margin-left: -4px;
+    font-size: 14px;
+    letter-spacing: -2px;
+    /* 클릭 영역 확장 */
+    padding: 6px;
+    margin: -6px 4px -6px -10px;
+  }
+  .drag-handle:active { cursor: grabbing; }
+  .drag-handle:hover { color: var(--text); }
+
+  /* 드래그 중 미리보기 (SortableJS .sortable-ghost) */
+  .sortable-ghost {
+    opacity: 0.4;
+    background: var(--accent-soft);
+  }
+  .sortable-ghost .series-group-header { border-color: var(--text); }
+
+  /* 드래그 중 마우스 따라다니는 카드 */
+  .sortable-drag {
+    opacity: 0.9;
+    transform: rotate(1deg);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  }
+
+  /* 저장 바 (변경사항 있을 때 페이지 상단 sticky) */
+  .save-bar {
+    position: sticky;
+    top: 48px;  /* topbar 높이 아래 */
+    z-index: 50;
+    background: #fff8e0;
+    border: 1px solid #f0d97a;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .save-bar-text { font-size: 13px; font-weight: 600; color: #7a5d0c; }
+  .save-bar-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .save-bar-actions .btn { padding: 8px 14px; font-size: 13px; }
+
+  /* "+추가" 플로팅 액션 버튼 (PC: 콘텐츠 영역 끝, 모바일: 우하단) */
   a.fab,
   .fab {
     position: fixed;
@@ -1034,6 +1082,16 @@ function getSeriesSlug(seriesName, ep) {
 async function router() {
   if (!isAuthed()) return; // 로그인 안 됐으면 라우터 무시
 
+  // 시리즈 화면 떠날 때 미저장 순서 변경 경고
+  const newHash = (location.hash || '').replace(/^#/, '');
+  if (_seriesDragOrder !== null && !newHash.startsWith('series')) {
+    if (!confirm('저장하지 않은 시리즈 순서 변경이 있어요. 그래도 떠나시겠어요?')) {
+      history.back();
+      return;
+    }
+    _seriesDragOrder = null;
+  }
+
   const content = document.getElementById('app-content');
   content.innerHTML = '<div class="loading">로딩 중...</div>';
 
@@ -1263,22 +1321,35 @@ function renderCampDetail(idx) {
 // 시리즈 리스트 (2레벨: 시리즈 그룹 → EP)
 // ════════════════════════════════════════════════════════════════════
 const _seriesOpen = new Set([0]); // 첫 시리즈는 기본 펼침
+let _seriesDragOrder = null; // 드래그로 변경된 순서 (null이면 변경 없음)
+
 function renderSeriesList() {
   document.getElementById('topbar-title').innerHTML = '🎬 시리즈 EP';
   const c = document.getElementById('app-content');
   const totalEps = cache.series.reduce((s,x) => s + x.eps.length, 0);
+  const hasUnsavedOrder = _seriesDragOrder !== null;
   c.innerHTML = `
     <div class="page-header">
       <button class="page-back" id="back-btn">← 대시보드</button>
       <div class="page-count">${cache.series.length}시리즈 · ${totalEps}편</div>
     </div>
-    <div>
+    ${hasUnsavedOrder ? `
+      <div class="save-bar" id="save-bar">
+        <div class="save-bar-text">📦 시리즈 순서가 변경되었어요</div>
+        <div class="save-bar-actions">
+          <button class="btn btn-secondary" id="cancel-order">취소</button>
+          <button class="btn" id="save-order">저장</button>
+        </div>
+      </div>
+    ` : ''}
+    <div id="series-sortable">
       ${cache.series.map((s, si) => {
         const sPub = s.published !== false;
         return `
         <div class="series-group ${_seriesOpen.has(si) ? 'is-open' : ''} ${sPub ? '' : 'is-unpublished'}" data-si="${si}">
           <div class="series-group-bar" style="background:${escapeHtml(s.color || 'var(--accent-soft)')}"></div>
           <div class="series-group-header">
+            <span class="drag-handle" title="드래그해서 순서 변경">⋮⋮</span>
             <div class="series-group-header-clickable" data-toggle="${si}">
               <span class="series-group-emoji">${escapeHtml(s.emoji || '🎬')}</span>${escapeHtml(s.name)}<span class="series-group-count">${s.eps.length}편</span>
             </div>
@@ -1313,7 +1384,11 @@ function renderSeriesList() {
     </div>
     <a href="#series/new" class="fab" title="EP 추가">+</a>
   `;
-  document.getElementById('back-btn').onclick = () => location.hash = '';
+  document.getElementById('back-btn').onclick = () => {
+    if (!checkUnsavedSeriesOrder()) return;
+    _seriesDragOrder = null;
+    location.hash = '';
+  };
   // 시리즈 그룹 펼치기/접기 — 명시적으로 toggle 영역만
   c.querySelectorAll('[data-toggle]').forEach(h => {
     h.onclick = () => {
@@ -1347,6 +1422,95 @@ function renderSeriesList() {
       }
     });
   });
+
+  // 드래그&드롭 정렬 (시리즈 그룹만)
+  const sortableEl = document.getElementById('series-sortable');
+  if (sortableEl && typeof Sortable !== 'undefined') {
+    Sortable.create(sortableEl, {
+      handle: '.drag-handle',
+      animation: 180,
+      delay: 200,           // 모바일 길게 누르기 (스크롤 충돌 방지)
+      delayOnTouchOnly: true, // PC는 즉시 드래그
+      forceFallback: false,
+      ghostClass: 'sortable-ghost',
+      dragClass: 'sortable-drag',
+      onEnd: (evt) => {
+        // 새 순서 계산 (DOM 기준)
+        const newOrder = Array.from(sortableEl.querySelectorAll('.series-group[data-si]'))
+          .map(el => +el.dataset.si);
+        // 변경이 없으면 무시
+        const originalOrder = cache.series.map((_, i) => i);
+        const changed = newOrder.some((v, i) => v !== originalOrder[i]);
+        if (!changed) return;
+        _seriesDragOrder = newOrder;
+        renderSeriesList(); // 저장 바 표시 위해 재렌더
+      }
+    });
+  }
+
+  // 저장/취소 버튼 핸들러
+  const saveBtn = document.getElementById('save-order');
+  const cancelBtn = document.getElementById('cancel-order');
+  if (saveBtn) saveBtn.onclick = saveSeriesOrder;
+  if (cancelBtn) cancelBtn.onclick = () => {
+    if (confirm('변경사항을 취소할까요?')) {
+      _seriesDragOrder = null;
+      renderSeriesList();
+    }
+  };
+}
+
+// 시리즈 순서 저장 (GitHub commit)
+async function saveSeriesOrder() {
+  if (!_seriesDragOrder) return;
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+
+  // 새 순서대로 series 배열 재구성
+  const newSeries = _seriesDragOrder.map(idx => cache.series[idx]);
+
+  // 진행 오버레이
+  const progress = document.createElement('div');
+  progress.className = 'submit-progress is-active';
+  progress.innerHTML = `
+    <div class="submit-progress-card">
+      <div class="submit-progress-spinner"></div>
+      <div class="submit-progress-text">순서 저장 중...</div>
+      <div class="submit-progress-sub">GitHub 업로드</div>
+    </div>
+  `;
+  document.body.appendChild(progress);
+
+  try {
+    const message = `reorder(admin): 시리즈 순서 변경 (${newSeries.map(s => s.name).slice(0, 3).join(', ')}${newSeries.length > 3 ? ' …' : ''})`;
+    await ghCommitMultipleFiles([
+      { path: 'data/series.json', content: JSON.stringify(newSeries, null, 2) + '\n', encoding: 'utf-8' },
+    ], message);
+
+    cache.series = newSeries;
+    cache.loadedAt = Date.now();
+    _seriesDragOrder = null;
+    // _seriesOpen은 인덱스 기반인데 순서가 바뀌면 의미 잃음 → 초기화
+    _seriesOpen.clear();
+    _seriesOpen.add(0);
+
+    progress.remove();
+    showToast('시리즈 순서 저장됨! (1~2분 후 사이트 반영)', 'success', 3500);
+    renderSeriesList();
+  } catch (e) {
+    progress.remove();
+    console.error(e);
+    showToast('저장 실패: ' + e.message, 'error', 5000);
+  }
+}
+
+// 시리즈 목록에서 떠날 때 미저장 변경사항 경고
+function checkUnsavedSeriesOrder() {
+  if (_seriesDragOrder !== null) {
+    return confirm('저장하지 않은 시리즈 순서 변경이 있어요. 정말 떠나시겠어요?');
+  }
+  return true;
 }
 
 // ════════════════════════════════════════════════════════════════════
