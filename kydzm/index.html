@@ -176,11 +176,17 @@
     border: 1px solid var(--line);
     border-radius: 10px;
     padding: 14px 16px;
-    cursor: pointer;
     transition: border-color 0.12s, transform 0.12s;
     display: flex; align-items: center; gap: 12px;
   }
   .list-item:hover { border-color: var(--text); transform: translateX(2px); }
+  .list-item-link {
+    flex: 1;
+    display: flex; align-items: center; gap: 12px;
+    min-width: 0;
+    cursor: pointer;
+    color: inherit !important;
+  }
   .list-item-thumb {
     width: 48px; height: 48px;
     border-radius: 8px;
@@ -201,20 +207,17 @@
     font-size: 12px; color: var(--muted);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .list-item-arrow { color: var(--muted); font-size: 18px; flex-shrink: 0; }
+  .list-item-arrow {
+    color: var(--muted) !important;
+    font-size: 18px;
+    flex-shrink: 0;
+    cursor: pointer;
+    padding: 6px 4px;
+    margin: -6px -4px -6px 0;
+  }
 
   /* ── 시리즈 (2레벨) ── */
   .series-group { margin-bottom: 12px; }
-  .series-group-header {
-    background: var(--bg);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 12px 16px;
-    display: flex; align-items: center; justify-content: space-between;
-    cursor: pointer;
-    font-weight: 700; font-size: 14px;
-  }
-  .series-group-header:hover { border-color: var(--text); }
   .series-group-emoji { margin-right: 6px; }
   .series-group-count {
     font-size: 11px; color: var(--muted);
@@ -237,15 +240,55 @@
     padding: 10px 12px;
     font-size: 13px;
     display: flex; align-items: center; gap: 10px;
-    cursor: pointer;
   }
   .series-ep-item:hover { border-color: var(--text); }
+  .series-ep-link {
+    flex: 1;
+    display: flex; align-items: center; gap: 10px;
+    min-width: 0;
+    color: inherit !important;
+  }
+  .series-ep-arrow {
+    color: var(--muted) !important;
+    font-size: 18px;
+    padding: 6px 4px;
+    margin: -6px -4px -6px 0;
+  }
   .series-ep-num {
     font-size: 11px; font-weight: 700;
     background: var(--accent-soft); padding: 3px 7px; border-radius: 100px;
     color: var(--muted); flex-shrink: 0;
   }
   .series-ep-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* 시리즈 헤더 — 클릭 영역 명시적 분리 */
+  .series-group-header {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 16px 12px 22px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-weight: 700; font-size: 14px;
+    gap: 12px;
+  }
+  .series-group-header:hover { border-color: var(--text); }
+  .series-group-header-clickable {
+    flex: 1;
+    cursor: pointer;
+    min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    padding: 4px 0;
+  }
+  .series-group-header-right {
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0;
+  }
+  .series-group-arrow {
+    cursor: pointer;
+    padding: 4px 8px;
+    margin: -4px -8px -4px 0;
+    color: var(--muted);
+  }
 
   /* ── 상세 뷰 ── */
   .detail-meta {
@@ -477,17 +520,14 @@
 
   /* 시리즈 그룹 좌측 컬러 띠 */
   .series-group { position: relative; }
-  .series-group-header {
-    padding-left: 22px;  /* 컬러 띠 공간 */
-  }
   .series-group-bar {
     position: absolute;
     left: 0; top: 0; bottom: 0;
     width: 4px;
     background: var(--accent-soft);
     border-radius: 10px 0 0 10px;
+    height: 100%;
   }
-  .series-group-bar { height: 100%; }
 
   /* "새 시리즈 만들기" 점선 카드 */
   .series-add-card {
@@ -544,45 +584,56 @@
   /* 공개/비공개 토글 스위치 */
   .pub-toggle {
     position: relative;
-    width: 38px; height: 22px;
+    width: 46px; height: 26px;
     flex-shrink: 0;
     cursor: pointer;
     user-select: none;
+    /* 클릭 영역 확장 (시각은 그대로, 손가락 미스 흡수) */
+    padding: 8px;
+    margin: -8px;
+    box-sizing: content-box;
+    display: inline-block;
   }
   .pub-toggle input { display: none; }
   .pub-toggle-track {
-    width: 100%; height: 100%;
-    background: #d4d4d2;
+    display: block;
+    width: 46px; height: 26px;
+    background: #b0b0ae;
     border-radius: 100px;
     transition: background 0.18s;
   }
   .pub-toggle-thumb {
     position: absolute;
-    top: 2px; left: 2px;
-    width: 18px; height: 18px;
+    top: 10px; left: 10px;
+    width: 22px; height: 22px;
     background: #fff;
     border-radius: 50%;
     transition: transform 0.18s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
   }
   .pub-toggle input:checked + .pub-toggle-track {
-    background: var(--success);
+    background: #2dab5e;  /* 더 진한 초록 */
   }
   .pub-toggle input:checked ~ .pub-toggle-thumb {
-    transform: translateX(16px);
+    transform: translateX(20px);
   }
   .pub-toggle.is-saving { opacity: 0.5; pointer-events: none; }
+  /* 호버 시 살짝 강조 (PC에서 인지 도움) */
+  .pub-toggle:hover .pub-toggle-track {
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
+  }
 
   /* 비공개 항목 스타일 */
   .is-unpublished {
-    opacity: 0.5;
+    opacity: 0.55;
   }
   .is-unpublished .list-item-title::before,
-  .is-unpublished .series-group-header > div::before,
+  .is-unpublished .series-group-header-clickable::before,
   .is-unpublished .series-ep-title::before {
     content: '🔒 ';
     font-size: 11px;
     opacity: 0.8;
+    margin-right: 2px;
   }
   /* 시리즈 그룹/EP 행의 우측 토글 영역 */
   .list-item-toggle, .series-group-toggle, .series-ep-toggle {
@@ -711,9 +762,11 @@ function maskToken(t) {
 }
 
 // 공개/비공개 토글 마크업 생성
+// label의 click은 부모로 전파 차단만, 기본 동작(input 토글)은 유지
+// input의 click도 부모로 전파 차단 (이중 안전장치)
 function toggleHtml(checked, dataAttrs = '') {
   return `<label class="pub-toggle" ${dataAttrs} onclick="event.stopPropagation();">
-    <input type="checkbox" ${checked ? 'checked' : ''}>
+    <input type="checkbox" ${checked ? 'checked' : ''} onclick="event.stopPropagation();">
     <span class="pub-toggle-track"></span>
     <span class="pub-toggle-thumb"></span>
   </label>`;
@@ -1129,14 +1182,17 @@ function renderCampList() {
           : '🏕';
         const isPub = camp.published !== false;
         return `
-          <a class="list-item ${isPub ? '' : 'is-unpublished'}" href="#camps/${camp._idx}">
-            <div class="list-item-thumb">${thumb}</div>
-            <div class="list-item-body">
-              <div class="list-item-title">${escapeHtml(camp.name)}${camp.graega ? ' <span class="badge badge-graega" style="font-size:9px;padding:1px 5px;">G</span>' : ''}</div>
-              <div class="list-item-meta">${escapeHtml(camp.region || '-')} · ${escapeHtml(seasons)} · ${visits}</div>
-            </div>
+          <div class="list-item ${isPub ? '' : 'is-unpublished'}">
+            <a class="list-item-link" href="#camps/${camp._idx}">
+              <div class="list-item-thumb">${thumb}</div>
+              <div class="list-item-body">
+                <div class="list-item-title">${escapeHtml(camp.name)}${camp.graega ? ' <span class="badge badge-graega" style="font-size:9px;padding:1px 5px;">G</span>' : ''}</div>
+                <div class="list-item-meta">${escapeHtml(camp.region || '-')} · ${escapeHtml(seasons)} · ${visits}</div>
+              </div>
+            </a>
             ${toggleHtml(isPub, `data-camp-idx="${camp._idx}"`)}
-          </a>
+            <a class="list-item-arrow" href="#camps/${camp._idx}">›</a>
+          </div>
         `;
       }).join('')}
     </div>
@@ -1145,12 +1201,14 @@ function renderCampList() {
   // 토글 핸들러
   c.querySelectorAll('[data-camp-idx]').forEach(toggleEl => {
     const cb = toggleEl.querySelector('input');
-    cb.onclick = (e) => e.stopPropagation();
-    cb.onchange = async (e) => {
+    cb.addEventListener('change', async (e) => {
       e.stopPropagation();
       const idx = +toggleEl.dataset.campIdx;
-      await togglePublished('camps', { idx }, e.target.checked, toggleEl);
-    };
+      const ok = await togglePublished('camps', { idx }, e.target.checked, toggleEl);
+      if (ok) {
+        toggleEl.closest('.list-item').classList.toggle('is-unpublished', !e.target.checked);
+      }
+    });
   });
   const search = document.getElementById('camp-search');
   search.oninput = (e) => { _campSearch = e.target.value; renderCampList(); };
@@ -1220,23 +1278,27 @@ function renderSeriesList() {
         return `
         <div class="series-group ${_seriesOpen.has(si) ? 'is-open' : ''} ${sPub ? '' : 'is-unpublished'}" data-si="${si}">
           <div class="series-group-bar" style="background:${escapeHtml(s.color || 'var(--accent-soft)')}"></div>
-          <div class="series-group-header" data-toggle="${si}">
-            <div><span class="series-group-emoji">${escapeHtml(s.emoji || '🎬')}</span>${escapeHtml(s.name)}<span class="series-group-count">${s.eps.length}편</span></div>
-            <div style="display:flex;align-items:center;gap:8px;">
+          <div class="series-group-header">
+            <div class="series-group-header-clickable" data-toggle="${si}">
+              <span class="series-group-emoji">${escapeHtml(s.emoji || '🎬')}</span>${escapeHtml(s.name)}<span class="series-group-count">${s.eps.length}편</span>
+            </div>
+            <div class="series-group-header-right">
               ${toggleHtml(sPub, `data-series-toggle="${si}"`)}
-              <span class="series-group-arrow">›</span>
+              <span class="series-group-arrow" data-toggle="${si}">›</span>
             </div>
           </div>
           <div class="series-group-eps">
             ${s.eps.map((ep, ei) => {
               const epPub = ep.published !== false;
               return `
-              <a class="series-ep-item ${epPub ? '' : 'is-unpublished'}" href="#series/${si}/${ei}">
-                <span class="series-ep-num">${ep.ep > 0 ? 'EP.' + String(ep.ep).padStart(2, '0') : '단편'}</span>
-                <span class="series-ep-title">${escapeHtml(ep.title)}</span>
+              <div class="series-ep-item ${epPub ? '' : 'is-unpublished'}">
+                <a class="series-ep-link" href="#series/${si}/${ei}">
+                  <span class="series-ep-num">${ep.ep > 0 ? 'EP.' + String(ep.ep).padStart(2, '0') : '단편'}</span>
+                  <span class="series-ep-title">${escapeHtml(ep.title)}</span>
+                </a>
                 ${toggleHtml(epPub, `data-ep-toggle="${si}-${ei}"`)}
-                <span class="list-item-arrow">›</span>
-              </a>
+                <a class="series-ep-arrow" href="#series/${si}/${ei}">›</a>
+              </div>
               `;
             }).join('')}
           </div>
@@ -1252,10 +1314,9 @@ function renderSeriesList() {
     <a href="#series/new" class="fab" title="EP 추가">+</a>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
-  // 시리즈 그룹 펼치기/접기
+  // 시리즈 그룹 펼치기/접기 — 명시적으로 toggle 영역만
   c.querySelectorAll('[data-toggle]').forEach(h => {
-    h.onclick = (e) => {
-      // 토글 스위치 클릭은 stopPropagation 되어있어 여기 도달 안 함
+    h.onclick = () => {
       const si = +h.dataset.toggle;
       if (_seriesOpen.has(si)) _seriesOpen.delete(si);
       else _seriesOpen.add(si);
@@ -1265,28 +1326,26 @@ function renderSeriesList() {
   // 시리즈 공개/비공개 토글
   c.querySelectorAll('[data-series-toggle]').forEach(toggleEl => {
     const cb = toggleEl.querySelector('input');
-    cb.onclick = (e) => e.stopPropagation();
-    cb.onchange = async (e) => {
+    cb.addEventListener('change', async (e) => {
       e.stopPropagation();
       const si = +toggleEl.dataset.seriesToggle;
       const ok = await togglePublished('series', { si }, e.target.checked, toggleEl);
       if (ok) {
         toggleEl.closest('.series-group').classList.toggle('is-unpublished', !e.target.checked);
       }
-    };
+    });
   });
   // EP 공개/비공개 토글
   c.querySelectorAll('[data-ep-toggle]').forEach(toggleEl => {
     const cb = toggleEl.querySelector('input');
-    cb.onclick = (e) => { e.stopPropagation(); e.preventDefault(); };
-    cb.onchange = async (e) => {
+    cb.addEventListener('change', async (e) => {
       e.stopPropagation();
       const [si, ei] = toggleEl.dataset.epToggle.split('-').map(Number);
       const ok = await togglePublished('series-ep', { si, ei }, e.target.checked, toggleEl);
       if (ok) {
         toggleEl.closest('.series-ep-item').classList.toggle('is-unpublished', !e.target.checked);
       }
-    };
+    });
   });
 }
 
@@ -1784,14 +1843,17 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey) {
   const src = item.source ? `<span style="font-size:11px;color:var(--muted);margin-right:6px;">${escapeHtml(item.source)}</span>` : '';
   const isPub = item.published !== false;
   return `
-    <a class="list-item ${isPub ? '' : 'is-unpublished'}" href="#${hrefPrefix}/${item._idx}">
-      <div class="list-item-thumb">${thumb}</div>
-      <div class="list-item-body">
-        <div class="list-item-title">${escapeHtml(item.name)}</div>
-        <div class="list-item-meta">${src}${escapeHtml(item.desc || '')}</div>
-      </div>
+    <div class="list-item ${isPub ? '' : 'is-unpublished'}">
+      <a class="list-item-link" href="#${hrefPrefix}/${item._idx}">
+        <div class="list-item-thumb">${thumb}</div>
+        <div class="list-item-body">
+          <div class="list-item-title">${escapeHtml(item.name)}</div>
+          <div class="list-item-meta">${src}${escapeHtml(item.desc || '')}</div>
+        </div>
+      </a>
       ${toggleHtml(isPub, `data-${dataAttrKey}="${item._idx}"`)}
-    </a>
+      <a class="list-item-arrow" href="#${hrefPrefix}/${item._idx}">›</a>
+    </div>
   `;
 }
 
@@ -1843,17 +1905,18 @@ function renderProductList(dataArr, searchVar, opts) {
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
-  // 토글 핸들러 (data-{key} 속성에서 idx 추출)
-  // 'food-idx' → dataset.foodIdx (camelCase)
+  // 토글 핸들러
   const datasetKey = opts.dataAttrKey.replace(/-([a-z])/g, (_, ch) => ch.toUpperCase());
   c.querySelectorAll(`[data-${opts.dataAttrKey}]`).forEach(toggleEl => {
     const cb = toggleEl.querySelector('input');
-    cb.onclick = (e) => e.stopPropagation();
-    cb.onchange = async (e) => {
+    cb.addEventListener('change', async (e) => {
       e.stopPropagation();
       const idx = +toggleEl.dataset[datasetKey];
-      await togglePublished(opts.type, { idx }, e.target.checked, toggleEl);
-    };
+      const ok = await togglePublished(opts.type, { idx }, e.target.checked, toggleEl);
+      if (ok) {
+        toggleEl.closest('.list-item').classList.toggle('is-unpublished', !e.target.checked);
+      }
+    });
   });
   const s = document.getElementById('prod-search');
   s.oninput = (e) => { opts.setSearch(e.target.value); opts.rerender(); };
