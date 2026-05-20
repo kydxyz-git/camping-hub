@@ -541,6 +541,55 @@
     text-shadow: 0 1px 2px rgba(0,0,0,0.4);
   }
 
+  /* 공개/비공개 토글 스위치 */
+  .pub-toggle {
+    position: relative;
+    width: 38px; height: 22px;
+    flex-shrink: 0;
+    cursor: pointer;
+    user-select: none;
+  }
+  .pub-toggle input { display: none; }
+  .pub-toggle-track {
+    width: 100%; height: 100%;
+    background: #d4d4d2;
+    border-radius: 100px;
+    transition: background 0.18s;
+  }
+  .pub-toggle-thumb {
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 18px; height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.18s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .pub-toggle input:checked + .pub-toggle-track {
+    background: var(--success);
+  }
+  .pub-toggle input:checked ~ .pub-toggle-thumb {
+    transform: translateX(16px);
+  }
+  .pub-toggle.is-saving { opacity: 0.5; pointer-events: none; }
+
+  /* 비공개 항목 스타일 */
+  .is-unpublished {
+    opacity: 0.5;
+  }
+  .is-unpublished .list-item-title::before,
+  .is-unpublished .series-group-header > div::before,
+  .is-unpublished .series-ep-title::before {
+    content: '🔒 ';
+    font-size: 11px;
+    opacity: 0.8;
+  }
+  /* 시리즈 그룹/EP 행의 우측 토글 영역 */
+  .list-item-toggle, .series-group-toggle, .series-ep-toggle {
+    flex-shrink: 0;
+    margin-left: 4px;
+  }
+
   /* ── 모바일 ── */
   @media (max-width: 480px) {
     .container { padding: 16px 14px; }
@@ -659,6 +708,85 @@ function matchSearch(item, query, fields) {
 function maskToken(t) {
   if (!t || t.length < 10) return t || '';
   return t.slice(0, 7) + '••••••••••••' + t.slice(-4);
+}
+
+// 공개/비공개 토글 마크업 생성
+function toggleHtml(checked, dataAttrs = '') {
+  return `<label class="pub-toggle" ${dataAttrs} onclick="event.stopPropagation();">
+    <input type="checkbox" ${checked ? 'checked' : ''}>
+    <span class="pub-toggle-track"></span>
+    <span class="pub-toggle-thumb"></span>
+  </label>`;
+}
+
+// published 상태 변경 + GitHub commit
+// type: 'camps' | 'foods' | 'items' (단일 배열)
+//   for series:        type='series', si 사용
+//   for series in eps: type='series-ep', si + ei 사용
+async function togglePublished(type, args, newValue, toggleEl) {
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+    // 토글 상태 원복
+    const cb = toggleEl?.querySelector('input');
+    if (cb) cb.checked = !newValue;
+    return false;
+  }
+
+  toggleEl?.classList.add('is-saving');
+
+  try {
+    let fileName, dataArr, label;
+    if (type === 'camps') {
+      dataArr = JSON.parse(JSON.stringify(cache.camps));
+      dataArr[args.idx].published = newValue;
+      cache.camps = dataArr;
+      fileName = 'camps.json';
+      label = dataArr[args.idx].name;
+    } else if (type === 'foods') {
+      dataArr = JSON.parse(JSON.stringify(cache.foods));
+      dataArr[args.idx].published = newValue;
+      cache.foods = dataArr;
+      fileName = 'foods.json';
+      label = dataArr[args.idx].name;
+    } else if (type === 'items') {
+      dataArr = JSON.parse(JSON.stringify(cache.items));
+      dataArr[args.idx].published = newValue;
+      cache.items = dataArr;
+      fileName = 'items.json';
+      label = dataArr[args.idx].name;
+    } else if (type === 'series') {
+      dataArr = JSON.parse(JSON.stringify(cache.series));
+      dataArr[args.si].published = newValue;
+      cache.series = dataArr;
+      fileName = 'series.json';
+      label = '시리즈 "' + dataArr[args.si].name + '"';
+    } else if (type === 'series-ep') {
+      dataArr = JSON.parse(JSON.stringify(cache.series));
+      dataArr[args.si].eps[args.ei].published = newValue;
+      cache.series = dataArr;
+      fileName = 'series.json';
+      label = 'EP "' + dataArr[args.si].eps[args.ei].title + '"';
+    } else {
+      throw new Error('알 수 없는 type: ' + type);
+    }
+
+    const message = `${newValue ? 'show' : 'hide'}(admin): ${label} ${newValue ? '공개' : '비공개'}`;
+    await ghCommitMultipleFiles([
+      { path: `data/${fileName}`, content: JSON.stringify(dataArr, null, 2) + '\n', encoding: 'utf-8' },
+    ], message);
+
+    toggleEl?.classList.remove('is-saving');
+    showToast(`${label} ${newValue ? '공개됨' : '비공개됨'}`, 'success', 2000);
+    return true;
+  } catch (e) {
+    console.error(e);
+    toggleEl?.classList.remove('is-saving');
+    // 토글 원복
+    const cb = toggleEl?.querySelector('input');
+    if (cb) cb.checked = !newValue;
+    showToast('변경 실패: ' + e.message, 'error', 4000);
+    return false;
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -999,20 +1127,31 @@ function renderCampList() {
         const thumb = camp.imgs && camp.imgs[0]
           ? `<img src="../${camp.imgs[0].replace(/^\.\//, '')}" alt="" loading="lazy">`
           : '🏕';
+        const isPub = camp.published !== false;
         return `
-          <a class="list-item" href="#camps/${camp._idx}">
+          <a class="list-item ${isPub ? '' : 'is-unpublished'}" href="#camps/${camp._idx}">
             <div class="list-item-thumb">${thumb}</div>
             <div class="list-item-body">
               <div class="list-item-title">${escapeHtml(camp.name)}${camp.graega ? ' <span class="badge badge-graega" style="font-size:9px;padding:1px 5px;">G</span>' : ''}</div>
               <div class="list-item-meta">${escapeHtml(camp.region || '-')} · ${escapeHtml(seasons)} · ${visits}</div>
             </div>
-            <div class="list-item-arrow">›</div>
+            ${toggleHtml(isPub, `data-camp-idx="${camp._idx}"`)}
           </a>
         `;
       }).join('')}
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
+  // 토글 핸들러
+  c.querySelectorAll('[data-camp-idx]').forEach(toggleEl => {
+    const cb = toggleEl.querySelector('input');
+    cb.onclick = (e) => e.stopPropagation();
+    cb.onchange = async (e) => {
+      e.stopPropagation();
+      const idx = +toggleEl.dataset.campIdx;
+      await togglePublished('camps', { idx }, e.target.checked, toggleEl);
+    };
+  });
   const search = document.getElementById('camp-search');
   search.oninput = (e) => { _campSearch = e.target.value; renderCampList(); };
   // 입력란 포커스 유지
@@ -1076,24 +1215,34 @@ function renderSeriesList() {
       <div class="page-count">${cache.series.length}시리즈 · ${totalEps}편</div>
     </div>
     <div>
-      ${cache.series.map((s, si) => `
-        <div class="series-group ${_seriesOpen.has(si) ? 'is-open' : ''}" data-si="${si}">
+      ${cache.series.map((s, si) => {
+        const sPub = s.published !== false;
+        return `
+        <div class="series-group ${_seriesOpen.has(si) ? 'is-open' : ''} ${sPub ? '' : 'is-unpublished'}" data-si="${si}">
           <div class="series-group-bar" style="background:${escapeHtml(s.color || 'var(--accent-soft)')}"></div>
           <div class="series-group-header" data-toggle="${si}">
             <div><span class="series-group-emoji">${escapeHtml(s.emoji || '🎬')}</span>${escapeHtml(s.name)}<span class="series-group-count">${s.eps.length}편</span></div>
-            <span class="series-group-arrow">›</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              ${toggleHtml(sPub, `data-series-toggle="${si}"`)}
+              <span class="series-group-arrow">›</span>
+            </div>
           </div>
           <div class="series-group-eps">
-            ${s.eps.map((ep, ei) => `
-              <a class="series-ep-item" href="#series/${si}/${ei}">
+            ${s.eps.map((ep, ei) => {
+              const epPub = ep.published !== false;
+              return `
+              <a class="series-ep-item ${epPub ? '' : 'is-unpublished'}" href="#series/${si}/${ei}">
                 <span class="series-ep-num">${ep.ep > 0 ? 'EP.' + String(ep.ep).padStart(2, '0') : '단편'}</span>
                 <span class="series-ep-title">${escapeHtml(ep.title)}</span>
+                ${toggleHtml(epPub, `data-ep-toggle="${si}-${ei}"`)}
                 <span class="list-item-arrow">›</span>
               </a>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
         </div>
-      `).join('')}
+        `;
+      }).join('')}
 
       <a class="series-add-card" href="#series/new-series">
         <span class="series-add-icon">+</span>
@@ -1103,12 +1252,40 @@ function renderSeriesList() {
     <a href="#series/new" class="fab" title="EP 추가">+</a>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
+  // 시리즈 그룹 펼치기/접기
   c.querySelectorAll('[data-toggle]').forEach(h => {
-    h.onclick = () => {
+    h.onclick = (e) => {
+      // 토글 스위치 클릭은 stopPropagation 되어있어 여기 도달 안 함
       const si = +h.dataset.toggle;
       if (_seriesOpen.has(si)) _seriesOpen.delete(si);
       else _seriesOpen.add(si);
       h.closest('.series-group').classList.toggle('is-open');
+    };
+  });
+  // 시리즈 공개/비공개 토글
+  c.querySelectorAll('[data-series-toggle]').forEach(toggleEl => {
+    const cb = toggleEl.querySelector('input');
+    cb.onclick = (e) => e.stopPropagation();
+    cb.onchange = async (e) => {
+      e.stopPropagation();
+      const si = +toggleEl.dataset.seriesToggle;
+      const ok = await togglePublished('series', { si }, e.target.checked, toggleEl);
+      if (ok) {
+        toggleEl.closest('.series-group').classList.toggle('is-unpublished', !e.target.checked);
+      }
+    };
+  });
+  // EP 공개/비공개 토글
+  c.querySelectorAll('[data-ep-toggle]').forEach(toggleEl => {
+    const cb = toggleEl.querySelector('input');
+    cb.onclick = (e) => { e.stopPropagation(); e.preventDefault(); };
+    cb.onchange = async (e) => {
+      e.stopPropagation();
+      const [si, ei] = toggleEl.dataset.epToggle.split('-').map(Number);
+      const ok = await togglePublished('series-ep', { si, ei }, e.target.checked, toggleEl);
+      if (ok) {
+        toggleEl.closest('.series-ep-item').classList.toggle('is-unpublished', !e.target.checked);
+      }
     };
   });
 }
@@ -1600,19 +1777,20 @@ function priceHtml(item) {
 }
 
 // 리스트 카드 한 줄
-function productListItem(item, hrefPrefix, fallbackEmoji) {
+function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey) {
   const thumb = item.thumb
     ? `<img src="../${item.thumb.replace(/^\.\//, '')}" alt="" loading="lazy">`
     : fallbackEmoji;
   const src = item.source ? `<span style="font-size:11px;color:var(--muted);margin-right:6px;">${escapeHtml(item.source)}</span>` : '';
+  const isPub = item.published !== false;
   return `
-    <a class="list-item" href="#${hrefPrefix}/${item._idx}">
+    <a class="list-item ${isPub ? '' : 'is-unpublished'}" href="#${hrefPrefix}/${item._idx}">
       <div class="list-item-thumb">${thumb}</div>
       <div class="list-item-body">
         <div class="list-item-title">${escapeHtml(item.name)}</div>
         <div class="list-item-meta">${src}${escapeHtml(item.desc || '')}</div>
       </div>
-      <div class="list-item-arrow">›</div>
+      ${toggleHtml(isPub, `data-${dataAttrKey}="${item._idx}"`)}
     </a>
   `;
 }
@@ -1661,10 +1839,22 @@ function renderProductList(dataArr, searchVar, opts) {
       <input class="input" id="prod-search" placeholder="${opts.placeholder}" value="${escapeHtml(q)}">
     </div>
     <div class="list">
-      ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji)).join('')}
+      ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey)).join('')}
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
+  // 토글 핸들러 (data-{key} 속성에서 idx 추출)
+  // 'food-idx' → dataset.foodIdx (camelCase)
+  const datasetKey = opts.dataAttrKey.replace(/-([a-z])/g, (_, ch) => ch.toUpperCase());
+  c.querySelectorAll(`[data-${opts.dataAttrKey}]`).forEach(toggleEl => {
+    const cb = toggleEl.querySelector('input');
+    cb.onclick = (e) => e.stopPropagation();
+    cb.onchange = async (e) => {
+      e.stopPropagation();
+      const idx = +toggleEl.dataset[datasetKey];
+      await togglePublished(opts.type, { idx }, e.target.checked, toggleEl);
+    };
+  });
   const s = document.getElementById('prod-search');
   s.oninput = (e) => { opts.setSearch(e.target.value); opts.rerender(); };
   setTimeout(() => { const pos = q.length; s.focus(); s.setSelectionRange(pos, pos); }, 0);
@@ -1678,6 +1868,7 @@ function renderFoodList() {
   renderProductList(cache.foods, _foodSearch, {
     icon: '🍖', label: '음식', placeholder: '음식명, 설명, 출처',
     hashPrefix: 'foods', fallbackEmoji: '🍖',
+    type: 'foods', dataAttrKey: 'food-idx',
     getSearch: () => _foodSearch,
     setSearch: (v) => { _foodSearch = v; },
     rerender: renderFoodList
@@ -1695,6 +1886,7 @@ function renderItemList() {
   renderProductList(cache.items, _itemSearch, {
     icon: '🛠', label: '장비', placeholder: '장비명, 설명, 출처',
     hashPrefix: 'items', fallbackEmoji: '🛠',
+    type: 'items', dataAttrKey: 'item-idx',
     getSearch: () => _itemSearch,
     setSearch: (v) => { _itemSearch = v; },
     rerender: renderItemList
