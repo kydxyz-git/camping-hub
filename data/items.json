@@ -1,0 +1,22 @@
+[
+  {
+    "name": "포레스트유 데크팩SET",
+    "desc": "캠핑 필수템",
+    "url": "https://link.coupang.com/a/et5HiO",
+    "source": "쿠팡",
+    "thumb": "./images/products/item-01.jpg",
+    "price_original": 22310,
+    "price_sale": 22050,
+    "discount_rate": 1
+  },
+  {
+    "name": "울란지 PM01 맥세이프 방식 연장 브라켓",
+    "desc": "오즈모 포켓 필수 악세사리",
+    "url": "https://naver.me/50BeWhG5",
+    "source": "네이버",
+    "thumb": "./images/products/item-02.jpg",
+    "price_original": 42000,
+    "price_sale": 41000,
+    "discount_rate": 2
+  }
+]

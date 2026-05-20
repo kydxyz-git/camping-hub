@@ -1,0 +1,135 @@
+[
+  {
+    "name": "여름에 가기 좋은 캠핑장",
+    "emoji": "☀️",
+    "color": "#F5A623",
+    "eps": [
+      {
+        "ep": 5,
+        "title": "200번 방문객이 있는 캠핑장",
+        "url": "https://www.instagram.com/reel/DYdGtAtTMKg/?igsh=YjNyN3lwcGloNmoy",
+        "thumb": "./images/series/summer-ep05.jpg",
+        "page_id": "36302bbd-cd95-8069-8a26-ef9471557a29"
+      },
+      {
+        "ep": 4,
+        "title": "저장 안 하면 후회할 계곡",
+        "url": "https://www.instagram.com/reel/DYQSBYjTGH7/?igsh=MTZtdzRweG9zbGtpZA==",
+        "thumb": "./images/series/summer-ep04.jpg",
+        "page_id": "35e02bbd-cd95-8070-8a80-f4e601d7cb8b"
+      },
+      {
+        "ep": 3,
+        "title": "4년 동안 27번 간 이유?",
+        "url": "https://www.instagram.com/reel/DYLENgzTkMj/?igsh=ZWh3bm4xbmpzcjRv",
+        "thumb": "./images/series/summer-ep03.jpg",
+        "page_id": "35c02bbd-cd95-8024-aa85-e08823bd611f"
+      },
+      {
+        "ep": 2,
+        "title": "물이 이렇게 맑다고?",
+        "url": "https://www.instagram.com/reel/DXv5NXvB08F/?igsh=Z25wcnczeTVleHVw",
+        "thumb": "./images/series/summer-ep02.jpg",
+        "page_id": "35202bbd-cd95-8082-b44c-da888a032c30"
+      },
+      {
+        "ep": 1,
+        "title": "여름 캠핑 고민 될 때",
+        "url": "https://www.instagram.com/reel/DXYt1NME24U/?igsh=MTN0bDAwbXYxZTRpMg==",
+        "thumb": "./images/series/summer-ep01.jpg",
+        "page_id": "34a02bbd-cd95-816d-bf06-f0498e7d7419"
+      }
+    ]
+  },
+  {
+    "name": "봄·가을에 가기 좋은 캠핑장",
+    "emoji": "🌸",
+    "color": "#E89BB9",
+    "eps": [
+      {
+        "ep": 1,
+        "title": "철쭉 명소 바로 옆 캠핑장",
+        "url": "https://www.instagram.com/reel/DXoK6lqk38D/?igsh=MWZhcjEzdGMzNGxiZQ==",
+        "thumb": "./images/series/spring-autumn-ep01.jpg",
+        "page_id": "34f02bbd-cd95-80c9-a03a-f1b13356298a"
+      }
+    ]
+  },
+  {
+    "name": "캠핑꿀팁",
+    "emoji": "💡",
+    "color": "#4A90E2",
+    "eps": [
+      {
+        "ep": 0,
+        "title": "캠핑고수처럼 타프 치는 방법",
+        "url": "https://www.instagram.com/p/DJ1XyvPT5rq/",
+        "thumb": "./images/series/tips-01.jpg",
+        "page_id": "34a02bbd-cd95-80e7-8c62-dd7ae01d8737"
+      },
+      {
+        "ep": 0,
+        "title": "일산화탄소 경보기 테스트",
+        "url": "https://www.instagram.com/p/DSQvxXlkx5E/",
+        "thumb": "./images/series/tips-02.jpg",
+        "page_id": "34a02bbd-cd95-8010-a774-fa35c5bb8ce2"
+      },
+      {
+        "ep": 0,
+        "title": "캠핑박스 수납법",
+        "url": "https://www.instagram.com/p/DKcA-brzRLN/",
+        "thumb": "./images/series/tips-03.jpg",
+        "page_id": "34a02bbd-cd95-80ce-9989-debe96852e1f"
+      },
+      {
+        "ep": 0,
+        "title": "우중철수 꿀팁",
+        "url": "https://www.instagram.com/reel/DXxYOT1TeAz/?igsh=OXN2ajlyMmF5d2lj",
+        "thumb": "./images/series/tips-04.jpg",
+        "page_id": "34a02bbd-cd95-8096-9f3e-cb89f0a3e768"
+      }
+    ]
+  },
+  {
+    "name": "또 해먹고 싶은 캠핑 음식",
+    "emoji": "🍖",
+    "color": "#C94A4A",
+    "eps": [
+      {
+        "ep": 2,
+        "title": "두릅 튀김, 등갈비 구이 등",
+        "url": "https://www.instagram.com/p/DX5BnxlE6hr/?igsh=amQzanpudnFjYzJs",
+        "thumb": "./images/series/food-ep02.jpg",
+        "page_id": "35502bbd-cd95-8014-8b29-fbe8aa605599"
+      },
+      {
+        "ep": 1,
+        "title": "야키토리 토리야 등",
+        "url": "https://www.instagram.com/p/DXUCu6vE6lw/?igsh=eDlvdml3dzFmaHMw",
+        "thumb": "./images/series/food-ep01.jpg",
+        "page_id": "34a02bbd-cd95-80a2-9894-c9bdb1d19f73"
+      }
+    ]
+  },
+  {
+    "name": "장비소개",
+    "emoji": "🎒",
+    "color": "#5E6C4F",
+    "eps": [
+      {
+        "title": "포켓4 악세사리 이거 하나면 끝!",
+        "url": "https://www.instagram.com/reel/DYAx2p_zTjk/?igsh=MW8xNmhqZmNoM2Y5aQ==",
+        "thumb": "./images/series/gear-02.jpg",
+        "page_id": "35802bbd-cd95-802b-90e6-c82814ea57ad",
+        "ep": 0
+      },
+      {
+        "ep": 0,
+        "title": "도쿄크래프트 지카테이블2",
+        "url": "https://www.instagram.com/p/DWkX9XuE7wz",
+        "thumb": "./images/series/gear-01.jpg",
+        "page_id": "34a02bbd-cd95-80d5-add8-c0687a88924f"
+      }
+    ]
+  }
+]
