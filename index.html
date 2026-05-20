@@ -665,7 +665,12 @@ function showToast(msg) {
 /* ─── 시리즈 렌더 ─── */
 function renderSeries() {
   const wrap = document.getElementById('series-wrap');
-  wrap.innerHTML = series.map(s => {
+  // 비공개 시리즈 제외 + 공개 EP만 가진 시리즈 중 빈 것도 제외
+  const visibleSeries = series
+    .filter(s => s.published !== false)
+    .map(s => ({ ...s, eps: s.eps.filter(e => e.published !== false) }))
+    .filter(s => s.eps.length > 0);
+  wrap.innerHTML = visibleSeries.map(s => {
     // 정렬: ep>0은 내림차순(최신 우선), ep=0은 매 로드마다 랜덤
     const sortedEps = [...s.eps].sort((a, b) => {
       const aHasEp = (a.ep || 0) > 0;
@@ -675,11 +680,8 @@ function renderSeries() {
       if (bHasEp) return 1;
       return Math.random() - 0.5;
     });
-    const eps = sortedEps.length ? sortedEps : [
-      {ep:1, title:"게시물 준비 중", url:"", thumb:"", empty:true},
-      {ep:2, title:"곧 업로드 예정", url:"", thumb:"", empty:true}
-    ];
-    const cnt = s.eps.length ? `${s.eps.length}편` : "";
+    const eps = sortedEps;
+    const cnt = `${s.eps.length}편`;
     return `<div class="series-group">
       <div class="series-group-bar" style="background:${s.color}"></div>
       <div class="series-group-header" onclick="toggleSeries(this)">
@@ -773,9 +775,10 @@ function saInit() {
 /* ─── 상품 카드 렌더 ─── */
 function renderProducts(containerId, dataArr) {
   const grid = document.getElementById(containerId);
-  // 매 페이지 로드마다 랜덤 셔플 (캠핑이야기 시리즈 ep=0과 동일 방식)
-  const shuffled = (dataArr || []).slice().sort(() => Math.random() - 0.5);
-  if (!shuffled || !shuffled.length) {
+  // 비공개 항목 제외 + 매 페이지 로드마다 랜덤 셔플
+  const visible = (dataArr || []).filter(x => x.published !== false);
+  const shuffled = visible.slice().sort(() => Math.random() - 0.5);
+  if (!shuffled.length) {
     grid.innerHTML = `<div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--text-sub);font-size:13px;">아직 등록된 항목이 없어요</div>`;
     return;
   }
@@ -841,7 +844,9 @@ function sortCamps(arr) {
   });
 }
 function renderGrid() {
-  const filtered = sortCamps(camps.filter(match));
+  // 비공개 캠핑장 제외 + 사용자 필터 적용
+  const visible = camps.filter(c => c.published !== false);
+  const filtered = sortCamps(visible.filter(match));
   document.getElementById('result-count').textContent = filtered.length;
   // 고아웃 노지 등 삭제된 캠핑장 방문 기록 보정(+3회)
   const totalVisits = filtered.reduce((sum, c) => sum + (c.visits || 0), 0) + 3;
@@ -1019,10 +1024,11 @@ document.getElementById('reset-btn').addEventListener('click', () => {
 async function init() {
   try {
     await loadData();
-    // camps 의존 파생 변수 계산
-    usedRegions = filterOpts.region.filter(r => camps.some(c => c.region === r));
-    usedSeasons = filterOpts.season.filter(s => camps.some(c => c.seasons.includes(s)));
-    autoExtras  = [...new Set(camps.flatMap(c => c.extras))].sort((a,b) => a.localeCompare(b,'ko'));
+    // camps 의존 파생 변수 계산 (비공개 제외)
+    const visibleCamps = camps.filter(c => c.published !== false);
+    usedRegions = filterOpts.region.filter(r => visibleCamps.some(c => c.region === r));
+    usedSeasons = filterOpts.season.filter(s => visibleCamps.some(c => c.seasons.includes(s)));
+    autoExtras  = [...new Set(visibleCamps.flatMap(c => c.extras))].sort((a,b) => a.localeCompare(b,'ko'));
 
     renderConfig();
     renderSeries(); setTimeout(saInit, 50);

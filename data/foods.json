@@ -7,7 +7,8 @@
     "thumb": "./images/products/food-01.jpg",
     "price_original": 49400,
     "price_sale": null,
-    "discount_rate": null
+    "discount_rate": null,
+    "published": true
   },
   {
     "name": "[성수동 분식] 수제 고추튀김 3종",
@@ -17,7 +18,8 @@
     "thumb": "./images/products/food-02.jpg",
     "price_original": 13900,
     "price_sale": 9729,
-    "discount_rate": 30
+    "discount_rate": 30,
+    "published": true
   },
   {
     "name": "[부산 이가네] 이가네 떡볶이",
@@ -27,7 +29,8 @@
     "thumb": "./images/products/food-03.jpg",
     "price_original": 7490,
     "price_sale": null,
-    "discount_rate": null
+    "discount_rate": null,
+    "published": true
   },
   {
     "name": "[전주 베테랑] 김치만두",
@@ -37,7 +40,8 @@
     "thumb": "./images/products/food-04.jpg",
     "price_original": 5980,
     "price_sale": null,
-    "discount_rate": null
+    "discount_rate": null,
+    "published": true
   },
   {
     "name": "[니뽕내뽕] 크뽕 (크림짬뽕)",
@@ -47,7 +51,8 @@
     "thumb": "./images/products/food-05.jpg",
     "price_original": 8900,
     "price_sale": 8100,
-    "discount_rate": 10
+    "discount_rate": 10,
+    "published": true
   },
   {
     "name": "[야키토리 토리야] 닭꼬치 염통 파닭 츠쿠네 모듬 캠핑음식 요리 숯불 구이 메뉴",
@@ -57,6 +62,7 @@
     "thumb": "./images/products/food-06.jpg",
     "price_original": 14000,
     "price_sale": 7400,
-    "discount_rate": 47
+    "discount_rate": 47,
+    "published": true
   }
 ]

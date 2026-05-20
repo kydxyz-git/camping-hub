@@ -7,7 +7,8 @@
     "thumb": "./images/products/item-01.jpg",
     "price_original": 22310,
     "price_sale": 22050,
-    "discount_rate": 1
+    "discount_rate": 1,
+    "published": true
   },
   {
     "name": "울란지 PM01 맥세이프 방식 연장 브라켓",
@@ -17,6 +18,7 @@
     "thumb": "./images/products/item-02.jpg",
     "price_original": 42000,
     "price_sale": 41000,
-    "discount_rate": 2
+    "discount_rate": 2,
+    "published": true
   }
 ]
