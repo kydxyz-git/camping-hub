@@ -671,15 +671,34 @@ function renderSeries() {
     .map(s => ({ ...s, eps: s.eps.filter(e => e.published !== false) }))
     .filter(s => s.eps.length > 0);
   wrap.innerHTML = visibleSeries.map(s => {
-    // 정렬: ep>0은 내림차순(최신 우선), ep=0은 매 로드마다 랜덤
-    const sortedEps = [...s.eps].sort((a, b) => {
-      const aHasEp = (a.ep || 0) > 0;
-      const bHasEp = (b.ep || 0) > 0;
-      if (aHasEp && bHasEp) return b.ep - a.ep;
-      if (aHasEp) return -1;
-      if (bHasEp) return 1;
-      return Math.random() - 0.5;
-    });
+    // 정렬 모드: s.sort 필드 ('ep_desc'/'ep_asc'/'random'/'manual')
+    const mode = s.sort || 'ep_desc';
+    let sortedEps;
+    if (mode === 'manual') {
+      // 수동: 데이터 배열 순서 그대로
+      sortedEps = [...s.eps];
+    } else if (mode === 'random') {
+      // 랜덤: 매 로드마다 셔플
+      sortedEps = [...s.eps].sort(() => Math.random() - 0.5);
+    } else if (mode === 'ep_asc') {
+      // 오름차순: EP.01, EP.02, ... (ep=0은 맨 뒤 랜덤)
+      sortedEps = [...s.eps].sort((a, b) => {
+        const aHas = (a.ep || 0) > 0, bHas = (b.ep || 0) > 0;
+        if (aHas && bHas) return a.ep - b.ep;
+        if (aHas) return -1;
+        if (bHas) return 1;
+        return Math.random() - 0.5;
+      });
+    } else {
+      // 기본: 내림차순 (최신 우선)
+      sortedEps = [...s.eps].sort((a, b) => {
+        const aHas = (a.ep || 0) > 0, bHas = (b.ep || 0) > 0;
+        if (aHas && bHas) return b.ep - a.ep;
+        if (aHas) return -1;
+        if (bHas) return 1;
+        return Math.random() - 0.5;
+      });
+    }
     const eps = sortedEps;
     const cnt = `${s.eps.length}편`;
     return `<div class="series-group">
