@@ -315,6 +315,13 @@
     padding-bottom: 1px;
   }
   .detail-val a:hover { color: var(--text); border-bottom-color: var(--text); }
+  .detail-actions {
+    display: flex; gap: 8px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+  .detail-actions .btn { flex: 1; }
   .badge {
     display: inline-block;
     padding: 3px 9px; border-radius: 100px;
@@ -1053,6 +1060,58 @@ async function ghCommitMultipleFiles(files, message) {
   return newCommit.sha;
 }
 
+// 파일 생성/수정 + 삭제를 함께 처리하는 단일 commit
+// files: ghCommitMultipleFiles와 동일 형태 (생성/수정)
+// deletePaths: ['images/series/old-ep01.jpg', ...] (삭제할 경로들)
+async function ghCommitWithDeletions(files, deletePaths, message) {
+  // 1) 최신 commit + tree SHA
+  const ref = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`);
+  const latestCommitSha = ref.object.sha;
+  const latestCommit = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/commits/${latestCommitSha}`);
+  const baseTreeSha = latestCommit.tree.sha;
+
+  // 2) 생성/수정 파일의 blob
+  const blobs = await Promise.all((files || []).map(async (f) => {
+    const blob = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/blobs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        content: f.content,
+        encoding: f.encoding === 'base64' ? 'base64' : 'utf-8'
+      })
+    });
+    return { path: f.path, sha: blob.sha };
+  }));
+
+  // 3) tree entries 구성
+  // 생성/수정: { path, mode: '100644', type: 'blob', sha: <blob.sha> }
+  // 삭제: { path, mode: '100644', type: 'blob', sha: null }
+  const treeEntries = [
+    ...blobs.map(b => ({ path: b.path, mode: '100644', type: 'blob', sha: b.sha })),
+    ...(deletePaths || []).map(p => ({ path: p, mode: '100644', type: 'blob', sha: null })),
+  ];
+
+  const newTree = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/trees`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ base_tree: baseTreeSha, tree: treeEntries })
+  });
+
+  const newCommit = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/commits`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, tree: newTree.sha, parents: [latestCommitSha] })
+  });
+
+  await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sha: newCommit.sha })
+  });
+
+  return newCommit.sha;
+}
+
 // ════════════════════════════════════════════════════════════════════
 // 이미지 크롭 (Canvas, 4:5, 600x750, JPEG q80)
 // ════════════════════════════════════════════════════════════════════
@@ -1174,6 +1233,7 @@ async function router() {
   } else if (parts[0] === 'series') {
     if (parts[1] === 'new') renderEpAddForm();
     else if (parts[1] === 'new-series') renderSeriesAddForm();
+    else if (parts[3] === 'edit' && parts[1] !== undefined && parts[2] !== undefined) renderEpEditForm(+parts[1], +parts[2]);
     else if (parts[1] !== undefined && parts[2] !== undefined) renderEpDetail(+parts[1], +parts[2]);
     else renderSeriesList();
   } else if (parts[0] === 'foods') {
@@ -1726,22 +1786,31 @@ function renderEpDetail(si, ei) {
         <div class="detail-row"><div class="detail-key">릴스 URL</div><div class="detail-val">${ep.url ? `<a href="${escapeHtml(ep.url)}" target="_blank" rel="noopener">${escapeHtml(ep.url)}</a>` : '-'}</div></div>
         <div class="detail-row"><div class="detail-key">썸네일</div><div class="detail-val">${escapeHtml(ep.thumb || '-')}</div></div>
       </div>
+      <div class="detail-actions">
+        <a class="btn btn-secondary" href="#series/${si}/${ei}/edit">✏️ 수정</a>
+        <button class="btn btn-danger" id="ep-delete-btn">🗑 삭제</button>
+      </div>
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = 'series';
+  document.getElementById('ep-delete-btn').onclick = () => deleteEp(si, ei);
 }
 
 // ════════════════════════════════════════════════════════════════════
-// EP 추가 폼
+// EP 추가/수정 폼 (통합)
 // ════════════════════════════════════════════════════════════════════
 let _epForm = {
+  mode: 'add',       // 'add' | 'edit'
+  editSi: null,      // edit 모드일 때 원본 위치
+  editEi: null,
   seriesIdx: 0,
   ep: '',
   title: '',
   url: '',
   imageBase64: null,
-  imagePreviewUrl: null,
+  imagePreviewUrl: null,  // data URL (새 이미지) 또는 './images/...' (기존 이미지)
   imageSize: 0,
+  imageChanged: false,    // true면 새 이미지로 교체
 };
 
 function suggestNextEp(seriesIdx) {
@@ -1752,22 +1821,56 @@ function suggestNextEp(seriesIdx) {
 }
 
 function renderEpAddForm() {
-  document.getElementById('topbar-title').innerHTML = '🎬 EP 추가';
-  const c = document.getElementById('app-content');
-
-  // 초기 진입 시 EP 번호 자동 제안
-  if (!_epForm._initialized) {
-    _epForm.seriesIdx = 0;
-    _epForm.ep = suggestNextEp(0);
-    _epForm._initialized = true;
+  // 폼 초기화 (이전 상태 정리)
+  if (!_epForm._initialized || _epForm.mode !== 'add') {
+    _epForm = {
+      mode: 'add',
+      editSi: null, editEi: null,
+      seriesIdx: 0,
+      ep: suggestNextEp(0),
+      title: '', url: '',
+      imageBase64: null, imagePreviewUrl: null, imageSize: 0,
+      imageChanged: false,
+      _initialized: true,
+    };
   }
+  _renderEpFormUI();
+}
+
+function renderEpEditForm(si, ei) {
+  const series = cache.series[si];
+  if (!series) { location.hash = 'series'; return; }
+  const ep = series.eps[ei];
+  if (!ep) { location.hash = 'series'; return; }
+
+  // 폼에 기존 값 채우기
+  _epForm = {
+    mode: 'edit',
+    editSi: si, editEi: ei,
+    seriesIdx: si,
+    ep: ep.ep || 0,
+    title: ep.title || '',
+    url: ep.url || '',
+    imageBase64: null,
+    imagePreviewUrl: ep.thumb ? '../' + ep.thumb.replace(/^\.\//, '') : null,
+    imageSize: 0,
+    imageChanged: false,
+    _initialized: true,
+  };
+  _renderEpFormUI();
+}
+
+function _renderEpFormUI() {
+  const isEdit = _epForm.mode === 'edit';
+  document.getElementById('topbar-title').innerHTML = isEdit ? '🎬 EP 수정' : '🎬 EP 추가';
+  const c = document.getElementById('app-content');
 
   c.innerHTML = `
     <div class="page-header">
-      <button class="page-back" id="back-btn">← 시리즈 목록</button>
+      <button class="page-back" id="back-btn">← ${isEdit ? '돌아가기' : '시리즈 목록'}</button>
     </div>
     <div class="card">
-      <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">새 EP 추가</h2>
+      <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">${isEdit ? 'EP 수정' : '새 EP 추가'}</h2>
       <div class="form-grid">
 
         <div class="form-field">
@@ -1795,11 +1898,11 @@ function renderEpAddForm() {
         </div>
 
         <div class="form-field">
-          <label class="label">썸네일 이미지 *</label>
+          <label class="label">썸네일 이미지 ${isEdit ? '' : '*'}</label>
           <label class="form-image-drop" id="f-image-drop">
             <input type="file" id="f-image" accept="image/*">
             <div class="form-image-drop-icon">📷</div>
-            <div class="form-image-drop-text">이미지를 선택하거나 끌어다 놓으세요</div>
+            <div class="form-image-drop-text">${isEdit ? '새 이미지로 교체하려면 선택' : '이미지를 선택하거나 끌어다 놓으세요'}</div>
             <div class="form-image-drop-sub">자동으로 4:5 비율로 크롭됩니다</div>
           </label>
           <div id="f-image-preview"></div>
@@ -1808,7 +1911,7 @@ function renderEpAddForm() {
       </div>
       <div class="form-actions">
         <button class="btn btn-secondary" id="f-cancel">취소</button>
-        <button class="btn" id="f-submit">EP 추가</button>
+        <button class="btn" id="f-submit">${isEdit ? '저장' : 'EP 추가'}</button>
       </div>
     </div>
 
@@ -1821,16 +1924,18 @@ function renderEpAddForm() {
     </div>
   `;
 
-  // 핸들러 바인딩
   const $ = (id) => document.getElementById(id);
-  $('back-btn').onclick = () => { resetEpForm(); location.hash = 'series'; };
-  $('f-cancel').onclick = () => { resetEpForm(); location.hash = 'series'; };
+  const backHash = isEdit ? `series/${_epForm.editSi}/${_epForm.editEi}` : 'series';
+  $('back-btn').onclick = () => { resetEpForm(); location.hash = backHash; };
+  $('f-cancel').onclick = () => { resetEpForm(); location.hash = backHash; };
 
   $('f-series').onchange = (e) => {
     _epForm.seriesIdx = +e.target.value;
-    // 시리즈 바뀔 때마다 EP 번호 자동 제안
-    $('f-ep').value = suggestNextEp(_epForm.seriesIdx);
-    _epForm.ep = +$('f-ep').value;
+    // add 모드일 때만 EP 번호 자동 제안 (수정 시엔 유지)
+    if (!isEdit) {
+      $('f-ep').value = suggestNextEp(_epForm.seriesIdx);
+      _epForm.ep = +$('f-ep').value;
+    }
   };
   $('f-ep').oninput = (e) => { _epForm.ep = e.target.value; };
   $('f-title').oninput = (e) => { _epForm.title = e.target.value; };
@@ -1852,26 +1957,45 @@ function renderEpAddForm() {
       _epForm.imageBase64 = base64;
       _epForm.imagePreviewUrl = previewUrl;
       _epForm.imageSize = size;
-      previewEl.innerHTML = `
-        <div class="form-image-preview">
-          <div class="form-image-preview-thumb"><img src="${previewUrl}" alt=""></div>
-          <div class="form-image-preview-info">
-            <b>${escapeHtml(file.name)}</b>
-            <span>4:5 크롭 · 600×750 · ${(size/1024).toFixed(0)}KB</span>
-          </div>
-          <button class="form-image-preview-remove" id="f-image-remove">제거</button>
-        </div>
-      `;
-      $('f-image-remove').onclick = (e) => {
-        e.preventDefault();
-        _epForm.imageBase64 = null;
-        _epForm.imagePreviewUrl = null;
-        previewEl.innerHTML = '';
-        fileInput.value = '';
-      };
+      _epForm.imageChanged = true;
+      renderImagePreview();
     } catch (err) {
       previewEl.innerHTML = '';
       showToast('이미지 처리 실패: ' + err.message, 'error');
+    }
+  }
+
+  function renderImagePreview() {
+    if (!_epForm.imagePreviewUrl) {
+      previewEl.innerHTML = '';
+      return;
+    }
+    const isNew = _epForm.imageChanged;
+    previewEl.innerHTML = `
+      <div class="form-image-preview">
+        <div class="form-image-preview-thumb"><img src="${_epForm.imagePreviewUrl}" alt=""></div>
+        <div class="form-image-preview-info">
+          <b>${isNew ? '새 이미지' : '기존 이미지'}</b>
+          <span>${isNew ? `4:5 크롭 · 600×750 · ${(_epForm.imageSize/1024).toFixed(0)}KB` : '교체하려면 위에서 선택'}</span>
+        </div>
+        ${isNew ? `<button class="form-image-preview-remove" id="f-image-remove">제거</button>` : ''}
+      </div>
+    `;
+    if (isNew) {
+      $('f-image-remove').onclick = (e) => {
+        e.preventDefault();
+        _epForm.imageBase64 = null;
+        _epForm.imageChanged = false;
+        // edit 모드면 기존 이미지로 복원, add 모드면 비움
+        if (isEdit) {
+          const orig = cache.series[_epForm.editSi].eps[_epForm.editEi];
+          _epForm.imagePreviewUrl = orig.thumb ? '../' + orig.thumb.replace(/^\.\//, '') : null;
+        } else {
+          _epForm.imagePreviewUrl = null;
+        }
+        fileInput.value = '';
+        renderImagePreview();
+      };
     }
   }
 
@@ -1883,59 +2007,36 @@ function renderEpAddForm() {
     if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
   };
 
-  // 이미 처리한 이미지 있으면 미리보기 복원
-  if (_epForm.imagePreviewUrl) {
-    previewEl.innerHTML = `
-      <div class="form-image-preview">
-        <div class="form-image-preview-thumb"><img src="${_epForm.imagePreviewUrl}" alt=""></div>
-        <div class="form-image-preview-info">
-          <b>(이전에 선택한 이미지)</b>
-          <span>4:5 크롭 · 600×750 · ${(_epForm.imageSize/1024).toFixed(0)}KB</span>
-        </div>
-        <button class="form-image-preview-remove" id="f-image-remove">제거</button>
-      </div>
-    `;
-    $('f-image-remove').onclick = (e) => {
-      e.preventDefault();
-      _epForm.imageBase64 = null; _epForm.imagePreviewUrl = null;
-      previewEl.innerHTML = ''; fileInput.value = '';
-    };
-  }
-
+  renderImagePreview(); // 기존 이미지 표시
   $('f-submit').onclick = submitEpForm;
 }
 
 function resetEpForm() {
   _epForm = {
+    mode: 'add', editSi: null, editEi: null,
     seriesIdx: 0, ep: '', title: '', url: '',
     imageBase64: null, imagePreviewUrl: null, imageSize: 0,
+    imageChanged: false,
     _initialized: false,
   };
 }
 
 async function submitEpForm() {
+  const isEdit = _epForm.mode === 'edit';
   const series = cache.series[_epForm.seriesIdx];
+
   // 검증
   if (!series) return showToast('시리즈를 선택해주세요', 'error');
   if (_epForm.ep === '' || _epForm.ep === null || isNaN(+_epForm.ep)) return showToast('EP 번호를 입력해주세요', 'error');
   if (!_epForm.title.trim()) return showToast('제목을 입력해주세요', 'error');
   if (!_epForm.url.trim()) return showToast('릴스 URL을 입력해주세요', 'error');
-  if (!_epForm.imageBase64) return showToast('썸네일 이미지를 선택해주세요', 'error');
+  if (!isEdit && !_epForm.imageBase64) return showToast('썸네일 이미지를 선택해주세요', 'error');
 
-  // 토큰 확인
   if (!localStorage.getItem(STORAGE_KEYS.token)) {
     return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
   }
 
   const ep = +_epForm.ep;
-  const slug = getSeriesSlug(series.name, ep);
-  const imagePath = `images/series/${slug}.jpg`;
-  const newEp = {
-    ep: ep,
-    title: _epForm.title.trim(),
-    url: _epForm.url.trim(),
-    thumb: `./${imagePath}`,
-  };
 
   // 진행 오버레이
   const progress = document.getElementById('submit-progress');
@@ -1944,62 +2045,215 @@ async function submitEpForm() {
   progress.classList.add('is-active');
 
   try {
-    // 1. series.json 갱신
     ptext.textContent = '데이터 준비 중...';
     psub.textContent = '시리즈 정보 갱신';
     const newSeries = JSON.parse(JSON.stringify(cache.series));
-    // ep>0이면 내림차순 위치에 삽입, ep=0이면 맨 앞
-    const targetSeries = newSeries[_epForm.seriesIdx];
-    if (ep > 0) {
-      let inserted = false;
-      for (let i = 0; i < targetSeries.eps.length; i++) {
-        const e = targetSeries.eps[i];
-        if ((e.ep || 0) > 0 && e.ep < ep) {
-          targetSeries.eps.splice(i, 0, newEp);
-          inserted = true; break;
+    const files = [];
+
+    if (isEdit) {
+      // === 수정 모드 ===
+      const oldSi = _epForm.editSi;
+      const oldEi = _epForm.editEi;
+      const oldEp = newSeries[oldSi].eps[oldEi];
+      const oldThumb = oldEp.thumb;
+
+      // 새 슬러그 (시리즈/EP번호 바뀌었을 수 있음)
+      const newSlug = getSeriesSlug(series.name, ep);
+      const newImagePath = `images/series/${newSlug}.jpg`;
+      const newThumbField = `./${newImagePath}`;
+
+      // 시리즈/EP번호/이미지 변경 여부 확인
+      const slugChanged = oldThumb !== newThumbField;
+      const imageChanged = _epForm.imageChanged;
+
+      // 새 EP 객체
+      const updatedEp = {
+        ep: ep,
+        title: _epForm.title.trim(),
+        url: _epForm.url.trim(),
+        thumb: newThumbField,
+        published: oldEp.published !== false,  // 기존 published 유지
+      };
+
+      // 시리즈가 같으면 자리 유지 (정렬 모드가 ep_desc/asc면 자동 재정렬되므로 그냥 두기)
+      // 시리즈가 바뀌면 원래 시리즈에서 제거 + 새 시리즈에 삽입
+      if (_epForm.seriesIdx === oldSi) {
+        newSeries[oldSi].eps[oldEi] = updatedEp;
+      } else {
+        // 원래 시리즈에서 제거
+        newSeries[oldSi].eps.splice(oldEi, 1);
+        // 새 시리즈에 삽입 (ep 번호 내림차순 자리 찾기)
+        const targetEps = newSeries[_epForm.seriesIdx].eps;
+        if (ep > 0) {
+          let inserted = false;
+          for (let i = 0; i < targetEps.length; i++) {
+            if ((targetEps[i].ep || 0) > 0 && targetEps[i].ep < ep) {
+              targetEps.splice(i, 0, updatedEp); inserted = true; break;
+            }
+          }
+          if (!inserted) targetEps.push(updatedEp);
+        } else {
+          targetEps.unshift(updatedEp);
         }
       }
-      if (!inserted) targetSeries.eps.push(newEp);
+
+      // 이미지 처리
+      if (imageChanged) {
+        // 새 이미지 업로드 (새 경로로)
+        files.push({ path: newImagePath, content: _epForm.imageBase64, encoding: 'base64' });
+      } else if (slugChanged && oldThumb) {
+        // 이미지는 안 바뀌었는데 슬러그(시리즈/EP번호)가 바뀜
+        // → 옛 이미지를 새 경로로 복사. 옛 파일은 정리 안 함 (안전, 작업 단순)
+        // 클라이언트에서 이미지 fetch → base64 → 새 경로로 업로드
+        ptext.textContent = '이미지 이동 중...';
+        const oldUrl = '../' + oldThumb.replace(/^\.\//, '');
+        const imgResp = await fetch(oldUrl);
+        const imgBlob = await imgResp.blob();
+        const imgBase64 = await new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result.split(',')[1]);
+          r.onerror = () => reject(new Error('이미지 읽기 실패'));
+          r.readAsDataURL(imgBlob);
+        });
+        files.push({ path: newImagePath, content: imgBase64, encoding: 'base64' });
+      }
+      // (slugChanged 안 됐고 imageChanged 안 됐으면 이미지 파일 변경 없음)
+
+      files.push({ path: 'data/series.json', content: JSON.stringify(newSeries, null, 2) + '\n', encoding: 'utf-8' });
+
+      const message = `update(admin): ${series.name} ${ep > 0 ? 'EP.' + String(ep).padStart(2, '0') : '단편'} '${updatedEp.title}' 수정`;
+      ptext.textContent = 'GitHub 업로드 중...';
+      await ghCommitMultipleFiles(files, message);
+
+      cache.series = newSeries;
+      cache.loadedAt = Date.now();
+
+      ptext.textContent = '완료!';
+      psub.textContent = '1~2분 후 사이트에 반영됩니다';
+      setTimeout(() => {
+        progress.classList.remove('is-active');
+        resetEpForm();
+        showToast('EP 수정 완료!', 'success', 3500);
+        location.hash = 'series';
+      }, 1000);
+
     } else {
-      targetSeries.eps.unshift(newEp);
+      // === 추가 모드 (기존 로직) ===
+      const slug = getSeriesSlug(series.name, ep);
+      const imagePath = `images/series/${slug}.jpg`;
+      const newEp = {
+        ep: ep,
+        title: _epForm.title.trim(),
+        url: _epForm.url.trim(),
+        thumb: `./${imagePath}`,
+        published: true,
+      };
+
+      const targetSeries = newSeries[_epForm.seriesIdx];
+      if (ep > 0) {
+        let inserted = false;
+        for (let i = 0; i < targetSeries.eps.length; i++) {
+          if ((targetSeries.eps[i].ep || 0) > 0 && targetSeries.eps[i].ep < ep) {
+            targetSeries.eps.splice(i, 0, newEp); inserted = true; break;
+          }
+        }
+        if (!inserted) targetSeries.eps.push(newEp);
+      } else {
+        targetSeries.eps.unshift(newEp);
+      }
+
+      const today = new Date().toISOString().slice(0, 10);
+      const sitemapResp = await fetch(`../sitemap.xml?v=${Date.now()}`);
+      const sitemapText = await sitemapResp.text();
+      const newSitemap = sitemapText.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g, `<lastmod>${today}</lastmod>`);
+
+      ptext.textContent = 'GitHub 업로드 중...';
+      psub.textContent = '이미지 + 데이터';
+
+      const message = `sync(admin): ${series.name} ${ep > 0 ? 'EP.' + String(ep).padStart(2, '0') : '단편'} '${newEp.title}' 추가`;
+      await ghCommitMultipleFiles([
+        { path: imagePath, content: _epForm.imageBase64, encoding: 'base64' },
+        { path: 'data/series.json', content: JSON.stringify(newSeries, null, 2) + '\n', encoding: 'utf-8' },
+        { path: 'sitemap.xml', content: newSitemap, encoding: 'utf-8' },
+      ], message);
+
+      cache.series = newSeries;
+      cache.loadedAt = Date.now();
+
+      ptext.textContent = '완료!';
+      psub.textContent = '1~2분 후 사이트에 반영됩니다';
+      setTimeout(() => {
+        progress.classList.remove('is-active');
+        resetEpForm();
+        showToast('EP 추가 완료!', 'success', 3500);
+        location.hash = 'series';
+      }, 1000);
     }
-
-    // 2. sitemap.xml 갱신 (lastmod만 오늘로)
-    const today = new Date().toISOString().slice(0, 10);
-    // 현재 sitemap 가져오기
-    const sitemapResp = await fetch(`../sitemap.xml?v=${Date.now()}`);
-    const sitemapText = await sitemapResp.text();
-    const newSitemap = sitemapText.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g, `<lastmod>${today}</lastmod>`);
-
-    // 3. 단일 커밋으로 푸시
-    ptext.textContent = 'GitHub 업로드 중...';
-    psub.textContent = '이미지 + 데이터 + sitemap (1/1)';
-
-    const message = `sync(admin): ${series.name} ${ep > 0 ? 'EP.' + String(ep).padStart(2, '0') : '단편'} '${newEp.title}' 추가\n\n관리자 페이지에서 자동 생성`;
-
-    const sha = await ghCommitMultipleFiles([
-      { path: imagePath, content: _epForm.imageBase64, encoding: 'base64' },
-      { path: 'data/series.json', content: JSON.stringify(newSeries, null, 2) + '\n', encoding: 'utf-8' },
-      { path: 'sitemap.xml', content: newSitemap, encoding: 'utf-8' },
-    ], message);
-
-    // 4. 로컬 캐시 갱신
-    cache.series = newSeries;
-    cache.loadedAt = Date.now();
-
-    ptext.textContent = '완료!';
-    psub.textContent = '1~2분 후 사이트에 반영됩니다';
-    setTimeout(() => {
-      progress.classList.remove('is-active');
-      resetEpForm();
-      showToast('EP 추가 완료! (1~2분 후 사이트 반영)', 'success', 4000);
-      location.hash = 'series';
-    }, 1200);
 
   } catch (e) {
     progress.classList.remove('is-active');
     console.error(e);
     showToast('업로드 실패: ' + e.message, 'error', 5000);
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// EP 삭제
+// ════════════════════════════════════════════════════════════════════
+async function deleteEp(si, ei) {
+  const series = cache.series[si];
+  if (!series) return;
+  const ep = series.eps[ei];
+  if (!ep) return;
+
+  // 2단계 확인
+  const label = ep.ep > 0 ? `EP.${String(ep.ep).padStart(2,'0')}` : '단편';
+  if (!confirm(`'${series.name}'의 ${label} "${ep.title}"을(를) 삭제할까요?\n\n이 작업은 되돌릴 수 없어요 (이미지 파일도 함께 삭제됩니다).`)) return;
+  if (!confirm(`정말로 삭제할까요? 마지막 확인입니다.`)) return;
+
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+
+  const progress = document.createElement('div');
+  progress.className = 'submit-progress is-active';
+  progress.innerHTML = `
+    <div class="submit-progress-card">
+      <div class="submit-progress-spinner"></div>
+      <div class="submit-progress-text">EP 삭제 중...</div>
+      <div class="submit-progress-sub">GitHub 업로드</div>
+    </div>
+  `;
+  document.body.appendChild(progress);
+
+  try {
+    // 새 series.json (해당 EP 제거)
+    const newSeries = JSON.parse(JSON.stringify(cache.series));
+    newSeries[si].eps.splice(ei, 1);
+
+    // 이미지 파일도 같이 삭제 — Git Data API의 tree에서 mode=null 또는 sha=null로 제거
+    // SHA를 null로 보내면 해당 경로의 파일을 삭제 처리
+    const imagePath = ep.thumb ? ep.thumb.replace(/^\.\//, '') : null;
+
+    const message = `delete(admin): ${series.name} ${label} '${ep.title}' 삭제`;
+    await ghCommitWithDeletions(
+      [
+        { path: 'data/series.json', content: JSON.stringify(newSeries, null, 2) + '\n', encoding: 'utf-8' },
+      ],
+      imagePath ? [imagePath] : [],
+      message
+    );
+
+    cache.series = newSeries;
+    cache.loadedAt = Date.now();
+
+    progress.remove();
+    showToast(`'${ep.title}' 삭제됨`, 'success', 2500);
+    location.hash = 'series';
+  } catch (e) {
+    progress.remove();
+    console.error(e);
+    showToast('삭제 실패: ' + e.message, 'error', 5000);
   }
 }
 
