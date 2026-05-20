@@ -1441,7 +1441,8 @@ function renderSeriesList() {
           <div class="series-group-eps">
             <div class="series-sort-bar">
               <span class="series-sort-label">EP 정렬:</span>
-              <select class="series-sort-select" data-series-sort="${si}">
+              <select class="series-sort-select" data-series-sort="${si}"
+                      onmousedown="event.stopPropagation();" onclick="event.stopPropagation();" ontouchstart="event.stopPropagation();">
                 ${SORT_MODES.map(m => `<option value="${m.value}" ${(s.sort || 'ep_desc') === m.value ? 'selected' : ''}>${m.label}</option>`).join('')}
               </select>
             </div>
@@ -1539,23 +1540,24 @@ function renderSeriesList() {
   const sortableEl = document.getElementById('series-sortable');
   if (sortableEl && typeof Sortable !== 'undefined') {
     Sortable.create(sortableEl, {
-      handle: '.series-group > .series-group-header > .drag-handle', // 시리즈 헤더의 핸들만 (EP 핸들과 분리)
+      handle: '.series-group > .series-group-header > .drag-handle', // 시리즈 헤더의 핸들만
       animation: 180,
-      delay: 200,           // 모바일 길게 누르기 (스크롤 충돌 방지)
-      delayOnTouchOnly: true, // PC는 즉시 드래그
+      delay: 200,
+      delayOnTouchOnly: true,
       forceFallback: false,
+      // 드래그 대상에서 제외: select, button, input, a 태그 (이벤트가 정상 동작하도록)
+      filter: 'select, button, input, a, label.pub-toggle',
+      preventOnFilter: false,
       ghostClass: 'sortable-ghost',
       dragClass: 'sortable-drag',
       onEnd: (evt) => {
-        // 새 순서 계산 (DOM 기준)
         const newOrder = Array.from(sortableEl.querySelectorAll('.series-group[data-si]'))
           .map(el => +el.dataset.si);
-        // 변경이 없으면 무시
         const originalOrder = cache.series.map((_, i) => i);
         const changed = newOrder.some((v, i) => v !== originalOrder[i]);
         if (!changed) return;
         _seriesDragOrder = newOrder;
-        renderSeriesList(); // 저장 바 표시 위해 재렌더
+        renderSeriesList();
       }
     });
   }
@@ -1565,23 +1567,23 @@ function renderSeriesList() {
     c.querySelectorAll('[data-ep-sortable]').forEach(epContainer => {
       const si = +epContainer.dataset.epSortable;
       const series = cache.series[si];
-      if (!series || (series.sort || 'ep_desc') !== 'manual') return; // manual이 아니면 비활성
+      if (!series || (series.sort || 'ep_desc') !== 'manual') return;
 
       Sortable.create(epContainer, {
         handle: '.drag-handle--ep',
         animation: 180,
         delay: 200,
         delayOnTouchOnly: true,
+        filter: 'select, button, input, a, label.pub-toggle',
+        preventOnFilter: false,
         ghostClass: 'sortable-ghost',
         dragClass: 'sortable-drag',
         onEnd: (evt) => {
-          // 새 순서 계산
           const newOrder = Array.from(epContainer.querySelectorAll('.series-ep-item[data-ei]'))
             .map(el => +el.dataset.ei);
           const originalOrder = series.eps.map((_, i) => i);
           const changed = newOrder.some((v, i) => v !== originalOrder[i]);
           if (!changed) return;
-          // 다른 시리즈의 미저장 변경이 있으면 경고
           if (_epDragOrder && _epDragOrder.si !== si) {
             if (!confirm('다른 시리즈에 저장 안 한 EP 순서 변경이 있어요. 이번 변경을 시작하면 그 변경은 폐기됩니다. 계속하시겠어요?')) {
               renderSeriesList();
