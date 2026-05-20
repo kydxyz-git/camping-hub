@@ -1278,6 +1278,53 @@ async function cropImage4to5(file, maxW = 600, maxH = 750, quality = 0.8) {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// 클립보드 이미지 paste 헬퍼 (Ctrl+V / Cmd+V)
+// ════════════════════════════════════════════════════════════════════
+// 폼 렌더 시 호출하면 클립보드에 이미지가 있을 때 Ctrl+V로 붙여넣기 가능
+// 입력란(input/textarea) 포커스 상태에서는 텍스트 paste 방해하지 않음
+// hashchange 시 자동 cleanup (다른 페이지로 이동하면 리스너 제거)
+function attachClipboardPaste(onPasteImage) {
+  const handler = (e) => {
+    // input/textarea에 포커스가 있고 텍스트를 paste 하는 중이면 무시
+    const target = e.target;
+    const isTextInput = target && (
+      target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
+    );
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    // 텍스트 입력 중이면 이미지 paste만 가로채고 텍스트는 통과
+    let hasImage = false;
+    for (const item of items) {
+      if (item.type && item.type.startsWith('image/')) {
+        hasImage = true;
+        break;
+      }
+    }
+    if (!hasImage) return;
+    // 텍스트 입력에서 이미지 paste한 경우도 폼에 추가
+    e.preventDefault();
+    for (const item of items) {
+      if (item.type && item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) {
+          onPasteImage(file);
+          showToast('📋 클립보드 이미지 추가됨', 'success', 1500);
+        }
+        break; // 첫 이미지 하나만
+      }
+    }
+  };
+  document.addEventListener('paste', handler);
+  // hash 변경 시 자동 정리
+  const cleanup = () => {
+    document.removeEventListener('paste', handler);
+    window.removeEventListener('hashchange', cleanup);
+  };
+  window.addEventListener('hashchange', cleanup);
+}
+
+// ════════════════════════════════════════════════════════════════════
 // 토스트
 // ════════════════════════════════════════════════════════════════════
 function showToast(msg, type = 'info', duration = 2400) {
@@ -1724,7 +1771,7 @@ function _renderCampFormUI() {
             <input type="file" id="cf-image" accept="image/*" multiple>
             <div class="form-image-drop-icon">📷</div>
             <div class="form-image-drop-text">이미지 선택 또는 끌어다 놓기 (여러 장 가능)</div>
-            <div class="form-image-drop-sub">자동으로 4:5 비율로 크롭됩니다 · 첫 이미지가 카드 대표</div>
+            <div class="form-image-drop-sub">자동으로 4:5 크롭 · 첫 이미지가 카드 대표 · 📋 Ctrl+V (Cmd+V) 붙여넣기</div>
           </label>
           <div id="cf-image-list" class="camp-image-list"></div>
         </div>
@@ -1853,6 +1900,9 @@ function _renderCampFormUI() {
     e.preventDefault(); drop.classList.remove('is-dragover');
     if (e.dataTransfer.files.length) handleFiles(Array.from(e.dataTransfer.files));
   };
+
+  // 클립보드 paste (Ctrl+V / Cmd+V) — 한 번에 한 장씩 추가
+  attachClipboardPaste((file) => handleFiles([file]));
 
   renderImageList();
   $('cf-submit').onclick = submitCampForm;
@@ -2536,7 +2586,7 @@ function _renderEpFormUI() {
             <input type="file" id="f-image" accept="image/*">
             <div class="form-image-drop-icon">📷</div>
             <div class="form-image-drop-text">${isEdit ? '새 이미지로 교체하려면 선택' : '이미지를 선택하거나 끌어다 놓으세요'}</div>
-            <div class="form-image-drop-sub">자동으로 4:5 비율로 크롭됩니다</div>
+            <div class="form-image-drop-sub">자동으로 4:5 크롭 · 📋 Ctrl+V (Cmd+V) 붙여넣기</div>
           </label>
           <div id="f-image-preview"></div>
         </div>
@@ -2639,6 +2689,9 @@ function _renderEpFormUI() {
     e.preventDefault(); drop.classList.remove('is-dragover');
     if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
   };
+
+  // 클립보드 paste (Ctrl+V / Cmd+V)
+  attachClipboardPaste(handleFile);
 
   renderImagePreview(); // 기존 이미지 표시
   $('f-submit').onclick = submitEpForm;
@@ -3438,7 +3491,7 @@ function _renderFoodFormUI() {
             <input type="file" id="ff-image" accept="image/*">
             <div class="form-image-drop-icon">📷</div>
             <div class="form-image-drop-text">${isEdit ? '새 이미지로 교체하려면 선택' : '이미지를 선택하거나 끌어다 놓으세요'}</div>
-            <div class="form-image-drop-sub">자동으로 4:5 비율로 크롭됩니다</div>
+            <div class="form-image-drop-sub">자동으로 4:5 크롭 · 📋 Ctrl+V (Cmd+V) 붙여넣기</div>
           </label>
           <div id="ff-image-preview"></div>
         </div>
@@ -3565,6 +3618,9 @@ function _renderFoodFormUI() {
     e.preventDefault(); drop.classList.remove('is-dragover');
     if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
   };
+
+  // 클립보드 paste (Ctrl+V / Cmd+V)
+  attachClipboardPaste(handleFile);
 
   renderImagePreview();
   $('ff-submit').onclick = submitFoodForm;
