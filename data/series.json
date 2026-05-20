@@ -3,6 +3,7 @@
     "name": "여름에 가기 좋은 캠핑장",
     "emoji": "☀️",
     "color": "#F5A623",
+    "published": true,
     "eps": [
       {
         "ep": 5,
@@ -44,13 +45,13 @@
         "page_id": "34a02bbd-cd95-816d-bf06-f0498e7d7419",
         "published": true
       }
-    ],
-    "published": true
+    ]
   },
   {
     "name": "봄·가을에 가기 좋은 캠핑장",
     "emoji": "🌸",
     "color": "#E89BB9",
+    "published": true,
     "eps": [
       {
         "ep": 1,
@@ -60,13 +61,13 @@
         "page_id": "34f02bbd-cd95-80c9-a03a-f1b13356298a",
         "published": true
       }
-    ],
-    "published": true
+    ]
   },
   {
     "name": "캠핑꿀팁",
     "emoji": "💡",
     "color": "#4A90E2",
+    "published": true,
     "eps": [
       {
         "ep": 0,
@@ -100,13 +101,13 @@
         "page_id": "34a02bbd-cd95-8096-9f3e-cb89f0a3e768",
         "published": true
       }
-    ],
-    "published": true
+    ]
   },
   {
     "name": "또 해먹고 싶은 캠핑 음식",
     "emoji": "🍖",
     "color": "#C94A4A",
+    "published": true,
     "eps": [
       {
         "ep": 2,
@@ -124,13 +125,13 @@
         "page_id": "34a02bbd-cd95-80a2-9894-c9bdb1d19f73",
         "published": true
       }
-    ],
-    "published": true
+    ]
   },
   {
     "name": "장비소개",
     "emoji": "🎒",
     "color": "#5E6C4F",
+    "published": true,
     "eps": [
       {
         "title": "포켓4 악세사리 이거 하나면 끝!",
@@ -148,7 +149,21 @@
         "page_id": "34a02bbd-cd95-80d5-add8-c0687a88924f",
         "published": true
       }
-    ],
-    "published": true
+    ]
+  },
+  {
+    "name": "테스트 시리즈",
+    "emoji": "ㅁ",
+    "color": "#6B8FB8",
+    "published": true,
+    "eps": [
+      {
+        "ep": 1,
+        "title": "test",
+        "url": "https://www.kydz.kr",
+        "thumb": "./images/series/series-ep01.jpg",
+        "published": true
+      }
+    ]
   }
 ]
