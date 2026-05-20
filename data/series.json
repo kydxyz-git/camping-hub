@@ -162,14 +162,6 @@
     "color": "#6B8FB8",
     "published": false,
     "sort": "ep_desc",
-    "eps": [
-      {
-        "ep": 1,
-        "title": "test",
-        "url": "https://www.kydz.kr",
-        "thumb": "./images/series/series-ep01.jpg",
-        "published": true
-      }
-    ]
+    "eps": []
   }
 ]
