@@ -136,6 +136,13 @@
     "name": "테스트 시리즈",
     "emoji": "ㅁ",
     "color": "#6B8FB8",
-    "eps": []
+    "eps": [
+      {
+        "ep": 1,
+        "title": "test",
+        "url": "https://www.kydz.kr",
+        "thumb": "./images/series/series-ep01.jpg"
+      }
+    ]
   }
 ]
