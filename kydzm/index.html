@@ -28,6 +28,10 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  /* ── 전역: 링크 정리 (기본 파란색 + 밑줄 제거) ── */
+  a, a:visited { color: inherit; text-decoration: none; }
+  a:hover { color: inherit; }
+
   /* ── 공통: 카드/버튼/입력 ── */
   .card {
     background: var(--bg);
@@ -257,7 +261,12 @@
   .detail-row:last-child { border-bottom: none; }
   .detail-key { color: var(--muted); width: 90px; flex-shrink: 0; font-weight: 600; }
   .detail-val { flex: 1; word-break: break-all; }
-  .detail-val a { color: var(--info); text-decoration: underline; }
+  .detail-val a {
+    color: var(--info);
+    border-bottom: 1px dotted currentColor;
+    padding-bottom: 1px;
+  }
+  .detail-val a:hover { color: var(--text); border-bottom-color: var(--text); }
   .badge {
     display: inline-block;
     padding: 3px 9px; border-radius: 100px;
