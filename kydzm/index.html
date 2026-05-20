@@ -729,28 +729,6 @@
   .save-bar-actions { display: flex; gap: 8px; flex-shrink: 0; }
   .save-bar-actions .btn { padding: 8px 14px; font-size: 13px; }
 
-  /* "+추가" 플로팅 액션 버튼 (PC: 콘텐츠 영역 끝, 모바일: 우하단) */
-  a.fab,
-  .fab {
-    position: fixed;
-    bottom: 24px;
-    right: max(20px, calc(50% - 480px + 20px));
-    width: 56px; height: 56px;
-    border-radius: 50%;
-    background: var(--text);
-    color: var(--bg) !important;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-    font-size: 28px; font-weight: 700;
-    line-height: 1;
-    z-index: 100;
-    display: flex; align-items: center; justify-content: center;
-    text-decoration: none;
-  }
-  a.fab:hover,
-  .fab:hover { opacity: 0.9; color: var(--bg) !important; }
-
   /* 시리즈 그룹 좌측 컬러 띠 */
   .series-group { position: relative; }
   .series-group-bar {
@@ -2123,6 +2101,7 @@ function renderSeriesList() {
   c.innerHTML = `
     <div class="page-header">
       <button class="page-back" id="back-btn">← 대시보드</button>
+      <a class="btn btn-sm" href="#series/new" style="margin-left:auto;">+ EP 추가</a>
       <div class="page-count">${cache.series.length}시리즈 · ${totalEps}편</div>
     </div>
     <div id="series-sortable">
@@ -2181,7 +2160,6 @@ function renderSeriesList() {
         <span>새 시리즈 만들기</span>
       </a>
     </div>
-    <a href="#series/new" class="fab" title="EP 추가">+</a>
   `;
   document.getElementById('back-btn').onclick = () => {
     location.hash = '';
