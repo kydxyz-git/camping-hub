@@ -275,6 +275,20 @@
     margin-right: 4px; margin-bottom: 4px;
   }
   .badge-graega { background: #fff2cc; color: #8a6a00; }
+  .badge-coupang { background: #ffefef; color: #c8252b; }
+  .badge-kurly { background: #f3e8f8; color: #5f0080; }
+  .badge-naver { background: #e7f5e9; color: #146d2e; }
+
+  /* 가격 표시 */
+  .price-original {
+    color: var(--muted); text-decoration: line-through;
+    font-size: 12px; margin-right: 6px;
+  }
+  .price-sale { font-weight: 800; }
+  .price-discount {
+    color: #c8252b; font-weight: 800;
+    font-size: 12px; margin-left: 6px;
+  }
   .detail-images {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -733,144 +747,137 @@ function renderEpDetail(si, ei) {
 }
 
 // ════════════════════════════════════════════════════════════════════
-// 음식 리스트
+// 음식 / 장비 — 공통 렌더 헬퍼
 // ════════════════════════════════════════════════════════════════════
-let _foodSearch = '';
-function renderFoodList() {
-  document.getElementById('topbar-title').innerHTML = '🍖 음식';
-  const c = document.getElementById('app-content');
-  const arr = cache.foods
-    .map((x, idx) => ({ ...x, _idx: idx }))
-    .filter(x => matchSearch(x, _foodSearch, ['name', 'desc']));
-  c.innerHTML = `
-    <div class="page-header">
-      <button class="page-back" id="back-btn">← 대시보드</button>
-      <div class="page-count">${arr.length} / ${cache.foods.length}</div>
-    </div>
-    <div class="search-bar">
-      <input class="input" id="food-search" placeholder="음식명, 설명" value="${escapeHtml(_foodSearch)}">
-    </div>
-    <div class="list">
-      ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(food => {
-        const thumb = food.img
-          ? `<img src="../${food.img.replace(/^\.\//, '')}" alt="" loading="lazy">`
-          : '🍖';
-        return `
-          <a class="list-item" href="#foods/${food._idx}">
-            <div class="list-item-thumb">${thumb}</div>
-            <div class="list-item-body">
-              <div class="list-item-title">${escapeHtml(food.name)}</div>
-              <div class="list-item-meta">${escapeHtml(food.desc || '')}</div>
-            </div>
-            <div class="list-item-arrow">›</div>
-          </a>
-        `;
-      }).join('')}
-    </div>
-  `;
-  document.getElementById('back-btn').onclick = () => location.hash = '';
-  const s = document.getElementById('food-search');
-  s.oninput = (e) => { _foodSearch = e.target.value; renderFoodList(); };
-  setTimeout(() => { const pos = _foodSearch.length; s.focus(); s.setSelectionRange(pos, pos); }, 0);
+
+// 출처 배지 (쿠팡/컬리/네이버)
+function sourceBadge(source) {
+  if (!source) return '';
+  const s = source.toLowerCase();
+  if (s === '쿠팡' || s === 'coupang') return '<span class="badge badge-coupang">쿠팡</span>';
+  if (s === '컬리' || s === 'kurly')   return '<span class="badge badge-kurly">컬리</span>';
+  if (s === '네이버' || s === 'naver') return '<span class="badge badge-naver">네이버</span>';
+  return `<span class="badge">${escapeHtml(source)}</span>`;
 }
 
-// ════════════════════════════════════════════════════════════════════
-// 음식 상세
-// ════════════════════════════════════════════════════════════════════
-function renderFoodDetail(idx) {
-  const food = cache.foods[idx];
-  if (!food) { location.hash = 'foods'; return; }
-  document.getElementById('topbar-title').innerHTML = `🍖 ${escapeHtml(food.name)}`;
-  const c = document.getElementById('app-content');
-  const imgPath = food.img ? '../' + food.img.replace(/^\.\//, '') : '';
-  c.innerHTML = `
-    <div class="page-header">
-      <button class="page-back" id="back-btn">← 음식 목록</button>
-    </div>
-    <div class="card">
-      ${imgPath ? `<div class="thumb-large"><img src="${escapeHtml(imgPath)}" alt=""></div>` : ''}
-      <h2 style="font-size:17px;font-weight:800;text-align:center;margin-bottom:18px;">${escapeHtml(food.name)}</h2>
-      <div class="detail-meta">
-        <div class="detail-row"><div class="detail-key">이름</div><div class="detail-val">${escapeHtml(food.name)}</div></div>
-        <div class="detail-row"><div class="detail-key">설명</div><div class="detail-val">${escapeHtml(food.desc || '-')}</div></div>
-        <div class="detail-row"><div class="detail-key">가격</div><div class="detail-val">${food.price ? escapeHtml(food.price) : '-'}</div></div>
-        <div class="detail-row"><div class="detail-key">링크</div><div class="detail-val">${food.url ? `<a href="${escapeHtml(food.url)}" target="_blank" rel="noopener">${escapeHtml(food.url)}</a>` : '-'}</div></div>
-        <div class="detail-row"><div class="detail-key">이미지</div><div class="detail-val">${escapeHtml(food.img || '-')}</div></div>
+// 가격 HTML (원가/할인가/할인율)
+function priceHtml(item) {
+  const o = item.price_original;
+  const s = item.price_sale;
+  const d = item.discount_rate;
+  if (!o && !s) return '<span style="color:var(--muted)">-</span>';
+  const fmt = n => Number(n).toLocaleString('ko-KR') + '원';
+  if (s != null && s !== o) {
+    return `<span class="price-original">${fmt(o)}</span><span class="price-sale">${fmt(s)}</span>${d ? `<span class="price-discount">${d}%</span>` : ''}`;
+  }
+  return `<span class="price-sale">${fmt(o)}</span>`;
+}
+
+// 리스트 카드 한 줄
+function productListItem(item, hrefPrefix, fallbackEmoji) {
+  const thumb = item.thumb
+    ? `<img src="../${item.thumb.replace(/^\.\//, '')}" alt="" loading="lazy">`
+    : fallbackEmoji;
+  const src = item.source ? `<span style="font-size:11px;color:var(--muted);margin-right:6px;">${escapeHtml(item.source)}</span>` : '';
+  return `
+    <a class="list-item" href="#${hrefPrefix}/${item._idx}">
+      <div class="list-item-thumb">${thumb}</div>
+      <div class="list-item-body">
+        <div class="list-item-title">${escapeHtml(item.name)}</div>
+        <div class="list-item-meta">${src}${escapeHtml(item.desc || '')}</div>
       </div>
-    </div>
+      <div class="list-item-arrow">›</div>
+    </a>
   `;
-  document.getElementById('back-btn').onclick = () => location.hash = 'foods';
 }
 
-// ════════════════════════════════════════════════════════════════════
-// 장비 리스트
-// ════════════════════════════════════════════════════════════════════
-let _itemSearch = '';
-function renderItemList() {
-  document.getElementById('topbar-title').innerHTML = '🛠 장비';
+// 상세 화면 (음식/장비 공통)
+function renderProductDetail(item, opts) {
+  if (!item) { location.hash = opts.listHash; return; }
+  document.getElementById('topbar-title').innerHTML = `${opts.icon} ${escapeHtml(item.name)}`;
   const c = document.getElementById('app-content');
-  const arr = cache.items
-    .map((x, idx) => ({ ...x, _idx: idx }))
-    .filter(x => matchSearch(x, _itemSearch, ['name', 'desc']));
+  const imgPath = item.thumb ? '../' + item.thumb.replace(/^\.\//, '') : '';
   c.innerHTML = `
     <div class="page-header">
-      <button class="page-back" id="back-btn">← 대시보드</button>
-      <div class="page-count">${arr.length} / ${cache.items.length}</div>
-    </div>
-    <div class="search-bar">
-      <input class="input" id="item-search" placeholder="장비명, 설명" value="${escapeHtml(_itemSearch)}">
-    </div>
-    <div class="list">
-      ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(item => {
-        const thumb = item.img
-          ? `<img src="../${item.img.replace(/^\.\//, '')}" alt="" loading="lazy">`
-          : '🛠';
-        return `
-          <a class="list-item" href="#items/${item._idx}">
-            <div class="list-item-thumb">${thumb}</div>
-            <div class="list-item-body">
-              <div class="list-item-title">${escapeHtml(item.name)}</div>
-              <div class="list-item-meta">${escapeHtml(item.desc || '')}</div>
-            </div>
-            <div class="list-item-arrow">›</div>
-          </a>
-        `;
-      }).join('')}
-    </div>
-  `;
-  document.getElementById('back-btn').onclick = () => location.hash = '';
-  const s = document.getElementById('item-search');
-  s.oninput = (e) => { _itemSearch = e.target.value; renderItemList(); };
-  setTimeout(() => { const pos = _itemSearch.length; s.focus(); s.setSelectionRange(pos, pos); }, 0);
-}
-
-// ════════════════════════════════════════════════════════════════════
-// 장비 상세
-// ════════════════════════════════════════════════════════════════════
-function renderItemDetail(idx) {
-  const item = cache.items[idx];
-  if (!item) { location.hash = 'items'; return; }
-  document.getElementById('topbar-title').innerHTML = `🛠 ${escapeHtml(item.name)}`;
-  const c = document.getElementById('app-content');
-  const imgPath = item.img ? '../' + item.img.replace(/^\.\//, '') : '';
-  c.innerHTML = `
-    <div class="page-header">
-      <button class="page-back" id="back-btn">← 장비 목록</button>
+      <button class="page-back" id="back-btn">← ${opts.listLabel} 목록</button>
     </div>
     <div class="card">
       ${imgPath ? `<div class="thumb-large"><img src="${escapeHtml(imgPath)}" alt=""></div>` : ''}
-      <h2 style="font-size:17px;font-weight:800;text-align:center;margin-bottom:18px;">${escapeHtml(item.name)}</h2>
+      <h2 style="font-size:17px;font-weight:800;text-align:center;margin-bottom:6px;">${escapeHtml(item.name)}</h2>
+      <div style="text-align:center;margin-bottom:18px;">${sourceBadge(item.source)}</div>
       <div class="detail-meta">
         <div class="detail-row"><div class="detail-key">이름</div><div class="detail-val">${escapeHtml(item.name)}</div></div>
         <div class="detail-row"><div class="detail-key">설명</div><div class="detail-val">${escapeHtml(item.desc || '-')}</div></div>
-        <div class="detail-row"><div class="detail-key">가격</div><div class="detail-val">${item.price ? escapeHtml(item.price) : '-'}</div></div>
+        <div class="detail-row"><div class="detail-key">출처</div><div class="detail-val">${item.source ? escapeHtml(item.source) : '-'}</div></div>
+        <div class="detail-row"><div class="detail-key">가격</div><div class="detail-val">${priceHtml(item)}</div></div>
         <div class="detail-row"><div class="detail-key">링크</div><div class="detail-val">${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.url)}</a>` : '-'}</div></div>
-        <div class="detail-row"><div class="detail-key">이미지</div><div class="detail-val">${escapeHtml(item.img || '-')}</div></div>
+        <div class="detail-row"><div class="detail-key">이미지</div><div class="detail-val" style="font-family:ui-monospace,monospace;font-size:11px;">${escapeHtml(item.thumb || '-')}</div></div>
       </div>
     </div>
   `;
-  document.getElementById('back-btn').onclick = () => location.hash = 'items';
+  document.getElementById('back-btn').onclick = () => location.hash = opts.listHash;
 }
+
+// 리스트 화면 (음식/장비 공통)
+function renderProductList(dataArr, searchVar, opts) {
+  document.getElementById('topbar-title').innerHTML = `${opts.icon} ${opts.label}`;
+  const c = document.getElementById('app-content');
+  const q = opts.getSearch();
+  const arr = dataArr
+    .map((x, idx) => ({ ...x, _idx: idx }))
+    .filter(x => matchSearch(x, q, ['name', 'desc', 'source']));
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← 대시보드</button>
+      <div class="page-count">${arr.length} / ${dataArr.length}</div>
+    </div>
+    <div class="search-bar">
+      <input class="input" id="prod-search" placeholder="${opts.placeholder}" value="${escapeHtml(q)}">
+    </div>
+    <div class="list">
+      ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji)).join('')}
+    </div>
+  `;
+  document.getElementById('back-btn').onclick = () => location.hash = '';
+  const s = document.getElementById('prod-search');
+  s.oninput = (e) => { opts.setSearch(e.target.value); opts.rerender(); };
+  setTimeout(() => { const pos = q.length; s.focus(); s.setSelectionRange(pos, pos); }, 0);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 음식 (foods)
+// ════════════════════════════════════════════════════════════════════
+let _foodSearch = '';
+function renderFoodList() {
+  renderProductList(cache.foods, _foodSearch, {
+    icon: '🍖', label: '음식', placeholder: '음식명, 설명, 출처',
+    hashPrefix: 'foods', fallbackEmoji: '🍖',
+    getSearch: () => _foodSearch,
+    setSearch: (v) => { _foodSearch = v; },
+    rerender: renderFoodList
+  });
+}
+function renderFoodDetail(idx) {
+  renderProductDetail(cache.foods[idx], { icon: '🍖', listLabel: '음식', listHash: 'foods' });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 장비 (items)
+// ════════════════════════════════════════════════════════════════════
+let _itemSearch = '';
+function renderItemList() {
+  renderProductList(cache.items, _itemSearch, {
+    icon: '🛠', label: '장비', placeholder: '장비명, 설명, 출처',
+    hashPrefix: 'items', fallbackEmoji: '🛠',
+    getSearch: () => _itemSearch,
+    setSearch: (v) => { _itemSearch = v; },
+    rerender: renderItemList
+  });
+}
+function renderItemDetail(idx) {
+  renderProductDetail(cache.items[idx], { icon: '🛠', listLabel: '장비', listHash: 'items' });
+}
+
 
 // ════════════════════════════════════════════════════════════════════
 // 로그인 & 인증
