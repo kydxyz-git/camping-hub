@@ -1390,7 +1390,10 @@ async function router() {
     else if (parts[1] !== undefined) renderFoodDetail(+parts[1]);
     else renderFoodList();
   } else if (parts[0] === 'items') {
-    parts[1] !== undefined ? renderItemDetail(+parts[1]) : renderItemList();
+    if (parts[1] === 'new') renderItemAddForm();
+    else if (parts[2] === 'edit' && parts[1] !== undefined) renderItemEditForm(+parts[1]);
+    else if (parts[1] !== undefined) renderItemDetail(+parts[1]);
+    else renderItemList();
   } else {
     renderDashboard();
   }
@@ -3783,7 +3786,394 @@ function renderItemList() {
   });
 }
 function renderItemDetail(idx) {
-  renderProductDetail(cache.items[idx], { icon: '🛠', listLabel: '장비', listHash: 'items', idx, onDelete: (i) => showToast('장비 삭제는 아직 준비 중입니다', 'warn') });
+  renderProductDetail(cache.items[idx], { icon: '🛠', listLabel: '장비', listHash: 'items', idx, onDelete: deleteItem });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 장비 추가/수정 폼 (통합) — 음식 폼과 동일한 구조
+// ════════════════════════════════════════════════════════════════════
+let _itemForm = {
+  mode: 'add', editIdx: null,
+  name: '', desc: '', source: '', url: '',
+  priceOriginal: '', priceSale: '', discountRate: '',
+  imageBase64: null, imagePreviewUrl: null, imageSize: 0,
+  imageChanged: false,
+};
+
+function renderItemAddForm() {
+  _itemForm = {
+    mode: 'add', editIdx: null,
+    name: '', desc: '', source: '', url: '',
+    priceOriginal: '', priceSale: '', discountRate: '',
+    imageBase64: null, imagePreviewUrl: null, imageSize: 0,
+    imageChanged: false,
+  };
+  _renderItemFormUI();
+}
+
+function renderItemEditForm(idx) {
+  const it = cache.items[idx];
+  if (!it) { location.hash = 'items'; return; }
+  _itemForm = {
+    mode: 'edit', editIdx: idx,
+    name: it.name || '',
+    desc: it.desc || '',
+    source: it.source || '',
+    url: it.url || '',
+    priceOriginal: it.price_original != null ? String(it.price_original) : '',
+    priceSale: it.price_sale != null ? String(it.price_sale) : '',
+    discountRate: it.discount_rate != null ? String(it.discount_rate) : '',
+    imageBase64: null,
+    imagePreviewUrl: it.thumb ? '../' + it.thumb.replace(/^\.\//, '') : null,
+    imageSize: 0,
+    imageChanged: false,
+  };
+  _renderItemFormUI();
+}
+
+function _renderItemFormUI() {
+  const isEdit = _itemForm.mode === 'edit';
+  document.getElementById('topbar-title').innerHTML = isEdit ? '🛠 장비 수정' : '🛠 장비 추가';
+  const c = document.getElementById('app-content');
+
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← ${isEdit ? '돌아가기' : '장비 목록'}</button>
+    </div>
+    <div class="card">
+      <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">${isEdit ? '장비 수정' : '새 장비 추가'}</h2>
+      <div class="form-grid">
+
+        <div class="form-field">
+          <label class="label" for="if-name">이름 *</label>
+          <input type="text" id="if-name" class="input" placeholder="예: 포레스트유 데크팩SET" value="${escapeHtml(_itemForm.name)}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="if-desc">설명</label>
+          <input type="text" id="if-desc" class="input" placeholder="예: 캠핑 필수템" value="${escapeHtml(_itemForm.desc)}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="if-url">URL *</label>
+          <input type="text" id="if-url" class="input" placeholder="https://..." value="${escapeHtml(_itemForm.url)}">
+          <div class="help">쿠팡/네이버/컬리 등의 상품 페이지 URL — 입력하면 출처 자동 감지</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="if-source">출처</label>
+          <select id="if-source">
+            <option value="">선택 (URL에서 자동 감지)</option>
+            ${FOOD_SOURCES.map(s => `<option value="${s}" ${_itemForm.source === s ? 'selected' : ''}>${s}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="if-price-original">원가 (원)</label>
+          <input type="number" id="if-price-original" class="input" min="0" placeholder="22310" value="${_itemForm.priceOriginal}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="if-price-sale">할인가 (원)</label>
+          <input type="number" id="if-price-sale" class="input" min="0" placeholder="할인 없으면 비워두세요" value="${_itemForm.priceSale}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="if-discount">할인율 (%)</label>
+          <input type="number" id="if-discount" class="input" min="0" max="99" placeholder="비워두면 자동 계산" value="${_itemForm.discountRate}">
+          <div class="help">원가와 할인가 입력하면 자동 계산됩니다</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label">썸네일 이미지 ${isEdit ? '' : '*'}</label>
+          <label class="form-image-drop" id="if-image-drop">
+            <input type="file" id="if-image" accept="image/*">
+            <div class="form-image-drop-icon">📷</div>
+            <div class="form-image-drop-text">${isEdit ? '새 이미지로 교체하려면 선택' : '이미지를 선택하거나 끌어다 놓으세요'}</div>
+            <div class="form-image-drop-sub">자동으로 4:5 크롭 · 📋 Ctrl+V (Cmd+V) 붙여넣기</div>
+          </label>
+          <div id="if-image-preview"></div>
+        </div>
+
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="if-cancel">취소</button>
+        <button class="btn" id="if-submit">${isEdit ? '저장' : '장비 추가'}</button>
+      </div>
+    </div>
+
+    <div class="submit-progress" id="submit-progress">
+      <div class="submit-progress-card">
+        <div class="submit-progress-spinner"></div>
+        <div class="submit-progress-text" id="submit-progress-text">처리 중...</div>
+        <div class="submit-progress-sub" id="submit-progress-sub">잠시만 기다려주세요</div>
+      </div>
+    </div>
+  `;
+
+  const $ = (id) => document.getElementById(id);
+  const backHash = isEdit ? `items/${_itemForm.editIdx}` : 'items';
+  $('back-btn').onclick = () => { resetItemForm(); location.hash = backHash; };
+  $('if-cancel').onclick = () => { resetItemForm(); location.hash = backHash; };
+
+  $('if-name').oninput = (e) => { _itemForm.name = e.target.value; };
+  $('if-desc').oninput = (e) => { _itemForm.desc = e.target.value; };
+  $('if-source').onchange = (e) => { _itemForm.source = e.target.value; };
+
+  // URL → 출처 자동 감지
+  $('if-url').oninput = (e) => {
+    _itemForm.url = e.target.value;
+    const detected = _detectSourceFromUrl(e.target.value);
+    if (detected && !_itemForm.source) {
+      _itemForm.source = detected;
+      $('if-source').value = detected;
+    }
+  };
+
+  $('if-price-original').oninput = (e) => {
+    _itemForm.priceOriginal = e.target.value;
+    _autoCalcDiscount();
+  };
+  $('if-price-sale').oninput = (e) => {
+    _itemForm.priceSale = e.target.value;
+    _autoCalcDiscount();
+  };
+  $('if-discount').oninput = (e) => { _itemForm.discountRate = e.target.value; };
+
+  function _autoCalcDiscount() {
+    const o = parseInt(_itemForm.priceOriginal);
+    const s = parseInt(_itemForm.priceSale);
+    if (o > 0 && s > 0 && s < o) {
+      const rate = Math.round((1 - s / o) * 100);
+      _itemForm.discountRate = String(rate);
+      $('if-discount').value = rate;
+    } else if (!_itemForm.priceSale) {
+      _itemForm.discountRate = '';
+      $('if-discount').value = '';
+    }
+  }
+
+  // 이미지 업로드
+  const drop = $('if-image-drop');
+  const fileInput = $('if-image');
+  const previewEl = $('if-image-preview');
+
+  async function handleFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      return showToast('이미지 파일만 가능해요', 'error');
+    }
+    try {
+      previewEl.innerHTML = '<div class="loading">이미지 처리 중...</div>';
+      const { base64, previewUrl, size } = await cropImage4to5(file);
+      _itemForm.imageBase64 = base64;
+      _itemForm.imagePreviewUrl = previewUrl;
+      _itemForm.imageSize = size;
+      _itemForm.imageChanged = true;
+      renderImagePreview();
+    } catch (err) {
+      previewEl.innerHTML = '';
+      showToast('이미지 처리 실패: ' + err.message, 'error');
+    }
+  }
+
+  function renderImagePreview() {
+    if (!_itemForm.imagePreviewUrl) {
+      previewEl.innerHTML = '';
+      return;
+    }
+    const isNew = _itemForm.imageChanged;
+    previewEl.innerHTML = `
+      <div class="form-image-preview">
+        <div class="form-image-preview-thumb"><img src="${_itemForm.imagePreviewUrl}" alt=""></div>
+        <div class="form-image-preview-info">
+          <b>${isNew ? '새 이미지' : '기존 이미지'}</b>
+          <span>${isNew ? `4:5 크롭 · 600×750 · ${(_itemForm.imageSize/1024).toFixed(0)}KB` : '교체하려면 위에서 선택'}</span>
+        </div>
+        ${isNew ? `<button class="form-image-preview-remove" id="if-image-remove">제거</button>` : ''}
+      </div>
+    `;
+    if (isNew) {
+      $('if-image-remove').onclick = (e) => {
+        e.preventDefault();
+        _itemForm.imageBase64 = null;
+        _itemForm.imageChanged = false;
+        if (isEdit) {
+          const orig = cache.items[_itemForm.editIdx];
+          _itemForm.imagePreviewUrl = orig.thumb ? '../' + orig.thumb.replace(/^\.\//, '') : null;
+        } else {
+          _itemForm.imagePreviewUrl = null;
+        }
+        fileInput.value = '';
+        renderImagePreview();
+      };
+    }
+  }
+
+  fileInput.onchange = (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); };
+  drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('is-dragover'); };
+  drop.ondragleave = () => drop.classList.remove('is-dragover');
+  drop.ondrop = (e) => {
+    e.preventDefault(); drop.classList.remove('is-dragover');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  };
+
+  // 클립보드 paste (Ctrl+V / Cmd+V)
+  attachClipboardPaste(handleFile);
+
+  renderImagePreview();
+  $('if-submit').onclick = submitItemForm;
+}
+
+function resetItemForm() {
+  _itemForm = {
+    mode: 'add', editIdx: null,
+    name: '', desc: '', source: '', url: '',
+    priceOriginal: '', priceSale: '', discountRate: '',
+    imageBase64: null, imagePreviewUrl: null, imageSize: 0,
+    imageChanged: false,
+  };
+}
+
+async function submitItemForm() {
+  const isEdit = _itemForm.mode === 'edit';
+
+  // 검증
+  if (!_itemForm.name.trim()) return showToast('이름을 입력해주세요', 'error');
+  if (!_itemForm.url.trim()) return showToast('URL을 입력해주세요', 'error');
+  if (!isEdit && !_itemForm.imageBase64) return showToast('이미지를 선택해주세요', 'error');
+
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+
+  const progress = document.getElementById('submit-progress');
+  const ptext = document.getElementById('submit-progress-text');
+  const psub = document.getElementById('submit-progress-sub');
+  progress.classList.add('is-active');
+
+  try {
+    ptext.textContent = '데이터 준비 중...';
+    psub.textContent = '이미지 경로 계산';
+
+    const newItems = JSON.parse(JSON.stringify(cache.items));
+    const files = [];
+
+    // 이미지 경로 결정 (음식과 동일 정책)
+    let thumbPath;
+    if (isEdit) {
+      thumbPath = newItems[_itemForm.editIdx].thumb;
+      if (_itemForm.imageChanged) {
+        files.push({
+          path: thumbPath.replace(/^\.\//, ''),
+          content: _itemForm.imageBase64, encoding: 'base64',
+        });
+      }
+    } else {
+      // 새 장비: hash 기반 (음식과 같은 폴더 사용, hash 다르므로 충돌 없음)
+      const hash = _foodImgHash(_itemForm.name);
+      const newPath = `images/products/${hash}.jpg`;
+      thumbPath = `./${newPath}`;
+      files.push({ path: newPath, content: _itemForm.imageBase64, encoding: 'base64' });
+    }
+
+    // 가격 정규화
+    const priceOriginal = parseInt(_itemForm.priceOriginal) || 0;
+    const priceSale = _itemForm.priceSale ? parseInt(_itemForm.priceSale) : null;
+    const discountRate = _itemForm.discountRate ? parseInt(_itemForm.discountRate) : null;
+
+    const itemObj = {
+      name: _itemForm.name.trim(),
+      desc: _itemForm.desc.trim(),
+      url: _itemForm.url.trim(),
+      source: _itemForm.source || _detectSourceFromUrl(_itemForm.url) || '',
+      thumb: thumbPath,
+      price_original: priceOriginal,
+      price_sale: priceSale,
+      discount_rate: discountRate,
+      published: isEdit ? (cache.items[_itemForm.editIdx].published !== false) : true,
+    };
+
+    if (isEdit) {
+      newItems[_itemForm.editIdx] = itemObj;
+    } else {
+      newItems.push(itemObj);
+    }
+
+    const action = isEdit ? '수정' : '추가';
+    const message = `${isEdit ? 'update' : 'sync'}(admin): 장비 '${itemObj.name}' ${action}`;
+
+    ptext.textContent = 'GitHub 업로드 중...';
+    psub.textContent = files.length ? `이미지 + 데이터` : '데이터';
+
+    files.push({ path: 'data/items.json', content: JSON.stringify(newItems, null, 2) + '\n', encoding: 'utf-8' });
+    await ghCommitMultipleFiles(files, message);
+
+    cache.items = newItems;
+    cache.loadedAt = Date.now();
+
+    ptext.textContent = '완료!';
+    psub.textContent = '1~2분 후 사이트에 반영됩니다';
+    setTimeout(() => {
+      progress.classList.remove('is-active');
+      resetItemForm();
+      showToast(`장비 '${itemObj.name}' ${action} 완료!`, 'success', 3500);
+      location.hash = isEdit ? `items/${_itemForm.editIdx}` : 'items';
+    }, 1000);
+
+  } catch (e) {
+    progress.classList.remove('is-active');
+    console.error(e);
+    showToast('업로드 실패: ' + e.message, 'error', 5000);
+  }
+}
+
+// 장비 삭제
+async function deleteItem(idx) {
+  const item = cache.items[idx];
+  if (!item) return;
+
+  if (!confirm(`장비 '${item.name}'을(를) 삭제할까요?\n\n이미지 파일도 함께 삭제됩니다. 되돌릴 수 없어요.`)) return;
+  if (!confirm(`정말로 삭제할까요? 마지막 확인입니다.`)) return;
+
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+
+  const progress = document.createElement('div');
+  progress.className = 'submit-progress is-active';
+  progress.innerHTML = `
+    <div class="submit-progress-card">
+      <div class="submit-progress-spinner"></div>
+      <div class="submit-progress-text">장비 삭제 중...</div>
+      <div class="submit-progress-sub">GitHub 업로드</div>
+    </div>
+  `;
+  document.body.appendChild(progress);
+
+  try {
+    const newItems = JSON.parse(JSON.stringify(cache.items));
+    newItems.splice(idx, 1);
+
+    const deletePaths = item.thumb ? [item.thumb.replace(/^\.\//, '')] : [];
+
+    const message = `delete(admin): 장비 '${item.name}' 삭제`;
+    await ghCommitWithDeletions(
+      [{ path: 'data/items.json', content: JSON.stringify(newItems, null, 2) + '\n', encoding: 'utf-8' }],
+      deletePaths,
+      message
+    );
+
+    cache.items = newItems;
+    cache.loadedAt = Date.now();
+
+    progress.remove();
+    showToast(`장비 '${item.name}' 삭제됨`, 'success', 2500);
+    location.hash = 'items';
+  } catch (e) {
+    progress.remove();
+    console.error(e);
+    showToast('삭제 실패: ' + e.message, 'error', 5000);
+  }
 }
 
 
