@@ -48,6 +48,30 @@
     ]
   },
   {
+    "name": "또 해먹고 싶은 캠핑 음식",
+    "emoji": "🍖",
+    "color": "#C94A4A",
+    "published": true,
+    "eps": [
+      {
+        "ep": 2,
+        "title": "두릅 튀김, 등갈비 구이 등",
+        "url": "https://www.instagram.com/p/DX5BnxlE6hr/?igsh=amQzanpudnFjYzJs",
+        "thumb": "./images/series/food-ep02.jpg",
+        "page_id": "35502bbd-cd95-8014-8b29-fbe8aa605599",
+        "published": true
+      },
+      {
+        "ep": 1,
+        "title": "야키토리 토리야 등",
+        "url": "https://www.instagram.com/p/DXUCu6vE6lw/?igsh=eDlvdml3dzFmaHMw",
+        "thumb": "./images/series/food-ep01.jpg",
+        "page_id": "34a02bbd-cd95-80a2-9894-c9bdb1d19f73",
+        "published": true
+      }
+    ]
+  },
+  {
     "name": "봄·가을에 가기 좋은 캠핑장",
     "emoji": "🌸",
     "color": "#E89BB9",
@@ -99,30 +123,6 @@
         "url": "https://www.instagram.com/reel/DXxYOT1TeAz/?igsh=OXN2ajlyMmF5d2lj",
         "thumb": "./images/series/tips-04.jpg",
         "page_id": "34a02bbd-cd95-8096-9f3e-cb89f0a3e768",
-        "published": true
-      }
-    ]
-  },
-  {
-    "name": "또 해먹고 싶은 캠핑 음식",
-    "emoji": "🍖",
-    "color": "#C94A4A",
-    "published": true,
-    "eps": [
-      {
-        "ep": 2,
-        "title": "두릅 튀김, 등갈비 구이 등",
-        "url": "https://www.instagram.com/p/DX5BnxlE6hr/?igsh=amQzanpudnFjYzJs",
-        "thumb": "./images/series/food-ep02.jpg",
-        "page_id": "35502bbd-cd95-8014-8b29-fbe8aa605599",
-        "published": true
-      },
-      {
-        "ep": 1,
-        "title": "야키토리 토리야 등",
-        "url": "https://www.instagram.com/p/DXUCu6vE6lw/?igsh=eDlvdml3dzFmaHMw",
-        "thumb": "./images/series/food-ep01.jpg",
-        "page_id": "34a02bbd-cd95-80a2-9894-c9bdb1d19f73",
         "published": true
       }
     ]
