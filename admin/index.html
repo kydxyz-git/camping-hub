@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>관리자 · kydz.kr</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --muted: #6e6e6e;
+    --line: #e5e5e5;
+    --accent: #1a1a1a;
+    --accent-soft: #f5f5f3;
+    --danger: #e63946;
+    --success: #03c75a;
+    --warning: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', sans-serif;
+    background: var(--accent-soft);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ── 공통: 카드/버튼/입력 ── */
+  .card {
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 18px;
+    background: var(--text); color: var(--bg);
+    border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-secondary { background: var(--accent-soft); color: var(--text); border: 1px solid var(--line); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+    background: var(--bg);
+    font-family: inherit;
+  }
+  .input:focus { outline: 2px solid var(--text); outline-offset: -1px; }
+  .label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+  .help { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+
+  /* ── 로그인 화면 ── */
+  .login-screen {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .login-card {
+    max-width: 380px; width: 100%;
+    padding: 32px 24px;
+  }
+  .login-title {
+    font-size: 20px; font-weight: 800;
+    margin-bottom: 4px; letter-spacing: -0.02em;
+  }
+  .login-sub {
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .login-error {
+    font-size: 13px; color: var(--danger);
+    margin-top: 10px;
+    display: none;
+  }
+
+  /* ── 대시보드 ── */
+  .dashboard { display: none; }
+  .dashboard.is-active { display: block; }
+
+  .topbar {
+    background: var(--text); color: var(--bg);
+    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar-title { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+  .topbar-actions { display: flex; gap: 8px; }
+  .topbar-btn {
+    background: transparent; color: var(--bg);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 6px 12px; border-radius: 6px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+  .topbar-btn:hover { background: rgba(255,255,255,0.08); }
+
+  .container {
+    max-width: 960px; margin: 0 auto;
+    padding: 24px 20px;
+  }
+
+  .section-title {
+    font-size: 18px; font-weight: 800;
+    margin-bottom: 16px; letter-spacing: -0.01em;
+  }
+
+  /* ── 토큰 설정 카드 ── */
+  .token-card { margin-bottom: 20px; }
+  .token-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 12px; font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .token-status.connected { background: #e8f8ef; color: #00824a; }
+  .token-status.disconnected { background: #fdeaec; color: #c2273a; }
+  .token-status::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+  }
+  .token-status.connected::before { background: var(--success); }
+  .token-status.disconnected::before { background: var(--danger); }
+  .token-preview {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 12px; color: var(--muted);
+    padding: 8px 12px; background: var(--accent-soft);
+    border-radius: 6px; margin-top: 6px;
+    word-break: break-all;
+  }
+  .row { display: flex; gap: 8px; }
+  .row .input { flex: 1; }
+
+  /* ── 기능 메뉴 그리드 ── */
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .menu-item {
+    padding: 20px;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.15s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .menu-item:hover { transform: translateY(-2px); }
+  .menu-item-icon { font-size: 28px; display: block; margin-bottom: 8px; }
+  .menu-item-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .menu-item-desc { font-size: 12px; color: var(--muted); }
+  .menu-item.disabled { opacity: 0.5; cursor: not-allowed; }
+  .menu-item.disabled:hover { transform: none; }
+
+  /* ── 모바일 대응 ── */
+  @media (max-width: 480px) {
+    .container { padding: 16px 14px; }
+    .card { padding: 18px; border-radius: 12px; }
+    .login-card { padding: 24px 18px; }
+    .menu-grid { gap: 10px; }
+    .menu-item { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 로그인 화면                                       -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="login-screen" id="login-screen">
+  <div class="card login-card">
+    <div class="login-title">🛠 관리자 페이지</div>
+    <div class="login-sub">패스워드를 입력해주세요</div>
+    <input type="password" id="login-password" class="input" placeholder="패스워드" autocomplete="current-password">
+    <div style="margin-top: 12px;">
+      <button class="btn" id="login-submit" style="width: 100%;">로그인</button>
+    </div>
+    <div class="login-error" id="login-error">패스워드가 틀렸어요</div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 대시보드                                          -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="dashboard" id="dashboard">
+  <div class="topbar">
+    <div class="topbar-title">🛠 kydz.kr 관리자</div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" id="topbar-back">← 사이트</button>
+      <button class="topbar-btn" id="topbar-logout">로그아웃</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- 토큰 설정 카드 -->
+    <div class="card token-card">
+      <div class="section-title">🔑 GitHub 토큰</div>
+      <div id="token-status" class="token-status disconnected">미설정</div>
+      <div id="token-display" style="display:none;">
+        <div class="help">현재 저장된 토큰</div>
+        <div class="token-preview" id="token-preview"></div>
+        <div style="display: flex; gap: 8px; margin-top: 12px;">
+          <button class="btn btn-secondary" id="token-edit" style="flex:1;">변경</button>
+          <button class="btn btn-danger" id="token-remove" style="flex:1;">삭제</button>
+        </div>
+      </div>
+      <div id="token-input-area">
+        <label class="label" for="token-input">Personal Access Token</label>
+        <div class="row">
+          <input type="password" id="token-input" class="input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+          <button class="btn" id="token-save">저장</button>
+        </div>
+        <div class="help">
+          GitHub Settings → Developer settings → Personal access tokens(classic)에서 발급<br>
+          권한: <code>repo</code> (전체) — 이 브라우저에만 저장됩니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- 기능 메뉴 -->
+    <div class="section-title">📋 콘텐츠 관리</div>
+    <div class="menu-grid">
+      <a class="card menu-item disabled" title="Phase 3에서 활성화">
+        <span class="menu-item-icon">🎬</span>
+        <div class="menu-item-title">시리즈 EP</div>
+        <div class="menu-item-desc">Phase 3 예정</div>
+      </a>
+      <a class="card menu-item disabled" title="Phase 4에서 활성화">
+        <span class="menu-item-icon">🏕</span>
+        <div class="menu-item-title">캠핑장</div>
+        <div class="menu-item-desc">Phase 4 예정</div>
+      </a>
+      <a class="card menu-item disabled" title="Phase 5에서 활성화">
+        <span class="menu-item-icon">🍖</span>
+        <div class="menu-item-title">음식</div>
+        <div class="menu-item-desc">Phase 5 예정</div>
+      </a>
+      <a class="card menu-item disabled" title="Phase 5에서 활성화">
+        <span class="menu-item-icon">🛠</span>
+        <div class="menu-item-title">장비</div>
+        <div class="menu-item-desc">Phase 5 예정</div>
+      </a>
+    </div>
+
+    <div style="margin-top: 24px; font-size: 11px; color: var(--muted); text-align: center;">
+      Phase 0 (인프라 셋업) · 빌드 <span id="build-date"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+// 패스워드 해시 — Phase 0 검증용 임시 패스워드: "admin-temp-2026"
+// Phase 0 끝나고 사용자가 최종 패스워드 정하면 교체 예정
+// ════════════════════════════════════════════════════════════════════
+const PASSWORD_HASH = '53c81ce46cf98dcee761fcbbf56533fe29a65b0c41090708abaeb71cbeed2168';
+
+// ════════════════════════════════════════════════════════════════════
+// localStorage 키
+// ════════════════════════════════════════════════════════════════════
+const STORAGE_KEYS = {
+  authed: 'kydz_admin_authed',  // 로그인 상태 (세션)
+  token: 'kydz_admin_gh_token', // GitHub 토큰
+};
+
+// ════════════════════════════════════════════════════════════════════
+// 유틸: SHA-256 해시
+// ════════════════════════════════════════════════════════════════════
+async function sha256(text) {
+  const buf = new TextEncoder().encode(text);
+  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hashBuf))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 로그인 화면 로직
+// ════════════════════════════════════════════════════════════════════
+const loginScreen = document.getElementById('login-screen');
+const dashboard = document.getElementById('dashboard');
+const loginPassword = document.getElementById('login-password');
+const loginSubmit = document.getElementById('login-submit');
+const loginError = document.getElementById('login-error');
+
+async function tryLogin() {
+  const pw = loginPassword.value;
+  if (!pw) return;
+  const hash = await sha256(pw);
+  if (hash === PASSWORD_HASH) {
+    sessionStorage.setItem(STORAGE_KEYS.authed, '1');
+    showDashboard();
+  } else {
+    loginError.style.display = 'block';
+    loginPassword.value = '';
+    loginPassword.focus();
+  }
+}
+
+loginSubmit.addEventListener('click', tryLogin);
+loginPassword.addEventListener('keypress', e => { if (e.key === 'Enter') tryLogin(); });
+
+function showLogin() {
+  loginScreen.style.display = 'flex';
+  dashboard.classList.remove('is-active');
+  setTimeout(() => loginPassword.focus(), 100);
+}
+
+function showDashboard() {
+  loginScreen.style.display = 'none';
+  dashboard.classList.add('is-active');
+  refreshTokenUI();
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 대시보드 — 토큰 관리
+// ════════════════════════════════════════════════════════════════════
+const tokenStatus = document.getElementById('token-status');
+const tokenDisplay = document.getElementById('token-display');
+const tokenPreview = document.getElementById('token-preview');
+const tokenInputArea = document.getElementById('token-input-area');
+const tokenInput = document.getElementById('token-input');
+const tokenSave = document.getElementById('token-save');
+const tokenEdit = document.getElementById('token-edit');
+const tokenRemove = document.getElementById('token-remove');
+
+function maskToken(t) {
+  if (!t || t.length < 10) return t || '';
+  return t.slice(0, 7) + '••••••••••••' + t.slice(-4);
+}
+
+function refreshTokenUI() {
+  const token = localStorage.getItem(STORAGE_KEYS.token);
+  if (token) {
+    tokenStatus.textContent = '연결됨';
+    tokenStatus.className = 'token-status connected';
+    tokenPreview.textContent = maskToken(token);
+    tokenDisplay.style.display = 'block';
+    tokenInputArea.style.display = 'none';
+  } else {
+    tokenStatus.textContent = '미설정';
+    tokenStatus.className = 'token-status disconnected';
+    tokenDisplay.style.display = 'none';
+    tokenInputArea.style.display = 'block';
+  }
+}
+
+tokenSave.addEventListener('click', () => {
+  const val = tokenInput.value.trim();
+  if (!val) { alert('토큰을 입력해주세요'); return; }
+  if (!val.startsWith('ghp_') && !val.startsWith('github_pat_')) {
+    if (!confirm('GitHub 토큰 형식이 아닌 것 같아요. 그래도 저장할까요?')) return;
+  }
+  localStorage.setItem(STORAGE_KEYS.token, val);
+  tokenInput.value = '';
+  refreshTokenUI();
+});
+
+tokenEdit.addEventListener('click', () => {
+  tokenDisplay.style.display = 'none';
+  tokenInputArea.style.display = 'block';
+  tokenInput.focus();
+});
+
+tokenRemove.addEventListener('click', () => {
+  if (!confirm('저장된 토큰을 삭제할까요?')) return;
+  localStorage.removeItem(STORAGE_KEYS.token);
+  refreshTokenUI();
+});
+
+// ════════════════════════════════════════════════════════════════════
+// 상단바
+// ════════════════════════════════════════════════════════════════════
+document.getElementById('topbar-back').addEventListener('click', () => {
+  window.location.href = '/';
+});
+document.getElementById('topbar-logout').addEventListener('click', () => {
+  if (!confirm('로그아웃 할까요? (토큰은 그대로 유지됩니다)')) return;
+  sessionStorage.removeItem(STORAGE_KEYS.authed);
+  showLogin();
+});
+
+// ════════════════════════════════════════════════════════════════════
+// 빌드 정보
+// ════════════════════════════════════════════════════════════════════
+document.getElementById('build-date').textContent = 'Phase 0';
+
+// ════════════════════════════════════════════════════════════════════
+// 초기 진입
+// ════════════════════════════════════════════════════════════════════
+if (sessionStorage.getItem(STORAGE_KEYS.authed) === '1') {
+  showDashboard();
+} else {
+  showLogin();
+}
+</script>
+</body>
+</html>
