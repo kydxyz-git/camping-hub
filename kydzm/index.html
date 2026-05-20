@@ -761,9 +761,16 @@
   }
 
   /* 비공개 항목 스타일 */
-  .is-unpublished {
+  /* 부모에 opacity 주면 자식까지 다 흐려져서 액션 버튼이 안 보임
+     → 자식 개별 처리: 헤더/본문은 흐리게, 액션 버튼은 또렷이 */
+  .is-unpublished .series-group-header,
+  .is-unpublished .series-group-eps .series-sort-bar,
+  .is-unpublished .series-group-eps .ep-sortable,
+  .is-unpublished.list-item .list-item-link {
     opacity: 0.55;
   }
+  /* 시리즈 액션 버튼은 항상 또렷 (정리/삭제 명확히) */
+  .is-unpublished .series-group-actions { opacity: 1; }
   .is-unpublished .list-item-title::before,
   .is-unpublished .series-group-header-clickable::before,
   .is-unpublished .series-ep-title::before {
