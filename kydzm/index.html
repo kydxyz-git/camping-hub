@@ -325,6 +325,146 @@
   /* ── 로딩 상태 ── */
   .loading { padding: 40px; text-align: center; color: var(--muted); font-size: 13px; }
 
+  /* ── 토스트 ── */
+  .admin-toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text); color: var(--bg);
+    padding: 12px 20px; border-radius: 100px;
+    font-size: 13px; font-weight: 600;
+    z-index: 99999;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    max-width: 90vw;
+    white-space: nowrap;
+  }
+  .admin-toast.is-visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .admin-toast.success { background: #00824a; }
+  .admin-toast.error { background: var(--danger); }
+  .admin-toast.warn { background: var(--warning); color: #fff; }
+
+  /* ── 폼 UI ── */
+  .form-grid { display: flex; flex-direction: column; gap: 14px; }
+  .form-field { display: flex; flex-direction: column; gap: 4px; }
+  .form-field select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+    background: var(--bg);
+    font-family: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23999' stroke-width='1.5'><path d='M3 4.5L6 7.5L9 4.5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+    padding-right: 36px;
+  }
+  .form-field select:focus { outline: 2px solid var(--text); outline-offset: -1px; }
+
+  .form-image-drop {
+    border: 2px dashed var(--line);
+    border-radius: 10px;
+    padding: 30px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    background: var(--accent-soft);
+  }
+  .form-image-drop:hover, .form-image-drop.is-dragover {
+    border-color: var(--text);
+    background: var(--bg);
+  }
+  .form-image-drop input[type=file] { display: none; }
+  .form-image-drop-icon { font-size: 32px; margin-bottom: 8px; }
+  .form-image-drop-text { font-size: 13px; font-weight: 600; color: var(--text); }
+  .form-image-drop-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .form-image-preview {
+    margin-top: 12px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex; gap: 12px; align-items: center;
+  }
+  .form-image-preview-thumb {
+    width: 100px; aspect-ratio: 4/5;
+    background: var(--accent-soft);
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .form-image-preview-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .form-image-preview-info { flex: 1; font-size: 12px; }
+  .form-image-preview-info b { display: block; font-size: 13px; margin-bottom: 2px; color: var(--text); }
+  .form-image-preview-info span { color: var(--muted); }
+  .form-image-preview-remove {
+    background: transparent; border: none; cursor: pointer;
+    color: var(--danger); font-size: 12px; font-weight: 600;
+    padding: 4px 8px; border-radius: 6px;
+  }
+  .form-image-preview-remove:hover { background: var(--accent-soft); }
+
+  .form-actions {
+    display: flex; gap: 8px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+  .form-actions .btn { flex: 1; }
+
+  /* 제출 진행 오버레이 */
+  .submit-progress {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none; align-items: center; justify-content: center;
+    z-index: 99998;
+    padding: 20px;
+  }
+  .submit-progress.is-active { display: flex; }
+  .submit-progress-card {
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 24px 20px;
+    max-width: 320px; width: 100%;
+    text-align: center;
+  }
+  .submit-progress-spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--accent-soft);
+    border-top-color: var(--text);
+    border-radius: 50%;
+    margin: 0 auto 14px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .submit-progress-text { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .submit-progress-sub { font-size: 12px; color: var(--muted); }
+
+  /* "+추가" 플로팅 액션 버튼 */
+  .fab {
+    position: fixed;
+    bottom: 20px; right: 20px;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--text); color: var(--bg);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    font-size: 24px; font-weight: 700;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .fab:hover { opacity: 0.9; }
+
   /* ── 모바일 ── */
   @media (max-width: 480px) {
     .container { padding: 16px 14px; }
@@ -446,6 +586,182 @@ function maskToken(t) {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// GitHub API 클라이언트
+// repo: kydxyz-git/camping-hub, branch: main
+// ════════════════════════════════════════════════════════════════════
+const GH_OWNER = 'kydxyz-git';
+const GH_REPO  = 'camping-hub';
+const GH_BRANCH = 'main';
+const GH_API = 'https://api.github.com';
+
+function getToken() {
+  const t = localStorage.getItem(STORAGE_KEYS.token);
+  if (!t) throw new Error('GitHub 토큰이 설정되지 않았어요. 대시보드에서 먼저 설정해주세요.');
+  return t;
+}
+
+async function ghFetch(path, opts = {}) {
+  const token = getToken();
+  const r = await fetch(`${GH_API}${path}`, {
+    ...opts,
+    headers: {
+      'Accept': 'application/vnd.github+json',
+      'Authorization': `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+      ...(opts.headers || {})
+    }
+  });
+  if (!r.ok) {
+    const body = await r.text();
+    throw new Error(`GitHub API ${r.status}: ${body.slice(0, 200)}`);
+  }
+  return r.json();
+}
+
+// 단일 커밋으로 여러 파일 변경 — Git Data API
+//
+// files = [
+//   { path: 'data/series.json', content: '...', encoding: 'utf-8' },
+//   { path: 'images/series/summer-ep06.jpg', content: 'BASE64_STRING', encoding: 'base64' }
+// ]
+async function ghCommitMultipleFiles(files, message) {
+  // 1) 현재 브랜치의 최신 commit SHA
+  const ref = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`);
+  const latestCommitSha = ref.object.sha;
+
+  // 2) 최신 commit의 tree SHA
+  const latestCommit = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/commits/${latestCommitSha}`);
+  const baseTreeSha = latestCommit.tree.sha;
+
+  // 3) 각 파일의 blob 생성
+  const blobs = await Promise.all(files.map(async (f) => {
+    const blob = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/blobs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        content: f.content,
+        encoding: f.encoding === 'base64' ? 'base64' : 'utf-8'
+      })
+    });
+    return { path: f.path, sha: blob.sha };
+  }));
+
+  // 4) 새 tree 생성 (base는 latestCommit의 tree)
+  const newTree = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/trees`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      base_tree: baseTreeSha,
+      tree: blobs.map(b => ({ path: b.path, mode: '100644', type: 'blob', sha: b.sha }))
+    })
+  });
+
+  // 5) 새 commit 생성
+  const newCommit = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/commits`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message,
+      tree: newTree.sha,
+      parents: [latestCommitSha]
+    })
+  });
+
+  // 6) 브랜치 ref 업데이트
+  await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sha: newCommit.sha })
+  });
+
+  return newCommit.sha;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 이미지 크롭 (Canvas, 4:5, 600x750, JPEG q80)
+// ════════════════════════════════════════════════════════════════════
+async function cropImage4to5(file, maxW = 600, maxH = 750, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('파일 읽기 실패'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('이미지 로드 실패'));
+      img.onload = () => {
+        const w = img.naturalWidth, h = img.naturalHeight;
+        const targetRatio = 4 / 5;
+        const curRatio = w / h;
+        let sx, sy, sw, sh;
+        if (curRatio > targetRatio) {
+          // 가로가 더 김 → 좌우 자르기
+          sh = h; sw = h * targetRatio;
+          sx = (w - sw) / 2; sy = 0;
+        } else {
+          // 세로가 더 김 → 상하 자르기
+          sw = w; sh = w / targetRatio;
+          sx = 0; sy = (h - sh) / 2;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = maxW; canvas.height = maxH;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, maxW, maxH);
+        canvas.toBlob((blob) => {
+          if (!blob) return reject(new Error('JPEG 변환 실패'));
+          const r2 = new FileReader();
+          r2.onload = () => {
+            // dataURL → base64 (헤더 제거)
+            const base64 = r2.result.split(',')[1];
+            const previewUrl = r2.result;
+            resolve({ base64, previewUrl, size: blob.size });
+          };
+          r2.readAsDataURL(blob);
+        }, 'image/jpeg', quality);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 토스트
+// ════════════════════════════════════════════════════════════════════
+function showToast(msg, type = 'info', duration = 2400) {
+  let t = document.getElementById('admin-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'admin-toast';
+    document.body.appendChild(t);
+  }
+  t.className = 'admin-toast is-visible ' + type;
+  t.textContent = msg;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = 'admin-toast ' + type; }, duration);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 시리즈 슬러그 매핑
+// ════════════════════════════════════════════════════════════════════
+const SERIES_SLUG_PREFIX = {
+  '여름에 가기 좋은 캠핑장':   'summer',
+  '봄·가을에 가기 좋은 캠핑장': 'spring-fall',
+  '캠핑꿀팁':                  'tips',
+  '또 해먹고 싶은 캠핑 음식':  'foods',
+  '장비소개':                  'items',
+};
+
+function getSeriesSlug(seriesName, ep) {
+  const prefix = SERIES_SLUG_PREFIX[seriesName] || seriesName.replace(/[^a-z0-9]/gi, '').toLowerCase() || 'series';
+  if (!ep || ep === 0) {
+    // 단편(ep=0)은 timestamp 뒤에 붙여서 충돌 방지
+    return `${prefix}-${Date.now().toString(36)}`;
+  }
+  return `${prefix}-ep${String(ep).padStart(2, '0')}`;
+}
+
+// ════════════════════════════════════════════════════════════════════
 // 라우터 (해시 기반)
 // 경로:
 //   '' / '#'          → 대시보드
@@ -480,7 +796,8 @@ async function router() {
   } else if (parts[0] === 'camps') {
     parts[1] !== undefined ? renderCampDetail(+parts[1]) : renderCampList();
   } else if (parts[0] === 'series') {
-    if (parts[1] !== undefined && parts[2] !== undefined) renderEpDetail(+parts[1], +parts[2]);
+    if (parts[1] === 'new') renderEpAddForm();
+    else if (parts[1] !== undefined && parts[2] !== undefined) renderEpDetail(+parts[1], +parts[2]);
     else renderSeriesList();
   } else if (parts[0] === 'foods') {
     parts[1] !== undefined ? renderFoodDetail(+parts[1]) : renderFoodList();
@@ -700,6 +1017,7 @@ function renderSeriesList() {
         </div>
       `).join('')}
     </div>
+    <a href="#series/new" class="fab" title="EP 추가">+</a>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
   c.querySelectorAll('[data-toggle]').forEach(h => {
@@ -744,6 +1062,287 @@ function renderEpDetail(si, ei) {
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = 'series';
+}
+
+// ════════════════════════════════════════════════════════════════════
+// EP 추가 폼
+// ════════════════════════════════════════════════════════════════════
+let _epForm = {
+  seriesIdx: 0,
+  ep: '',
+  title: '',
+  url: '',
+  pageId: '',
+  imageBase64: null,
+  imagePreviewUrl: null,
+  imageSize: 0,
+};
+
+function suggestNextEp(seriesIdx) {
+  const s = cache.series[seriesIdx];
+  if (!s) return 1;
+  const maxEp = s.eps.reduce((m, e) => Math.max(m, e.ep || 0), 0);
+  return maxEp + 1;
+}
+
+function renderEpAddForm() {
+  document.getElementById('topbar-title').innerHTML = '🎬 EP 추가';
+  const c = document.getElementById('app-content');
+
+  // 초기 진입 시 EP 번호 자동 제안
+  if (!_epForm._initialized) {
+    _epForm.seriesIdx = 0;
+    _epForm.ep = suggestNextEp(0);
+    _epForm._initialized = true;
+  }
+
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← 시리즈 목록</button>
+    </div>
+    <div class="card">
+      <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">새 EP 추가</h2>
+      <div class="form-grid">
+
+        <div class="form-field">
+          <label class="label" for="f-series">시리즈 *</label>
+          <select id="f-series">
+            ${cache.series.map((s, i) => `<option value="${i}" ${i === _epForm.seriesIdx ? 'selected' : ''}>${escapeHtml(s.emoji || '')} ${escapeHtml(s.name)} (${s.eps.length}편)</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="f-ep">EP 번호 *</label>
+          <input type="number" id="f-ep" class="input" min="0" placeholder="0 = 단편" value="${_epForm.ep}">
+          <div class="help">0이면 단편 (캠핑꿀팁/장비소개 같은 시리즈)</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="f-title">제목 *</label>
+          <input type="text" id="f-title" class="input" placeholder="예: 200번 방문객이 있는 캠핑장" value="${escapeHtml(_epForm.title)}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="f-url">릴스 URL *</label>
+          <input type="text" id="f-url" class="input" placeholder="https://www.instagram.com/reel/..." value="${escapeHtml(_epForm.url)}">
+          <div class="help">인스타그램 릴스 공유 URL을 그대로 붙여넣으세요</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label">썸네일 이미지 *</label>
+          <label class="form-image-drop" id="f-image-drop">
+            <input type="file" id="f-image" accept="image/*">
+            <div class="form-image-drop-icon">📷</div>
+            <div class="form-image-drop-text">이미지를 선택하거나 끌어다 놓으세요</div>
+            <div class="form-image-drop-sub">자동으로 4:5 비율로 크롭됩니다</div>
+          </label>
+          <div id="f-image-preview"></div>
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="f-pageid">노션 page_id (선택)</label>
+          <input type="text" id="f-pageid" class="input" placeholder="36302bbd-cd95-..." value="${escapeHtml(_epForm.pageId)}">
+          <div class="help">노션 페이지에서 옮겨오는 경우만</div>
+        </div>
+
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="f-cancel">취소</button>
+        <button class="btn" id="f-submit">EP 추가</button>
+      </div>
+    </div>
+
+    <div class="submit-progress" id="submit-progress">
+      <div class="submit-progress-card">
+        <div class="submit-progress-spinner"></div>
+        <div class="submit-progress-text" id="submit-progress-text">처리 중...</div>
+        <div class="submit-progress-sub" id="submit-progress-sub">잠시만 기다려주세요</div>
+      </div>
+    </div>
+  `;
+
+  // 핸들러 바인딩
+  const $ = (id) => document.getElementById(id);
+  $('back-btn').onclick = () => { resetEpForm(); location.hash = 'series'; };
+  $('f-cancel').onclick = () => { resetEpForm(); location.hash = 'series'; };
+
+  $('f-series').onchange = (e) => {
+    _epForm.seriesIdx = +e.target.value;
+    // 시리즈 바뀔 때마다 EP 번호 자동 제안
+    $('f-ep').value = suggestNextEp(_epForm.seriesIdx);
+    _epForm.ep = +$('f-ep').value;
+  };
+  $('f-ep').oninput = (e) => { _epForm.ep = e.target.value; };
+  $('f-title').oninput = (e) => { _epForm.title = e.target.value; };
+  $('f-url').oninput = (e) => { _epForm.url = e.target.value; };
+  $('f-pageid').oninput = (e) => { _epForm.pageId = e.target.value.trim(); };
+
+  // 이미지 업로드 + 드래그&드롭
+  const drop = $('f-image-drop');
+  const fileInput = $('f-image');
+  const previewEl = $('f-image-preview');
+
+  async function handleFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      showToast('이미지 파일만 가능해요', 'error');
+      return;
+    }
+    try {
+      previewEl.innerHTML = '<div class="loading">이미지 처리 중...</div>';
+      const { base64, previewUrl, size } = await cropImage4to5(file);
+      _epForm.imageBase64 = base64;
+      _epForm.imagePreviewUrl = previewUrl;
+      _epForm.imageSize = size;
+      previewEl.innerHTML = `
+        <div class="form-image-preview">
+          <div class="form-image-preview-thumb"><img src="${previewUrl}" alt=""></div>
+          <div class="form-image-preview-info">
+            <b>${escapeHtml(file.name)}</b>
+            <span>4:5 크롭 · 600×750 · ${(size/1024).toFixed(0)}KB</span>
+          </div>
+          <button class="form-image-preview-remove" id="f-image-remove">제거</button>
+        </div>
+      `;
+      $('f-image-remove').onclick = (e) => {
+        e.preventDefault();
+        _epForm.imageBase64 = null;
+        _epForm.imagePreviewUrl = null;
+        previewEl.innerHTML = '';
+        fileInput.value = '';
+      };
+    } catch (err) {
+      previewEl.innerHTML = '';
+      showToast('이미지 처리 실패: ' + err.message, 'error');
+    }
+  }
+
+  fileInput.onchange = (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); };
+  drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('is-dragover'); };
+  drop.ondragleave = () => drop.classList.remove('is-dragover');
+  drop.ondrop = (e) => {
+    e.preventDefault(); drop.classList.remove('is-dragover');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  };
+
+  // 이미 처리한 이미지 있으면 미리보기 복원
+  if (_epForm.imagePreviewUrl) {
+    previewEl.innerHTML = `
+      <div class="form-image-preview">
+        <div class="form-image-preview-thumb"><img src="${_epForm.imagePreviewUrl}" alt=""></div>
+        <div class="form-image-preview-info">
+          <b>(이전에 선택한 이미지)</b>
+          <span>4:5 크롭 · 600×750 · ${(_epForm.imageSize/1024).toFixed(0)}KB</span>
+        </div>
+        <button class="form-image-preview-remove" id="f-image-remove">제거</button>
+      </div>
+    `;
+    $('f-image-remove').onclick = (e) => {
+      e.preventDefault();
+      _epForm.imageBase64 = null; _epForm.imagePreviewUrl = null;
+      previewEl.innerHTML = ''; fileInput.value = '';
+    };
+  }
+
+  $('f-submit').onclick = submitEpForm;
+}
+
+function resetEpForm() {
+  _epForm = {
+    seriesIdx: 0, ep: '', title: '', url: '', pageId: '',
+    imageBase64: null, imagePreviewUrl: null, imageSize: 0,
+    _initialized: false,
+  };
+}
+
+async function submitEpForm() {
+  const series = cache.series[_epForm.seriesIdx];
+  // 검증
+  if (!series) return showToast('시리즈를 선택해주세요', 'error');
+  if (_epForm.ep === '' || _epForm.ep === null || isNaN(+_epForm.ep)) return showToast('EP 번호를 입력해주세요', 'error');
+  if (!_epForm.title.trim()) return showToast('제목을 입력해주세요', 'error');
+  if (!_epForm.url.trim()) return showToast('릴스 URL을 입력해주세요', 'error');
+  if (!_epForm.imageBase64) return showToast('썸네일 이미지를 선택해주세요', 'error');
+
+  // 토큰 확인
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+
+  const ep = +_epForm.ep;
+  const slug = getSeriesSlug(series.name, ep);
+  const imagePath = `images/series/${slug}.jpg`;
+  const newEp = {
+    ep: ep,
+    title: _epForm.title.trim(),
+    url: _epForm.url.trim(),
+    thumb: `./${imagePath}`,
+  };
+  if (_epForm.pageId) newEp.page_id = _epForm.pageId;
+
+  // 진행 오버레이
+  const progress = document.getElementById('submit-progress');
+  const ptext = document.getElementById('submit-progress-text');
+  const psub = document.getElementById('submit-progress-sub');
+  progress.classList.add('is-active');
+
+  try {
+    // 1. series.json 갱신
+    ptext.textContent = '데이터 준비 중...';
+    psub.textContent = '시리즈 정보 갱신';
+    const newSeries = JSON.parse(JSON.stringify(cache.series));
+    // ep>0이면 내림차순 위치에 삽입, ep=0이면 맨 앞
+    const targetSeries = newSeries[_epForm.seriesIdx];
+    if (ep > 0) {
+      let inserted = false;
+      for (let i = 0; i < targetSeries.eps.length; i++) {
+        const e = targetSeries.eps[i];
+        if ((e.ep || 0) > 0 && e.ep < ep) {
+          targetSeries.eps.splice(i, 0, newEp);
+          inserted = true; break;
+        }
+      }
+      if (!inserted) targetSeries.eps.push(newEp);
+    } else {
+      targetSeries.eps.unshift(newEp);
+    }
+
+    // 2. sitemap.xml 갱신 (lastmod만 오늘로)
+    const today = new Date().toISOString().slice(0, 10);
+    // 현재 sitemap 가져오기
+    const sitemapResp = await fetch(`../sitemap.xml?v=${Date.now()}`);
+    const sitemapText = await sitemapResp.text();
+    const newSitemap = sitemapText.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g, `<lastmod>${today}</lastmod>`);
+
+    // 3. 단일 커밋으로 푸시
+    ptext.textContent = 'GitHub 업로드 중...';
+    psub.textContent = '이미지 + 데이터 + sitemap (1/1)';
+
+    const message = `sync(admin): ${series.name} ${ep > 0 ? 'EP.' + String(ep).padStart(2, '0') : '단편'} '${newEp.title}' 추가\n\n관리자 페이지에서 자동 생성`;
+
+    const sha = await ghCommitMultipleFiles([
+      { path: imagePath, content: _epForm.imageBase64, encoding: 'base64' },
+      { path: 'data/series.json', content: JSON.stringify(newSeries, null, 2) + '\n', encoding: 'utf-8' },
+      { path: 'sitemap.xml', content: newSitemap, encoding: 'utf-8' },
+    ], message);
+
+    // 4. 로컬 캐시 갱신
+    cache.series = newSeries;
+    cache.loadedAt = Date.now();
+
+    ptext.textContent = '완료!';
+    psub.textContent = '1~2분 후 사이트에 반영됩니다';
+    setTimeout(() => {
+      progress.classList.remove('is-active');
+      resetEpForm();
+      showToast('EP 추가 완료! (1~2분 후 사이트 반영)', 'success', 4000);
+      location.hash = 'series';
+    }, 1200);
+
+  } catch (e) {
+    progress.classList.remove('is-active');
+    console.error(e);
+    showToast('업로드 실패: ' + e.message, 'error', 5000);
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════
