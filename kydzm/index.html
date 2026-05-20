@@ -1413,15 +1413,13 @@ function renderSeriesList() {
       <button class="page-back" id="back-btn">← 대시보드</button>
       <div class="page-count">${cache.series.length}시리즈 · ${totalEps}편</div>
     </div>
-    ${hasUnsavedOrder ? `
-      <div class="save-bar" id="save-bar">
-        <div class="save-bar-text">📦 시리즈 순서가 변경되었어요</div>
-        <div class="save-bar-actions">
-          <button class="btn btn-secondary" id="cancel-order">취소</button>
-          <button class="btn" id="save-order">저장</button>
-        </div>
+    <div class="save-bar" id="save-bar" style="display:${hasUnsavedOrder ? 'flex' : 'none'};">
+      <div class="save-bar-text">📦 시리즈 순서가 변경되었어요</div>
+      <div class="save-bar-actions">
+        <button class="btn btn-secondary" id="cancel-order">취소</button>
+        <button class="btn" id="save-order">저장</button>
       </div>
-    ` : ''}
+    </div>
     <div id="series-sortable">
       ${cache.series.map((s, si) => {
         const sPub = s.published !== false;
@@ -1551,13 +1549,23 @@ function renderSeriesList() {
       ghostClass: 'sortable-ghost',
       dragClass: 'sortable-drag',
       onEnd: (evt) => {
+        // 새 순서 계산 (드래그 직후 DOM 상태 기준)
         const newOrder = Array.from(sortableEl.querySelectorAll('.series-group[data-si]'))
           .map(el => +el.dataset.si);
         const originalOrder = cache.series.map((_, i) => i);
         const changed = newOrder.some((v, i) => v !== originalOrder[i]);
-        if (!changed) return;
+        if (!changed) {
+          // 변경 없으면 저장 바 숨김
+          _seriesDragOrder = null;
+          const sb = document.getElementById('save-bar');
+          if (sb) sb.style.display = 'none';
+          return;
+        }
         _seriesDragOrder = newOrder;
-        renderSeriesList();
+        // renderSeriesList() 호출하지 않음! (SortableJS가 이미 DOM을 이동시켜놨음)
+        // 저장 바만 표시
+        const sb = document.getElementById('save-bar');
+        if (sb) sb.style.display = 'flex';
       }
     });
   }
