@@ -1649,15 +1649,20 @@ async function changeSeriesSort(si, newSort, selectEl) {
     newSeries[si].sort = newSort;
     const modeLabel = (SORT_MODES.find(m => m.value === newSort) || {}).label || newSort;
     const message = `sort(admin): 시리즈 '${newSeries[si].name}' 정렬 → ${modeLabel}`;
+    console.log('[정렬변경] 시작', { si, oldSort: cache.series[si].sort, newSort });
     await ghCommitMultipleFiles([
       { path: 'data/series.json', content: JSON.stringify(newSeries, null, 2) + '\n', encoding: 'utf-8' },
     ], message);
     cache.series = newSeries;
     cache.loadedAt = Date.now();
+    console.log('[정렬변경] cache 갱신 완료, 현재 시리즈 sort =', cache.series[si].sort);
+    // 펼친 상태 유지 (해당 시리즈가 닫혀있으면 강제로 열어줘서 결과를 즉시 확인 가능)
+    _seriesOpen.add(si);
     progress.remove();
     showToast(`정렬: ${modeLabel}`, 'success', 2000);
     // 항상 재렌더 (admin 화면도 즉시 새 정렬 결과 반영)
     renderSeriesList();
+    console.log('[정렬변경] 재렌더 완료');
   } catch (e) {
     console.error(e);
     progress.remove();
