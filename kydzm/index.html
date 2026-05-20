@@ -57,6 +57,8 @@
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn-secondary { background: var(--accent-soft); color: var(--text); border: 1px solid var(--line); }
   .btn-danger { background: var(--danger); color: #fff; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .input {
     width: 100%;
     padding: 12px 14px;
@@ -504,6 +506,15 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .submit-progress-text { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
   .submit-progress-sub { font-size: 12px; color: var(--muted); }
+
+  /* 시리즈 그룹 액션 (수정/삭제 버튼) */
+  .series-group-actions {
+    display: flex; gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--line);
+  }
+  .series-group-actions .btn { flex: 1; }
 
   /* 시리즈 EP 정렬 모드 선택 바 */
   .series-sort-bar {
@@ -1236,6 +1247,9 @@ async function router() {
     else if (parts[3] === 'edit' && parts[1] !== undefined && parts[2] !== undefined) renderEpEditForm(+parts[1], +parts[2]);
     else if (parts[1] !== undefined && parts[2] !== undefined) renderEpDetail(+parts[1], +parts[2]);
     else renderSeriesList();
+  } else if (parts[0] === 'series-edit') {
+    if (parts[1] !== undefined) renderSeriesEditForm(+parts[1]);
+    else location.hash = 'series';
   } else if (parts[0] === 'foods') {
     parts[1] !== undefined ? renderFoodDetail(+parts[1]) : renderFoodList();
   } else if (parts[0] === 'items') {
@@ -1496,6 +1510,10 @@ function renderSeriesList() {
                 `;
               }).join('')}
             </div>
+            <div class="series-group-actions">
+              <a class="btn btn-secondary btn-sm" href="#series-edit/${si}">✏️ 시리즈 수정</a>
+              <button class="btn btn-danger btn-sm" data-series-delete="${si}" ${s.eps.length > 0 ? 'disabled title="EP가 있는 시리즈는 삭제할 수 없어요. EP를 먼저 모두 삭제하세요."' : ''}>🗑 시리즈 삭제</button>
+            </div>
           </div>
         </div>
         `;
@@ -1543,6 +1561,14 @@ function renderSeriesList() {
         toggleEl.closest('.series-ep-item').classList.toggle('is-unpublished', !e.target.checked);
       }
     });
+  });
+  // 시리즈 삭제 버튼
+  c.querySelectorAll('[data-series-delete]').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const si = +btn.dataset.seriesDelete;
+      deleteSeries(si);
+    };
   });
 
   // EP 정렬 모드 변경
@@ -2272,6 +2298,8 @@ const COLOR_PRESETS = [
 ];
 
 let _seriesForm = {
+  mode: 'add',       // 'add' | 'edit'
+  editSi: null,
   name: '',
   emoji: '',
   color: COLOR_PRESETS[0].hex,
@@ -2286,20 +2314,17 @@ const SORT_MODES = [
 ];
 
 // admin 화면에서 EP를 sort 모드에 맞춰 정렬 (원본 인덱스 함께 반환)
-// 메인 사이트와 동일한 정렬 결과를 보여줘 정합성 유지
-// 단, random은 admin에선 원본 순서 유지 (매번 바뀌면 헷갈림)
 function getSortedEpsForAdmin(series) {
   const mode = series.sort || 'ep_desc';
-  // 원본 인덱스(ei) 보존
   const indexed = series.eps.map((ep, ei) => ({ ep, ei }));
   if (mode === 'manual' || mode === 'random') {
-    return indexed; // 원본 순서
+    return indexed;
   }
   return [...indexed].sort((a, b) => {
     const aHas = (a.ep.ep || 0) > 0, bHas = (b.ep.ep || 0) > 0;
     if (mode === 'ep_asc') {
       if (aHas && bHas) return a.ep.ep - b.ep.ep;
-    } else { // ep_desc
+    } else {
       if (aHas && bHas) return b.ep.ep - a.ep.ep;
     }
     if (aHas) return -1;
@@ -2309,14 +2334,37 @@ function getSortedEpsForAdmin(series) {
 }
 
 function renderSeriesAddForm() {
-  document.getElementById('topbar-title').innerHTML = '📁 새 시리즈';
+  _seriesForm = {
+    mode: 'add', editSi: null,
+    name: '', emoji: '',
+    color: COLOR_PRESETS[0].hex, sort: 'ep_desc',
+  };
+  _renderSeriesFormUI();
+}
+
+function renderSeriesEditForm(si) {
+  const s = cache.series[si];
+  if (!s) { location.hash = 'series'; return; }
+  _seriesForm = {
+    mode: 'edit', editSi: si,
+    name: s.name || '',
+    emoji: s.emoji || '',
+    color: s.color || COLOR_PRESETS[0].hex,
+    sort: s.sort || 'ep_desc',
+  };
+  _renderSeriesFormUI();
+}
+
+function _renderSeriesFormUI() {
+  const isEdit = _seriesForm.mode === 'edit';
+  document.getElementById('topbar-title').innerHTML = isEdit ? '📁 시리즈 수정' : '📁 새 시리즈';
   const c = document.getElementById('app-content');
   c.innerHTML = `
     <div class="page-header">
       <button class="page-back" id="back-btn">← 시리즈 목록</button>
     </div>
     <div class="card">
-      <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">새 시리즈 만들기</h2>
+      <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">${isEdit ? '시리즈 수정' : '새 시리즈 만들기'}</h2>
       <div class="form-grid">
 
         <div class="form-field">
@@ -2353,7 +2401,7 @@ function renderSeriesAddForm() {
       </div>
       <div class="form-actions">
         <button class="btn btn-secondary" id="sf-cancel">취소</button>
-        <button class="btn" id="sf-submit">시리즈 만들기</button>
+        <button class="btn" id="sf-submit">${isEdit ? '저장' : '시리즈 만들기'}</button>
       </div>
     </div>
 
@@ -2373,7 +2421,6 @@ function renderSeriesAddForm() {
   $('sf-emoji').oninput = (e) => { _seriesForm.emoji = e.target.value; };
   $('sf-sort').onchange = (e) => { _seriesForm.sort = e.target.value; };
 
-  // 컬러 프리셋 선택
   $('sf-colors').querySelectorAll('.color-preset').forEach(el => {
     el.onclick = () => {
       _seriesForm.color = el.dataset.color;
@@ -2386,32 +2433,26 @@ function renderSeriesAddForm() {
 }
 
 function resetSeriesForm() {
-  _seriesForm = { name: '', emoji: '', color: COLOR_PRESETS[0].hex, sort: 'ep_desc' };
+  _seriesForm = { mode: 'add', editSi: null, name: '', emoji: '', color: COLOR_PRESETS[0].hex, sort: 'ep_desc' };
 }
 
 async function submitSeriesForm() {
+  const isEdit = _seriesForm.mode === 'edit';
+
   // 검증
   if (!_seriesForm.name.trim()) return showToast('시리즈 이름을 입력해주세요', 'error');
   if (!_seriesForm.emoji.trim()) return showToast('이모지를 입력해주세요', 'error');
   if (!_seriesForm.color) return showToast('컬러를 선택해주세요', 'error');
 
-  // 중복 이름 체크
-  if (cache.series.some(s => s.name === _seriesForm.name.trim())) {
+  // 중복 이름 체크 (수정 모드에선 자기 자신 제외)
+  const dupIdx = cache.series.findIndex(s => s.name === _seriesForm.name.trim());
+  if (dupIdx !== -1 && (!isEdit || dupIdx !== _seriesForm.editSi)) {
     return showToast('이미 같은 이름의 시리즈가 있어요', 'error');
   }
 
   if (!localStorage.getItem(STORAGE_KEYS.token)) {
     return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
   }
-
-  const newSeries = {
-    name: _seriesForm.name.trim(),
-    emoji: _seriesForm.emoji.trim(),
-    color: _seriesForm.color,
-    published: true,
-    sort: _seriesForm.sort,
-    eps: [],
-  };
 
   const progress = document.getElementById('submit-progress');
   const ptext = document.getElementById('submit-progress-text');
@@ -2420,18 +2461,38 @@ async function submitSeriesForm() {
 
   try {
     ptext.textContent = 'GitHub 업로드 중...';
-    psub.textContent = '시리즈 추가';
+    psub.textContent = isEdit ? '시리즈 수정' : '시리즈 추가';
 
-    const updatedSeries = [...cache.series, newSeries];
-    const today = new Date().toISOString().slice(0, 10);
-    const sitemapResp = await fetch(`../sitemap.xml?v=${Date.now()}`);
-    const sitemapText = await sitemapResp.text();
-    const newSitemap = sitemapText.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g, `<lastmod>${today}</lastmod>`);
+    const updatedSeries = JSON.parse(JSON.stringify(cache.series));
 
-    const message = `sync(admin): 시리즈 '${newSeries.emoji} ${newSeries.name}' 추가\n\n관리자 페이지에서 자동 생성`;
+    if (isEdit) {
+      // 기존 시리즈 정보 업데이트 (eps와 published는 유지)
+      const old = updatedSeries[_seriesForm.editSi];
+      updatedSeries[_seriesForm.editSi] = {
+        name: _seriesForm.name.trim(),
+        emoji: _seriesForm.emoji.trim(),
+        color: _seriesForm.color,
+        published: old.published !== false,
+        sort: _seriesForm.sort,
+        eps: old.eps,
+      };
+    } else {
+      updatedSeries.push({
+        name: _seriesForm.name.trim(),
+        emoji: _seriesForm.emoji.trim(),
+        color: _seriesForm.color,
+        published: true,
+        sort: _seriesForm.sort,
+        eps: [],
+      });
+    }
+
+    const message = isEdit
+      ? `update(admin): 시리즈 '${_seriesForm.name}' 수정`
+      : `sync(admin): 시리즈 '${_seriesForm.emoji} ${_seriesForm.name}' 추가`;
+
     await ghCommitMultipleFiles([
       { path: 'data/series.json', content: JSON.stringify(updatedSeries, null, 2) + '\n', encoding: 'utf-8' },
-      { path: 'sitemap.xml', content: newSitemap, encoding: 'utf-8' },
     ], message);
 
     cache.series = updatedSeries;
@@ -2442,14 +2503,65 @@ async function submitSeriesForm() {
     setTimeout(() => {
       progress.classList.remove('is-active');
       resetSeriesForm();
-      showToast(`시리즈 '${newSeries.name}' 추가 완료!`, 'success', 4000);
+      showToast(isEdit ? '시리즈 수정 완료!' : `시리즈 '${_seriesForm.name}' 추가 완료!`, 'success', 3500);
       location.hash = 'series';
-    }, 1200);
+    }, 1000);
 
   } catch (e) {
     progress.classList.remove('is-active');
     console.error(e);
     showToast('업로드 실패: ' + e.message, 'error', 5000);
+  }
+}
+
+// 시리즈 삭제 (빈 시리즈만 가능)
+async function deleteSeries(si) {
+  const s = cache.series[si];
+  if (!s) return;
+
+  if (s.eps.length > 0) {
+    return showToast(`'${s.name}'에 EP가 ${s.eps.length}개 있어요. EP를 먼저 모두 삭제해주세요.`, 'error', 4000);
+  }
+
+  if (!confirm(`시리즈 '${s.emoji} ${s.name}'을(를) 삭제할까요?\n\n빈 시리즈라 안전하지만 이 작업은 되돌릴 수 없어요.`)) return;
+
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+
+  const progress = document.createElement('div');
+  progress.className = 'submit-progress is-active';
+  progress.innerHTML = `
+    <div class="submit-progress-card">
+      <div class="submit-progress-spinner"></div>
+      <div class="submit-progress-text">시리즈 삭제 중...</div>
+      <div class="submit-progress-sub">GitHub 업로드</div>
+    </div>
+  `;
+  document.body.appendChild(progress);
+
+  try {
+    const newSeries = JSON.parse(JSON.stringify(cache.series));
+    newSeries.splice(si, 1);
+
+    const message = `delete(admin): 시리즈 '${s.name}' 삭제`;
+    await ghCommitMultipleFiles([
+      { path: 'data/series.json', content: JSON.stringify(newSeries, null, 2) + '\n', encoding: 'utf-8' },
+    ], message);
+
+    cache.series = newSeries;
+    cache.loadedAt = Date.now();
+    // _seriesOpen 인덱스가 의미 잃음 → 초기화
+    _seriesOpen.clear();
+    _seriesOpen.add(0);
+
+    progress.remove();
+    showToast(`시리즈 '${s.name}' 삭제됨`, 'success', 2500);
+    renderSeriesList();
+  } catch (e) {
+    progress.remove();
+    console.error(e);
+    showToast('삭제 실패: ' + e.message, 'error', 5000);
   }
 }
 
