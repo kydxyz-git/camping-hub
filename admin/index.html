@@ -16,6 +16,7 @@
     --danger: #e63946;
     --success: #03c75a;
     --warning: #f59e0b;
+    --info: #4a7ba6;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -66,34 +67,21 @@
     display: flex; align-items: center; justify-content: center;
     padding: 20px;
   }
-  .login-card {
-    max-width: 380px; width: 100%;
-    padding: 32px 24px;
-  }
-  .login-title {
-    font-size: 20px; font-weight: 800;
-    margin-bottom: 4px; letter-spacing: -0.02em;
-  }
-  .login-sub {
-    font-size: 13px; color: var(--muted);
-    margin-bottom: 24px;
-  }
-  .login-error {
-    font-size: 13px; color: var(--danger);
-    margin-top: 10px;
-    display: none;
-  }
+  .login-card { max-width: 380px; width: 100%; padding: 32px 24px; }
+  .login-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.02em; }
+  .login-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+  .login-error { font-size: 13px; color: var(--danger); margin-top: 10px; display: none; }
 
-  /* ── 대시보드 ── */
-  .dashboard { display: none; }
-  .dashboard.is-active { display: block; }
-
+  /* ── 대시보드 공통 ── */
+  .app { display: none; }
+  .app.is-active { display: block; }
   .topbar {
     background: var(--text); color: var(--bg);
     padding: 14px 20px;
     display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
   }
-  .topbar-title { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+  .topbar-title { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; display:flex; align-items:center; gap:6px; }
   .topbar-actions { display: flex; gap: 8px; }
   .topbar-btn {
     background: transparent; color: var(--bg);
@@ -102,49 +90,33 @@
     font-size: 12px; font-weight: 600; cursor: pointer;
   }
   .topbar-btn:hover { background: rgba(255,255,255,0.08); }
-
-  .container {
-    max-width: 960px; margin: 0 auto;
-    padding: 24px 20px;
-  }
-
-  .section-title {
-    font-size: 18px; font-weight: 800;
-    margin-bottom: 16px; letter-spacing: -0.01em;
-  }
+  .container { max-width: 960px; margin: 0 auto; padding: 24px 20px; }
+  .section-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; letter-spacing: -0.01em; }
 
   /* ── 토큰 설정 카드 ── */
   .token-card { margin-bottom: 20px; }
   .token-status {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 4px 10px;
-    border-radius: 100px;
+    padding: 4px 10px; border-radius: 100px;
     font-size: 12px; font-weight: 700;
     margin-bottom: 12px;
   }
   .token-status.connected { background: #e8f8ef; color: #00824a; }
   .token-status.disconnected { background: #fdeaec; color: #c2273a; }
-  .token-status::before {
-    content: ''; width: 6px; height: 6px; border-radius: 50%;
-  }
+  .token-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
   .token-status.connected::before { background: var(--success); }
   .token-status.disconnected::before { background: var(--danger); }
   .token-preview {
     font-family: ui-monospace, 'SF Mono', Menlo, monospace;
     font-size: 12px; color: var(--muted);
     padding: 8px 12px; background: var(--accent-soft);
-    border-radius: 6px; margin-top: 6px;
-    word-break: break-all;
+    border-radius: 6px; margin-top: 6px; word-break: break-all;
   }
   .row { display: flex; gap: 8px; }
   .row .input { flex: 1; }
 
   /* ── 기능 메뉴 그리드 ── */
-  .menu-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
+  .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .menu-item {
     padding: 20px;
     text-align: left;
@@ -153,21 +125,192 @@
     text-decoration: none;
     color: inherit;
     display: block;
+    border: 1px solid var(--line);
   }
-  .menu-item:hover { transform: translateY(-2px); }
+  .menu-item:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
   .menu-item-icon { font-size: 28px; display: block; margin-bottom: 8px; }
   .menu-item-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
   .menu-item-desc { font-size: 12px; color: var(--muted); }
-  .menu-item.disabled { opacity: 0.5; cursor: not-allowed; }
-  .menu-item.disabled:hover { transform: none; }
 
-  /* ── 모바일 대응 ── */
+  /* ── 리스트 뷰 ── */
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; gap: 12px;
+  }
+  .page-back {
+    background: transparent; border: none; cursor: pointer;
+    padding: 8px 12px 8px 0; font-size: 14px; font-weight: 700;
+    color: var(--text);
+  }
+  .page-back:hover { opacity: 0.65; }
+  .page-title-h { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; flex: 1; }
+  .page-count {
+    font-size: 12px; color: var(--muted);
+    background: var(--accent-soft); padding: 4px 10px; border-radius: 100px;
+    font-weight: 700;
+  }
+  .search-bar {
+    margin-bottom: 16px; position: relative;
+  }
+  .search-bar input {
+    padding-left: 38px;
+  }
+  .search-bar::before {
+    content: '🔍';
+    position: absolute; left: 12px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px; opacity: 0.5;
+  }
+  .list { display: flex; flex-direction: column; gap: 6px; }
+  .list-empty {
+    padding: 40px 20px; text-align: center;
+    color: var(--muted); font-size: 13px;
+    background: var(--bg); border-radius: 12px;
+  }
+  .list-item {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.12s, transform 0.12s;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .list-item:hover { border-color: var(--text); transform: translateX(2px); }
+  .list-item-thumb {
+    width: 48px; height: 48px;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .list-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .list-item-body { flex: 1; min-width: 0; }
+  .list-item-title {
+    font-size: 14px; font-weight: 700;
+    margin-bottom: 2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .list-item-meta {
+    font-size: 12px; color: var(--muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .list-item-arrow { color: var(--muted); font-size: 18px; flex-shrink: 0; }
+
+  /* ── 시리즈 (2레벨) ── */
+  .series-group { margin-bottom: 12px; }
+  .series-group-header {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    font-weight: 700; font-size: 14px;
+  }
+  .series-group-header:hover { border-color: var(--text); }
+  .series-group-emoji { margin-right: 6px; }
+  .series-group-count {
+    font-size: 11px; color: var(--muted);
+    background: var(--accent-soft); padding: 2px 8px; border-radius: 100px;
+    margin-left: 8px;
+  }
+  .series-group-eps {
+    margin-top: 6px;
+    padding-left: 12px;
+    border-left: 2px solid var(--line);
+    display: none;
+  }
+  .series-group.is-open .series-group-eps { display: flex; flex-direction: column; gap: 4px; }
+  .series-group.is-open .series-group-arrow { transform: rotate(90deg); }
+  .series-group-arrow { transition: transform 0.18s; font-size: 12px; }
+  .series-ep-item {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+  }
+  .series-ep-item:hover { border-color: var(--text); }
+  .series-ep-num {
+    font-size: 11px; font-weight: 700;
+    background: var(--accent-soft); padding: 3px 7px; border-radius: 100px;
+    color: var(--muted); flex-shrink: 0;
+  }
+  .series-ep-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ── 상세 뷰 ── */
+  .detail-meta {
+    display: grid; gap: 12px;
+    margin-bottom: 18px;
+  }
+  .detail-row {
+    display: flex; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-key { color: var(--muted); width: 90px; flex-shrink: 0; font-weight: 600; }
+  .detail-val { flex: 1; word-break: break-all; }
+  .detail-val a { color: var(--info); text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    padding: 3px 9px; border-radius: 100px;
+    font-size: 11px; font-weight: 700;
+    background: var(--accent-soft); color: var(--text);
+    margin-right: 4px; margin-bottom: 4px;
+  }
+  .badge-graega { background: #fff2cc; color: #8a6a00; }
+  .detail-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px; margin-top: 10px;
+  }
+  .detail-image-tile {
+    aspect-ratio: 4/5;
+    background: var(--accent-soft);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  .detail-image-tile img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
+  }
+  .detail-image-tile-idx {
+    position: absolute; top: 4px; left: 4px;
+    background: rgba(0,0,0,0.7); color: #fff;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 100px;
+  }
+  .thumb-large {
+    width: 100%;
+    aspect-ratio: 4/5;
+    background: var(--accent-soft);
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 240px;
+    margin: 0 auto 18px;
+  }
+  .thumb-large img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ── 로딩 상태 ── */
+  .loading { padding: 40px; text-align: center; color: var(--muted); font-size: 13px; }
+
+  /* ── 모바일 ── */
   @media (max-width: 480px) {
     .container { padding: 16px 14px; }
     .card { padding: 18px; border-radius: 12px; }
     .login-card { padding: 24px 18px; }
     .menu-grid { gap: 10px; }
     .menu-item { padding: 16px; }
+    .detail-key { width: 70px; font-size: 12px; }
+    .detail-val { font-size: 13px; }
   }
 </style>
 </head>
@@ -189,105 +332,546 @@
 </div>
 
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<!-- 대시보드                                          -->
+<!-- 앱 (대시보드/리스트/상세 — 단일 SPA)              -->
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<div class="dashboard" id="dashboard">
+<div class="app" id="app">
   <div class="topbar">
-    <div class="topbar-title">🛠 kydz.kr 관리자</div>
+    <div class="topbar-title" id="topbar-title">🛠 kydz.kr 관리자</div>
     <div class="topbar-actions">
       <button class="topbar-btn" id="topbar-back">← 사이트</button>
       <button class="topbar-btn" id="topbar-logout">로그아웃</button>
     </div>
   </div>
-
-  <div class="container">
-    <!-- 토큰 설정 카드 -->
-    <div class="card token-card">
-      <div class="section-title">🔑 GitHub 토큰</div>
-      <div id="token-status" class="token-status disconnected">미설정</div>
-      <div id="token-display" style="display:none;">
-        <div class="help">현재 저장된 토큰</div>
-        <div class="token-preview" id="token-preview"></div>
-        <div style="display: flex; gap: 8px; margin-top: 12px;">
-          <button class="btn btn-secondary" id="token-edit" style="flex:1;">변경</button>
-          <button class="btn btn-danger" id="token-remove" style="flex:1;">삭제</button>
-        </div>
-      </div>
-      <div id="token-input-area">
-        <label class="label" for="token-input">Personal Access Token</label>
-        <div class="row">
-          <input type="password" id="token-input" class="input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-          <button class="btn" id="token-save">저장</button>
-        </div>
-        <div class="help">
-          GitHub Settings → Developer settings → Personal access tokens(classic)에서 발급<br>
-          권한: <code>repo</code> (전체) — 이 브라우저에만 저장됩니다.
-        </div>
-      </div>
-    </div>
-
-    <!-- 기능 메뉴 -->
-    <div class="section-title">📋 콘텐츠 관리</div>
-    <div class="menu-grid">
-      <a class="card menu-item disabled" title="Phase 3에서 활성화">
-        <span class="menu-item-icon">🎬</span>
-        <div class="menu-item-title">시리즈 EP</div>
-        <div class="menu-item-desc">Phase 3 예정</div>
-      </a>
-      <a class="card menu-item disabled" title="Phase 4에서 활성화">
-        <span class="menu-item-icon">🏕</span>
-        <div class="menu-item-title">캠핑장</div>
-        <div class="menu-item-desc">Phase 4 예정</div>
-      </a>
-      <a class="card menu-item disabled" title="Phase 5에서 활성화">
-        <span class="menu-item-icon">🍖</span>
-        <div class="menu-item-title">음식</div>
-        <div class="menu-item-desc">Phase 5 예정</div>
-      </a>
-      <a class="card menu-item disabled" title="Phase 5에서 활성화">
-        <span class="menu-item-icon">🛠</span>
-        <div class="menu-item-title">장비</div>
-        <div class="menu-item-desc">Phase 5 예정</div>
-      </a>
-    </div>
-
-    <div style="margin-top: 24px; font-size: 11px; color: var(--muted); text-align: center;">
-      Phase 0 (인프라 셋업) · 빌드 <span id="build-date"></span>
-    </div>
+  <div class="container" id="app-content">
+    <!-- 화면 내용이 라우터에 의해 렌더됨 -->
   </div>
 </div>
 
 <script>
 // ════════════════════════════════════════════════════════════════════
 // 패스워드 해시 — SHA-256
-// 변경하려면: python3 -c "import hashlib; print(hashlib.sha256('새비밀번호'.encode()).hexdigest())"
+// 변경: python3 -c "import hashlib; print(hashlib.sha256('새비밀번호'.encode()).hexdigest())"
 // ════════════════════════════════════════════════════════════════════
 const PASSWORD_HASH = 'fc0d164e3259b5a28b9b7ac489e95e1638ba1bc37a27c2bb07ac7bdb624f1347';
 
-// ════════════════════════════════════════════════════════════════════
-// localStorage 키
-// ════════════════════════════════════════════════════════════════════
 const STORAGE_KEYS = {
-  authed: 'kydz_admin_authed',  // 로그인 상태 (세션)
-  token: 'kydz_admin_gh_token', // GitHub 토큰
+  authed: 'kydz_admin_authed',
+  token:  'kydz_admin_gh_token',
 };
 
 // ════════════════════════════════════════════════════════════════════
-// 유틸: SHA-256 해시
+// 데이터 캐시 (메모리)
+// ════════════════════════════════════════════════════════════════════
+const cache = {
+  config: null, series: null, foods: null, items: null, camps: null,
+  loaded: false,
+  loadedAt: null,
+};
+
+async function loadAllData(force = false) {
+  if (cache.loaded && !force) return cache;
+  const files = ['config', 'series', 'foods', 'items', 'camps'];
+  const results = await Promise.all(
+    files.map(name => fetch(`../data/${name}.json?v=${Date.now()}`).then(r => {
+      if (!r.ok) throw new Error(`${name}.json: ${r.status}`);
+      return r.json();
+    }))
+  );
+  cache.config = results[0];
+  cache.series = results[1];
+  cache.foods  = results[2];
+  cache.items  = results[3];
+  cache.camps  = results[4];
+  cache.loaded = true;
+  cache.loadedAt = Date.now();
+  return cache;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 유틸
 // ════════════════════════════════════════════════════════════════════
 async function sha256(text) {
   const buf = new TextEncoder().encode(text);
   const hashBuf = await crypto.subtle.digest('SHA-256', buf);
   return Array.from(new Uint8Array(hashBuf))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[c]);
+}
+
+function normalizeText(s) {
+  return String(s ?? '').toLowerCase().replace(/\s+/g, '');
+}
+
+function matchSearch(item, query, fields) {
+  if (!query) return true;
+  const q = normalizeText(query);
+  return fields.some(f => {
+    const v = typeof f === 'function' ? f(item) : item[f];
+    if (Array.isArray(v)) return v.some(x => normalizeText(x).includes(q));
+    return normalizeText(v).includes(q);
+  });
+}
+
+function maskToken(t) {
+  if (!t || t.length < 10) return t || '';
+  return t.slice(0, 7) + '••••••••••••' + t.slice(-4);
 }
 
 // ════════════════════════════════════════════════════════════════════
-// 로그인 화면 로직
+// 라우터 (해시 기반)
+// 경로:
+//   '' / '#'          → 대시보드
+//   '#camps'          → 캠핑장 리스트
+//   '#camps/{idx}'    → 캠핑장 상세
+//   '#series'         → 시리즈 리스트 (그룹별 EP)
+//   '#series/{s}/{e}' → EP 상세
+//   '#foods'          → 음식 리스트
+//   '#foods/{idx}'    → 음식 상세
+//   '#items'          → 장비 리스트
+//   '#items/{idx}'    → 장비 상세
 // ════════════════════════════════════════════════════════════════════
+async function router() {
+  if (!isAuthed()) return; // 로그인 안 됐으면 라우터 무시
+
+  const content = document.getElementById('app-content');
+  content.innerHTML = '<div class="loading">로딩 중...</div>';
+
+  // 데이터 로드 (캐시 활용)
+  try {
+    await loadAllData();
+  } catch (e) {
+    content.innerHTML = `<div class="card"><strong>데이터 로드 실패</strong><div class="help">${escapeHtml(e.message)}</div></div>`;
+    return;
+  }
+
+  const hash = (location.hash || '').replace(/^#/, '');
+  const parts = hash ? hash.split('/').filter(Boolean) : [];
+
+  if (parts.length === 0) {
+    renderDashboard();
+  } else if (parts[0] === 'camps') {
+    parts[1] !== undefined ? renderCampDetail(+parts[1]) : renderCampList();
+  } else if (parts[0] === 'series') {
+    if (parts[1] !== undefined && parts[2] !== undefined) renderEpDetail(+parts[1], +parts[2]);
+    else renderSeriesList();
+  } else if (parts[0] === 'foods') {
+    parts[1] !== undefined ? renderFoodDetail(+parts[1]) : renderFoodList();
+  } else if (parts[0] === 'items') {
+    parts[1] !== undefined ? renderItemDetail(+parts[1]) : renderItemList();
+  } else {
+    renderDashboard();
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 대시보드
+// ════════════════════════════════════════════════════════════════════
+function renderDashboard() {
+  document.getElementById('topbar-title').innerHTML = '🛠 kydz.kr 관리자';
+  const c = document.getElementById('app-content');
+  const token = localStorage.getItem(STORAGE_KEYS.token);
+  const tokenConnected = !!token;
+  c.innerHTML = `
+    <!-- 토큰 카드 -->
+    <div class="card token-card">
+      <div class="section-title">🔑 GitHub 토큰</div>
+      <div class="token-status ${tokenConnected ? 'connected' : 'disconnected'}">${tokenConnected ? '연결됨' : '미설정'}</div>
+      ${tokenConnected ? `
+        <div class="help">현재 저장된 토큰</div>
+        <div class="token-preview">${escapeHtml(maskToken(token))}</div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="btn btn-secondary" id="token-edit" style="flex:1;">변경</button>
+          <button class="btn btn-danger" id="token-remove" style="flex:1;">삭제</button>
+        </div>
+      ` : `
+        <label class="label" for="token-input">Personal Access Token</label>
+        <div class="row">
+          <input type="password" id="token-input" class="input" placeholder="ghp_... or github_pat_...">
+          <button class="btn" id="token-save">저장</button>
+        </div>
+        <div class="help">
+          GitHub Settings → Developer settings → Personal access tokens<br>
+          권한: <code>Contents: Read and write</code> 이 브라우저에만 저장됩니다.
+        </div>
+      `}
+    </div>
+
+    <!-- 메뉴 -->
+    <div class="section-title">📋 콘텐츠 관리</div>
+    <div class="menu-grid">
+      <a class="card menu-item" href="#series">
+        <span class="menu-item-icon">🎬</span>
+        <div class="menu-item-title">시리즈 EP</div>
+        <div class="menu-item-desc">${cache.series.length}개 시리즈 / ${cache.series.reduce((s,x)=>s+x.eps.length,0)}편</div>
+      </a>
+      <a class="card menu-item" href="#camps">
+        <span class="menu-item-icon">🏕</span>
+        <div class="menu-item-title">캠핑장</div>
+        <div class="menu-item-desc">${cache.camps.length}개</div>
+      </a>
+      <a class="card menu-item" href="#foods">
+        <span class="menu-item-icon">🍖</span>
+        <div class="menu-item-title">음식</div>
+        <div class="menu-item-desc">${cache.foods.length}개</div>
+      </a>
+      <a class="card menu-item" href="#items">
+        <span class="menu-item-icon">🛠</span>
+        <div class="menu-item-title">장비</div>
+        <div class="menu-item-desc">${cache.items.length}개</div>
+      </a>
+    </div>
+
+    <div style="margin-top:24px;font-size:11px;color:var(--muted);text-align:center;">
+      Phase 2 · 데이터 로드 ${new Date(cache.loadedAt).toLocaleTimeString('ko-KR')}
+    </div>
+  `;
+
+  // 토큰 핸들러 바인딩
+  if (tokenConnected) {
+    document.getElementById('token-edit').onclick = () => {
+      localStorage.removeItem(STORAGE_KEYS.token);
+      renderDashboard();
+    };
+    document.getElementById('token-remove').onclick = () => {
+      if (!confirm('저장된 토큰을 삭제할까요?')) return;
+      localStorage.removeItem(STORAGE_KEYS.token);
+      renderDashboard();
+    };
+  } else {
+    document.getElementById('token-save').onclick = () => {
+      const v = document.getElementById('token-input').value.trim();
+      if (!v) { alert('토큰을 입력해주세요'); return; }
+      if (!v.startsWith('ghp_') && !v.startsWith('github_pat_')) {
+        if (!confirm('GitHub 토큰 형식이 아닌 것 같아요. 그래도 저장할까요?')) return;
+      }
+      localStorage.setItem(STORAGE_KEYS.token, v);
+      renderDashboard();
+    };
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 캠핑장 리스트
+// ════════════════════════════════════════════════════════════════════
+let _campSearch = '';
+function renderCampList() {
+  document.getElementById('topbar-title').innerHTML = '🏕 캠핑장';
+  const c = document.getElementById('app-content');
+  const arr = cache.camps
+    .map((x, idx) => ({ ...x, _idx: idx }))
+    .filter(x => matchSearch(x, _campSearch, ['name', 'region', 'extras', 'landscape', 'seasons']));
+
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← 대시보드</button>
+      <div class="page-title-h" style="text-align:right;"></div>
+      <div class="page-count">${arr.length} / ${cache.camps.length}</div>
+    </div>
+    <div class="search-bar">
+      <input class="input" id="camp-search" placeholder="캠핑장명, 지역, 시즌 등" value="${escapeHtml(_campSearch)}">
+    </div>
+    <div class="list">
+      ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(camp => {
+        const seasons = (camp.seasons || []).join('·') || '-';
+        const visits = camp.visits ? `${camp.visits}회` : '0회';
+        const thumb = camp.imgs && camp.imgs[0]
+          ? `<img src="../${camp.imgs[0].replace(/^\.\//, '')}" alt="" loading="lazy">`
+          : '🏕';
+        return `
+          <a class="list-item" href="#camps/${camp._idx}">
+            <div class="list-item-thumb">${thumb}</div>
+            <div class="list-item-body">
+              <div class="list-item-title">${escapeHtml(camp.name)}${camp.graega ? ' <span class="badge badge-graega" style="font-size:9px;padding:1px 5px;">G</span>' : ''}</div>
+              <div class="list-item-meta">${escapeHtml(camp.region || '-')} · ${escapeHtml(seasons)} · ${visits}</div>
+            </div>
+            <div class="list-item-arrow">›</div>
+          </a>
+        `;
+      }).join('')}
+    </div>
+  `;
+  document.getElementById('back-btn').onclick = () => location.hash = '';
+  const search = document.getElementById('camp-search');
+  search.oninput = (e) => { _campSearch = e.target.value; renderCampList(); };
+  // 입력란 포커스 유지
+  setTimeout(() => {
+    const pos = _campSearch.length;
+    search.focus(); search.setSelectionRange(pos, pos);
+  }, 0);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 캠핑장 상세
+// ════════════════════════════════════════════════════════════════════
+function renderCampDetail(idx) {
+  const camp = cache.camps[idx];
+  if (!camp) { location.hash = 'camps'; return; }
+  document.getElementById('topbar-title').innerHTML = `🏕 ${escapeHtml(camp.name)}`;
+  const c = document.getElementById('app-content');
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← 캠핑장 목록</button>
+    </div>
+    <div class="card">
+      <h2 style="font-size:18px;font-weight:800;margin-bottom:4px;">${escapeHtml(camp.name)}</h2>
+      ${camp.graega ? '<div style="margin-bottom:12px;"><span class="badge badge-graega">그래가 직영</span></div>' : '<div style="margin-bottom:12px;"></div>'}
+      <div class="detail-meta">
+        <div class="detail-row"><div class="detail-key">지역</div><div class="detail-val">${escapeHtml(camp.region || '-')}</div></div>
+        <div class="detail-row"><div class="detail-key">시즌</div><div class="detail-val">${(camp.seasons || []).map(s => `<span class="badge">${escapeHtml(s)}</span>`).join('') || '<span style="color:var(--muted)">-</span>'}</div></div>
+        <div class="detail-row"><div class="detail-key">풍경</div><div class="detail-val">${(camp.landscape || []).map(s => `<span class="badge">${escapeHtml(s)}</span>`).join('') || '<span style="color:var(--muted)">-</span>'}</div></div>
+        <div class="detail-row"><div class="detail-key">추가 태그</div><div class="detail-val">${(camp.extras || []).map(s => `<span class="badge">${escapeHtml(s)}</span>`).join('') || '<span style="color:var(--muted)">-</span>'}</div></div>
+        <div class="detail-row"><div class="detail-key">별점</div><div class="detail-val">${camp.rating ? '⭐'.repeat(Math.floor(camp.rating)) + (camp.rating % 1 ? '½' : '') + ` (${camp.rating})` : '-'}</div></div>
+        <div class="detail-row"><div class="detail-key">다녀온</div><div class="detail-val">${camp.visits || 0}회</div></div>
+        <div class="detail-row"><div class="detail-key">URL</div><div class="detail-val">${camp.url ? `<a href="${escapeHtml(camp.url)}" target="_blank" rel="noopener">${escapeHtml(camp.url)}</a>` : '-'}</div></div>
+      </div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;">이미지 ${(camp.imgs || []).length}장</div>
+      ${(camp.imgs || []).length > 0 ? `
+        <div class="detail-images">
+          ${camp.imgs.map((src, i) => `
+            <div class="detail-image-tile">
+              <span class="detail-image-tile-idx">${i+1}</span>
+              <img src="../${src.replace(/^\.\//, '')}" alt="" loading="lazy">
+            </div>
+          `).join('')}
+        </div>
+      ` : '<div style="color:var(--muted);font-size:13px;padding:20px 0;">등록된 이미지가 없어요</div>'}
+    </div>
+  `;
+  document.getElementById('back-btn').onclick = () => location.hash = 'camps';
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 시리즈 리스트 (2레벨: 시리즈 그룹 → EP)
+// ════════════════════════════════════════════════════════════════════
+const _seriesOpen = new Set([0]); // 첫 시리즈는 기본 펼침
+function renderSeriesList() {
+  document.getElementById('topbar-title').innerHTML = '🎬 시리즈 EP';
+  const c = document.getElementById('app-content');
+  const totalEps = cache.series.reduce((s,x) => s + x.eps.length, 0);
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← 대시보드</button>
+      <div class="page-count">${cache.series.length}시리즈 · ${totalEps}편</div>
+    </div>
+    <div>
+      ${cache.series.map((s, si) => `
+        <div class="series-group ${_seriesOpen.has(si) ? 'is-open' : ''}" data-si="${si}">
+          <div class="series-group-header" data-toggle="${si}">
+            <div><span class="series-group-emoji">${escapeHtml(s.emoji || '🎬')}</span>${escapeHtml(s.name)}<span class="series-group-count">${s.eps.length}편</span></div>
+            <span class="series-group-arrow">›</span>
+          </div>
+          <div class="series-group-eps">
+            ${s.eps.map((ep, ei) => `
+              <a class="series-ep-item" href="#series/${si}/${ei}">
+                <span class="series-ep-num">${ep.ep > 0 ? 'EP.' + String(ep.ep).padStart(2, '0') : '단편'}</span>
+                <span class="series-ep-title">${escapeHtml(ep.title)}</span>
+                <span class="list-item-arrow">›</span>
+              </a>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  document.getElementById('back-btn').onclick = () => location.hash = '';
+  c.querySelectorAll('[data-toggle]').forEach(h => {
+    h.onclick = () => {
+      const si = +h.dataset.toggle;
+      if (_seriesOpen.has(si)) _seriesOpen.delete(si);
+      else _seriesOpen.add(si);
+      h.closest('.series-group').classList.toggle('is-open');
+    };
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// EP 상세
+// ════════════════════════════════════════════════════════════════════
+function renderEpDetail(si, ei) {
+  const series = cache.series[si];
+  if (!series) { location.hash = 'series'; return; }
+  const ep = series.eps[ei];
+  if (!ep) { location.hash = 'series'; return; }
+  document.getElementById('topbar-title').innerHTML = `🎬 ${escapeHtml(ep.title)}`;
+  const c = document.getElementById('app-content');
+  const thumbPath = ep.thumb ? '../' + ep.thumb.replace(/^\.\//, '') : '';
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← 시리즈 목록</button>
+    </div>
+    <div class="card">
+      ${thumbPath ? `<div class="thumb-large"><img src="${escapeHtml(thumbPath)}" alt=""></div>` : ''}
+      <h2 style="font-size:17px;font-weight:800;text-align:center;margin-bottom:4px;">${escapeHtml(ep.title)}</h2>
+      <div style="text-align:center;color:var(--muted);font-size:12px;margin-bottom:18px;">
+        ${escapeHtml(series.name)} ${ep.ep > 0 ? '· EP.' + String(ep.ep).padStart(2, '0') : ''}
+      </div>
+      <div class="detail-meta">
+        <div class="detail-row"><div class="detail-key">시리즈</div><div class="detail-val">${escapeHtml(series.emoji || '')} ${escapeHtml(series.name)}</div></div>
+        <div class="detail-row"><div class="detail-key">EP 번호</div><div class="detail-val">${ep.ep > 0 ? 'EP.' + String(ep.ep).padStart(2, '0') : '단편 (ep=0)'}</div></div>
+        <div class="detail-row"><div class="detail-key">제목</div><div class="detail-val">${escapeHtml(ep.title)}</div></div>
+        <div class="detail-row"><div class="detail-key">릴스 URL</div><div class="detail-val">${ep.url ? `<a href="${escapeHtml(ep.url)}" target="_blank" rel="noopener">${escapeHtml(ep.url)}</a>` : '-'}</div></div>
+        <div class="detail-row"><div class="detail-key">썸네일</div><div class="detail-val">${escapeHtml(ep.thumb || '-')}</div></div>
+        ${ep.page_id ? `<div class="detail-row"><div class="detail-key">page_id</div><div class="detail-val" style="font-family:ui-monospace,monospace;font-size:11px;">${escapeHtml(ep.page_id)}</div></div>` : ''}
+      </div>
+    </div>
+  `;
+  document.getElementById('back-btn').onclick = () => location.hash = 'series';
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 음식 리스트
+// ════════════════════════════════════════════════════════════════════
+let _foodSearch = '';
+function renderFoodList() {
+  document.getElementById('topbar-title').innerHTML = '🍖 음식';
+  const c = document.getElementById('app-content');
+  const arr = cache.foods
+    .map((x, idx) => ({ ...x, _idx: idx }))
+    .filter(x => matchSearch(x, _foodSearch, ['name', 'desc']));
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← 대시보드</button>
+      <div class="page-count">${arr.length} / ${cache.foods.length}</div>
+    </div>
+    <div class="search-bar">
+      <input class="input" id="food-search" placeholder="음식명, 설명" value="${escapeHtml(_foodSearch)}">
+    </div>
+    <div class="list">
+      ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(food => {
+        const thumb = food.img
+          ? `<img src="../${food.img.replace(/^\.\//, '')}" alt="" loading="lazy">`
+          : '🍖';
+        return `
+          <a class="list-item" href="#foods/${food._idx}">
+            <div class="list-item-thumb">${thumb}</div>
+            <div class="list-item-body">
+              <div class="list-item-title">${escapeHtml(food.name)}</div>
+              <div class="list-item-meta">${escapeHtml(food.desc || '')}</div>
+            </div>
+            <div class="list-item-arrow">›</div>
+          </a>
+        `;
+      }).join('')}
+    </div>
+  `;
+  document.getElementById('back-btn').onclick = () => location.hash = '';
+  const s = document.getElementById('food-search');
+  s.oninput = (e) => { _foodSearch = e.target.value; renderFoodList(); };
+  setTimeout(() => { const pos = _foodSearch.length; s.focus(); s.setSelectionRange(pos, pos); }, 0);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 음식 상세
+// ════════════════════════════════════════════════════════════════════
+function renderFoodDetail(idx) {
+  const food = cache.foods[idx];
+  if (!food) { location.hash = 'foods'; return; }
+  document.getElementById('topbar-title').innerHTML = `🍖 ${escapeHtml(food.name)}`;
+  const c = document.getElementById('app-content');
+  const imgPath = food.img ? '../' + food.img.replace(/^\.\//, '') : '';
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← 음식 목록</button>
+    </div>
+    <div class="card">
+      ${imgPath ? `<div class="thumb-large"><img src="${escapeHtml(imgPath)}" alt=""></div>` : ''}
+      <h2 style="font-size:17px;font-weight:800;text-align:center;margin-bottom:18px;">${escapeHtml(food.name)}</h2>
+      <div class="detail-meta">
+        <div class="detail-row"><div class="detail-key">이름</div><div class="detail-val">${escapeHtml(food.name)}</div></div>
+        <div class="detail-row"><div class="detail-key">설명</div><div class="detail-val">${escapeHtml(food.desc || '-')}</div></div>
+        <div class="detail-row"><div class="detail-key">가격</div><div class="detail-val">${food.price ? escapeHtml(food.price) : '-'}</div></div>
+        <div class="detail-row"><div class="detail-key">링크</div><div class="detail-val">${food.url ? `<a href="${escapeHtml(food.url)}" target="_blank" rel="noopener">${escapeHtml(food.url)}</a>` : '-'}</div></div>
+        <div class="detail-row"><div class="detail-key">이미지</div><div class="detail-val">${escapeHtml(food.img || '-')}</div></div>
+      </div>
+    </div>
+  `;
+  document.getElementById('back-btn').onclick = () => location.hash = 'foods';
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 장비 리스트
+// ════════════════════════════════════════════════════════════════════
+let _itemSearch = '';
+function renderItemList() {
+  document.getElementById('topbar-title').innerHTML = '🛠 장비';
+  const c = document.getElementById('app-content');
+  const arr = cache.items
+    .map((x, idx) => ({ ...x, _idx: idx }))
+    .filter(x => matchSearch(x, _itemSearch, ['name', 'desc']));
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← 대시보드</button>
+      <div class="page-count">${arr.length} / ${cache.items.length}</div>
+    </div>
+    <div class="search-bar">
+      <input class="input" id="item-search" placeholder="장비명, 설명" value="${escapeHtml(_itemSearch)}">
+    </div>
+    <div class="list">
+      ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(item => {
+        const thumb = item.img
+          ? `<img src="../${item.img.replace(/^\.\//, '')}" alt="" loading="lazy">`
+          : '🛠';
+        return `
+          <a class="list-item" href="#items/${item._idx}">
+            <div class="list-item-thumb">${thumb}</div>
+            <div class="list-item-body">
+              <div class="list-item-title">${escapeHtml(item.name)}</div>
+              <div class="list-item-meta">${escapeHtml(item.desc || '')}</div>
+            </div>
+            <div class="list-item-arrow">›</div>
+          </a>
+        `;
+      }).join('')}
+    </div>
+  `;
+  document.getElementById('back-btn').onclick = () => location.hash = '';
+  const s = document.getElementById('item-search');
+  s.oninput = (e) => { _itemSearch = e.target.value; renderItemList(); };
+  setTimeout(() => { const pos = _itemSearch.length; s.focus(); s.setSelectionRange(pos, pos); }, 0);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 장비 상세
+// ════════════════════════════════════════════════════════════════════
+function renderItemDetail(idx) {
+  const item = cache.items[idx];
+  if (!item) { location.hash = 'items'; return; }
+  document.getElementById('topbar-title').innerHTML = `🛠 ${escapeHtml(item.name)}`;
+  const c = document.getElementById('app-content');
+  const imgPath = item.img ? '../' + item.img.replace(/^\.\//, '') : '';
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← 장비 목록</button>
+    </div>
+    <div class="card">
+      ${imgPath ? `<div class="thumb-large"><img src="${escapeHtml(imgPath)}" alt=""></div>` : ''}
+      <h2 style="font-size:17px;font-weight:800;text-align:center;margin-bottom:18px;">${escapeHtml(item.name)}</h2>
+      <div class="detail-meta">
+        <div class="detail-row"><div class="detail-key">이름</div><div class="detail-val">${escapeHtml(item.name)}</div></div>
+        <div class="detail-row"><div class="detail-key">설명</div><div class="detail-val">${escapeHtml(item.desc || '-')}</div></div>
+        <div class="detail-row"><div class="detail-key">가격</div><div class="detail-val">${item.price ? escapeHtml(item.price) : '-'}</div></div>
+        <div class="detail-row"><div class="detail-key">링크</div><div class="detail-val">${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.url)}</a>` : '-'}</div></div>
+        <div class="detail-row"><div class="detail-key">이미지</div><div class="detail-val">${escapeHtml(item.img || '-')}</div></div>
+      </div>
+    </div>
+  `;
+  document.getElementById('back-btn').onclick = () => location.hash = 'items';
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 로그인 & 인증
+// ════════════════════════════════════════════════════════════════════
+function isAuthed() {
+  return sessionStorage.getItem(STORAGE_KEYS.authed) === '1';
+}
+
 const loginScreen = document.getElementById('login-screen');
-const dashboard = document.getElementById('dashboard');
+const app = document.getElementById('app');
 const loginPassword = document.getElementById('login-password');
 const loginSubmit = document.getElementById('login-submit');
 const loginError = document.getElementById('login-error');
@@ -298,110 +882,40 @@ async function tryLogin() {
   const hash = await sha256(pw);
   if (hash === PASSWORD_HASH) {
     sessionStorage.setItem(STORAGE_KEYS.authed, '1');
-    showDashboard();
+    showApp();
   } else {
     loginError.style.display = 'block';
     loginPassword.value = '';
     loginPassword.focus();
   }
 }
-
 loginSubmit.addEventListener('click', tryLogin);
 loginPassword.addEventListener('keypress', e => { if (e.key === 'Enter') tryLogin(); });
 
 function showLogin() {
   loginScreen.style.display = 'flex';
-  dashboard.classList.remove('is-active');
+  app.classList.remove('is-active');
   setTimeout(() => loginPassword.focus(), 100);
 }
-
-function showDashboard() {
+function showApp() {
   loginScreen.style.display = 'none';
-  dashboard.classList.add('is-active');
-  refreshTokenUI();
+  app.classList.add('is-active');
+  router();
 }
 
-// ════════════════════════════════════════════════════════════════════
-// 대시보드 — 토큰 관리
-// ════════════════════════════════════════════════════════════════════
-const tokenStatus = document.getElementById('token-status');
-const tokenDisplay = document.getElementById('token-display');
-const tokenPreview = document.getElementById('token-preview');
-const tokenInputArea = document.getElementById('token-input-area');
-const tokenInput = document.getElementById('token-input');
-const tokenSave = document.getElementById('token-save');
-const tokenEdit = document.getElementById('token-edit');
-const tokenRemove = document.getElementById('token-remove');
-
-function maskToken(t) {
-  if (!t || t.length < 10) return t || '';
-  return t.slice(0, 7) + '••••••••••••' + t.slice(-4);
-}
-
-function refreshTokenUI() {
-  const token = localStorage.getItem(STORAGE_KEYS.token);
-  if (token) {
-    tokenStatus.textContent = '연결됨';
-    tokenStatus.className = 'token-status connected';
-    tokenPreview.textContent = maskToken(token);
-    tokenDisplay.style.display = 'block';
-    tokenInputArea.style.display = 'none';
-  } else {
-    tokenStatus.textContent = '미설정';
-    tokenStatus.className = 'token-status disconnected';
-    tokenDisplay.style.display = 'none';
-    tokenInputArea.style.display = 'block';
-  }
-}
-
-tokenSave.addEventListener('click', () => {
-  const val = tokenInput.value.trim();
-  if (!val) { alert('토큰을 입력해주세요'); return; }
-  if (!val.startsWith('ghp_') && !val.startsWith('github_pat_')) {
-    if (!confirm('GitHub 토큰 형식이 아닌 것 같아요. 그래도 저장할까요?')) return;
-  }
-  localStorage.setItem(STORAGE_KEYS.token, val);
-  tokenInput.value = '';
-  refreshTokenUI();
-});
-
-tokenEdit.addEventListener('click', () => {
-  tokenDisplay.style.display = 'none';
-  tokenInputArea.style.display = 'block';
-  tokenInput.focus();
-});
-
-tokenRemove.addEventListener('click', () => {
-  if (!confirm('저장된 토큰을 삭제할까요?')) return;
-  localStorage.removeItem(STORAGE_KEYS.token);
-  refreshTokenUI();
-});
-
-// ════════════════════════════════════════════════════════════════════
-// 상단바
-// ════════════════════════════════════════════════════════════════════
-document.getElementById('topbar-back').addEventListener('click', () => {
-  window.location.href = '/';
-});
+// 상단바 액션
+document.getElementById('topbar-back').addEventListener('click', () => { window.location.href = '/'; });
 document.getElementById('topbar-logout').addEventListener('click', () => {
   if (!confirm('로그아웃 할까요? (토큰은 그대로 유지됩니다)')) return;
   sessionStorage.removeItem(STORAGE_KEYS.authed);
   showLogin();
 });
 
-// ════════════════════════════════════════════════════════════════════
-// 빌드 정보
-// ════════════════════════════════════════════════════════════════════
-document.getElementById('build-date').textContent = 'Phase 0';
+// 해시 변경 시 라우터 호출
+window.addEventListener('hashchange', router);
 
-// ════════════════════════════════════════════════════════════════════
 // 초기 진입
-// ════════════════════════════════════════════════════════════════════
-if (sessionStorage.getItem(STORAGE_KEYS.authed) === '1') {
-  showDashboard();
-} else {
-  showLogin();
-}
+if (isAuthed()) showApp(); else showLogin();
 </script>
 </body>
 </html>
