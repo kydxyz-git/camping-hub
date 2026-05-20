@@ -525,6 +525,17 @@
   }
   .series-sort-select:focus { outline: 2px solid var(--text); outline-offset: -1px; }
 
+  /* random 모드 안내 (admin과 메인 사이트 차이 설명) */
+  .series-sort-note {
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--accent-soft);
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
   /* ── 드래그&드롭 정렬 (시리즈 그룹) ── */
   .drag-handle {
     flex-shrink: 0;
@@ -1430,6 +1441,7 @@ function renderSeriesList() {
                 ${SORT_MODES.map(m => `<option value="${m.value}" ${(s.sort || 'ep_desc') === m.value ? 'selected' : ''}>${m.label}</option>`).join('')}
               </select>
             </div>
+            ${(s.sort === 'random') ? `<div class="series-sort-note">🎲 메인 사이트에서는 매 페이지 로드마다 다른 순서로 보입니다 (admin은 입력 순서)</div>` : ''}
             ${(_epDragOrder && _epDragOrder.si === si) ? `
               <div class="save-bar save-bar--ep">
                 <div class="save-bar-text">🔀 EP 순서가 변경되었어요</div>
@@ -1440,7 +1452,7 @@ function renderSeriesList() {
               </div>
             ` : ''}
             <div class="ep-sortable" data-ep-sortable="${si}">
-              ${s.eps.map((ep, ei) => {
+              ${getSortedEpsForAdmin(s).map(({ ep, ei }) => {
                 const epPub = ep.published !== false;
                 const isManual = (s.sort || 'ep_desc') === 'manual';
                 return `
@@ -1619,7 +1631,19 @@ async function changeSeriesSort(si, newSort, selectEl) {
     }
     _epDragOrder = null;
   }
-  selectEl.disabled = true;
+
+  // 진행 오버레이 — 다른 클릭/조작 차단
+  const progress = document.createElement('div');
+  progress.className = 'submit-progress is-active';
+  progress.innerHTML = `
+    <div class="submit-progress-card">
+      <div class="submit-progress-spinner"></div>
+      <div class="submit-progress-text">정렬 모드 변경 중...</div>
+      <div class="submit-progress-sub">GitHub 업로드</div>
+    </div>
+  `;
+  document.body.appendChild(progress);
+
   try {
     const newSeries = JSON.parse(JSON.stringify(cache.series));
     newSeries[si].sort = newSort;
@@ -1630,14 +1654,13 @@ async function changeSeriesSort(si, newSort, selectEl) {
     ], message);
     cache.series = newSeries;
     cache.loadedAt = Date.now();
-    selectEl.disabled = false;
+    progress.remove();
     showToast(`정렬: ${modeLabel}`, 'success', 2000);
-    // manual로 바뀐 경우, 드래그 핸들 노출 위해 재렌더
-    if (newSort === 'manual') {
-      renderSeriesList();
-    }
+    // 항상 재렌더 (admin 화면도 즉시 새 정렬 결과 반영)
+    renderSeriesList();
   } catch (e) {
     console.error(e);
+    progress.remove();
     selectEl.disabled = false;
     selectEl.value = cache.series[si].sort || 'ep_desc'; // 원복
     showToast('변경 실패: ' + e.message, 'error', 4000);
@@ -2078,6 +2101,29 @@ const SORT_MODES = [
   { value: 'random',  label: '랜덤',           desc: '매 페이지 로드마다 셔플' },
   { value: 'manual',  label: '수동',           desc: '저장된 순서 그대로' },
 ];
+
+// admin 화면에서 EP를 sort 모드에 맞춰 정렬 (원본 인덱스 함께 반환)
+// 메인 사이트와 동일한 정렬 결과를 보여줘 정합성 유지
+// 단, random은 admin에선 원본 순서 유지 (매번 바뀌면 헷갈림)
+function getSortedEpsForAdmin(series) {
+  const mode = series.sort || 'ep_desc';
+  // 원본 인덱스(ei) 보존
+  const indexed = series.eps.map((ep, ei) => ({ ep, ei }));
+  if (mode === 'manual' || mode === 'random') {
+    return indexed; // 원본 순서
+  }
+  return [...indexed].sort((a, b) => {
+    const aHas = (a.ep.ep || 0) > 0, bHas = (b.ep.ep || 0) > 0;
+    if (mode === 'ep_asc') {
+      if (aHas && bHas) return a.ep.ep - b.ep.ep;
+    } else { // ep_desc
+      if (aHas && bHas) return b.ep.ep - a.ep.ep;
+    }
+    if (aHas) return -1;
+    if (bHas) return 1;
+    return 0;
+  });
+}
 
 function renderSeriesAddForm() {
   document.getElementById('topbar-title').innerHTML = '📁 새 시리즈';
