@@ -214,6 +214,34 @@
     font-size: 12px; color: var(--muted);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
+  /* 캠핑장 리스트 뱃지형 메타 */
+  .list-item-meta-row {
+    display: flex; flex-wrap: wrap; align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+  }
+  .meta-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .meta-badge--region {
+    background: #f0f4ea;   /* 차분한 그린톤 */
+    color: #4a5d3a;
+  }
+  .meta-badge--season {
+    background: #fdf2e3;   /* 부드러운 베이지 */
+    color: #8a5a2a;
+  }
+  .meta-visits {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
   .list-item-arrow {
     color: var(--muted) !important;
     font-size: 18px;
@@ -1449,19 +1477,24 @@ function renderCampList() {
     </div>
     <div class="list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(camp => {
-        const seasons = (camp.seasons || []).join('·') || '-';
-        const visits = camp.visits ? `${camp.visits}회` : '0회';
+        const visits = camp.visits || 0;
+        const seasons = (camp.seasons || []).filter(Boolean);
         const thumb = camp.imgs && camp.imgs[0]
           ? `<img src="../${camp.imgs[0].replace(/^\.\//, '')}" alt="" loading="lazy">`
           : '🏕';
         const isPub = camp.published !== false;
+        // 뱃지 메타: 지역 뱃지 + 시즌 뱃지 + 횟수 텍스트 (빈 값은 생략)
+        const metaParts = [];
+        if (camp.region) metaParts.push(`<span class="meta-badge meta-badge--region">${escapeHtml(camp.region)}</span>`);
+        if (seasons.length) metaParts.push(`<span class="meta-badge meta-badge--season">${escapeHtml(seasons.join('·'))}</span>`);
+        if (visits > 0) metaParts.push(`<span class="meta-visits">${visits}회 방문</span>`);
         return `
           <div class="list-item ${isPub ? '' : 'is-unpublished'}">
             <a class="list-item-link" href="#camps/${camp._idx}">
               <div class="list-item-thumb">${thumb}</div>
               <div class="list-item-body">
                 <div class="list-item-title">${escapeHtml(camp.name)}${camp.graega ? ' <span class="badge badge-graega" style="font-size:9px;padding:1px 5px;">G</span>' : ''}</div>
-                <div class="list-item-meta">${escapeHtml(camp.region || '-')} · ${escapeHtml(seasons)} · ${visits}</div>
+                <div class="list-item-meta-row">${metaParts.join('')}</div>
               </div>
             </a>
             ${toggleHtml(isPub, `data-camp-idx="${camp._idx}"`)}
