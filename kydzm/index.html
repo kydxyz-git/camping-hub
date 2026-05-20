@@ -1360,7 +1360,10 @@ async function router() {
     if (parts[1] !== undefined) renderSeriesEditForm(+parts[1]);
     else location.hash = 'series';
   } else if (parts[0] === 'foods') {
-    parts[1] !== undefined ? renderFoodDetail(+parts[1]) : renderFoodList();
+    if (parts[1] === 'new') renderFoodAddForm();
+    else if (parts[2] === 'edit' && parts[1] !== undefined) renderFoodEditForm(+parts[1]);
+    else if (parts[1] !== undefined) renderFoodDetail(+parts[1]);
+    else renderFoodList();
   } else if (parts[0] === 'items') {
     parts[1] !== undefined ? renderItemDetail(+parts[1]) : renderItemList();
   } else {
@@ -1519,11 +1522,13 @@ function renderCampList() {
   });
   const search = document.getElementById('camp-search');
   search.oninput = (e) => { _campSearch = e.target.value; renderCampList(); };
-  // 입력란 포커스 유지
-  setTimeout(() => {
-    const pos = _campSearch.length;
-    search.focus(); search.setSelectionRange(pos, pos);
-  }, 0);
+  // 검색어를 타이핑 중일 때만 포커스 유지 (첫 진입 시 모바일 키보드 자동 등장 방지)
+  if (_campSearch.length > 0) {
+    setTimeout(() => {
+      const pos = _campSearch.length;
+      search.focus(); search.setSelectionRange(pos, pos);
+    }, 0);
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -3238,9 +3243,14 @@ function renderProductDetail(item, opts) {
         <div class="detail-row"><div class="detail-key">링크</div><div class="detail-val">${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.url)}</a>` : '-'}</div></div>
         <div class="detail-row"><div class="detail-key">이미지</div><div class="detail-val" style="font-family:ui-monospace,monospace;font-size:11px;">${escapeHtml(item.thumb || '-')}</div></div>
       </div>
+      <div class="detail-actions">
+        <a class="btn btn-secondary" href="#${opts.listHash}/${opts.idx}/edit">✏️ 수정</a>
+        <button class="btn btn-danger" id="product-delete-btn">🗑 삭제</button>
+      </div>
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = opts.listHash;
+  document.getElementById('product-delete-btn').onclick = () => opts.onDelete(opts.idx);
 }
 
 // 리스트 화면 (음식/장비 공통)
@@ -3254,6 +3264,7 @@ function renderProductList(dataArr, searchVar, opts) {
   c.innerHTML = `
     <div class="page-header">
       <button class="page-back" id="back-btn">← 대시보드</button>
+      <a class="btn btn-sm" href="#${opts.hashPrefix}/new" style="margin-left:auto;">+ 추가</a>
       <div class="page-count">${arr.length} / ${dataArr.length}</div>
     </div>
     <div class="search-bar">
@@ -3279,7 +3290,10 @@ function renderProductList(dataArr, searchVar, opts) {
   });
   const s = document.getElementById('prod-search');
   s.oninput = (e) => { opts.setSearch(e.target.value); opts.rerender(); };
-  setTimeout(() => { const pos = q.length; s.focus(); s.setSelectionRange(pos, pos); }, 0);
+  // 검색어를 타이핑 중일 때만 포커스 유지 (첫 진입 시 모바일 키보드 자동 등장 방지)
+  if (q.length > 0) {
+    setTimeout(() => { const pos = q.length; s.focus(); s.setSelectionRange(pos, pos); }, 0);
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -3297,7 +3311,427 @@ function renderFoodList() {
   });
 }
 function renderFoodDetail(idx) {
-  renderProductDetail(cache.foods[idx], { icon: '🍖', listLabel: '음식', listHash: 'foods' });
+  renderProductDetail(cache.foods[idx], { icon: '🍖', listLabel: '음식', listHash: 'foods', idx, onDelete: deleteFood });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 음식 추가/수정 폼 (통합)
+// ════════════════════════════════════════════════════════════════════
+const FOOD_SOURCES = ['쿠팡', '컬리', '네이버', '11번가', '지마켓', 'SSG', '오아시스', '기타'];
+
+let _foodForm = {
+  mode: 'add',       // 'add' | 'edit'
+  editIdx: null,
+  name: '',
+  desc: '',
+  source: '',
+  url: '',
+  priceOriginal: '',
+  priceSale: '',
+  discountRate: '',
+  imageBase64: null,
+  imagePreviewUrl: null,
+  imageSize: 0,
+  imageChanged: false,
+};
+
+function renderFoodAddForm() {
+  _foodForm = {
+    mode: 'add', editIdx: null,
+    name: '', desc: '', source: '', url: '',
+    priceOriginal: '', priceSale: '', discountRate: '',
+    imageBase64: null, imagePreviewUrl: null, imageSize: 0,
+    imageChanged: false,
+  };
+  _renderFoodFormUI();
+}
+
+function renderFoodEditForm(idx) {
+  const f = cache.foods[idx];
+  if (!f) { location.hash = 'foods'; return; }
+  _foodForm = {
+    mode: 'edit', editIdx: idx,
+    name: f.name || '',
+    desc: f.desc || '',
+    source: f.source || '',
+    url: f.url || '',
+    priceOriginal: f.price_original != null ? String(f.price_original) : '',
+    priceSale: f.price_sale != null ? String(f.price_sale) : '',
+    discountRate: f.discount_rate != null ? String(f.discount_rate) : '',
+    imageBase64: null,
+    imagePreviewUrl: f.thumb ? '../' + f.thumb.replace(/^\.\//, '') : null,
+    imageSize: 0,
+    imageChanged: false,
+  };
+  _renderFoodFormUI();
+}
+
+function _detectSourceFromUrl(url) {
+  if (!url) return '';
+  const u = url.toLowerCase();
+  if (u.includes('coupang')) return '쿠팡';
+  if (u.includes('kurly')) return '컬리';
+  if (u.includes('naver')) return '네이버';
+  if (u.includes('11st')) return '11번가';
+  if (u.includes('gmarket')) return '지마켓';
+  if (u.includes('ssg.com')) return 'SSG';
+  if (u.includes('oasis')) return '오아시스';
+  return '';
+}
+
+function _renderFoodFormUI() {
+  const isEdit = _foodForm.mode === 'edit';
+  document.getElementById('topbar-title').innerHTML = isEdit ? '🍖 음식 수정' : '🍖 음식 추가';
+  const c = document.getElementById('app-content');
+
+  c.innerHTML = `
+    <div class="page-header">
+      <button class="page-back" id="back-btn">← ${isEdit ? '돌아가기' : '음식 목록'}</button>
+    </div>
+    <div class="card">
+      <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">${isEdit ? '음식 수정' : '새 음식 추가'}</h2>
+      <div class="form-grid">
+
+        <div class="form-field">
+          <label class="label" for="ff-name">이름 *</label>
+          <input type="text" id="ff-name" class="input" placeholder="예: 툇골 오리 주물럭" value="${escapeHtml(_foodForm.name)}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="ff-desc">설명</label>
+          <input type="text" id="ff-desc" class="input" placeholder="예: 부추무침이 진짜 별미" value="${escapeHtml(_foodForm.desc)}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="ff-url">URL *</label>
+          <input type="text" id="ff-url" class="input" placeholder="https://..." value="${escapeHtml(_foodForm.url)}">
+          <div class="help">쿠팡/컬리/네이버 등의 상품 페이지 URL — 입력하면 출처 자동 감지</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="ff-source">출처</label>
+          <select id="ff-source">
+            <option value="">선택 (URL에서 자동 감지)</option>
+            ${FOOD_SOURCES.map(s => `<option value="${s}" ${_foodForm.source === s ? 'selected' : ''}>${s}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="ff-price-original">원가 (원)</label>
+          <input type="number" id="ff-price-original" class="input" min="0" placeholder="49400" value="${_foodForm.priceOriginal}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="ff-price-sale">할인가 (원)</label>
+          <input type="number" id="ff-price-sale" class="input" min="0" placeholder="할인 없으면 비워두세요" value="${_foodForm.priceSale}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="ff-discount">할인율 (%)</label>
+          <input type="number" id="ff-discount" class="input" min="0" max="99" placeholder="비워두면 자동 계산" value="${_foodForm.discountRate}">
+          <div class="help">원가와 할인가 입력하면 자동 계산됩니다</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label">썸네일 이미지 ${isEdit ? '' : '*'}</label>
+          <label class="form-image-drop" id="ff-image-drop">
+            <input type="file" id="ff-image" accept="image/*">
+            <div class="form-image-drop-icon">📷</div>
+            <div class="form-image-drop-text">${isEdit ? '새 이미지로 교체하려면 선택' : '이미지를 선택하거나 끌어다 놓으세요'}</div>
+            <div class="form-image-drop-sub">자동으로 4:5 비율로 크롭됩니다</div>
+          </label>
+          <div id="ff-image-preview"></div>
+        </div>
+
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="ff-cancel">취소</button>
+        <button class="btn" id="ff-submit">${isEdit ? '저장' : '음식 추가'}</button>
+      </div>
+    </div>
+
+    <div class="submit-progress" id="submit-progress">
+      <div class="submit-progress-card">
+        <div class="submit-progress-spinner"></div>
+        <div class="submit-progress-text" id="submit-progress-text">처리 중...</div>
+        <div class="submit-progress-sub" id="submit-progress-sub">잠시만 기다려주세요</div>
+      </div>
+    </div>
+  `;
+
+  const $ = (id) => document.getElementById(id);
+  const backHash = isEdit ? `foods/${_foodForm.editIdx}` : 'foods';
+  $('back-btn').onclick = () => { resetFoodForm(); location.hash = backHash; };
+  $('ff-cancel').onclick = () => { resetFoodForm(); location.hash = backHash; };
+
+  $('ff-name').oninput = (e) => { _foodForm.name = e.target.value; };
+  $('ff-desc').oninput = (e) => { _foodForm.desc = e.target.value; };
+  $('ff-source').onchange = (e) => { _foodForm.source = e.target.value; };
+
+  // URL 입력 시 출처 자동 감지 (사용자가 명시 선택 안 한 경우만)
+  $('ff-url').oninput = (e) => {
+    _foodForm.url = e.target.value;
+    const detected = _detectSourceFromUrl(e.target.value);
+    if (detected && !_foodForm.source) {
+      _foodForm.source = detected;
+      $('ff-source').value = detected;
+    }
+  };
+
+  $('ff-price-original').oninput = (e) => {
+    _foodForm.priceOriginal = e.target.value;
+    _autoCalcDiscount();
+  };
+  $('ff-price-sale').oninput = (e) => {
+    _foodForm.priceSale = e.target.value;
+    _autoCalcDiscount();
+  };
+  $('ff-discount').oninput = (e) => { _foodForm.discountRate = e.target.value; };
+
+  // 원가/할인가 입력 시 할인율 자동 계산
+  function _autoCalcDiscount() {
+    const o = parseInt(_foodForm.priceOriginal);
+    const s = parseInt(_foodForm.priceSale);
+    if (o > 0 && s > 0 && s < o) {
+      const rate = Math.round((1 - s / o) * 100);
+      _foodForm.discountRate = String(rate);
+      $('ff-discount').value = rate;
+    } else if (!_foodForm.priceSale) {
+      _foodForm.discountRate = '';
+      $('ff-discount').value = '';
+    }
+  }
+
+  // 이미지 업로드
+  const drop = $('ff-image-drop');
+  const fileInput = $('ff-image');
+  const previewEl = $('ff-image-preview');
+
+  async function handleFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      return showToast('이미지 파일만 가능해요', 'error');
+    }
+    try {
+      previewEl.innerHTML = '<div class="loading">이미지 처리 중...</div>';
+      const { base64, previewUrl, size } = await cropImage4to5(file);
+      _foodForm.imageBase64 = base64;
+      _foodForm.imagePreviewUrl = previewUrl;
+      _foodForm.imageSize = size;
+      _foodForm.imageChanged = true;
+      renderImagePreview();
+    } catch (err) {
+      previewEl.innerHTML = '';
+      showToast('이미지 처리 실패: ' + err.message, 'error');
+    }
+  }
+
+  function renderImagePreview() {
+    if (!_foodForm.imagePreviewUrl) {
+      previewEl.innerHTML = '';
+      return;
+    }
+    const isNew = _foodForm.imageChanged;
+    previewEl.innerHTML = `
+      <div class="form-image-preview">
+        <div class="form-image-preview-thumb"><img src="${_foodForm.imagePreviewUrl}" alt=""></div>
+        <div class="form-image-preview-info">
+          <b>${isNew ? '새 이미지' : '기존 이미지'}</b>
+          <span>${isNew ? `4:5 크롭 · 600×750 · ${(_foodForm.imageSize/1024).toFixed(0)}KB` : '교체하려면 위에서 선택'}</span>
+        </div>
+        ${isNew ? `<button class="form-image-preview-remove" id="ff-image-remove">제거</button>` : ''}
+      </div>
+    `;
+    if (isNew) {
+      $('ff-image-remove').onclick = (e) => {
+        e.preventDefault();
+        _foodForm.imageBase64 = null;
+        _foodForm.imageChanged = false;
+        if (isEdit) {
+          const orig = cache.foods[_foodForm.editIdx];
+          _foodForm.imagePreviewUrl = orig.thumb ? '../' + orig.thumb.replace(/^\.\//, '') : null;
+        } else {
+          _foodForm.imagePreviewUrl = null;
+        }
+        fileInput.value = '';
+        renderImagePreview();
+      };
+    }
+  }
+
+  fileInput.onchange = (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); };
+  drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('is-dragover'); };
+  drop.ondragleave = () => drop.classList.remove('is-dragover');
+  drop.ondrop = (e) => {
+    e.preventDefault(); drop.classList.remove('is-dragover');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  };
+
+  renderImagePreview();
+  $('ff-submit').onclick = submitFoodForm;
+}
+
+function resetFoodForm() {
+  _foodForm = {
+    mode: 'add', editIdx: null,
+    name: '', desc: '', source: '', url: '',
+    priceOriginal: '', priceSale: '', discountRate: '',
+    imageBase64: null, imagePreviewUrl: null, imageSize: 0,
+    imageChanged: false,
+  };
+}
+
+function _foodImgHash(name) {
+  const str = (name || 'food') + Date.now();
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) & 0xffffffff;
+  let h2 = 5381;
+  for (let i = 0; i < str.length; i++) h2 = ((h2 * 33) ^ str.charCodeAt(i)) & 0xffffffff;
+  return ((h >>> 0).toString(16).padStart(8, '0') + (h2 >>> 0).toString(16).padStart(8, '0')).slice(0, 12);
+}
+
+async function submitFoodForm() {
+  const isEdit = _foodForm.mode === 'edit';
+
+  // 검증
+  if (!_foodForm.name.trim()) return showToast('이름을 입력해주세요', 'error');
+  if (!_foodForm.url.trim()) return showToast('URL을 입력해주세요', 'error');
+  if (!isEdit && !_foodForm.imageBase64) return showToast('이미지를 선택해주세요', 'error');
+
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+
+  const progress = document.getElementById('submit-progress');
+  const ptext = document.getElementById('submit-progress-text');
+  const psub = document.getElementById('submit-progress-sub');
+  progress.classList.add('is-active');
+
+  try {
+    ptext.textContent = '데이터 준비 중...';
+    psub.textContent = '이미지 경로 계산';
+
+    const newFoods = JSON.parse(JSON.stringify(cache.foods));
+    const files = [];
+
+    // 이미지 경로 결정
+    let thumbPath;
+    if (isEdit) {
+      // 기존 이미지 경로 그대로 유지 (이미지 변경 시 같은 경로 덮어쓰기)
+      thumbPath = newFoods[_foodForm.editIdx].thumb;
+      if (_foodForm.imageChanged) {
+        // 같은 경로에 덮어쓰기
+        files.push({
+          path: thumbPath.replace(/^\.\//, ''),
+          content: _foodForm.imageBase64, encoding: 'base64',
+        });
+      }
+    } else {
+      // 새 음식: hash 기반 파일명
+      const hash = _foodImgHash(_foodForm.name);
+      const newPath = `images/products/${hash}.jpg`;
+      thumbPath = `./${newPath}`;
+      files.push({ path: newPath, content: _foodForm.imageBase64, encoding: 'base64' });
+    }
+
+    // 가격 정규화
+    const priceOriginal = parseInt(_foodForm.priceOriginal) || 0;
+    const priceSale = _foodForm.priceSale ? parseInt(_foodForm.priceSale) : null;
+    const discountRate = _foodForm.discountRate ? parseInt(_foodForm.discountRate) : null;
+
+    // 음식 객체
+    const foodObj = {
+      name: _foodForm.name.trim(),
+      desc: _foodForm.desc.trim(),
+      url: _foodForm.url.trim(),
+      source: _foodForm.source || _detectSourceFromUrl(_foodForm.url) || '',
+      thumb: thumbPath,
+      price_original: priceOriginal,
+      price_sale: priceSale,
+      discount_rate: discountRate,
+      published: isEdit ? (cache.foods[_foodForm.editIdx].published !== false) : true,
+    };
+
+    if (isEdit) {
+      newFoods[_foodForm.editIdx] = foodObj;
+    } else {
+      newFoods.push(foodObj);
+    }
+
+    const action = isEdit ? '수정' : '추가';
+    const message = `${isEdit ? 'update' : 'sync'}(admin): 음식 '${foodObj.name}' ${action}`;
+
+    ptext.textContent = 'GitHub 업로드 중...';
+    psub.textContent = files.length ? `이미지 + 데이터` : '데이터';
+
+    files.push({ path: 'data/foods.json', content: JSON.stringify(newFoods, null, 2) + '\n', encoding: 'utf-8' });
+    await ghCommitMultipleFiles(files, message);
+
+    cache.foods = newFoods;
+    cache.loadedAt = Date.now();
+
+    ptext.textContent = '완료!';
+    psub.textContent = '1~2분 후 사이트에 반영됩니다';
+    setTimeout(() => {
+      progress.classList.remove('is-active');
+      resetFoodForm();
+      showToast(`음식 '${foodObj.name}' ${action} 완료!`, 'success', 3500);
+      location.hash = isEdit ? `foods/${_foodForm.editIdx}` : 'foods';
+    }, 1000);
+
+  } catch (e) {
+    progress.classList.remove('is-active');
+    console.error(e);
+    showToast('업로드 실패: ' + e.message, 'error', 5000);
+  }
+}
+
+// 음식 삭제
+async function deleteFood(idx) {
+  const food = cache.foods[idx];
+  if (!food) return;
+
+  if (!confirm(`음식 '${food.name}'을(를) 삭제할까요?\n\n이미지 파일도 함께 삭제됩니다. 되돌릴 수 없어요.`)) return;
+  if (!confirm(`정말로 삭제할까요? 마지막 확인입니다.`)) return;
+
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+
+  const progress = document.createElement('div');
+  progress.className = 'submit-progress is-active';
+  progress.innerHTML = `
+    <div class="submit-progress-card">
+      <div class="submit-progress-spinner"></div>
+      <div class="submit-progress-text">음식 삭제 중...</div>
+      <div class="submit-progress-sub">GitHub 업로드</div>
+    </div>
+  `;
+  document.body.appendChild(progress);
+
+  try {
+    const newFoods = JSON.parse(JSON.stringify(cache.foods));
+    newFoods.splice(idx, 1);
+
+    const deletePaths = food.thumb ? [food.thumb.replace(/^\.\//, '')] : [];
+
+    const message = `delete(admin): 음식 '${food.name}' 삭제`;
+    await ghCommitWithDeletions(
+      [{ path: 'data/foods.json', content: JSON.stringify(newFoods, null, 2) + '\n', encoding: 'utf-8' }],
+      deletePaths,
+      message
+    );
+
+    cache.foods = newFoods;
+    cache.loadedAt = Date.now();
+
+    progress.remove();
+    showToast(`음식 '${food.name}' 삭제됨`, 'success', 2500);
+    location.hash = 'foods';
+  } catch (e) {
+    progress.remove();
+    console.error(e);
+    showToast('삭제 실패: ' + e.message, 'error', 5000);
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -3315,7 +3749,7 @@ function renderItemList() {
   });
 }
 function renderItemDetail(idx) {
-  renderProductDetail(cache.items[idx], { icon: '🛠', listLabel: '장비', listHash: 'items' });
+  renderProductDetail(cache.items[idx], { icon: '🛠', listLabel: '장비', listHash: 'items', idx, onDelete: (i) => showToast('장비 삭제는 아직 준비 중입니다', 'warn') });
 }
 
 
