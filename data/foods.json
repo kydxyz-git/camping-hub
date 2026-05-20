@@ -39,8 +39,8 @@
     "source": "컬리",
     "thumb": "./images/products/food-04.jpg",
     "price_original": 5980,
-    "price_sale": null,
-    "discount_rate": null,
+    "price_sale": 5382,
+    "discount_rate": 10,
     "published": true
   },
   {
@@ -63,6 +63,17 @@
     "price_original": 14000,
     "price_sale": 7400,
     "discount_rate": 47,
+    "published": true
+  },
+  {
+    "name": "상국이네 떡볶이",
+    "desc": "부산 40년 전통의 쌀떡볶이",
+    "url": "https://link.coupang.com/a/dUsNdt7JxQ",
+    "source": "쿠팡",
+    "thumb": "./images/products/6e41acce3d12.jpg",
+    "price_original": 7560,
+    "price_sale": null,
+    "discount_rate": null,
     "published": true
   }
 ]
