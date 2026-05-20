@@ -155,13 +155,5 @@
         "published": true
       }
     ]
-  },
-  {
-    "name": "테스트 시리즈",
-    "emoji": "ㅁ",
-    "color": "#6B8FB8",
-    "published": false,
-    "sort": "ep_desc",
-    "eps": []
   }
 ]
