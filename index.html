@@ -1086,15 +1086,19 @@ init();
     try {
       const body = JSON.stringify(payload);
       if (navigator.sendBeacon) {
-        const blob = new Blob([body], { type: 'application/json' });
+        // sendBeacon: Content-Type을 명시적으로 'text/plain'으로 보내 CORS preflight 우회
+        // (Worker는 request.text() 후 JSON.parse 하므로 Content-Type 무관)
+        const blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
         navigator.sendBeacon(STATS_URL, blob);
       } else {
         fetch(STATS_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
           body,
           keepalive: true,
-        }).catch(() => {}); // 실패해도 무시 (사용자 경험 영향 X)
+          mode: 'cors',
+          credentials: 'omit',  // credentials 안 보냄 (CORS 단순 요청 조건)
+        }).catch(() => {});
       }
     } catch (e) { /* noop */ }
   }
