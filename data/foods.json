@@ -70,18 +70,18 @@
     "updated_at": "2026-05-21T15:01:09.864Z"
   },
   {
+    "id": "food_592752e317",
     "name": "[야키토리 토리야] 닭꼬치 염통 파닭 츠쿠네 모듬 캠핑음식 요리 숯불 구이 메뉴",
     "desc": "이번 주 고민되시면 그냥 이거 드세요!",
     "url": "https://naver.me/xrzyoskO",
     "source": "네이버",
     "thumb": "./images/products/food-06.jpg",
     "price_original": 14000,
-    "price_sale": 7400,
-    "discount_rate": 47,
+    "price_sale": 7900,
+    "discount_rate": 44,
     "published": true,
-    "id": "food_592752e317",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T02:53:18.159759+00:00"
+    "updated_at": "2026-05-21T15:01:39.345Z"
   },
   {
     "name": "상국이네 떡볶이",
