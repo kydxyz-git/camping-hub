@@ -200,6 +200,125 @@
   .menu-item-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
   .menu-item-desc { font-size: 12px; color: var(--muted); }
 
+  /* ── 통계 섹션 ── */
+  .btn-tiny {
+    background: transparent; border: 1px solid var(--line); cursor: pointer;
+    padding: 2px 8px; font-size: 12px; border-radius: 6px;
+    color: var(--text); margin-left: 8px;
+    vertical-align: middle;
+  }
+  .btn-tiny:hover { background: var(--accent-soft); }
+  .stats-loading {
+    padding: 32px; text-align: center; color: var(--muted); font-size: 13px;
+    background: var(--accent-soft); border-radius: 10px;
+  }
+  .stats-summary {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    margin-bottom: 14px;
+  }
+  .stats-card {
+    background: #fff; border: 1px solid var(--line);
+    border-radius: 10px; padding: 12px 8px;
+    text-align: center;
+  }
+  .stats-card-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .stats-card-value { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+  @media (max-width: 480px) {
+    .stats-summary { grid-template-columns: repeat(2, 1fr); }
+    .stats-card-value { font-size: 18px; }
+  }
+  .stats-section-title {
+    font-size: 13px; font-weight: 700; margin-bottom: 10px;
+    color: var(--text);
+  }
+  .stats-chart-card { padding: 16px 12px; }
+  .stats-bar-chart {
+    display: flex; align-items: flex-end; gap: 2px;
+    height: 100px; padding: 0 4px;
+  }
+  .stats-bar-col {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    height: 100%; position: relative;
+  }
+  .stats-bar {
+    width: 100%; max-width: 14px;
+    background: linear-gradient(to top, var(--text), #555);
+    border-radius: 2px 2px 0 0;
+    min-height: 1px;
+  }
+  .stats-bar-value {
+    font-size: 9px; color: var(--muted);
+    height: 12px; line-height: 12px;
+    overflow: hidden;
+  }
+  .stats-bar-label {
+    font-size: 9px; color: var(--muted);
+    margin-top: 4px; height: 12px; line-height: 12px;
+    white-space: nowrap;
+  }
+  .stats-popular-sub {
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    margin-top: 12px; margin-bottom: 6px;
+    padding-bottom: 4px; border-bottom: 1px dashed var(--line);
+  }
+  .stats-popular-sub:first-of-type { margin-top: 0; }
+  .stats-list {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .stats-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px solid var(--line);
+  }
+  .stats-row:last-child { border-bottom: none; }
+  .stats-row-rank {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent-soft); color: var(--muted);
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .stats-row-label {
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .stats-row-count {
+    font-size: 12px; font-weight: 700; color: var(--text);
+    background: var(--accent-soft); padding: 2px 8px; border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .stats-tag {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    background: #eee; color: var(--muted);
+    padding: 1px 6px; border-radius: 999px;
+    margin-right: 4px;
+  }
+  .stats-empty {
+    padding: 16px; text-align: center; color: var(--muted); font-size: 12px;
+  }
+  .stats-device-bars { display: flex; flex-direction: column; gap: 10px; }
+  .stats-device-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px;
+  }
+  .stats-device-label { width: 70px; font-weight: 600; flex-shrink: 0; }
+  .stats-device-bar {
+    flex: 1; height: 16px;
+    background: var(--accent-soft); border-radius: 999px;
+    overflow: hidden;
+  }
+  .stats-device-fill {
+    height: 100%; border-radius: 999px;
+    transition: width 0.5s ease;
+  }
+  .stats-device-pct {
+    width: 36px; text-align: right;
+    font-size: 12px; font-weight: 700;
+  }
+
   /* ── 리스트 뷰 ── */
   .page-header {
     display: flex; align-items: center; justify-content: space-between;
@@ -1570,6 +1689,15 @@ function renderDashboard() {
       </a>
     </div>
 
+    <!-- 통계 -->
+    <div class="section-title" style="margin-top:28px;">
+      📊 사이트 통계
+      <button class="btn-tiny" id="stats-refresh" title="새로고침">↻</button>
+    </div>
+    <div id="stats-container">
+      <div class="stats-loading">통계 불러오는 중...</div>
+    </div>
+
     <div style="margin-top:24px;font-size:11px;color:var(--muted);text-align:center;">
       Phase 2 · 데이터 로드 ${new Date(cache.loadedAt).toLocaleTimeString('ko-KR')}
     </div>
@@ -1584,6 +1712,13 @@ function renderDashboard() {
       renderDashboard();
     };
   }
+
+  // 통계 비동기 로드 + 새로고침 버튼
+  loadAndRenderStats();
+  document.getElementById('stats-refresh').onclick = (e) => {
+    e.preventDefault();
+    loadAndRenderStats();
+  };
 
   // 토큰 핸들러 바인딩
   if (tokenConnected) {
@@ -1610,6 +1745,262 @@ function renderDashboard() {
       renderDashboard();
     };
   }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 통계 (Cloudflare Worker /stats 조회 + 시각화)
+// ════════════════════════════════════════════════════════════════════
+const STATS_API = 'https://kyd-stats.kydxyz.workers.dev/stats';
+let _statsCache = null;
+let _statsCacheAt = 0;
+
+async function loadAndRenderStats(forceRefresh = false) {
+  const container = document.getElementById('stats-container');
+  if (!container) return;
+
+  // 30초 캐시 (대시보드 새로 들어와도 너무 자주 호출 안 함)
+  const now = Date.now();
+  if (!forceRefresh && _statsCache && (now - _statsCacheAt < 30000)) {
+    renderStats(container, _statsCache);
+    return;
+  }
+
+  container.innerHTML = `<div class="stats-loading">통계 불러오는 중...</div>`;
+  try {
+    const resp = await fetch(STATS_API + '?t=' + Date.now());
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    _statsCache = data;
+    _statsCacheAt = Date.now();
+    renderStats(container, data);
+  } catch (e) {
+    container.innerHTML = `
+      <div class="card" style="text-align:center;color:var(--muted);font-size:13px;">
+        <div style="margin-bottom:8px;">⚠️ 통계 불러오기 실패</div>
+        <div style="font-size:11px;">${escapeHtml(e.message)}</div>
+        <div style="font-size:11px;margin-top:8px;">${STATS_API}</div>
+      </div>
+    `;
+  }
+}
+
+function renderStats(container, data) {
+  // ── 1. 기간별 카운트 계산 ──
+  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  // 최근 7일/30일
+  const periods = { today: 0, week: 0, month: 0 };
+  const todayDate = new Date(today + 'T00:00:00');
+  const weekAgo = new Date(todayDate); weekAgo.setDate(weekAgo.getDate() - 6);
+  const monthAgo = new Date(todayDate); monthAgo.setDate(monthAgo.getDate() - 29);
+
+  const dailyEntries = Object.entries(data.daily || {}).sort();
+  for (const [date, d] of dailyEntries) {
+    const dt = new Date(date + 'T00:00:00');
+    if (date === today) periods.today += d.pv;
+    if (dt >= weekAgo) periods.week += d.pv;
+    if (dt >= monthAgo) periods.month += d.pv;
+  }
+
+  // ── 2. 인기 페이지 분류 (캠핑장/EP/음식/장비/카테고리) ──
+  const popular = { camps: [], series: [], foods: [], items: [], category: [] };
+  for (const [path, count] of Object.entries(data.pages || {})) {
+    const p = path.replace(/^\/?#?/, ''); // 슬래시/해시 제거
+    const parts = p.split('/');
+    if (parts[0] === 'camps' && parts[1] !== undefined && parts[1] !== '') {
+      const idx = +parts[1];
+      const camp = cache.camps[idx];
+      if (camp) popular.camps.push({ name: camp.name, count, path });
+    } else if (parts[0] === 'series' && parts[1] !== undefined && parts[2] !== undefined) {
+      const si = +parts[1], ei = +parts[2];
+      const s = cache.series[si];
+      const ep = s && s.eps[ei];
+      if (s && ep) popular.series.push({ name: `${s.emoji || ''} ${ep.title}`, count, path });
+    } else if (parts[0] === 'foods' && parts[1] !== undefined) {
+      const f = cache.foods[+parts[1]];
+      if (f) popular.foods.push({ name: f.name, count, path });
+    } else if (parts[0] === 'items' && parts[1] !== undefined) {
+      const it = cache.items[+parts[1]];
+      if (it) popular.items.push({ name: it.name, count, path });
+    } else {
+      // 카테고리 (/, /series, /camps 등)
+      const label = parts[0] || '홈';
+      popular.category.push({ name: label, count, path });
+    }
+  }
+  for (const k in popular) popular[k].sort((a, b) => b.count - a.count);
+
+  // ── 3. 외부 링크 클릭 정렬 ──
+  const clicks = Object.entries(data.clicks || {}).sort((a, b) => b[1] - a[1]);
+
+  // ── 4. 검색어 정렬 (category:query 형식) ──
+  const searches = Object.entries(data.searches || {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([key, count]) => {
+      const [cat, ...rest] = key.split(':');
+      return { category: cat, query: rest.join(':'), count };
+    });
+
+  // ── 5. 디바이스 비율 ──
+  const devices = data.devices || {};
+  const deviceTotal = Object.values(devices).reduce((s, n) => s + n, 0) || 1;
+  const devicePct = {
+    mobile: Math.round((devices.mobile || 0) / deviceTotal * 100),
+    desktop: Math.round((devices.desktop || 0) / deviceTotal * 100),
+    tablet: Math.round((devices.tablet || 0) / deviceTotal * 100),
+  };
+
+  // ── 6. 30일 차트 데이터 ──
+  const chartDates = [];
+  for (let i = 29; i >= 0; i--) {
+    const dt = new Date(todayDate);
+    dt.setDate(dt.getDate() - i);
+    chartDates.push(dt.toISOString().slice(0, 10));
+  }
+  const chartData = chartDates.map(d => (data.daily[d] && data.daily[d].pv) || 0);
+  const chartMax = Math.max(1, ...chartData);
+
+  // ── 7. updated_at ──
+  const updated = data.updated_at
+    ? new Date(data.updated_at).toLocaleString('ko-KR', { hour12: false })
+    : '없음';
+
+  container.innerHTML = `
+    <!-- 요약 카드 4개 -->
+    <div class="stats-summary">
+      <div class="stats-card">
+        <div class="stats-card-label">오늘</div>
+        <div class="stats-card-value">${periods.today.toLocaleString()}</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-card-label">최근 7일</div>
+        <div class="stats-card-value">${periods.week.toLocaleString()}</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-card-label">최근 30일</div>
+        <div class="stats-card-value">${periods.month.toLocaleString()}</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-card-label">누적</div>
+        <div class="stats-card-value">${(data.total.pv || 0).toLocaleString()}</div>
+      </div>
+    </div>
+
+    <!-- 30일 차트 -->
+    <div class="card stats-chart-card">
+      <div class="stats-section-title">최근 30일 방문</div>
+      ${renderBarChart(chartDates, chartData, chartMax)}
+    </div>
+
+    <!-- 인기 콘텐츠 -->
+    <div class="card">
+      <div class="stats-section-title">🏆 인기 콘텐츠 TOP</div>
+      ${renderPopularSection('🏕 캠핑장', popular.camps, 5)}
+      ${renderPopularSection('🎬 시리즈 EP', popular.series, 5)}
+      ${renderPopularSection('🍖 음식', popular.foods, 5)}
+      ${renderPopularSection('🛠 장비', popular.items, 5)}
+      ${renderPopularSection('📂 카테고리', popular.category, 5)}
+    </div>
+
+    <!-- 외부 링크 클릭 -->
+    <div class="card">
+      <div class="stats-section-title">🎯 외부 링크 클릭 (전환)</div>
+      ${clicks.length === 0
+        ? '<div class="stats-empty">아직 클릭 데이터가 없어요</div>'
+        : `<div class="stats-list">
+            ${clicks.slice(0, 10).map(([target, count]) => `
+              <div class="stats-row">
+                <span class="stats-row-label">${escapeHtml(target)}</span>
+                <span class="stats-row-count">${count.toLocaleString()}</span>
+              </div>
+            `).join('')}
+          </div>`}
+    </div>
+
+    <!-- 인기 검색어 -->
+    <div class="card">
+      <div class="stats-section-title">🔍 인기 검색어</div>
+      ${searches.length === 0
+        ? '<div class="stats-empty">아직 검색 데이터가 없어요</div>'
+        : `<div class="stats-list">
+            ${searches.map(s => `
+              <div class="stats-row">
+                <span class="stats-row-label">
+                  <span class="stats-tag">${escapeHtml(s.category)}</span>
+                  ${escapeHtml(s.query)}
+                </span>
+                <span class="stats-row-count">${s.count.toLocaleString()}</span>
+              </div>
+            `).join('')}
+          </div>`}
+    </div>
+
+    <!-- 디바이스 -->
+    <div class="card">
+      <div class="stats-section-title">📱 디바이스 비율</div>
+      ${deviceTotal <= 1
+        ? '<div class="stats-empty">아직 데이터가 없어요</div>'
+        : `<div class="stats-device-bars">
+            <div class="stats-device-row">
+              <span class="stats-device-label">📱 모바일</span>
+              <div class="stats-device-bar"><div class="stats-device-fill" style="width:${devicePct.mobile}%;background:#5b9aff;"></div></div>
+              <span class="stats-device-pct">${devicePct.mobile}%</span>
+            </div>
+            <div class="stats-device-row">
+              <span class="stats-device-label">💻 PC</span>
+              <div class="stats-device-bar"><div class="stats-device-fill" style="width:${devicePct.desktop}%;background:#6b8fb8;"></div></div>
+              <span class="stats-device-pct">${devicePct.desktop}%</span>
+            </div>
+            ${devicePct.tablet > 0 ? `
+            <div class="stats-device-row">
+              <span class="stats-device-label">📟 태블릿</span>
+              <div class="stats-device-bar"><div class="stats-device-fill" style="width:${devicePct.tablet}%;background:#a3a3a3;"></div></div>
+              <span class="stats-device-pct">${devicePct.tablet}%</span>
+            </div>` : ''}
+          </div>`}
+    </div>
+
+    <!-- 요약 푸터 -->
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;">
+      마지막 집계: ${updated}<br>
+      총 페이지뷰 ${(data.total.pv || 0).toLocaleString()} · 외부 클릭 ${(data.total.click || 0).toLocaleString()} · 검색 ${(data.total.search || 0).toLocaleString()}<br>
+      <span style="font-size:10px;">GitHub 동기화는 매시간 정각 / 데이터는 30초 캐시</span>
+    </div>
+  `;
+}
+
+function renderPopularSection(label, items, limit = 5) {
+  if (items.length === 0) return '';
+  return `
+    <div class="stats-popular-sub">${label}</div>
+    <div class="stats-list">
+      ${items.slice(0, limit).map((it, i) => `
+        <div class="stats-row">
+          <span class="stats-row-rank">${i + 1}</span>
+          <span class="stats-row-label">${escapeHtml(it.name)}</span>
+          <span class="stats-row-count">${it.count.toLocaleString()}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderBarChart(dates, data, max) {
+  const bars = data.map((v, i) => {
+    const heightPct = Math.round((v / max) * 100);
+    const date = dates[i];
+    const md = date.slice(5).replace('-', '/');
+    const isFirstOfMonth = date.slice(8) === '01';
+    return `
+      <div class="stats-bar-col" title="${date}: ${v}회">
+        <div class="stats-bar-value">${v > 0 ? v : ''}</div>
+        <div class="stats-bar" style="height:${heightPct}%;"></div>
+        <div class="stats-bar-label">${isFirstOfMonth || i % 5 === 0 ? md : ''}</div>
+      </div>
+    `;
+  }).join('');
+  return `<div class="stats-bar-chart">${bars}</div>`;
 }
 
 // ════════════════════════════════════════════════════════════════════
