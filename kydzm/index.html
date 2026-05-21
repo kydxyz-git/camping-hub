@@ -273,6 +273,29 @@
     border-bottom: 1px solid var(--line);
   }
   .stats-row:last-child { border-bottom: none; }
+  /* 링크 가능한 행 (인기 콘텐츠) - hover 시 강조 */
+  a.stats-row.is-link {
+    text-decoration: none; color: var(--text);
+    transition: background 0.15s;
+    padding-left: 6px; padding-right: 6px;
+    margin: 0 -6px;
+    border-radius: 6px;
+  }
+  a.stats-row.is-link:hover {
+    background: var(--accent-soft);
+    color: var(--text);
+  }
+  a.stats-row.is-link .stats-row-label::after {
+    content: '↗';
+    margin-left: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  a.stats-row.is-link:hover .stats-row-label::after {
+    opacity: 1;
+  }
   .stats-row-rank {
     width: 18px; height: 18px;
     border-radius: 50%;
@@ -1869,30 +1892,50 @@ function renderStats(container, data) {
     try { return decodeURIComponent(key); } catch { return key; }
   }
 
+  // URL 매핑 헬퍼 (인기 콘텐츠 클릭 시 새 탭에서 열 URL)
+  function resolveUrl(category, key) {
+    if (category === 'camps') {
+      if (campById[key]) return campById[key].url || '';
+    } else if (category === 'foods') {
+      if (foodById[key]) return foodById[key].url || '';
+    } else if (category === 'items') {
+      if (itemById[key]) return itemById[key].url || '';
+    }
+    if (/^\d+$/.test(key)) {
+      const arr = category === 'camps' ? cache.camps : category === 'foods' ? cache.foods : cache.items;
+      const obj = arr && arr[+key];
+      return obj && obj.url ? obj.url : '';
+    }
+    return '';
+  }
+
   for (const [path, count] of Object.entries(data.pages || {})) {
     const p = path.replace(/^\/?#?/, '');
     const parts = p.split('/');  // decode는 resolveName에서 하므로 여기선 raw 유지
 
     if (parts[0] === 'camps' && parts[1] !== undefined && parts[1] !== '') {
-      popular.camps.push({ name: resolveName('camps', parts[1]), count, path });
+      popular.camps.push({
+        name: resolveName('camps', parts[1]),
+        url: resolveUrl('camps', parts[1]),
+        count, path,
+      });
     } else if (parts[0] === 'series' && parts[1] !== undefined && parts[2] !== undefined) {
-      // 신규 ID 기반: /series/{seriesId}/{epId}
-      // 옛 이름 기반: /series/{이름}/{EP제목}
-      // 옛 인덱스: /series/{si}/{ei}
       // 표시용 메타 정보 분리: emoji, seriesName, epTitle, color
-      let emoji = '', seriesName = '', epTitle = '', color = '#888';
+      let emoji = '', seriesName = '', epTitle = '', color = '#888', url = '';
       if (epById[parts[2]]) {
         const { ep, series } = epById[parts[2]];
         emoji = series.emoji || '';
         seriesName = series.name || '';
         epTitle = ep.title || '';
         color = series.color || '#888';
+        url = ep.url || '';
       } else if (/^\d+$/.test(parts[1]) && /^\d+$/.test(parts[2])) {
         const s = cache.series[+parts[1]];
         const ep = s && s.eps[+parts[2]];
         if (s && ep) {
           emoji = s.emoji || ''; seriesName = s.name || ''; epTitle = ep.title || '';
           color = s.color || '#888';
+          url = ep.url || '';
         } else {
           seriesName = `(삭제됨)`; epTitle = `#${parts[1]}/${parts[2]}`;
         }
@@ -1900,11 +1943,19 @@ function renderStats(container, data) {
         try { seriesName = decodeURIComponent(parts[1]); } catch { seriesName = parts[1]; }
         try { epTitle = decodeURIComponent(parts[2]); } catch { epTitle = parts[2]; }
       }
-      popular.series.push({ emoji, seriesName, epTitle, color, count, path });
+      popular.series.push({ emoji, seriesName, epTitle, color, url, count, path });
     } else if (parts[0] === 'foods' && parts[1] !== undefined) {
-      popular.foods.push({ name: resolveName('foods', parts[1]), count, path });
+      popular.foods.push({
+        name: resolveName('foods', parts[1]),
+        url: resolveUrl('foods', parts[1]),
+        count, path,
+      });
     } else if (parts[0] === 'items' && parts[1] !== undefined) {
-      popular.items.push({ name: resolveName('items', parts[1]), count, path });
+      popular.items.push({
+        name: resolveName('items', parts[1]),
+        url: resolveUrl('items', parts[1]),
+        count, path,
+      });
     } else {
       // 카테고리 (/, /series, /camps 등)
       const label = parts[0] || '홈';
@@ -2044,13 +2095,18 @@ function renderPopularSection(label, items, limit = 5) {
   return `
     <div class="stats-popular-sub">${label}</div>
     <div class="stats-list">
-      ${items.slice(0, limit).map((it, i) => `
-        <div class="stats-row">
+      ${items.slice(0, limit).map((it, i) => {
+        const hasUrl = !!it.url;
+        const tag = hasUrl ? 'a' : 'div';
+        const attrs = hasUrl ? `href="${escapeHtml(it.url)}" target="_blank" rel="noopener"` : '';
+        return `
+        <${tag} class="stats-row${hasUrl ? ' is-link' : ''}" ${attrs}>
           <span class="stats-row-rank">${i + 1}</span>
           <span class="stats-row-label">${escapeHtml(it.name)}</span>
           <span class="stats-row-count">${it.count.toLocaleString()}</span>
-        </div>
-      `).join('')}
+        </${tag}>
+      `;
+      }).join('')}
     </div>
   `;
 }
@@ -2060,8 +2116,12 @@ function renderSeriesPopular(label, items, limit = 8) {
   return `
     <div class="stats-popular-sub">${label}</div>
     <div class="stats-list">
-      ${items.slice(0, limit).map((it, i) => `
-        <div class="stats-row stats-series-row">
+      ${items.slice(0, limit).map((it, i) => {
+        const hasUrl = !!it.url;
+        const tag = hasUrl ? 'a' : 'div';
+        const attrs = hasUrl ? `href="${escapeHtml(it.url)}" target="_blank" rel="noopener"` : '';
+        return `
+        <${tag} class="stats-row stats-series-row${hasUrl ? ' is-link' : ''}" ${attrs}>
           <span class="stats-row-rank">${i + 1}</span>
           <span class="stats-row-label">
             <span class="stats-series-badge" style="background:${escapeHtml(it.color || '#888')};">
@@ -2070,8 +2130,9 @@ function renderSeriesPopular(label, items, limit = 8) {
             <span class="stats-series-title">${escapeHtml(it.epTitle || '')}</span>
           </span>
           <span class="stats-row-count">${it.count.toLocaleString()}</span>
-        </div>
-      `).join('')}
+        </${tag}>
+      `;
+      }).join('')}
     </div>
   `;
 }
