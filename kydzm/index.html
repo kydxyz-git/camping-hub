@@ -296,6 +296,16 @@
     padding: 1px 6px; border-radius: 999px;
     margin-right: 4px;
   }
+  .stats-click-arrow {
+    display: inline-block;
+    margin: 0 4px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .stats-click-target {
+    font-weight: 600;
+    color: var(--text);
+  }
   .stats-empty {
     padding: 16px; text-align: center; color: var(--muted); font-size: 12px;
   }
@@ -1830,8 +1840,63 @@ function renderStats(container, data) {
   }
   for (const k in popular) popular[k].sort((a, b) => b.count - a.count);
 
-  // ── 3. 외부 링크 클릭 정렬 ──
-  const clicks = Object.entries(data.clicks || {}).sort((a, b) => b[1] - a[1]);
+  // ── 3. 외부 링크 클릭 분류 (context::target 형식) ──
+  // 신규 데이터: "/#camps/12::그래가" → 캠핑장 > 산청 우니메이카 > 그래가 5회
+  // 기존 데이터: "그래가" → 기타로 분류
+  const clicksByCategory = {
+    camps: [],    // [{ contentName, target, count }]
+    series: [],
+    foods: [],
+    items: [],
+    other: [],    // 카테고리 매핑 안 되는 것 (인스타DM, 메일 + 기존 데이터)
+  };
+  for (const [key, count] of Object.entries(data.clicks || {})) {
+    // "context::target" 분리
+    const sepIdx = key.indexOf('::');
+    let context = '', target = key;
+    if (sepIdx !== -1) {
+      context = key.slice(0, sepIdx);
+      target = key.slice(sepIdx + 2);
+    }
+
+    // context의 path parse — 예: "/#camps/12", "/#series/0/3", "/#foods/5"
+    // 슬래시/해시/슬래시로 정규화
+    const p = context.replace(/^\/?#?/, '');
+    const parts = p.split('/').filter(Boolean);
+
+    if (parts[0] === 'camps' && parts[1] !== undefined) {
+      const camp = cache.camps[+parts[1]];
+      if (camp) {
+        clicksByCategory.camps.push({ contentName: camp.name, target, count });
+        continue;
+      }
+    } else if (parts[0] === 'series' && parts[1] !== undefined && parts[2] !== undefined) {
+      const s = cache.series[+parts[1]];
+      const ep = s && s.eps[+parts[2]];
+      if (s && ep) {
+        clicksByCategory.series.push({ contentName: `${s.emoji || ''} ${ep.title}`, target, count });
+        continue;
+      }
+    } else if (parts[0] === 'foods' && parts[1] !== undefined) {
+      const f = cache.foods[+parts[1]];
+      if (f) {
+        clicksByCategory.foods.push({ contentName: f.name, target, count });
+        continue;
+      }
+    } else if (parts[0] === 'items' && parts[1] !== undefined) {
+      const it = cache.items[+parts[1]];
+      if (it) {
+        clicksByCategory.items.push({ contentName: it.name, target, count });
+        continue;
+      }
+    }
+
+    // 카테고리 매핑 안 됨 → 기타 (인스타DM, 메일, 또는 기존 형식 데이터)
+    clicksByCategory.other.push({ contentName: context || '(컨텍스트 없음)', target, count });
+  }
+  // 각 카테고리 정렬
+  for (const k in clicksByCategory) clicksByCategory[k].sort((a, b) => b.count - a.count);
+  const hasAnyClicks = Object.values(clicksByCategory).some(arr => arr.length > 0);
 
   // ── 4. 검색어 정렬 (category:query 형식) ──
   const searches = Object.entries(data.searches || {})
@@ -1906,16 +1971,15 @@ function renderStats(container, data) {
     <!-- 외부 링크 클릭 -->
     <div class="card">
       <div class="stats-section-title">🎯 외부 링크 클릭 (전환)</div>
-      ${clicks.length === 0
+      ${!hasAnyClicks
         ? '<div class="stats-empty">아직 클릭 데이터가 없어요</div>'
-        : `<div class="stats-list">
-            ${clicks.slice(0, 10).map(([target, count]) => `
-              <div class="stats-row">
-                <span class="stats-row-label">${escapeHtml(target)}</span>
-                <span class="stats-row-count">${count.toLocaleString()}</span>
-              </div>
-            `).join('')}
-          </div>`}
+        : `
+          ${renderClickSection('🏕 캠핑장', clicksByCategory.camps, 8)}
+          ${renderClickSection('🎬 시리즈 EP', clicksByCategory.series, 8)}
+          ${renderClickSection('🍖 음식', clicksByCategory.foods, 8)}
+          ${renderClickSection('🛠 장비', clicksByCategory.items, 8)}
+          ${renderClickSection('📌 기타', clicksByCategory.other, 5)}
+        `}
     </div>
 
     <!-- 인기 검색어 -->
@@ -1979,6 +2043,27 @@ function renderPopularSection(label, items, limit = 5) {
         <div class="stats-row">
           <span class="stats-row-rank">${i + 1}</span>
           <span class="stats-row-label">${escapeHtml(it.name)}</span>
+          <span class="stats-row-count">${it.count.toLocaleString()}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderClickSection(label, items, limit = 8) {
+  if (items.length === 0) return '';
+  // 같은 콘텐츠에서 여러 target으로 나갔을 수 있으니 행마다 "콘텐츠 → target"
+  return `
+    <div class="stats-popular-sub">${label}</div>
+    <div class="stats-list">
+      ${items.slice(0, limit).map((it, i) => `
+        <div class="stats-row">
+          <span class="stats-row-rank">${i + 1}</span>
+          <span class="stats-row-label">
+            ${escapeHtml(it.contentName)}
+            <span class="stats-click-arrow">→</span>
+            <span class="stats-click-target">${escapeHtml(it.target)}</span>
+          </span>
           <span class="stats-row-count">${it.count.toLocaleString()}</span>
         </div>
       `).join('')}
