@@ -259,21 +259,36 @@
     .series-chevron { width:12px; height:12px; color:var(--text-sub); transition:transform 0.28s ease; flex-shrink:0; }
     .series-group.collapsed .series-chevron { transform:rotate(-90deg); }
     .series-body { position:relative; display:grid; grid-template-rows:1fr; transition:grid-template-rows 0.3s ease, opacity 0.28s ease, margin 0.3s ease; opacity:1; }
-    .series-body > .series-body-inner { overflow:hidden; min-height:0; }
+    .series-body > .series-body-inner { position:relative; overflow:hidden; min-height:0; }
     .series-group.collapsed .series-body { grid-template-rows:0fr; opacity:0; pointer-events:none; margin-bottom:-12px; }
     .series-scroll { display:flex; gap:8px; align-items:flex-start; overflow-x:auto; padding:0 0 8px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
     .series-scroll::-webkit-scrollbar { display:none; }
 
     .series-scroll-wrap { position:relative; overflow:hidden; margin:0 20px; }
-    .sa-btn { position:absolute; width:20px; height:151px; top:0; background:var(--point); opacity:0.52; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; color:#fff; z-index:6; transition:opacity 0.15s; }
-    .sa-btn:hover { opacity:0.82; }
+    .sa-btn {
+      position: absolute;
+      width: 28px;
+      height: 100%;  /* 부모(series-body-inner) 전체 높이 - 다양한 폭에서 일관 */
+      top: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.45);  /* 더 진한 배경 */
+      opacity: 1;
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0; color: #fff;
+      z-index: 10;  /* 카드 위에 확실히 */
+      transition: background 0.15s;
+    }
+    .sa-btn:hover { background: rgba(0, 0, 0, 0.65); }
     @keyframes sa-bounce-r { 0%,100%{transform:translateX(0)} 40%{transform:translateX(4px)} }
     @keyframes sa-bounce-l { 0%,100%{transform:translateX(0)} 40%{transform:translateX(-4px)} }
-    .sa-btn.sa-right:not(.sa-hide) svg { animation:sa-bounce-r 1.4s ease-in-out infinite; }
-    .sa-btn.sa-left:not(.sa-hide)  svg { animation:sa-bounce-l 1.4s ease-in-out infinite; }
-    .sa-btn.sa-left  { left:0;  border-radius:0 8px 8px 0; }
-    .sa-btn.sa-right { right:0; border-radius:8px 0 0 8px; }
-    .sa-btn.sa-hide  { visibility:hidden; pointer-events:none; }
+    .sa-btn.sa-right:not(.sa-hide) svg { animation: sa-bounce-r 1.4s ease-in-out infinite; }
+    .sa-btn.sa-left:not(.sa-hide)  svg { animation: sa-bounce-l 1.4s ease-in-out infinite; }
+    .sa-btn.sa-left  { left: 0; border-radius: 0 6px 6px 0; }
+    .sa-btn.sa-right { right: 0; border-radius: 6px 0 0 6px; }
+    .sa-btn.sa-hide  { display: none; }
+    .sa-btn svg {
+      width: 12px; height: 18px;
+    }
     .ep-card { flex-shrink:0; width:121px; scroll-snap-align:start; cursor:pointer; transition:transform 0.18s; display:flex; flex-direction:column; }
 
     .ep-card:active { transform:scale(0.96); }
@@ -467,14 +482,12 @@
       .series-scroll .ep-ig svg {
         width: 14px; height: 14px;
       }
-      /* 시리즈 좌우 스크롤 화살표 - 썸네일 높이에 맞춤 */
-      .series-scroll-wrap .sa-btn {
-        width: 28px;
-        height: 275px;
+      /* PC에서 화살표 크기 키움 (높이는 100%로 자동) */
+      .series-body-inner > .sa-btn {
+        width: 36px;
       }
-      .series-scroll-wrap .sa-btn svg {
-        width: 12px;
-        height: 22px;
+      .series-body-inner > .sa-btn svg {
+        width: 14px; height: 24px;
       }
 
       /* env-section (체크리스트) - 와이드 활용 */
