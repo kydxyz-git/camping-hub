@@ -1069,5 +1069,125 @@ async function init() {
 }
 init();
 </script>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     통계 추적 (Cloudflare Worker로 전송)
+     - 페이지뷰: 해시 변경마다 자동
+     - 외부 링크 클릭: 도메인 자동 감지
+     - 검색어: 디바운스 1초 후 전송
+     - 봇 차단: Worker에서 처리
+     ════════════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+  const STATS_URL = 'https://kyd-stats.kydxyz.workers.dev/log';
+
+  // 전송 함수 (sendBeacon 우선, 실패 시 fetch fallback)
+  function send(payload) {
+    try {
+      const body = JSON.stringify(payload);
+      if (navigator.sendBeacon) {
+        const blob = new Blob([body], { type: 'application/json' });
+        navigator.sendBeacon(STATS_URL, blob);
+      } else {
+        fetch(STATS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body,
+          keepalive: true,
+        }).catch(() => {}); // 실패해도 무시 (사용자 경험 영향 X)
+      }
+    } catch (e) { /* noop */ }
+  }
+
+  // ─── 1) 페이지뷰 추적 ──────────────────────────────────────────────
+  // 해시 변경마다 전송 (예: #, #camps, #camps/12, #series/0/3)
+  let lastPath = '';
+  let lastSent = 0;
+  function trackPageView() {
+    const path = location.pathname + (location.hash || '');
+    const now = Date.now();
+    // 같은 경로 1초 내 중복 차단
+    if (path === lastPath && now - lastSent < 1000) return;
+    lastPath = path;
+    lastSent = now;
+    send({
+      type: 'pageview',
+      path: path || '/',
+      title: document.title || '',
+    });
+  }
+  // 초기 로드
+  trackPageView();
+  // 해시 변경
+  window.addEventListener('hashchange', trackPageView);
+
+  // ─── 2) 외부 링크 클릭 추적 ────────────────────────────────────────
+  // 도메인별 라벨 매핑
+  function detectTarget(url) {
+    if (!url) return null;
+    const u = url.toLowerCase();
+    if (u.includes('graega.co.kr') || u.includes('graega')) return '그래가';
+    if (u.includes('booking.naver') || u.includes('naver.me') || u.includes('place.naver')) return '네이버예약';
+    if (u.includes('campit')) return '캠핏';
+    if (u.includes('thankqcamping') || u.includes('thankq')) return '땡큐캠핑';
+    if (u.includes('coupang')) return '쿠팡';
+    if (u.includes('kurly')) return '컬리';
+    if (u.includes('naver')) return '네이버';
+    if (u.includes('11st')) return '11번가';
+    if (u.includes('gmarket')) return '지마켓';
+    if (u.includes('ssg.com')) return 'SSG';
+    if (u.includes('oasis')) return '오아시스';
+    if (u.includes('ig.me') || u.includes('instagram.com')) return '인스타DM';
+    if (u.startsWith('mailto:')) return '메일';
+    if (u.startsWith('tel:')) return '전화';
+    // 외부 도메인 (자체 도메인 제외)
+    try {
+      const host = new URL(url, location.href).hostname;
+      if (host && host !== location.hostname && !host.endsWith('kydz.kr')) return host;
+    } catch {}
+    return null;
+  }
+
+  // 클릭 이벤트 캡쳐 (document에 한 번만 등록)
+  document.addEventListener('click', function(e) {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href) return;
+    const target = detectTarget(href);
+    if (!target) return; // 내부 링크 또는 미분류 → 추적 안 함
+    // 컨텍스트: 어떤 페이지에서 클릭했는지
+    send({
+      type: 'click',
+      target,
+      url: href,
+      context: location.pathname + (location.hash || ''),
+    });
+  }, true);
+
+  // ─── 3) 검색어 추적 (디바운스 1초) ────────────────────────────────
+  let searchTimer = null;
+  let lastSearch = { category: '', query: '' };
+  document.addEventListener('input', function(e) {
+    const t = e.target;
+    if (!t || t.tagName !== 'INPUT') return;
+    // 검색창인지 판별 (id에 'search' 포함)
+    const id = (t.id || '').toLowerCase();
+    if (!id.includes('search')) return;
+    // 카테고리 추정 (해시 기반)
+    const hash = (location.hash || '').replace(/^#/, '').split('/')[0];
+    const category = hash || 'unknown';
+    const query = t.value.trim();
+    if (!query || query.length < 2) return; // 너무 짧으면 무시
+    if (category === lastSearch.category && query === lastSearch.query) return;
+
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      lastSearch = { category, query };
+      send({ type: 'search', category, query });
+    }, 1000); // 1초 후 전송 (타이핑 멈춤 감지)
+  }, true);
+})();
+</script>
 </body>
 </html>
