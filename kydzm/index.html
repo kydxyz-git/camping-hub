@@ -410,6 +410,62 @@
   .stats-platform-badge.bg-camfit { background: #2D8F4C; }
   .stats-platform-badge.bg-thankq { background: #FF6B2C; }
   .stats-platform-badge.bg-etc    { background: #9e9e9e; }
+
+  /* 시간대 히트맵 */
+  .heatmap-wrap {
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: 24px repeat(24, 1fr);
+    gap: 2px;
+    min-width: 480px;
+  }
+  .heatmap-corner { height: 18px; }
+  .heatmap-col-label {
+    font-size: 9px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 18px;
+    font-weight: 500;
+  }
+  .heatmap-row-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: right;
+    padding-right: 4px;
+    line-height: 18px;
+    font-weight: 600;
+  }
+  .heatmap-cell {
+    height: 18px;
+    border-radius: 2px;
+    cursor: default;
+  }
+  .heatmap-legend {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 12px; font-size: 10px; color: var(--muted);
+  }
+  .heatmap-legend-bar {
+    flex: 0 0 80px;
+    height: 8px;
+    background: linear-gradient(90deg, rgba(74,124,78,0.05), rgba(74,124,78,1));
+    border-radius: 2px;
+  }
+  /* 트렌드 인디케이터 */
+  .stats-trend {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+  .stats-trend.up { background: #e8f5e9; color: #2e7d32; }
+  .stats-trend.down { background: #ffebee; color: #c62828; }
+  .stats-trend.flat { background: #f5f5f5; color: var(--muted); }
+
   /* 등록일 작은 회색 텍스트 (인기 콘텐츠 항목 우측에 표시) */
   .stats-row-date {
     margin-left: 8px;
@@ -2115,6 +2171,37 @@ function renderStats(container, data) {
   }
   for (const k in popular) popular[k].sort((a, b) => b.count - a.count);
 
+  // ── 3b. 시간대 히트맵 (요일×24시간, 최근 30일 기준) ──
+  // 요일: 0=일, 1=월, ..., 6=토
+  const heatmap = Array.from({length: 7}, () => new Array(24).fill(0));
+  let heatmapMax = 0;
+  for (const [date, d] of dailyEntries) {
+    const dt = new Date(date + 'T00:00:00');
+    if (dt < monthAgo) continue;
+    const dayOfWeek = dt.getDay();
+    const hourly = d.hourly || [];
+    for (let h = 0; h < 24; h++) {
+      heatmap[dayOfWeek][h] += (hourly[h] || 0);
+      if (heatmap[dayOfWeek][h] > heatmapMax) heatmapMax = heatmap[dayOfWeek][h];
+    }
+  }
+
+  // ── 3c. 레퍼러 (누적) ──
+  const referrers = Object.entries(data.referrers || {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([name, count]) => ({ name, count }));
+
+  // ── 3d. 7일 vs 지난 7일 트렌드 ──
+  const last7Ago = new Date(todayDate); last7Ago.setDate(last7Ago.getDate() - 13);
+  let week_now = 0, week_prev = 0;
+  for (const [date, d] of dailyEntries) {
+    const dt = new Date(date + 'T00:00:00');
+    if (dt >= weekAgo) week_now += d.pv;
+    else if (dt >= last7Ago) week_prev += d.pv;
+  }
+  const trendChange = week_prev === 0 ? null : ((week_now - week_prev) / week_prev * 100);
+
   // ── 3. 기타 외부 링크 (data-track-external 명시된 버튼들) ──
   // 그래가파트너스 / Clip Creators / DM / 메일 / 인스타 프로필 등
   // context가 '__external__' 인 click 이벤트만 추출
@@ -2171,7 +2258,11 @@ function renderStats(container, data) {
         <div class="stats-card-value">${periods.today.toLocaleString()}</div>
       </div>
       <div class="stats-card">
-        <div class="stats-card-label">최근 7일</div>
+        <div class="stats-card-label">최근 7일${trendChange !== null ? (
+          trendChange > 5 ? `<span class="stats-trend up">↑ ${Math.round(trendChange)}%</span>` :
+          trendChange < -5 ? `<span class="stats-trend down">↓ ${Math.round(Math.abs(trendChange))}%</span>` :
+          `<span class="stats-trend flat">─</span>`
+        ) : ''}</div>
         <div class="stats-card-value">${periods.week.toLocaleString()}</div>
       </div>
       <div class="stats-card">
@@ -2218,6 +2309,30 @@ function renderStats(container, data) {
                 <span class="stats-row-rank">${i + 1}</span>
                 <span class="stats-row-label">${escapeHtml(it.target)}</span>
                 <span class="stats-row-count">${it.count.toLocaleString()}</span>
+              </div>
+            `).join('')}
+          </div>`}
+    </div>
+
+    <!-- 시간대 히트맵 (요일×24시간, 최근 30일) -->
+    <div class="card">
+      <div class="stats-section-title">🕐 시간대 히트맵 <span style="font-size:11px;font-weight:400;color:var(--muted);">(최근 30일)</span></div>
+      ${heatmapMax === 0
+        ? '<div class="stats-empty">아직 충분한 데이터가 없어요</div>'
+        : renderHeatmap(heatmap, heatmapMax)}
+    </div>
+
+    <!-- 레퍼러 (유입 경로) -->
+    <div class="card">
+      <div class="stats-section-title">🔗 유입 경로 (referrer)</div>
+      ${referrers.length === 0
+        ? '<div class="stats-empty">아직 유입 데이터가 없어요</div>'
+        : `<div class="stats-list">
+            ${referrers.map((r, i) => `
+              <div class="stats-row">
+                <span class="stats-row-rank">${i + 1}</span>
+                <span class="stats-row-label">${escapeHtml(r.name)}</span>
+                <span class="stats-row-count">${r.count.toLocaleString()}</span>
               </div>
             `).join('')}
           </div>`}
@@ -2376,6 +2491,36 @@ function renderClickSection(label, items, limit = 8) {
           <span class="stats-row-count">${it.count.toLocaleString()}</span>
         </div>
       `).join('')}
+    </div>
+  `;
+}
+
+function renderHeatmap(heatmap, max) {
+  // heatmap: 7행(요일) × 24열(시간) 배열
+  // 색 농도로 활동량 표시
+  const days = ['일', '월', '화', '수', '목', '금', '토'];
+  const hours = [0, 3, 6, 9, 12, 15, 18, 21];  // 표시할 시간 마커
+  return `
+    <div class="heatmap-wrap">
+      <div class="heatmap-grid">
+        <div class="heatmap-corner"></div>
+        ${Array.from({length: 24}, (_, h) => `
+          <div class="heatmap-col-label">${hours.includes(h) ? h : ''}</div>
+        `).join('')}
+        ${heatmap.map((row, dayIdx) => `
+          <div class="heatmap-row-label">${days[dayIdx]}</div>
+          ${row.map(v => {
+            const intensity = max > 0 ? v / max : 0;
+            const alpha = v === 0 ? 0.05 : (0.15 + intensity * 0.85);
+            return `<div class="heatmap-cell" style="background:rgba(74,124,78,${alpha});" title="${v}회"></div>`;
+          }).join('')}
+        `).join('')}
+      </div>
+      <div class="heatmap-legend">
+        <span>적음</span>
+        <div class="heatmap-legend-bar"></div>
+        <span>많음 (최대 ${max}회)</span>
+      </div>
     </div>
   `;
 }

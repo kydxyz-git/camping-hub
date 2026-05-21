@@ -1233,9 +1233,50 @@ init();
 (function() {
   const STATS_URL = 'https://kyd-stats.kydxyz.workers.dev/log';
 
+  // ─── 디바이스 감지 (클라이언트 측에서 명시) ─────────────────────
+  // Worker가 User-Agent에서 감지하긴 하지만, sendBeacon은 일부 환경에서 UA가
+  // minimal로 전송될 수 있어 클라이언트에서 명시적으로 보내는 게 안전
+  function detectDevice() {
+    const ua = navigator.userAgent || '';
+    if (/iPad|Tablet|tablet/i.test(ua)) return 'tablet';
+    if (/Mobile|Android|iPhone|iPod|Phone/i.test(ua)) return 'mobile';
+    return 'desktop';
+  }
+  const DEVICE = detectDevice();
+
+  // ─── 레퍼러 분류 ────────────────────────────────────────────────
+  // 어디서 유입됐는지 자동 분류 (인스타/검색/직접 등)
+  function classifyReferrer() {
+    const ref = document.referrer || '';
+    if (!ref) return 'direct';  // 북마크, 직접 입력, 앱에서 진입
+    try {
+      const host = new URL(ref).hostname.toLowerCase();
+      // 자기 사이트 → null (referrer로 안 침)
+      if (host === location.hostname || host.endsWith('kydz.kr')) return null;
+      // 분류
+      if (host.includes('instagram') || host.includes('ig.me') || host.includes('cdninstagram')) return '인스타그램';
+      if (host.includes('facebook') || host.includes('fb.com')) return '페이스북';
+      if (host.includes('youtube') || host.includes('youtu.be')) return '유튜브';
+      if (host.includes('google')) return '구글';
+      if (host.includes('naver')) return '네이버';
+      if (host.includes('daum') || host.includes('kakao')) return '다음/카카오';
+      if (host.includes('bing')) return '빙';
+      if (host.includes('graega')) return '그래가';
+      // 기타: 호스트명 그대로
+      return host;
+    } catch { return 'direct'; }
+  }
+  const REFERRER = classifyReferrer();
+
   // 전송 함수 (sendBeacon 우선, 실패 시 fetch fallback)
   function send(payload) {
     try {
+      // 모든 이벤트에 device 자동 포함 (Worker가 fallback으로 UA 봄)
+      payload.device = DEVICE;
+      // referrer는 페이지뷰에만 (클릭은 페이지뷰 context로 묶임)
+      if (payload.type === 'pageview' && REFERRER) {
+        payload.referrer = REFERRER;
+      }
       const body = JSON.stringify(payload);
       if (navigator.sendBeacon) {
         // sendBeacon: Content-Type을 명시적으로 'text/plain'으로 보내 CORS preflight 우회
