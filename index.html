@@ -267,18 +267,17 @@
     .series-scroll-wrap { position:relative; overflow:hidden; margin:0 20px; }
     .sa-btn {
       position: absolute;
-      width: 28px;
-      height: 100%;  /* 부모(series-body-inner) 전체 높이 - 다양한 폭에서 일관 */
-      top: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.45);  /* 더 진한 배경 */
-      opacity: 1;
+      width: 24px;
+      height: 151px;  /* ep-thumb 모바일 높이와 동일 */
+      top: 0;
+      background: rgba(0, 0, 0, 0.4);
       border: none; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       padding: 0; color: #fff;
-      z-index: 10;  /* 카드 위에 확실히 */
+      z-index: 10;
       transition: background 0.15s;
     }
-    .sa-btn:hover { background: rgba(0, 0, 0, 0.65); }
+    .sa-btn:hover { background: rgba(0, 0, 0, 0.6); }
     @keyframes sa-bounce-r { 0%,100%{transform:translateX(0)} 40%{transform:translateX(4px)} }
     @keyframes sa-bounce-l { 0%,100%{transform:translateX(0)} 40%{transform:translateX(-4px)} }
     .sa-btn.sa-right:not(.sa-hide) svg { animation: sa-bounce-r 1.4s ease-in-out infinite; }
@@ -482,12 +481,13 @@
       .series-scroll .ep-ig svg {
         width: 14px; height: 14px;
       }
-      /* PC에서 화살표 크기 키움 (높이는 100%로 자동) */
+      /* PC에서 화살표 크기 - ep-thumb 높이(275px)와 동일하게 */
       .series-body-inner > .sa-btn {
-        width: 36px;
+        width: 32px;
+        height: 275px;
       }
       .series-body-inner > .sa-btn svg {
-        width: 14px; height: 24px;
+        width: 14px; height: 22px;
       }
 
       /* env-section (체크리스트) - 와이드 활용 */
