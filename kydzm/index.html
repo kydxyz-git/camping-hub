@@ -257,12 +257,6 @@
     margin-top: 4px; height: 12px; line-height: 12px;
     white-space: nowrap;
   }
-  .stats-popular-sub {
-    font-size: 12px; font-weight: 600; color: var(--muted);
-    margin-top: 12px; margin-bottom: 6px;
-    padding-bottom: 4px; border-bottom: 1px dashed var(--line);
-  }
-  .stats-popular-sub:first-of-type { margin-top: 0; }
   .stats-list {
     display: flex; flex-direction: column; gap: 4px;
   }
@@ -360,6 +354,48 @@
     line-height: 1.4;
     letter-spacing: -0.01em;
   }
+  /* 통계 컨테이너 내 카드 사이 여백 */
+  #stats-container > .card {
+    margin-bottom: 16px;
+  }
+  #stats-container > .card:last-child {
+    margin-bottom: 0;
+  }
+  /* 인기 콘텐츠 TOP 안의 섹션 구분 (시리즈/캠핑장/음식/장비) */
+  .stats-popular-sub {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-sub, var(--muted));
+    padding: 14px 0 8px 0;
+    margin-top: 12px;
+    border-top: 1px dashed var(--line);
+    letter-spacing: -0.01em;
+  }
+  /* 첫 섹션은 위 구분선 제거 */
+  .card > .stats-popular-sub:first-of-type,
+  .stats-section-title + .stats-popular-sub {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 4px;
+  }
+  /* 캠핑장 예약 플랫폼 뱃지 (메인 사이트의 camp-badge와 동일 컬러) */
+  .stats-platform-badge {
+    display: inline-block;
+    color: white;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 100px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin-right: 6px;
+    vertical-align: 1px;
+    white-space: nowrap;
+  }
+  .stats-platform-badge.bg-graega { background: #1a1a1a; }
+  .stats-platform-badge.bg-naver  { background: #03C75A; }
+  .stats-platform-badge.bg-camfit { background: #2D8F4C; }
+  .stats-platform-badge.bg-thankq { background: #FF6B2C; }
+  .stats-platform-badge.bg-etc    { background: #9e9e9e; }
   /* 등록일 작은 회색 텍스트 (인기 콘텐츠 항목 우측에 표시) */
   .stats-row-date {
     margin-left: 8px;
@@ -2001,10 +2037,13 @@ function renderStats(container, data) {
     const parts = p.split('/');
 
     if (parts[0] === 'camps' && parts[1] !== undefined && parts[1] !== '') {
+      // 뱃지 판별을 위한 캠핑장 원본 정보 같이 저장
+      const campObj = campById[parts[1]] || (/^\d+$/.test(parts[1]) ? cache.camps[+parts[1]] : null);
       popular.camps.push({
         name: resolveName('camps', parts[1]),
         url: resolveUrl('camps', parts[1]),
         created_at: resolveCreatedAt('camps', parts[1]),
+        graega: campObj ? !!campObj.graega : false,
         count, path,
       });
     } else if (parts[0] === 'series' && parts[1] !== undefined && parts[2] !== undefined) {
@@ -2140,11 +2179,18 @@ function renderStats(container, data) {
     <!-- 인기 콘텐츠 -->
     <div class="card">
       <div class="stats-section-title">🏆 인기 콘텐츠 TOP</div>
-      ${renderPopularSection('🏕 캠핑장', popular.camps, 5)}
       ${renderSeriesPopular('🎬 시리즈 EP', popular.series, 8)}
+      ${renderPopularSection('🏕 캠핑장', popular.camps, 5)}
       ${renderPopularSection('🍖 음식', popular.foods, 5)}
       ${renderPopularSection('🛠 장비', popular.items, 5)}
-      ${renderCategoryPopular('📂 카테고리', popular.category, 5)}
+    </div>
+
+    <!-- 카테고리 (별도 카드) -->
+    <div class="card">
+      <div class="stats-section-title">📂 카테고리</div>
+      ${popular.category.length === 0
+        ? '<div class="stats-empty">아직 데이터가 없어요</div>'
+        : renderCategoryPopular('', popular.category, 5)}
     </div>
 
     <!-- 기타 외부링크 (그래가파트너스 / Clip Creators / DM / 메일 / 인스타 프로필) -->
@@ -2225,16 +2271,29 @@ function renderPopularSection(label, items, limit = 5) {
         const tag = hasUrl ? 'a' : 'div';
         const attrs = hasUrl ? `href="${escapeHtml(it.url)}" target="_blank" rel="noopener"` : '';
         const dateTxt = it.created_at ? fmtDateShort(it.created_at) : '';
+        // 캠핑장 항목이면 (graega 키가 있으면) 플랫폼 뱃지 표시
+        const platformBadge = ('graega' in it) ? campPlatformBadgeHtml(it) : '';
         return `
         <${tag} class="stats-row${hasUrl ? ' is-link' : ''}" ${attrs}>
           <span class="stats-row-rank">${i + 1}</span>
-          <span class="stats-row-label">${escapeHtml(it.name)}${dateTxt ? `<span class="stats-row-date">${dateTxt}</span>` : ''}</span>
+          <span class="stats-row-label">${platformBadge}${escapeHtml(it.name)}${dateTxt ? `<span class="stats-row-date">${dateTxt}</span>` : ''}</span>
           <span class="stats-row-count">${it.count.toLocaleString()}</span>
         </${tag}>
       `;
       }).join('')}
     </div>
   `;
+}
+
+// 캠핑장 예약 플랫폼 뱃지 (메인 사이트의 campPlatformBadge와 동일 로직)
+function campPlatformBadgeHtml(it) {
+  if (it.graega) return '<span class="stats-platform-badge bg-graega">그래가</span>';
+  if (!it.url) return '';
+  const u = it.url.toLowerCase();
+  if (u.includes('naver.com')) return '<span class="stats-platform-badge bg-naver">네이버</span>';
+  if (u.includes('camfit.co.kr')) return '<span class="stats-platform-badge bg-camfit">캠핏</span>';
+  if (u.includes('thankqcamping.com') || u.includes('camperstory.com')) return '<span class="stats-platform-badge bg-thankq">땡큐캠핑</span>';
+  return '<span class="stats-platform-badge bg-etc">기타</span>';
 }
 
 function renderSeriesPopular(label, items, limit = 8) {
@@ -2268,7 +2327,7 @@ function renderSeriesPopular(label, items, limit = 8) {
 function renderCategoryPopular(label, items, limit = 5) {
   if (items.length === 0) return '';
   return `
-    <div class="stats-popular-sub">${label}</div>
+    ${label ? `<div class="stats-popular-sub">${label}</div>` : ''}
     <div class="stats-list">
       ${items.slice(0, limit).map((it, i) => `
         <div class="stats-row">
