@@ -1,42 +1,87 @@
 {
   "total": {
-    "pv": 46,
-    "click": 17,
+    "pv": 6,
+    "click": 16,
     "search": 0
   },
-  "daily": {
-    "2026-05-21": {
-      "pv": 46,
-      "click": 17,
-      "search": 0,
-      "devices": {
-        "desktop": 63
-      }
-    }
-  },
   "pages": {
-    "/#stories": 19,
-    "/": 16,
-    "/series/series_ba7cc89468/ep_ad505df37d": 4,
-    "/series/series_304565fb77/ep_a8b40077ca": 1,
-    "/series/series_ba7cc89468/ep_73bdfba72e": 1,
-    "/camps/camp_e220a217fd": 1,
-    "/items/item_960c2ff01c": 1,
-    "/#foods": 1,
-    "/#items": 1,
-    "/series/series_ba7cc89468/ep_b953456d73": 1
+    "/": 4,
+    "/#stories": 1,
+    "/series/series_test/ep_test": 1
   },
   "clicks": {
-    "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 11,
-    "/series/series_ba7cc89468/ep_b953456d73::인스타DM": 2,
+    "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 3,
+    "/series/series_ba7cc89468/ep_73bdfba72e::인스타DM": 2,
+    "/series/series_e8c17ad5da/ep_ff868ac30c::인스타DM": 1,
+    "__external__::DM 보내기": 1,
+    "__external__::그래가파트너스": 1,
+    "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 4,
+    "/series/series_304565fb77/ep_c2e684a351::인스타DM": 2,
     "/series/series_304565fb77/ep_a8b40077ca::인스타DM": 1,
-    "/foods/food_48d51f3296::컬리": 1,
-    "/series/series_ba7cc89468/ep_27438d1204::인스타DM": 1,
-    "/foods/food_790525d8a8::컬리": 1
+    "/series/series_ba7cc89468/ep_b953456d73::인스타DM": 1
   },
   "searches": {},
   "devices": {
-    "desktop": 63
+    "desktop": 22
   },
-  "updated_at": "2026-05-21T08:00:57.205Z"
+  "referrers": {
+    "direct": 6
+  },
+  "daily": {
+    "2026-05-21": {
+      "pv": 6,
+      "click": 16,
+      "search": 0,
+      "pages": {
+        "/": 4,
+        "/#stories": 1,
+        "/series/series_test/ep_test": 1
+      },
+      "clicks": {
+        "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 3,
+        "/series/series_ba7cc89468/ep_73bdfba72e::인스타DM": 2,
+        "/series/series_e8c17ad5da/ep_ff868ac30c::인스타DM": 1,
+        "__external__::DM 보내기": 1,
+        "__external__::그래가파트너스": 1,
+        "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 4,
+        "/series/series_304565fb77/ep_c2e684a351::인스타DM": 2,
+        "/series/series_304565fb77/ep_a8b40077ca::인스타DM": 1,
+        "/series/series_ba7cc89468/ep_b953456d73::인스타DM": 1
+      },
+      "searches": {},
+      "devices": {
+        "desktop": 22
+      },
+      "referrers": {
+        "direct": 6
+      },
+      "hourly": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "updated_at": "2026-05-21T12:00:10.083Z"
 }
