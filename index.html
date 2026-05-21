@@ -723,7 +723,11 @@ function renderSeries() {
               const epBadge = (ep.ep && ep.ep > 0) ? `<span class="ep-badge" style="background:${s.color}">EP.${String(ep.ep).padStart(2,'0')}</span>` : '';
               // 인스타 아이콘: 실제 인스타 주소가 입력된 경우에만
               const isInsta = ep.url && /instagram\.com/i.test(ep.url);
-              return `<${tag} class="ep-card" ${attr}>
+              // 통계 추적용 path/title
+              const trackTitle = `${s.name} - ${ep.title}`.replace(/"/g, '&quot;');
+              const trackPath = `/series/${encodeURIComponent(s.name)}/${encodeURIComponent(ep.title)}`;
+              const trackAttrs = `data-track-path="${trackPath}" data-track-title="${trackTitle}"`;
+              return `<${tag} class="ep-card" ${attr} ${trackAttrs}>
                 <div class="ep-thumb${empty?' empty':''}">
                   ${ep.thumb ? `<img src="${ep.thumb}" loading="lazy">` : `<div class="ep-thumb-ph">${PH_SVG}</div>`}
                   ${epBadge}
@@ -794,6 +798,8 @@ function saInit() {
 /* ─── 상품 카드 렌더 ─── */
 function renderProducts(containerId, dataArr) {
   const grid = document.getElementById(containerId);
+  // 통계 추적 카테고리 (food-grid → foods, item-grid → items)
+  const trackCategory = containerId === 'food-grid' ? 'foods' : containerId === 'item-grid' ? 'items' : 'product';
   // 비공개 항목 제외 + 매 페이지 로드마다 랜덤 셔플
   const visible = (dataArr || []).filter(x => x.published !== false);
   const shuffled = visible.slice().sort(() => Math.random() - 0.5);
@@ -805,7 +811,11 @@ function renderProducts(containerId, dataArr) {
     const src = (item.source||'').toLowerCase(); const bc = (src==='쿠팡'||src==='coupang')?'badge-coupang':(src==='컬리'||src==='kurly')?'badge-kurly':(src==='네이버'||src==='naver')?'badge-naver':'';
     const bl = (src==='쿠팡'||src==='coupang')?'쿠팡':(src==='컬리'||src==='kurly')?'컬리':(src==='네이버'||src==='naver')?'네이버':'';
     const empty = !item.url || item.url==='#';
-    return `<a class="product-card${empty?' empty':''}" href="${empty?'#':item.url}" ${empty?'':' target="_blank" rel="noopener"'}>
+    // 통계 추적 path/title
+    const trackPath = `/${trackCategory}/${encodeURIComponent(item.name)}`;
+    const trackTitle = (item.name || '').replace(/"/g, '&quot;');
+    const trackAttrs = `data-track-path="${trackPath}" data-track-title="${trackTitle}"`;
+    return `<a class="product-card${empty?' empty':''}" href="${empty?'#':item.url}" ${empty?'':' target="_blank" rel="noopener"'} ${trackAttrs}>
       <div class="product-thumb${item.thumb?'':' ph'}">
         ${item.thumb ? `<img src="${item.thumb}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
         ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : ''}
@@ -896,8 +906,10 @@ function renderGrid() {
     const attrs = hasUrl ? `href="${c.url}" target="_blank" rel="noopener"` : '';
     const nocursor = hasUrl ? '' : 'style="cursor:default;animation-delay:'+(i*0.03)+'s" ';
     const style = hasUrl ? `style="animation-delay:${i*0.03}s"` : nocursor.slice(0,-1);
+    // 통계 추적용: 카드 클릭 시 페이지뷰 + 클릭 시 컨텍스트로 사용
+    const trackAttrs = `data-track-path="/camps/${encodeURIComponent(c.name)}" data-track-title="${(c.name || '').replace(/"/g, '&quot;')}"`;
     return `
-    <${tag} ${attrs} class="camp-card${hasUrl?'':' no-link'}" ${style}>
+    <${tag} ${attrs} ${trackAttrs} class="camp-card${hasUrl?'':' no-link'}" ${style}>
       <div class="camp-img">
         ${campThumb(c)}
         ${campPlatformBadge(c)}
@@ -1153,19 +1165,40 @@ init();
   }
 
   // 클릭 이벤트 캡쳐 (document에 한 번만 등록)
+  // 1) data-track-path 있는 카드 클릭 시 페이지뷰 이벤트 발송
+  //    (메인 사이트가 SPA가 아니라 카드/모달 구조라 hash 변경이 없음)
+  // 2) 외부 링크면 같은 path를 context로 사용해서 클릭 이벤트도 발송
+  //    → "여름캠핑장 EP.05 → 인스타DM" 같은 컨텍스트가 만들어짐
   document.addEventListener('click', function(e) {
+    // 추적 카드(시리즈 EP/캠핑장/음식/장비) 클릭 → 페이지뷰
+    const card = e.target.closest('[data-track-path]');
+    let cardPath = '';
+    if (card) {
+      cardPath = card.getAttribute('data-track-path') || '';
+      const cardTitle = card.getAttribute('data-track-title') || '';
+      if (cardPath) {
+        send({
+          type: 'pageview',
+          path: cardPath,
+          title: cardTitle,
+        });
+      }
+    }
+
+    // 외부 링크 클릭 추적
     const a = e.target.closest('a[href]');
     if (!a) return;
     const href = a.getAttribute('href');
     if (!href) return;
     const target = detectTarget(href);
     if (!target) return; // 내부 링크 또는 미분류 → 추적 안 함
-    // 컨텍스트: 어떤 페이지에서 클릭했는지
+    // context: 추적 카드 path 우선, 없으면 현재 위치 (탭 hash)
+    const context = cardPath || (location.pathname + (location.hash || ''));
     send({
       type: 'click',
       target,
       url: href,
-      context: location.pathname + (location.hash || ''),
+      context,
     });
   }, true);
 
