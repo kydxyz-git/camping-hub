@@ -1445,6 +1445,15 @@
     }
   }
 
+  // Android 일반 브라우저에서 인스타 앱 강제 호출 (package=com.instagram.android)
+  function toInstaIntentUrl(url) {
+    return 'intent://' + url.replace(/^https?:\/\//, '') +
+      '#Intent;scheme=https;action=android.intent.action.VIEW;' +
+      'category=android.intent.category.BROWSABLE;' +
+      'package=com.instagram.android;' +
+      'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+  }
+
   document.addEventListener('click', function(e) {
     const a = e.target.closest('a[href]');
     if (!a) return;
@@ -1454,8 +1463,12 @@
     if (isMetaInApp) {
       e.preventDefault();
       openInExternalBrowser(normalized);
+    } else if (isAndroid) {
+      // Android 일반 브라우저 (삼성 인터넷 등): intent:// + package로 인스타 앱 강제 호출
+      e.preventDefault();
+      window.location.href = toInstaIntentUrl(normalized);
     } else if (normalized !== href) {
-      // 일반 브라우저: anchor href를 정규화 URL로 교체 → 브라우저 기본 navigation
+      // iOS / PC: anchor href 정규화 URL로 교체
       a.setAttribute('href', normalized);
     }
   }, true);

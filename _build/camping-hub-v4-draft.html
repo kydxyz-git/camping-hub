@@ -932,7 +932,7 @@ function applyMarquee() {
       const safariUrl = url.replace(/^https?:\/\//, 'x-safari-https://');
       window.location.href = safariUrl;
     } else if (isAndroid) {
-      // Android: intent:// 스킴으로 사용자 기본 브라우저(삼성 인터넷/Chrome/Whale 등)로 강제 호출
+      // Android 인앱: intent:// + package 미지정 → 사용자 기본 브라우저
       const intentUrl = 'intent://' + url.replace(/^https?:\/\//, '') +
         '#Intent;scheme=https;action=android.intent.action.VIEW;' +
         'category=android.intent.category.BROWSABLE;' +
@@ -943,6 +943,15 @@ function applyMarquee() {
     }
   }
 
+  // Android 일반 브라우저(Chrome/삼성/네이버 등)에서 인스타 앱 강제 호출용
+  function toInstaIntentUrl(url) {
+    return 'intent://' + url.replace(/^https?:\/\//, '') +
+      '#Intent;scheme=https;action=android.intent.action.VIEW;' +
+      'category=android.intent.category.BROWSABLE;' +
+      'package=com.instagram.android;' +
+      'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+  }
+
   document.addEventListener('click', function(e) {
     const a = e.target.closest('a[href]');
     if (!a) return;
@@ -950,14 +959,17 @@ function applyMarquee() {
     if (!href || !/^https?:\/\/(www\.)?instagram\.com/i.test(href)) return;
     const normalized = normalizeInstagramUrl(href);
     if (isMetaInApp) {
-      // 인스타/페북 인앱: 외부 브라우저 강제 전환 + 정규화 URL
       e.preventDefault();
       openInExternalBrowser(normalized);
+    } else if (isAndroid) {
+      // Android 일반 브라우저: 삼성 인터넷 등 anchor href 정규화로 안 잡히는 경우 대응
+      // intent:// + package=com.instagram.android로 인스타 앱 강제 호출
+      e.preventDefault();
+      window.location.href = toInstaIntentUrl(normalized);
     } else if (normalized !== href) {
-      // 일반 브라우저: anchor href를 정규화 URL로 교체 (window.open은 Universal Link 트리거 안 되는 경우 있음)
+      // iOS / PC: anchor href를 정규화 URL로 교체
       a.setAttribute('href', normalized);
     }
-    // 정규화도 안 됐고 인앱도 아니면 기본 동작 유지
   }, true);
 })();
 

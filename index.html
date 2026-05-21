@@ -1139,13 +1139,24 @@ function applyMarquee() {
     normalizeAllInstagramAnchors();
   }
 
+  // 인스타 앱 호출용 intent:// URL 생성 (Android)
+  // package=com.instagram.android 지정 시 인스타 앱 직접 호출 (앱 우선 처리)
+  // S.browser_fallback_url로 앱 미설치 시 웹페이지 fallback
+  function toInstaIntentUrl(url) {
+    return 'intent://' + url.replace(/^https?:\/\//, '') +
+      '#Intent;scheme=https;action=android.intent.action.VIEW;' +
+      'category=android.intent.category.BROWSABLE;' +
+      'package=com.instagram.android;' +
+      'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+  }
+
   function openInExternalBrowser(url) {
     if (isIOS) {
       // iOS: x-safari-https:// 스킴으로 Safari 강제 호출
       const safariUrl = url.replace(/^https?:\/\//, 'x-safari-https://');
       window.location.href = safariUrl;
     } else if (isAndroid) {
-      // Android: intent:// 스킴으로 사용자 기본 브라우저(삼성 인터넷/Chrome/Whale 등)로 강제 호출
+      // Android 인앱: intent:// + package 미지정 → 사용자 기본 브라우저 (삼성 인터넷/Chrome 등)
       const intentUrl = 'intent://' + url.replace(/^https?:\/\//, '') +
         '#Intent;scheme=https;action=android.intent.action.VIEW;' +
         'category=android.intent.category.BROWSABLE;' +
@@ -1163,15 +1174,20 @@ function applyMarquee() {
     if (!href || !/^https?:\/\/(www\.)?instagram\.com/i.test(href)) return;
     const normalized = normalizeInstagramUrl(href);
     if (isMetaInApp) {
-      // 인스타/페북 인앱: 외부 브라우저 강제 전환 + 정규화 URL
+      // 인스타/페북 인앱: 외부 브라우저 강제 전환 (외부 브라우저가 다시 인스타 앱으로 Universal Link)
       e.preventDefault();
       openInExternalBrowser(normalized);
+    } else if (isAndroid) {
+      // Android 일반 브라우저 (Chrome/삼성 인터넷/네이버 등): intent:// + package=com.instagram.android
+      // → 인스타 앱 강제 호출 (앱 설치 시 직접 앱 열림, 미설치 시 fallback URL)
+      // 삼성 인터넷이 anchor href 정규화만으론 인스타 앱 호출 안 잡히는 케이스 해결
+      e.preventDefault();
+      window.location.href = toInstaIntentUrl(normalized);
     } else if (normalized !== href) {
-      // 일반 브라우저: anchor href를 정규화 URL로 교체 (window.open은 Universal Link 트리거 안 되는 경우 있음)
-      // 캡처 단계에서 href 변경 → 같은 클릭에서 새 href로 자연 navigate
+      // iOS / PC: anchor href를 정규화 URL로 교체 → 브라우저 기본 navigation (Universal Link 잡힘)
       a.setAttribute('href', normalized);
     }
-    // 정규화도 안 됐고 인앱도 아니면 기본 동작 유지
+    // 정규화도 안 됐고 인앱/Android도 아니면 기본 동작 유지
   }, true);
 })();
 
@@ -1346,15 +1362,18 @@ init();
 
   // ─── 1) 페이지뷰 추적 ──────────────────────────────────────────────
   // 해시 변경마다 전송 (예: #, #camps, #camps/12, #series/0/3)
-  // 중복 차단 (3단계 OR):
-  // 1) 메모리: 같은 경로 1초 내 (hashchange 빠른 반복)
-  // 2) sessionStorage: 같은 경로 30분 내 (탭 내 새로고침/재방문)
-  // 3) localStorage: 같은 경로 24시간 내 (다른 탭/세션 포함, 기기 영구 기억)
+  // 중복 차단 (path 종류에 따라 dedup 강도 분리):
+  // ▶ 방문 카운팅 (/, /#stories, /#camps 등 탭/홈):
+  //   1) 메모리 1초 + 2) sessionStorage 30분 + 3) localStorage 24시간
+  // ▶ 콘텐츠 클릭 (/series/xxx, /camps/xxx, /foods/xxx, /items/xxx 등 카드):
+  //   1) 메모리 1초 + 2) sessionStorage 5분 (기존 유지) — 24시간은 X
+  //   → 자주 본 콘텐츠가 24시간 동안 안 잡히면 인기 데이터가 왜곡되므로 콘텐츠는 짧게
   let lastPath = '';
   let lastSent = 0;
-  const MEM_DEDUP_MS     = 1000;                // 1초
-  const SESSION_DEDUP_MS = 30 * 60 * 1000;      // 30분 (5분에서 강화)
-  const LOCAL_DEDUP_MS   = 24 * 60 * 60 * 1000; // 24시간 (기기 영구, 신규)
+  const MEM_DEDUP_MS       = 1000;                // 1초 (공통)
+  const CONTENT_DEDUP_MS   = 5 * 60 * 1000;       // 콘텐츠 클릭 5분 (기존)
+  const VISIT_DEDUP_MS     = 30 * 60 * 1000;      // 방문 30분 (5분→강화)
+  const VISIT_LOCAL_DEDUP  = 24 * 60 * 60 * 1000; // 방문 24시간 (신규)
   // 디버그 모드: URL에 ?debug=1 또는 localStorage.setItem('kydzm:debug', '1')
   const DEBUG = (function() {
     try {
@@ -1367,42 +1386,50 @@ init();
   })();
   if (DEBUG) console.log('[kydz stats] debug ON, device=' + DEVICE + ', referrer=' + REFERRER);
 
+  // 콘텐츠 경로 판별: /series/xxx, /camps/xxx, /foods/xxx, /items/xxx 형태
+  // 방문 경로 (/, /#stories 등)는 false
+  function isContentPath(path) {
+    return /^\/(series|camps|foods|items)\/[^/]+/.test(path);
+  }
+
   function shouldTrack(path) {
     const now = Date.now();
-    // 1) 메모리 중복 차단 (1초)
+    const isContent = isContentPath(path);
+    const sessionDedupMs = isContent ? CONTENT_DEDUP_MS : VISIT_DEDUP_MS;
+    // 1) 메모리 중복 차단 (1초, 공통)
     if (path === lastPath && now - lastSent < MEM_DEDUP_MS) {
       if (DEBUG) console.log('[kydz stats] dedup 1s:', path);
       return false;
     }
-    // 2) sessionStorage 중복 차단 (30분, 탭 내)
+    // 2) sessionStorage 중복 차단 (콘텐츠 5분 / 방문 30분)
     try {
       const key = 'kydzm:pv:' + path;
       const prev = sessionStorage.getItem(key);
-      if (prev && (now - parseInt(prev, 10) < SESSION_DEDUP_MS)) {
-        if (DEBUG) console.log('[kydz stats] dedup 30m:', path);
+      if (prev && (now - parseInt(prev, 10) < sessionDedupMs)) {
+        if (DEBUG) console.log(`[kydz stats] dedup ${isContent ? '5m' : '30m'}:`, path);
         return false;
       }
       sessionStorage.setItem(key, String(now));
     } catch (e) {}
-    // 3) localStorage 중복 차단 (24시간, 기기 영구)
-    //    탭이 달라도 같은 기기면 24시간 내 같은 경로는 1회만 카운트
-    //    시크릿 모드/다른 기기는 별도 카운트
-    try {
-      const lkey = 'kydzm:pvd:' + path;
-      const prev = localStorage.getItem(lkey);
-      if (prev && (now - parseInt(prev, 10) < LOCAL_DEDUP_MS)) {
-        if (DEBUG) console.log('[kydz stats] dedup 24h:', path);
-        return false;
-      }
-      localStorage.setItem(lkey, String(now));
-    } catch (e) {}
+    // 3) localStorage 24시간 dedup — 방문 경로에만 적용 (콘텐츠는 X)
+    if (!isContent) {
+      try {
+        const lkey = 'kydzm:pvd:' + path;
+        const prev = localStorage.getItem(lkey);
+        if (prev && (now - parseInt(prev, 10) < VISIT_LOCAL_DEDUP)) {
+          if (DEBUG) console.log('[kydz stats] dedup 24h:', path);
+          return false;
+        }
+        localStorage.setItem(lkey, String(now));
+      } catch (e) {}
+    }
     lastPath = path;
     lastSent = now;
     return true;
   }
 
   // 페이지 로드 시 24시간 지난 localStorage dedup 키 자동 정리 (lazy cleanup)
-  // path 종류가 늘어나도 영구 누적 안 되도록
+  // 방문 dedup만 localStorage 사용하므로 cleanup도 그것만
   (function cleanupOldLocalDedup() {
     try {
       const now = Date.now();
@@ -1411,7 +1438,7 @@ init();
         const k = localStorage.key(i);
         if (!k || !k.startsWith('kydzm:pvd:')) continue;
         const v = localStorage.getItem(k);
-        if (v && (now - parseInt(v, 10)) > LOCAL_DEDUP_MS) {
+        if (v && (now - parseInt(v, 10)) > VISIT_LOCAL_DEDUP) {
           expired.push(k);
         }
       }
