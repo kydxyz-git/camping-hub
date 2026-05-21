@@ -1278,22 +1278,33 @@ init();
         payload.referrer = REFERRER;
       }
       const body = JSON.stringify(payload);
+      let beaconOk = false;
       if (navigator.sendBeacon) {
-        // sendBeacon: Content-Type을 명시적으로 'text/plain'으로 보내 CORS preflight 우회
-        // (Worker는 request.text() 후 JSON.parse 하므로 Content-Type 무관)
+        // sendBeacon은 같은 핸들러에서 두 번째 호출 시 false 반환 가능 (브라우저 큐 한계)
         const blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
-        navigator.sendBeacon(STATS_URL, blob);
-      } else {
+        beaconOk = navigator.sendBeacon(STATS_URL, blob);
+        if (DEBUG && !beaconOk) console.log('[kydz stats] sendBeacon returned false, falling back to fetch');
+      }
+      // sendBeacon이 없거나 false 반환 시 fetch fallback (keepalive로 navigation 후도 OK)
+      if (!beaconOk) {
         fetch(STATS_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
           body,
           keepalive: true,
           mode: 'cors',
-          credentials: 'omit',  // credentials 안 보냄 (CORS 단순 요청 조건)
-        }).catch(() => {});
+          credentials: 'omit',
+        }).then(r => {
+          if (DEBUG) console.log('[kydz stats] fetch fallback:', r.status);
+        }).catch(err => {
+          if (DEBUG) console.log('[kydz stats] fetch fallback failed:', err.message);
+        });
+      } else if (DEBUG) {
+        console.log('[kydz stats] sendBeacon OK');
       }
-    } catch (e) { /* noop */ }
+    } catch (e) {
+      if (DEBUG) console.log('[kydz stats] send error:', e.message);
+    }
   }
 
   // ─── 1) 페이지뷰 추적 ──────────────────────────────────────────────
