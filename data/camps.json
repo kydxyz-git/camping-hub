@@ -24,7 +24,8 @@
     ],
     "rating": 3,
     "visits": 15,
-    "published": true
+    "published": true,
+    "id": "camp_e5a202316d"
   },
   {
     "name": "캠프627 경호강",
@@ -52,7 +53,8 @@
     ],
     "rating": 5,
     "visits": 3,
-    "published": true
+    "published": true,
+    "id": "camp_b8d29b3f00"
   },
   {
     "name": "우니메이카 산청",
@@ -75,7 +77,8 @@
     ],
     "rating": 4,
     "visits": 2,
-    "published": true
+    "published": true,
+    "id": "camp_d9699234d4"
   },
   {
     "name": "문경 그린스톤",
@@ -105,7 +108,8 @@
     ],
     "rating": 4,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_8e1adf57aa"
   },
   {
     "name": "밀양 구만산장",
@@ -136,7 +140,8 @@
     ],
     "rating": 3.5,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_0741c2c7b7"
   },
   {
     "name": "상우농장",
@@ -167,7 +172,8 @@
     ],
     "rating": 5,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_e220a217fd"
   },
   {
     "name": "봉화별캠핑장",
@@ -197,7 +203,8 @@
     ],
     "rating": 5,
     "visits": 27,
-    "published": true
+    "published": true,
+    "id": "camp_e06cb829df"
   },
   {
     "name": "왕피천모래언덕",
@@ -219,7 +226,8 @@
     "imgs": [],
     "rating": 4.5,
     "visits": 2,
-    "published": true
+    "published": true,
+    "id": "camp_17e022c947"
   },
   {
     "name": "곤달비캠프",
@@ -241,7 +249,8 @@
     "imgs": [],
     "rating": 4,
     "visits": 5,
-    "published": true
+    "published": true,
+    "id": "camp_e1e0dde7b3"
   },
   {
     "name": "창바우마을 해송피크닉장",
@@ -262,7 +271,8 @@
     "imgs": [],
     "rating": 4,
     "visits": 4,
-    "published": true
+    "published": true,
+    "id": "camp_357cccb118"
   },
   {
     "name": "THE360캠핑장",
@@ -283,7 +293,8 @@
     "imgs": [],
     "rating": 4,
     "visits": 2,
-    "published": true
+    "published": true,
+    "id": "camp_922e05eeae"
   },
   {
     "name": "또바기캠핑장",
@@ -304,7 +315,8 @@
     "imgs": [],
     "rating": 4,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_253105161b"
   },
   {
     "name": "문경히든벨리캠핑장",
@@ -327,7 +339,8 @@
     "imgs": [],
     "rating": 4,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_c6d9da8748"
   },
   {
     "name": "새움정",
@@ -351,7 +364,8 @@
     "imgs": [],
     "rating": 4,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_f0ee7dd769"
   },
   {
     "name": "왕피천숲속캠핑장",
@@ -369,7 +383,8 @@
     "imgs": [],
     "rating": 4,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_7ce3fbcc39"
   },
   {
     "name": "상주우산오토캠핑장",
@@ -387,7 +402,8 @@
     "imgs": [],
     "rating": 3.5,
     "visits": 3,
-    "published": true
+    "published": true,
+    "id": "camp_c47fbddb56"
   },
   {
     "name": "구미캠핑장",
@@ -406,7 +422,8 @@
     "imgs": [],
     "rating": 3.5,
     "visits": 2,
-    "published": true
+    "published": true,
+    "id": "camp_bb40ee2105"
   },
   {
     "name": "내를건너서숲으로",
@@ -426,7 +443,8 @@
     "imgs": [],
     "rating": 3.5,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_6ecd104353"
   },
   {
     "name": "안동우니메이카",
@@ -448,7 +466,8 @@
     "imgs": [],
     "rating": 3.5,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_75ee389015"
   },
   {
     "name": "월명612",
@@ -470,7 +489,8 @@
     "imgs": [],
     "rating": 3.5,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_a9c16113fe"
   },
   {
     "name": "경주에덴펜션&오토캠핑장",
@@ -491,7 +511,8 @@
     "imgs": [],
     "rating": 3.5,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_e2b57e4e5d"
   },
   {
     "name": "포항비손농장",
@@ -514,7 +535,8 @@
     "imgs": [],
     "rating": 3.5,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_fd26ab4286"
   },
   {
     "name": "무릉관광농원(캠핑빌리지)",
@@ -533,7 +555,8 @@
     "imgs": [],
     "rating": 3.5,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_4ba7c9c565"
   },
   {
     "name": "하늘아래첫동네",
@@ -551,7 +574,8 @@
     "imgs": [],
     "rating": 3.5,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_43b6759cd3"
   },
   {
     "name": "휴앤락오토캠핑장",
@@ -571,7 +595,8 @@
     "imgs": [],
     "rating": 3.5,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_0760ee65ba"
   },
   {
     "name": "경주가나캠핑장",
@@ -589,7 +614,8 @@
     "imgs": [],
     "rating": 3,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_7b58bb3d0e"
   },
   {
     "name": "라라캠핑장",
@@ -607,7 +633,8 @@
     "imgs": [],
     "rating": 3,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_52f0d87941"
   },
   {
     "name": "칠곡보오토캠핑장",
@@ -626,7 +653,8 @@
     "imgs": [],
     "rating": 3,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_7fafd07d0a"
   },
   {
     "name": "포항백경오토캠핑장",
@@ -645,7 +673,8 @@
     "imgs": [],
     "rating": 3,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_3f541ff6e3"
   },
   {
     "name": "황매산별쿵캠핑장",
@@ -672,7 +701,8 @@
     ],
     "rating": 5,
     "visits": 13,
-    "published": true
+    "published": true,
+    "id": "camp_82599ba9bf"
   },
   {
     "name": "황석산라온오토캠핑장",
@@ -690,7 +720,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 6,
-    "published": true
+    "published": true,
+    "id": "camp_c284aeffe4"
   },
   {
     "name": "산중오토캠핑장",
@@ -708,7 +739,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 4,
-    "published": true
+    "published": true,
+    "id": "camp_2dee32afa2"
   },
   {
     "name": "산중오토계곡캠핑장",
@@ -723,7 +755,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_d69cf442b4"
   },
   {
     "name": "버드하우스캠핑장",
@@ -742,7 +775,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 4,
-    "published": true
+    "published": true,
+    "id": "camp_8f72106bcf"
   },
   {
     "name": "합천정양오토캠핑장",
@@ -761,7 +795,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 3,
-    "published": true
+    "published": true,
+    "id": "camp_e7783e56dc"
   },
   {
     "name": "든해솔계곡캠핑장",
@@ -776,7 +811,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 3,
-    "published": true
+    "published": true,
+    "id": "camp_b2804ced5e"
   },
   {
     "name": "사천솔섬오토캠핑장",
@@ -795,7 +831,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 3,
-    "published": true
+    "published": true,
+    "id": "camp_133dd5b2c6"
   },
   {
     "name": "산청별천지캠핑장",
@@ -810,7 +847,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 3,
-    "published": true
+    "published": true,
+    "id": "camp_873dcfe92d"
   },
   {
     "name": "청풍호반오토캠핑장",
@@ -825,7 +863,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 2,
-    "published": true
+    "published": true,
+    "id": "camp_6f9fbf5abd"
   },
   {
     "name": "산청반달캠핑장",
@@ -840,7 +879,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 2,
-    "published": true
+    "published": true,
+    "id": "camp_9ada4f994a"
   },
   {
     "name": "경남밀양솔바람캠핑장",
@@ -855,7 +895,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_bcd074ef33"
   },
   {
     "name": "구지강변오토캠핑장",
@@ -870,7 +911,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_f5b616b34c"
   },
   {
     "name": "바람이좋은저녁캠핑장",
@@ -885,7 +927,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_ec631c9ffe"
   },
   {
     "name": "거창강가펜션캠핑장",
@@ -901,7 +944,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_58cc50d43a"
   },
   {
     "name": "고흥나로힐링캠핑장",
@@ -916,7 +960,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_b205723404"
   },
   {
     "name": "대경오토캠핑장",
@@ -931,7 +976,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_c0830df6de"
   },
   {
     "name": "구례섬지캠핑장",
@@ -946,7 +992,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_701884bc18"
   },
   {
     "name": "안녕오토캠핑장",
@@ -961,7 +1008,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_6f2737e954"
   },
   {
     "name": "캠프하다",
@@ -976,7 +1024,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_c51f85254a"
   },
   {
     "name": "온새미로캠핑장",
@@ -991,7 +1040,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_50b5aafda9"
   },
   {
     "name": "달서별빛캠핑장",
@@ -1006,7 +1056,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_4b6ea440d0"
   },
   {
     "name": "덕풍계곡별빛야영장",
@@ -1021,7 +1072,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_ed97486488"
   },
   {
     "name": "단양소풍캠핑장",
@@ -1036,7 +1088,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_02c72e06a3"
   },
   {
     "name": "경산갓바위캠핑장",
@@ -1051,7 +1104,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_f0df0a949b"
   },
   {
     "name": "지리산365캠핑장",
@@ -1067,7 +1121,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_8625b4018d"
   },
   {
     "name": "해피단밀오토캠핑장",
@@ -1082,7 +1137,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_24560122c2"
   },
   {
     "name": "캠핑느루",
@@ -1098,7 +1154,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_9bcf85928e"
   },
   {
     "name": "하늘하루펜션앤캠핑장",
@@ -1113,7 +1170,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_7f83d13375"
   },
   {
     "name": "양산무릉도원캠핑장",
@@ -1128,7 +1186,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_55791da55f"
   },
   {
     "name": "나조스트",
@@ -1144,7 +1203,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_6cc478b0b1"
   },
   {
     "name": "장성편백힐치유의숲",
@@ -1159,7 +1219,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_2d2adbe3fd"
   },
   {
     "name": "너와두리농촌캠핑장",
@@ -1172,7 +1233,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_51082836b6"
   },
   {
     "name": "고성상족암캠핑장",
@@ -1187,7 +1249,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_0380055336"
   },
   {
     "name": "몽산포오션캠핑장",
@@ -1202,7 +1265,8 @@
     "imgs": [],
     "rating": 0,
     "visits": 2,
-    "published": true
+    "published": true,
+    "id": "camp_117766ff1c"
   },
   {
     "name": "교육청수련원",
@@ -1217,6 +1281,7 @@
     "imgs": [],
     "rating": 0,
     "visits": 1,
-    "published": true
+    "published": true,
+    "id": "camp_f756d38620"
   }
 ]

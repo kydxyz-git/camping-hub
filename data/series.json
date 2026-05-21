@@ -12,7 +12,8 @@
         "url": "https://www.instagram.com/reel/DYdGtAtTMKg/?igsh=YjNyN3lwcGloNmoy",
         "thumb": "./images/series/summer-ep05.jpg",
         "page_id": "36302bbd-cd95-8069-8a26-ef9471557a29",
-        "published": true
+        "published": true,
+        "id": "ep_ad505df37d"
       },
       {
         "ep": 4,
@@ -20,7 +21,8 @@
         "url": "https://www.instagram.com/reel/DYQSBYjTGH7/?igsh=MTZtdzRweG9zbGtpZA==",
         "thumb": "./images/series/summer-ep04.jpg",
         "page_id": "35e02bbd-cd95-8070-8a80-f4e601d7cb8b",
-        "published": true
+        "published": true,
+        "id": "ep_73bdfba72e"
       },
       {
         "ep": 3,
@@ -28,7 +30,8 @@
         "url": "https://www.instagram.com/reel/DYLENgzTkMj/?igsh=ZWh3bm4xbmpzcjRv",
         "thumb": "./images/series/summer-ep03.jpg",
         "page_id": "35c02bbd-cd95-8024-aa85-e08823bd611f",
-        "published": true
+        "published": true,
+        "id": "ep_3acff3998f"
       },
       {
         "ep": 2,
@@ -36,7 +39,8 @@
         "url": "https://www.instagram.com/reel/DXv5NXvB08F/?igsh=Z25wcnczeTVleHVw",
         "thumb": "./images/series/summer-ep02.jpg",
         "page_id": "35202bbd-cd95-8082-b44c-da888a032c30",
-        "published": true
+        "published": true,
+        "id": "ep_27438d1204"
       },
       {
         "ep": 1,
@@ -44,9 +48,11 @@
         "url": "https://www.instagram.com/reel/DXYt1NME24U/?igsh=MTN0bDAwbXYxZTRpMg==",
         "thumb": "./images/series/summer-ep01.jpg",
         "page_id": "34a02bbd-cd95-816d-bf06-f0498e7d7419",
-        "published": true
+        "published": true,
+        "id": "ep_b953456d73"
       }
-    ]
+    ],
+    "id": "series_ba7cc89468"
   },
   {
     "name": "또 해먹고 싶은 캠핑 음식",
@@ -61,7 +67,8 @@
         "url": "https://www.instagram.com/p/DX5BnxlE6hr/?igsh=amQzanpudnFjYzJs",
         "thumb": "./images/series/food-ep02.jpg",
         "page_id": "35502bbd-cd95-8014-8b29-fbe8aa605599",
-        "published": true
+        "published": true,
+        "id": "ep_c2e684a351"
       },
       {
         "ep": 1,
@@ -69,9 +76,11 @@
         "url": "https://www.instagram.com/p/DXUCu6vE6lw/?igsh=eDlvdml3dzFmaHMw",
         "thumb": "./images/series/food-ep01.jpg",
         "page_id": "34a02bbd-cd95-80a2-9894-c9bdb1d19f73",
-        "published": true
+        "published": true,
+        "id": "ep_a8b40077ca"
       }
-    ]
+    ],
+    "id": "series_304565fb77"
   },
   {
     "name": "장비소개",
@@ -86,7 +95,8 @@
         "thumb": "./images/series/gear-02.jpg",
         "page_id": "35802bbd-cd95-802b-90e6-c82814ea57ad",
         "ep": 0,
-        "published": true
+        "published": true,
+        "id": "ep_7dd208fe26"
       },
       {
         "ep": 0,
@@ -94,9 +104,11 @@
         "url": "https://www.instagram.com/p/DWkX9XuE7wz",
         "thumb": "./images/series/gear-01.jpg",
         "page_id": "34a02bbd-cd95-80d5-add8-c0687a88924f",
-        "published": true
+        "published": true,
+        "id": "ep_cf2282cf4e"
       }
-    ]
+    ],
+    "id": "series_873cdcaf61"
   },
   {
     "name": "캠핑꿀팁",
@@ -111,7 +123,8 @@
         "url": "https://www.instagram.com/p/DJ1XyvPT5rq/",
         "thumb": "./images/series/tips-01.jpg",
         "page_id": "34a02bbd-cd95-80e7-8c62-dd7ae01d8737",
-        "published": true
+        "published": true,
+        "id": "ep_ff868ac30c"
       },
       {
         "ep": 0,
@@ -119,7 +132,8 @@
         "url": "https://www.instagram.com/p/DSQvxXlkx5E/",
         "thumb": "./images/series/tips-02.jpg",
         "page_id": "34a02bbd-cd95-8010-a774-fa35c5bb8ce2",
-        "published": true
+        "published": true,
+        "id": "ep_7a390bade9"
       },
       {
         "ep": 0,
@@ -127,7 +141,8 @@
         "url": "https://www.instagram.com/p/DKcA-brzRLN/",
         "thumb": "./images/series/tips-03.jpg",
         "page_id": "34a02bbd-cd95-80ce-9989-debe96852e1f",
-        "published": true
+        "published": true,
+        "id": "ep_e383972ec6"
       },
       {
         "ep": 0,
@@ -135,9 +150,11 @@
         "url": "https://www.instagram.com/reel/DXxYOT1TeAz/?igsh=OXN2ajlyMmF5d2lj",
         "thumb": "./images/series/tips-04.jpg",
         "page_id": "34a02bbd-cd95-8096-9f3e-cb89f0a3e768",
-        "published": true
+        "published": true,
+        "id": "ep_e46450a717"
       }
-    ]
+    ],
+    "id": "series_e8c17ad5da"
   },
   {
     "name": "봄·가을에 가기 좋은 캠핑장",
@@ -152,8 +169,10 @@
         "url": "https://www.instagram.com/reel/DXoK6lqk38D/?igsh=MWZhcjEzdGMzNGxiZQ==",
         "thumb": "./images/series/spring-autumn-ep01.jpg",
         "page_id": "34f02bbd-cd95-80c9-a03a-f1b13356298a",
-        "published": true
+        "published": true,
+        "id": "ep_39cf2ffa99"
       }
-    ]
+    ],
+    "id": "series_c0b82ea145"
   }
 ]
