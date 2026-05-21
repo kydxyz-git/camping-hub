@@ -2780,6 +2780,11 @@ function parseClickKey(key) {
   return { ctx: key.slice(0, sepIdx), target: key.slice(sepIdx + 2) };
 }
 
+// 콘텐츠 path 판별: /series/xxx, /camps/xxx, /foods/xxx, /items/xxx
+function isContentPath(path) {
+  return /^\/(series|camps|foods|items)\/[^/]+/.test(path || '');
+}
+
 // path/target → 표시명 변환
 function analysisLabelFor(mode, key) {
   if (mode === 'pageview') {
@@ -2822,14 +2827,24 @@ function analysisLabelFor(mode, key) {
   return `🔗 ${key}`;
 }
 
-// 외부 링크: click 키들을 target별로 합산
-function aggregateClicksByTarget(clicks) {
+// 외부 링크: context === '__external__' click 키만 target별로 합산
+// (data-track-external="1" 명시 버튼: 인스타 프로필/DM 보내기/메일/그래가/Clip Creators)
+// 카드 안의 인스타 URL 클릭(콘텐츠 이동의 부산물)은 제외
+function aggregateExternalClicksByTarget(clicks) {
   const byTarget = {};
   for (const [key, count] of Object.entries(clicks || {})) {
-    const { target } = parseClickKey(key);
+    const { ctx, target } = parseClickKey(key);
+    if (ctx !== '__external__') continue;
     byTarget[target] = (byTarget[target] || 0) + count;
   }
   return byTarget;
+}
+
+// 콘텐츠 진입: 콘텐츠 path(/series/xxx, /camps/xxx 등)만 후보로
+function getContentPageCandidates(pages) {
+  return Object.entries(pages || {})
+    .filter(([path]) => isContentPath(path))
+    .sort((a, b) => b[1] - a[1]);
 }
 
 // 일별 시계열: raw events에서 추출 (최근 N일, KST 기준)
@@ -2856,6 +2871,8 @@ function buildDailySeriesFromEvents(events, mode, target, days = 30) {
     if (mode === 'pageview') {
       if (e.path !== target) continue;
     } else {
+      // click: 명시적 외부 버튼(__external__)만 + target 매칭
+      if (e.ctx !== '__external__') continue;
       if (e.target !== target) continue;
     }
     // e.ts는 epoch ms (UTC). KST 변환은 new Date(e.ts) 후 getFullYear/Month/Date가 로컬 시간 사용
@@ -2886,10 +2903,12 @@ function buildMonthlySeriesFromDaily(data, mode, target, months = 12) {
     if (mode === 'pageview') {
       monthMap[ym] += (d.pages || {})[target] || 0;
     } else {
-      // click: target별 합산 (키가 ctx::target 형식)
+      // click: __external__ context + target 매칭만 합산
       for (const [key, count] of Object.entries(d.clicks || {})) {
         const parsed = parseClickKey(key);
-        if (parsed.target === target) monthMap[ym] += count;
+        if (parsed.ctx !== '__external__') continue;
+        if (parsed.target !== target) continue;
+        monthMap[ym] += count;
       }
     }
   }
@@ -2906,6 +2925,8 @@ function buildContentHeatmap(events, mode, target) {
     if (mode === 'pageview') {
       if (e.path !== target) continue;
     } else {
+      // click: 명시적 외부 버튼만 + target 매칭
+      if (e.ctx !== '__external__') continue;
       if (e.target !== target) continue;
     }
     const d = new Date(e.ts);
@@ -2948,12 +2969,14 @@ async function loadEventsForAnalysis(days = 30) {
 // 콘텐츠 분석 초기화
 function initContentAnalysis(data) {
   _analysisData = data;
-  // 모드별 후보: pageview는 path별, click은 target별 (합산 후)
+  // 모드별 후보:
+  // - pageview: 콘텐츠 path(/series/xxx, /camps/xxx 등)만
+  // - click: __external__ context만 (인스타 프로필/DM/메일/그래가/Clip Creators)
   let candidates;
   if (_analysisMode === 'pageview') {
-    candidates = Object.entries(data.pages || {}).sort((a, b) => b[1] - a[1]);
+    candidates = getContentPageCandidates(data.pages || {});
   } else {
-    const byTarget = aggregateClicksByTarget(data.clicks || {});
+    const byTarget = aggregateExternalClicksByTarget(data.clicks || {});
     candidates = Object.entries(byTarget).sort((a, b) => b[1] - a[1]);
   }
   if (candidates.length === 0) {
@@ -2971,9 +2994,9 @@ function renderContentAnalysisCard() {
   const data = _analysisData;
   let candidates;
   if (_analysisMode === 'pageview') {
-    candidates = Object.entries(data.pages || {}).sort((a, b) => b[1] - a[1]);
+    candidates = getContentPageCandidates(data.pages || {});
   } else {
-    const byTarget = aggregateClicksByTarget(data.clicks || {});
+    const byTarget = aggregateExternalClicksByTarget(data.clicks || {});
     candidates = Object.entries(byTarget).sort((a, b) => b[1] - a[1]);
   }
 
