@@ -73,6 +73,16 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_d7955f38a0",
+        "ep": 3,
+        "title": "양갈비 구이, 조조칼국수, 참외샐러드 등",
+        "url": "https://www.instagram.com/p/DYnZcRPE3Lb/?igsh=OWZxc214enF6cGRk",
+        "thumb": "./images/series/foods-ep03.jpg",
+        "published": true,
+        "created_at": "2026-05-21T21:25:18.850Z",
+        "updated_at": "2026-05-21T21:25:18.850Z"
+      },
+      {
         "ep": 2,
         "title": "두릅 튀김, 등갈비 구이 등",
         "url": "https://www.instagram.com/p/DX5BnxlE6hr/?igsh=amQzanpudnFjYzJs",
