@@ -442,9 +442,9 @@
       .series-scroll-wrap {
         margin: 0 32px;
       }
-      /* 시리즈 EP 카드 크기 조정 - PC에서 더 크게 (한 화면에 5-6개) */
+      /* 시리즈 EP 카드 크기 조정 - 캠핑장 카드와 비슷한 크기 (한 화면에 4개) */
       .series-scroll .ep-card {
-        flex: 0 0 220px;
+        flex: 0 0 280px;
       }
 
       /* env-section (체크리스트) - 와이드 활용 */
@@ -467,21 +467,6 @@
       .count-bar {
         padding-left: 32px;
         padding-right: 32px;
-      }
-    }
-
-    /* ═══════════════════════════════════════════════════════
-       와이드 PC (≥1400px) - 캠핑장만 5열로 더 늘림
-       ═══════════════════════════════════════════════════════ */
-    @media (min-width: 1400px) {
-      body {
-        max-width: 1400px;
-      }
-      .grid {
-        grid-template-columns: repeat(5, 1fr);
-      }
-      .product-grid {
-        grid-template-columns: repeat(5, 1fr);
       }
     }
   </style>
