@@ -428,8 +428,8 @@ async function loadData() {
     <div class="header-right">
       <p class="header-sub" id="header-sub"></p>
       <div class="header-badges">
-        <a class="header-badge" id="header-badge" target="_blank" rel="noopener"></a>
-        <a class="header-badge header-badge-naver" id="header-badge-naver" target="_blank" rel="noopener"></a>
+        <a class="header-badge" id="header-badge" data-track-target="그래가파트너스" data-track-external="1" target="_blank" rel="noopener"></a>
+        <a class="header-badge header-badge-naver" id="header-badge-naver" data-track-target="Clip Creators" data-track-external="1" target="_blank" rel="noopener"></a>
       </div>
     </div>
   </header>
@@ -499,14 +499,14 @@ async function loadData() {
   <footer class="footer">
     <div class="footer-collab-label" id="footer-collab"></div>
     <div class="footer-cta-row">
-      <a id="footer-dm-btn" target="_blank" class="footer-cta">
+      <a id="footer-dm-btn" data-track-target="DM 보내기" data-track-external="1" target="_blank" class="footer-cta">
         <span class="footer-cta-icon">💬</span><span>DM 보내기</span>
       </a>
-      <button type="button" id="footer-email-btn" class="footer-cta">
+      <button type="button" id="footer-email-btn" data-track-target="메일 보내기" data-track-external="1" class="footer-cta">
         <span class="footer-cta-icon">✉</span><span>메일 보내기</span>
       </button>
     </div>
-    <a id="footer-insta-link" target="_blank" class="footer-insta-link"></a>
+    <a id="footer-insta-link" data-track-target="인스타 프로필" data-track-external="1" target="_blank" class="footer-insta-link"></a>
     <div class="footer-credits" id="footer-credits"></div>
   </footer>
 
@@ -1169,11 +1169,27 @@ init();
   }
 
   // 클릭 이벤트 캡쳐 (document에 한 번만 등록)
-  // 1) data-track-path 있는 카드 클릭 시 페이지뷰 이벤트 발송
-  //    (메인 사이트가 SPA가 아니라 카드/모달 구조라 hash 변경이 없음)
-  // 2) 외부 링크면 같은 path를 context로 사용해서 클릭 이벤트도 발송
-  //    → "여름캠핑장 EP.05 → 인스타DM" 같은 컨텍스트가 만들어짐
+  // 1) data-track-path 있는 카드 클릭 → 페이지뷰
+  // 2) 외부 링크면 클릭 이벤트도 발송 (context = cardPath 또는 현재 위치)
+  // 3) data-track-target + data-track-external 명시된 요소 → '기타 외부링크'로 분류 (context: '__external__')
+  //    예: 그래가파트너스 / Clip Creators / DM / 메일 / 인스타 프로필
   document.addEventListener('click', function(e) {
+    // 명시적 외부 채널 버튼 (data-track-target + data-track-external)
+    // 이건 카드 컨텍스트와 무관하게 별도 분류
+    const externalBtn = e.target.closest('[data-track-external="1"]');
+    if (externalBtn) {
+      const explicitTarget = externalBtn.getAttribute('data-track-target') || 'unknown';
+      send({
+        type: 'click',
+        target: explicitTarget,
+        url: externalBtn.getAttribute('href') || externalBtn.tagName.toLowerCase() === 'button' ? '#button' : '',
+        context: '__external__',  // 별도 카테고리로 분류
+      });
+      // a 태그면 클릭 이벤트도 정상 진행 (return하지 않음)
+      // 추적 카드 매칭은 아래로 건너뜀
+      return;
+    }
+
     // 추적 카드(시리즈 EP/캠핑장/음식/장비) 클릭 → 페이지뷰
     const card = e.target.closest('[data-track-path]');
     let cardPath = '';

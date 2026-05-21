@@ -13,7 +13,9 @@
         "thumb": "./images/series/summer-ep05.jpg",
         "page_id": "36302bbd-cd95-8069-8a26-ef9471557a29",
         "published": true,
-        "id": "ep_ad505df37d"
+        "id": "ep_ad505df37d",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       },
       {
         "ep": 4,
@@ -22,7 +24,9 @@
         "thumb": "./images/series/summer-ep04.jpg",
         "page_id": "35e02bbd-cd95-8070-8a80-f4e601d7cb8b",
         "published": true,
-        "id": "ep_73bdfba72e"
+        "id": "ep_73bdfba72e",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       },
       {
         "ep": 3,
@@ -31,7 +35,9 @@
         "thumb": "./images/series/summer-ep03.jpg",
         "page_id": "35c02bbd-cd95-8024-aa85-e08823bd611f",
         "published": true,
-        "id": "ep_3acff3998f"
+        "id": "ep_3acff3998f",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       },
       {
         "ep": 2,
@@ -40,7 +46,9 @@
         "thumb": "./images/series/summer-ep02.jpg",
         "page_id": "35202bbd-cd95-8082-b44c-da888a032c30",
         "published": true,
-        "id": "ep_27438d1204"
+        "id": "ep_27438d1204",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       },
       {
         "ep": 1,
@@ -49,10 +57,14 @@
         "thumb": "./images/series/summer-ep01.jpg",
         "page_id": "34a02bbd-cd95-816d-bf06-f0498e7d7419",
         "published": true,
-        "id": "ep_b953456d73"
+        "id": "ep_b953456d73",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       }
     ],
-    "id": "series_ba7cc89468"
+    "id": "series_ba7cc89468",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
     "name": "또 해먹고 싶은 캠핑 음식",
@@ -68,7 +80,9 @@
         "thumb": "./images/series/food-ep02.jpg",
         "page_id": "35502bbd-cd95-8014-8b29-fbe8aa605599",
         "published": true,
-        "id": "ep_c2e684a351"
+        "id": "ep_c2e684a351",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       },
       {
         "ep": 1,
@@ -77,10 +91,14 @@
         "thumb": "./images/series/food-ep01.jpg",
         "page_id": "34a02bbd-cd95-80a2-9894-c9bdb1d19f73",
         "published": true,
-        "id": "ep_a8b40077ca"
+        "id": "ep_a8b40077ca",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       }
     ],
-    "id": "series_304565fb77"
+    "id": "series_304565fb77",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
     "name": "장비소개",
@@ -96,7 +114,9 @@
         "page_id": "35802bbd-cd95-802b-90e6-c82814ea57ad",
         "ep": 0,
         "published": true,
-        "id": "ep_7dd208fe26"
+        "id": "ep_7dd208fe26",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       },
       {
         "ep": 0,
@@ -105,10 +125,14 @@
         "thumb": "./images/series/gear-01.jpg",
         "page_id": "34a02bbd-cd95-80d5-add8-c0687a88924f",
         "published": true,
-        "id": "ep_cf2282cf4e"
+        "id": "ep_cf2282cf4e",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       }
     ],
-    "id": "series_873cdcaf61"
+    "id": "series_873cdcaf61",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
     "name": "캠핑꿀팁",
@@ -124,7 +148,9 @@
         "thumb": "./images/series/tips-01.jpg",
         "page_id": "34a02bbd-cd95-80e7-8c62-dd7ae01d8737",
         "published": true,
-        "id": "ep_ff868ac30c"
+        "id": "ep_ff868ac30c",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       },
       {
         "ep": 0,
@@ -133,7 +159,9 @@
         "thumb": "./images/series/tips-02.jpg",
         "page_id": "34a02bbd-cd95-8010-a774-fa35c5bb8ce2",
         "published": true,
-        "id": "ep_7a390bade9"
+        "id": "ep_7a390bade9",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       },
       {
         "ep": 0,
@@ -142,7 +170,9 @@
         "thumb": "./images/series/tips-03.jpg",
         "page_id": "34a02bbd-cd95-80ce-9989-debe96852e1f",
         "published": true,
-        "id": "ep_e383972ec6"
+        "id": "ep_e383972ec6",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       },
       {
         "ep": 0,
@@ -151,10 +181,14 @@
         "thumb": "./images/series/tips-04.jpg",
         "page_id": "34a02bbd-cd95-8096-9f3e-cb89f0a3e768",
         "published": true,
-        "id": "ep_e46450a717"
+        "id": "ep_e46450a717",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       }
     ],
-    "id": "series_e8c17ad5da"
+    "id": "series_e8c17ad5da",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
     "name": "봄·가을에 가기 좋은 캠핑장",
@@ -170,9 +204,13 @@
         "thumb": "./images/series/spring-autumn-ep01.jpg",
         "page_id": "34f02bbd-cd95-80c9-a03a-f1b13356298a",
         "published": true,
-        "id": "ep_39cf2ffa99"
+        "id": "ep_39cf2ffa99",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
       }
     ],
-    "id": "series_c0b82ea145"
+    "id": "series_c0b82ea145",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   }
 ]
