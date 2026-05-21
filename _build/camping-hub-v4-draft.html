@@ -893,8 +893,22 @@ function applyMarquee() {
   // 페북 인앱 브라우저(FBAN/FBAV)도 같은 처리 (메타 자회사라 동작 동일)
   const isMetaInApp = isInstagramInApp || /FBAN|FBAV/i.test(ua);
 
-  // 인앱 브라우저가 아니면 아무것도 안 함 (브라우저 기본 동작 유지 → Universal Link 작동)
-  if (!isMetaInApp) return;
+  // 인스타 URL 정규화 — 앱 라우팅 안정성 (모든 환경에서 적용)
+  // - /reel/, /reels/, /tv/ → /p/ (인스타 앱이 reel URL을 Universal Link로 잡지만 홈으로 떨어지는 이슈)
+  // - igsh 등 share/추적 파라미터 제거 (앱 내 라우터 간섭 가능성)
+  function normalizeInstagramUrl(url) {
+    try {
+      const u = new URL(url);
+      const host = u.hostname.replace(/^www\./, '').toLowerCase();
+      if (host !== 'instagram.com') return url;
+      u.pathname = u.pathname.replace(/^\/(reel|reels|tv)\//i, '/p/');
+      const removeParams = ['igsh', 'igshid', 'ig_rid', 'utm_source', 'utm_medium', 'utm_campaign'];
+      for (const p of removeParams) u.searchParams.delete(p);
+      return u.toString();
+    } catch {
+      return url;
+    }
+  }
 
   function openInExternalBrowser(url) {
     if (isIOS) {
@@ -921,8 +935,19 @@ function applyMarquee() {
     if (!a) return;
     const href = a.getAttribute('href');
     if (!href || !/^https?:\/\/(www\.)?instagram\.com/i.test(href)) return;
-    e.preventDefault();
-    openInExternalBrowser(href);
+    const normalized = normalizeInstagramUrl(href);
+    if (isMetaInApp) {
+      // 인스타/페북 인앱: 외부 브라우저 강제 전환 + 정규화 URL
+      e.preventDefault();
+      openInExternalBrowser(normalized);
+    } else if (normalized !== href) {
+      // 일반 브라우저: URL이 정규화됐으면 새 탭으로 정규화 URL 열기
+      e.preventDefault();
+      const target = a.getAttribute('target') || '_blank';
+      if (target === '_blank') window.open(normalized, '_blank', 'noopener');
+      else window.location.href = normalized;
+    }
+    // 정규화도 안 됐고 인앱도 아니면 기본 동작 유지 (anchor가 그대로 열림)
   }, true);
 })();
 
