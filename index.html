@@ -1394,11 +1394,24 @@ init();
       cardPath = card.getAttribute('data-track-path') || '';
       const cardTitle = card.getAttribute('data-track-title') || '';
       if (cardPath && shouldTrack(cardPath)) {
-        send({
-          type: 'pageview',
-          path: cardPath,
-          title: cardTitle,
-        });
+        // 페이지뷰 + 클릭이 같은 click 이벤트에서 발송되면 sendBeacon이 일부 무시할 수 있어서
+        // fetch로 강제 (target="_blank"라 navigation에도 영향 없음)
+        try {
+          fetch(STATS_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+            body: JSON.stringify({
+              type: 'pageview',
+              path: cardPath,
+              title: cardTitle,
+              device: DEVICE,
+              referrer: REFERRER || undefined,
+            }),
+            keepalive: true,
+            mode: 'cors',
+            credentials: 'omit',
+          }).catch(() => {});
+        } catch (e) {}
       }
     }
 
