@@ -56,18 +56,18 @@
     "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
+    "id": "food_464525ea11",
     "name": "[니뽕내뽕] 크뽕 (크림짬뽕)",
     "desc": "고소하고 꾸덕한 크림 짬뽕",
     "url": "https://lounge.kurly.com/link/ThTI-lkYv",
     "source": "컬리",
     "thumb": "./images/products/food-05.jpg",
     "price_original": 8900,
-    "price_sale": 8100,
-    "discount_rate": 10,
+    "price_sale": 7120,
+    "discount_rate": 20,
     "published": true,
-    "id": "food_464525ea11",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T02:53:18.159759+00:00"
+    "updated_at": "2026-05-21T15:01:09.864Z"
   },
   {
     "name": "[야키토리 토리야] 닭꼬치 염통 파닭 츠쿠네 모듬 캠핑음식 요리 숯불 구이 메뉴",
