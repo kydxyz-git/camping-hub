@@ -453,6 +453,38 @@
     background: linear-gradient(90deg, rgba(74,124,78,0.05), rgba(74,124,78,1));
     border-radius: 2px;
   }
+
+  /* 세로형 히트맵 (24행 시간 × 7열 요일) - 모바일 가로 스크롤 제거 */
+  .heatmap-vertical .heatmap-grid-v {
+    display: grid;
+    grid-template-columns: 28px repeat(7, 1fr);
+    gap: 2px;
+    width: 100%;
+  }
+  .heatmap-col-label-v {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+    padding-bottom: 4px;
+  }
+  .heatmap-row-label-v {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: right;
+    padding-right: 4px;
+    align-self: center;
+    height: 14px;
+    line-height: 14px;
+  }
+  .heatmap-row-label-v.is-marker {
+    font-weight: 700;
+    color: var(--text);
+  }
+  .heatmap-cell-v {
+    height: 14px;
+    border-radius: 2px;
+  }
   /* 트렌드 인디케이터 */
   .stats-trend {
     display: inline-block;
@@ -2473,13 +2505,12 @@ function renderPopularSection(label, items, limit = 5, sectionKey = '') {
         const hasUrl = !!it.url;
         const tag = hasUrl ? 'a' : 'div';
         const attrs = hasUrl ? `href="${escapeHtml(it.url)}" target="_blank" rel="noopener"` : '';
-        const dateTxt = it.created_at ? fmtDateShort(it.created_at) : '';
         // 캠핑장 항목이면 (graega 키가 있으면) 플랫폼 뱃지 표시
         const platformBadge = ('graega' in it) ? campPlatformBadgeHtml(it) : '';
         return `
         <${tag} class="stats-row${hasUrl ? ' is-link' : ''}" ${attrs}>
           <span class="stats-row-rank">${i + 1}</span>
-          <span class="stats-row-label">${platformBadge}${escapeHtml(it.name)}${dateTxt ? `<span class="stats-row-date">${dateTxt}</span>` : ''}</span>
+          <span class="stats-row-label">${platformBadge}${escapeHtml(it.name)}</span>
           <span class="stats-row-count">${it.count.toLocaleString()}</span>
         </${tag}>
       `;
@@ -2508,7 +2539,6 @@ function renderSeriesPopular(label, items, limit = 8) {
         const hasUrl = !!it.url;
         const tag = hasUrl ? 'a' : 'div';
         const attrs = hasUrl ? `href="${escapeHtml(it.url)}" target="_blank" rel="noopener"` : '';
-        const dateTxt = it.created_at ? fmtDateShort(it.created_at) : '';
         return `
         <${tag} class="stats-row stats-series-row${hasUrl ? ' is-link' : ''}" ${attrs}>
           <span class="stats-row-rank">${i + 1}</span>
@@ -2517,7 +2547,6 @@ function renderSeriesPopular(label, items, limit = 8) {
               ${escapeHtml(it.emoji || '')} ${escapeHtml(it.seriesName || '')}
             </span>
             <span class="stats-series-title">${escapeHtml(it.epTitle || '')}</span>
-            ${dateTxt ? `<span class="stats-row-date">${dateTxt}</span>` : ''}
           </span>
           <span class="stats-row-count">${it.count.toLocaleString()}</span>
         </${tag}>
@@ -2569,25 +2598,27 @@ function renderClickSection(label, items, limit = 8) {
 }
 
 function renderHeatmap(heatmap, max) {
-  // heatmap: 7행(요일) × 24열(시간) 배열
-  // 색 농도로 활동량 표시
+  // heatmap: 7행(요일) × 24열(시간) 배열로 들어옴
+  // 모바일 가독성을 위해 24행(시간) × 7열(요일) 세로형으로 전치해서 그림
   const days = ['일', '월', '화', '수', '목', '금', '토'];
-  const hours = [0, 3, 6, 9, 12, 15, 18, 21];  // 표시할 시간 마커
+  // 3시간 단위로 시간 라벨 강조 (0, 3, 6, ..., 21)
   return `
-    <div class="heatmap-wrap">
-      <div class="heatmap-grid">
+    <div class="heatmap-wrap heatmap-vertical">
+      <div class="heatmap-grid-v">
         <div class="heatmap-corner"></div>
-        ${Array.from({length: 24}, (_, h) => `
-          <div class="heatmap-col-label">${hours.includes(h) ? h : ''}</div>
-        `).join('')}
-        ${heatmap.map((row, dayIdx) => `
-          <div class="heatmap-row-label">${days[dayIdx]}</div>
-          ${row.map(v => {
-            const intensity = max > 0 ? v / max : 0;
-            const alpha = v === 0 ? 0.05 : (0.15 + intensity * 0.85);
-            return `<div class="heatmap-cell" style="background:rgba(74,124,78,${alpha});" title="${v}회"></div>`;
-          }).join('')}
-        `).join('')}
+        ${days.map(d => `<div class="heatmap-col-label-v">${d}</div>`).join('')}
+        ${Array.from({length: 24}, (_, h) => {
+          const isMarker = h % 3 === 0;
+          return `
+            <div class="heatmap-row-label-v ${isMarker ? 'is-marker' : ''}">${String(h).padStart(2, '0')}</div>
+            ${days.map((_, dayIdx) => {
+              const v = heatmap[dayIdx][h] || 0;
+              const intensity = max > 0 ? v / max : 0;
+              const alpha = v === 0 ? 0.05 : (0.15 + intensity * 0.85);
+              return `<div class="heatmap-cell-v" style="background:rgba(74,124,78,${alpha});" title="${days[dayIdx]} ${h}시: ${v}회"></div>`;
+            }).join('')}
+          `;
+        }).join('')}
       </div>
       <div class="heatmap-legend">
         <span>적음</span>
@@ -2617,29 +2648,36 @@ function renderBarChart(dates, data, max) {
 
 // ════════════════════════════════════════════════════════════════════
 // 📊 콘텐츠별 분석 (신규)
-// 일별 차트는 stats.daily에서, 시간대 히트맵은 raw events에서 추출
+// 일별: raw events 기반 (정확) / 월별: stats.daily 기반 (12개월치)
+// 시간대 히트맵: raw events 기반
 // ════════════════════════════════════════════════════════════════════
 const EVENTS_API = 'https://kyd-stats.kydxyz.workers.dev/events';
-let _analysisMode = 'pageview';     // 'pageview' | 'click'
-let _analysisTarget = null;          // 선택된 path 또는 target+url 키
-let _analysisData = null;            // renderStats가 전달한 stats 데이터
-let _eventsCache = null;             // 30일치 events 캐시
+let _analysisMode = 'pageview';      // 'pageview' | 'click'
+let _analysisTarget = null;           // 선택된 path (pageview) 또는 target (click)
+let _analysisPeriod = 'daily';        // 'daily' (30일) | 'monthly' (12개월)
+let _analysisData = null;             // renderStats가 전달한 stats 데이터
+let _eventsCache = null;              // raw events 캐시
 let _eventsCacheAt = 0;
+let _eventsCacheDays = 0;             // 캐시된 일수
+
+// click 키 파싱: `context::target` → { ctx, target }
+function parseClickKey(key) {
+  const sepIdx = key.indexOf('::');
+  if (sepIdx === -1) return { ctx: '', target: key };
+  return { ctx: key.slice(0, sepIdx), target: key.slice(sepIdx + 2) };
+}
 
 // path/target → 표시명 변환
 function analysisLabelFor(mode, key) {
   if (mode === 'pageview') {
-    // path 형식 처리
     if (key === '/' || key === '') return '🏠 홈';
     const m = key.match(/^\/([^/]+)\/(.+?)\/?$/);
     if (m) {
       const tab = m[1], rest = decodeURIComponent(m[2]);
-      // 시리즈 EP: /series/series_xxx/ep_yyy
       if (tab === 'series') {
         const parts = rest.split('/');
         if (parts.length === 2) {
           const seriesId = parts[0], epId = parts[1];
-          // cache.series에서 직접 lookup
           for (const s of (cache.series || [])) {
             if (s.id !== seriesId) continue;
             const ep = (s.eps || []).find(e => e.id === epId);
@@ -2662,58 +2700,114 @@ function analysisLabelFor(mode, key) {
         return `🛠 ${i?.name || rest}`;
       }
     }
-    // 단일 탭 path: /camps, /foods 등
     const tabSingle = key.replace(/^\//, '').replace(/\/$/, '');
     const tabMeta = CATEGORY_META[tabSingle];
     if (tabMeta) return `📂 ${tabMeta.label}`;
     return key;
   }
-  // click target
+  // click: target 이미 한글
   return `🔗 ${key}`;
 }
 
-// stats.daily에서 특정 path/target의 일별 시계열 추출 (최근 N일)
-function buildDailySeries(data, mode, target, days = 30) {
-  const today = new Date().toISOString().slice(0, 10);
-  const todayDate = new Date(today + 'T00:00:00');
-  const dates = [];
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(todayDate);
-    d.setDate(d.getDate() - i);
-    dates.push(d.toISOString().slice(0, 10));
+// 외부 링크: click 키들을 target별로 합산
+function aggregateClicksByTarget(clicks) {
+  const byTarget = {};
+  for (const [key, count] of Object.entries(clicks || {})) {
+    const { target } = parseClickKey(key);
+    byTarget[target] = (byTarget[target] || 0) + count;
   }
-  const daily = data.daily || {};
-  const series = dates.map(date => {
-    const d = daily[date];
-    if (!d) return 0;
-    if (mode === 'pageview') return (d.pages || {})[target] || 0;
-    return (d.clicks || {})[target] || 0;
-  });
+  return byTarget;
+}
+
+// 일별 시계열: raw events에서 추출 (최근 N일, KST 기준)
+function buildDailySeriesFromEvents(events, mode, target, days = 30) {
+  // 로컬(KST) 날짜 문자열 생성 헬퍼
+  const localDateStr = (d) => {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+  const today = new Date();
+  const dates = [];
+  const dateMap = {};
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const ds = localDateStr(d);
+    dates.push(ds);
+    dateMap[ds] = 0;
+  }
+  for (const e of events) {
+    if (e.type !== mode) continue;
+    if (mode === 'pageview') {
+      if (e.path !== target) continue;
+    } else {
+      if (e.target !== target) continue;
+    }
+    // e.ts는 epoch ms (UTC). KST 변환은 new Date(e.ts) 후 getFullYear/Month/Date가 로컬 시간 사용
+    const dt = new Date(e.ts);
+    const kstDate = localDateStr(dt);
+    if (kstDate in dateMap) dateMap[kstDate]++;
+  }
+  const series = dates.map(d => dateMap[d]);
   return { dates, series, total: series.reduce((a, b) => a + b, 0) };
 }
 
-// raw events에서 시간대 히트맵 빌드 (요일×24시간)
+// 월별 시계열: stats.daily에서 추출 (최근 12개월)
+function buildMonthlySeriesFromDaily(data, mode, target, months = 12) {
+  const now = new Date();
+  const labels = [];
+  const monthMap = {};
+  // 최근 N개월 (오래된 것부터)
+  for (let i = months - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    labels.push(ym);
+    monthMap[ym] = 0;
+  }
+  const daily = data.daily || {};
+  for (const [date, d] of Object.entries(daily)) {
+    const ym = date.slice(0, 7);
+    if (!(ym in monthMap)) continue;
+    if (mode === 'pageview') {
+      monthMap[ym] += (d.pages || {})[target] || 0;
+    } else {
+      // click: target별 합산 (키가 ctx::target 형식)
+      for (const [key, count] of Object.entries(d.clicks || {})) {
+        const parsed = parseClickKey(key);
+        if (parsed.target === target) monthMap[ym] += count;
+      }
+    }
+  }
+  const series = labels.map(ym => monthMap[ym]);
+  return { labels, series, total: series.reduce((a, b) => a + b, 0) };
+}
+
+// 시간대 히트맵: raw events에서 추출 (요일×24시간, 브라우저 로컬 시간 = KST)
 function buildContentHeatmap(events, mode, target) {
   const heatmap = Array.from({ length: 7 }, () => new Array(24).fill(0));
   let max = 0;
   for (const e of events) {
     if (e.type !== mode) continue;
-    // pageview: e.path 비교 / click: e.target 비교 (sanitize와 동일)
-    const key = mode === 'pageview' ? (e.path || '') : (e.target || '');
-    if (key !== target) continue;
+    if (mode === 'pageview') {
+      if (e.path !== target) continue;
+    } else {
+      if (e.target !== target) continue;
+    }
     const d = new Date(e.ts);
-    const dayOfWeek = d.getDay();   // 로컬 (KST) 요일
-    const hour = d.getHours();      // 로컬 (KST) 시간
+    const dayOfWeek = d.getDay();   // 로컬(KST) 요일
+    const hour = d.getHours();      // 로컬(KST) 시간
     heatmap[dayOfWeek][hour]++;
     if (heatmap[dayOfWeek][hour] > max) max = heatmap[dayOfWeek][hour];
   }
   return { heatmap, max };
 }
 
-// 최근 N일치 events 모두 fetch (5분 메모리 캐시)
+// 최근 N일치 events 모두 fetch (5분 캐시)
 async function loadEventsForAnalysis(days = 30) {
   const now = Date.now();
-  if (_eventsCache && (now - _eventsCacheAt < 5 * 60 * 1000)) {
+  if (_eventsCache && _eventsCacheDays >= days && (now - _eventsCacheAt < 5 * 60 * 1000)) {
     return _eventsCache;
   }
   const today = new Date();
@@ -2723,7 +2817,6 @@ async function loadEventsForAnalysis(days = 30) {
     d.setDate(d.getDate() - i);
     dates.push(d.toISOString().slice(0, 10));
   }
-  // 30개 병렬 fetch
   const results = await Promise.all(dates.map(async (date) => {
     try {
       const r = await fetch(`${EVENTS_API}?date=${date}&t=${now}`);
@@ -2735,33 +2828,44 @@ async function loadEventsForAnalysis(days = 30) {
   const allEvents = results.flat();
   _eventsCache = allEvents;
   _eventsCacheAt = now;
+  _eventsCacheDays = days;
   return allEvents;
 }
 
-// 콘텐츠 분석 초기화 (renderStats에서 호출)
+// 콘텐츠 분석 초기화
 function initContentAnalysis(data) {
   _analysisData = data;
-  // 모드별 사용 가능한 target 후보 (누적 카운트 기준 상위 정렬)
-  const map = _analysisMode === 'pageview' ? (data.pages || {}) : (data.clicks || {});
-  const candidates = Object.entries(map).sort((a, b) => b[1] - a[1]).map(([k]) => k);
+  // 모드별 후보: pageview는 path별, click은 target별 (합산 후)
+  let candidates;
+  if (_analysisMode === 'pageview') {
+    candidates = Object.entries(data.pages || {}).sort((a, b) => b[1] - a[1]);
+  } else {
+    const byTarget = aggregateClicksByTarget(data.clicks || {});
+    candidates = Object.entries(byTarget).sort((a, b) => b[1] - a[1]);
+  }
   if (candidates.length === 0) {
     _analysisTarget = null;
-  } else if (!_analysisTarget || !candidates.includes(_analysisTarget)) {
-    _analysisTarget = candidates[0];
+  } else if (!_analysisTarget || !candidates.map(c => c[0]).includes(_analysisTarget)) {
+    _analysisTarget = candidates[0][0];
   }
   renderContentAnalysisCard();
 }
 
-// 카드 전체 렌더 (토글 + 셀렉트 + 차트)
+// 카드 전체 렌더
 function renderContentAnalysisCard() {
   const card = document.getElementById('content-analysis-card');
   if (!card || !_analysisData) return;
   const data = _analysisData;
-  const map = _analysisMode === 'pageview' ? (data.pages || {}) : (data.clicks || {});
-  const candidates = Object.entries(map).sort((a, b) => b[1] - a[1]);
+  let candidates;
+  if (_analysisMode === 'pageview') {
+    candidates = Object.entries(data.pages || {}).sort((a, b) => b[1] - a[1]);
+  } else {
+    const byTarget = aggregateClicksByTarget(data.clicks || {});
+    candidates = Object.entries(byTarget).sort((a, b) => b[1] - a[1]);
+  }
 
   card.innerHTML = `
-    <div class="stats-section-title">📊 콘텐츠별 분석 <span style="font-size:11px;font-weight:400;color:var(--muted);">(최근 30일)</span></div>
+    <div class="stats-section-title">📊 콘텐츠별 분석</div>
 
     <div class="ca-toggle">
       <button class="ca-toggle-btn ${_analysisMode === 'pageview' ? 'is-active' : ''}" data-mode="pageview">📄 콘텐츠 진입</button>
@@ -2780,22 +2884,37 @@ function renderContentAnalysisCard() {
           `).join('')}
         </select>
       </div>
+
+      <div class="ca-toggle" style="margin-bottom:14px;">
+        <button class="ca-toggle-btn ${_analysisPeriod === 'daily' ? 'is-active' : ''}" data-period="daily">📅 일별 (30일)</button>
+        <button class="ca-toggle-btn ${_analysisPeriod === 'monthly' ? 'is-active' : ''}" data-period="monthly">📆 월별 (12개월)</button>
+      </div>
+
       <div id="ca-charts"></div>
     `}
   `;
 
-  // 토글 이벤트
-  card.querySelectorAll('.ca-toggle-btn').forEach(btn => {
+  // 모드 토글
+  card.querySelectorAll('.ca-toggle-btn[data-mode]').forEach(btn => {
     btn.addEventListener('click', () => {
       const mode = btn.dataset.mode;
       if (mode === _analysisMode) return;
       _analysisMode = mode;
-      _analysisTarget = null; // 모드 바뀌면 target 초기화
+      _analysisTarget = null;
       initContentAnalysis(_analysisData);
     });
   });
 
-  // 셀렉트 이벤트
+  // 기간 토글
+  card.querySelectorAll('.ca-toggle-btn[data-period]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const period = btn.dataset.period;
+      if (period === _analysisPeriod) return;
+      _analysisPeriod = period;
+      renderContentAnalysisCard();
+    });
+  });
+
   const sel = document.getElementById('ca-target-select');
   if (sel) {
     sel.addEventListener('change', () => {
@@ -2806,40 +2925,66 @@ function renderContentAnalysisCard() {
   }
 }
 
-// 차트 영역 렌더 (일별 + 히트맵)
+// 차트 영역 렌더
 async function renderContentAnalysisCharts() {
   const container = document.getElementById('ca-charts');
   if (!container || !_analysisData || !_analysisTarget) return;
 
-  // 1) 일별 30일 (즉시)
-  const daily = buildDailySeries(_analysisData, _analysisMode, _analysisTarget, 30);
-  const dailyMax = Math.max(1, ...daily.series);
+  if (_analysisPeriod === 'monthly') {
+    // 월별: stats.daily 기반 (즉시)
+    const monthly = buildMonthlySeriesFromDaily(_analysisData, _analysisMode, _analysisTarget, 12);
+    const mMax = Math.max(1, ...monthly.series);
+    container.innerHTML = `
+      <div class="ca-section-sub">📆 월별 (최근 12개월) · 합계 ${monthly.total}회</div>
+      ${monthly.total === 0
+        ? '<div class="ca-empty">최근 12개월간 활동이 없어요<br><span style="font-size:10px;">v6 deploy(260521) 이전 카드 데이터는 부정확할 수 있어요</span></div>'
+        : renderBarChart(monthly.labels, monthly.series, mMax)}
 
-  container.innerHTML = `
-    <div class="ca-section-sub">📅 일별 (최근 30일) · 합계 ${daily.total}회</div>
-    ${daily.total === 0
-      ? '<div class="ca-empty">최근 30일간 활동이 없어요</div>'
-      : renderBarChart(daily.dates, daily.series, dailyMax)}
+      <div class="ca-section-sub">🕐 시간대 히트맵 (요일×시간, KST · 최근 30일)</div>
+      <div id="ca-heatmap"><div class="ca-loading">히트맵 데이터 불러오는 중...</div></div>
+    `;
+  } else {
+    // 일별: raw events 기반 (events fetch 필요)
+    container.innerHTML = `
+      <div class="ca-section-sub">📅 일별 (최근 30일)</div>
+      <div id="ca-daily"><div class="ca-loading">일별 데이터 불러오는 중...</div></div>
 
-    <div class="ca-section-sub">🕐 시간대 히트맵 (요일×시간, KST)</div>
-    <div id="ca-heatmap"><div class="ca-loading">히트맵 데이터 불러오는 중...</div></div>
-  `;
+      <div class="ca-section-sub">🕐 시간대 히트맵 (요일×시간, KST)</div>
+      <div id="ca-heatmap"><div class="ca-loading">히트맵 데이터 불러오는 중...</div></div>
+    `;
+  }
 
-  // 2) 시간대 히트맵 (events fetch 필요, 비동기)
+  // events fetch (히트맵 + 일별 모두 사용)
   try {
     const events = await loadEventsForAnalysis(30);
+
+    // 일별 (해당 기간이 daily일 때만)
+    if (_analysisPeriod === 'daily') {
+      const daily = buildDailySeriesFromEvents(events, _analysisMode, _analysisTarget, 30);
+      const dMax = Math.max(1, ...daily.series);
+      const dailyEl = document.getElementById('ca-daily');
+      if (dailyEl) {
+        dailyEl.innerHTML = daily.total === 0
+          ? '<div class="ca-empty">최근 30일간 활동이 없어요</div>'
+          : renderBarChart(daily.dates, daily.series, dMax) +
+            `<div class="ca-summary">합계 ${daily.total}회</div>`;
+      }
+    }
+
+    // 시간대 히트맵
     const { heatmap, max } = buildContentHeatmap(events, _analysisMode, _analysisTarget);
     const hmEl = document.getElementById('ca-heatmap');
     if (!hmEl) return;
     if (max === 0) {
       hmEl.innerHTML = '<div class="ca-empty">최근 30일간 활동이 없어요</div>';
     } else {
-      hmEl.innerHTML = renderHeatmap(heatmap, max) +
-        `<div class="ca-summary">총 ${events.filter(e => e.type === _analysisMode && (_analysisMode === 'pageview' ? e.path : e.target) === _analysisTarget).length}건</div>`;
+      hmEl.innerHTML = renderHeatmap(heatmap, max);
     }
   } catch (e) {
+    const dailyEl = document.getElementById('ca-daily');
+    if (dailyEl) dailyEl.innerHTML = `<div class="ca-empty">로딩 실패: ${escapeHtml(e.message)}</div>`;
     const hmEl = document.getElementById('ca-heatmap');
-    if (hmEl) hmEl.innerHTML = `<div class="ca-empty">히트맵 로딩 실패: ${escapeHtml(e.message)}</div>`;
+    if (hmEl) hmEl.innerHTML = `<div class="ca-empty">로딩 실패: ${escapeHtml(e.message)}</div>`;
   }
 }
 
