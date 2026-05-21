@@ -434,24 +434,25 @@
         padding-right: 32px;
       }
 
-      /* 시리즈 섹션 - 좁게 유지 (가로 스크롤 카드라 너무 넓으면 비례 안 맞음) */
+      /* 시리즈 섹션 - PC에서도 와이드 활용 (max-width 제한 제거) */
       .series-section {
-        max-width: 920px;
-        margin: 0 auto;
+        padding-left: 0;
+        padding-right: 0;
       }
       .series-scroll-wrap {
         margin: 0 32px;
       }
-      /* 시리즈 EP 카드 크기 조정 - 한 화면에 4-5개 보이게 */
+      /* 시리즈 EP 카드 크기 조정 - PC에서 더 크게 (한 화면에 5-6개) */
       .series-scroll .ep-card {
-        flex: 0 0 200px;
+        flex: 0 0 220px;
       }
 
-      /* env-section (체크리스트) - 좁게 유지, 가운데 정렬 */
+      /* env-section (체크리스트) - 와이드 활용 */
       .env-section {
-        max-width: 900px;
-        margin: 0 auto;
         padding: 20px 32px 12px;
+      }
+      .env-grid {
+        grid-template-columns: repeat(8, 1fr);
       }
 
       /* 푸터 - 가운데 정렬 */
