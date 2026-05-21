@@ -388,6 +388,101 @@
     @keyframes modalUp { from{opacity:0;transform:translateY(12px) scale(0.98)} to{opacity:1;transform:translateY(0) scale(1)} }
 
     @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ═══════════════════════════════════════════════════════
+       PC 화면 (≥1024px) - 와이드 레이아웃
+       ═══════════════════════════════════════════════════════ */
+    @media (min-width: 1024px) {
+      /* 전체 컨테이너 확장 */
+      body {
+        max-width: 1200px;
+      }
+
+      /* 헤더는 그대로 (가운데 정렬 자연스러움) */
+      .header {
+        padding: 28px 32px 20px;
+      }
+
+      /* 탭 영역 */
+      .tab-bar {
+        padding: 0 32px;
+      }
+
+      /* 캠핑장 그리드 - 4열 */
+      .grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        padding: 0 32px 40px;
+      }
+
+      /* 음식/장비 그리드 - 4열 */
+      .product-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      /* 음식/장비 컨테이너 패딩 - 실제는 부모 컨테이너에 적용 안 함, product-grid가 자체 마진 가짐 */
+      .price-notice {
+        padding-left: 32px;
+        padding-right: 32px;
+      }
+      .product-section {
+        padding: 14px 32px 40px;
+      }
+      .partners-notice {
+        padding-left: 32px;
+        padding-right: 32px;
+      }
+
+      /* 시리즈 섹션 - 좁게 유지 (가로 스크롤 카드라 너무 넓으면 비례 안 맞음) */
+      .series-section {
+        max-width: 920px;
+        margin: 0 auto;
+      }
+      .series-scroll-wrap {
+        margin: 0 32px;
+      }
+      /* 시리즈 EP 카드 크기 조정 - 한 화면에 4-5개 보이게 */
+      .series-scroll .ep-card {
+        flex: 0 0 200px;
+      }
+
+      /* env-section (체크리스트) - 좁게 유지, 가운데 정렬 */
+      .env-section {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px 32px 12px;
+      }
+
+      /* 푸터 - 가운데 정렬 */
+      .footer {
+        padding: 36px 32px 24px;
+      }
+      .footer-cta-row {
+        max-width: 400px;
+      }
+
+      /* 결과 카운트 */
+      .count-bar {
+        padding-left: 32px;
+        padding-right: 32px;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       와이드 PC (≥1400px) - 캠핑장만 5열로 더 늘림
+       ═══════════════════════════════════════════════════════ */
+    @media (min-width: 1400px) {
+      body {
+        max-width: 1400px;
+      }
+      .grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+      .product-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
   </style>
 </head>
 <body>

@@ -362,22 +362,36 @@
     margin-bottom: 0;
   }
   /* 인기 콘텐츠 TOP 안의 섹션 구분 (시리즈/캠핑장/음식/장비) */
+  /* 각 섹션을 인셋 카드처럼 - 회색 배경 + 헤더 강조 */
   .stats-popular-sub {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text-sub, var(--muted));
-    padding: 14px 0 8px 0;
-    margin-top: 12px;
-    border-top: 1px dashed var(--line);
+    display: block;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    padding: 10px 14px;
+    margin-top: 16px;
+    margin-bottom: 0;
+    background: var(--surface-2, #f3f4f0);
+    border-left: 3px solid var(--accent, #6b8e5a);
+    border-radius: 6px 6px 0 0;
     letter-spacing: -0.01em;
   }
-  /* 첫 섹션은 위 구분선 제거 */
-  .card > .stats-popular-sub:first-of-type,
-  .stats-section-title + .stats-popular-sub {
-    border-top: none;
-    margin-top: 0;
-    padding-top: 4px;
+  /* 섹션 내부 리스트 - 인셋 박스 */
+  .stats-popular-sub + .stats-list {
+    padding: 8px 14px 12px 14px;
+    background: var(--surface-2, #f3f4f0);
+    border-radius: 0 0 6px 6px;
+    margin-bottom: 0;
   }
+  /* 첫 섹션은 위 margin 제거 (카드 헤더 바로 아래) */
+  .stats-section-title + .stats-popular-sub {
+    margin-top: 12px;
+  }
+  /* 섹션별 컬러 (시각적 구분 보조) */
+  .stats-popular-sub.sub-series { border-left-color: #c97a4a; }
+  .stats-popular-sub.sub-camps  { border-left-color: #4a7c4e; }
+  .stats-popular-sub.sub-foods  { border-left-color: #d68d3e; }
+  .stats-popular-sub.sub-items  { border-left-color: #5b6d8f; }
   /* 캠핑장 예약 플랫폼 뱃지 (메인 사이트의 camp-badge와 동일 컬러) */
   .stats-platform-badge {
     display: inline-block;
@@ -2180,9 +2194,9 @@ function renderStats(container, data) {
     <div class="card">
       <div class="stats-section-title">🏆 인기 콘텐츠 TOP</div>
       ${renderSeriesPopular('🎬 시리즈 EP', popular.series, 8)}
-      ${renderPopularSection('🏕 캠핑장', popular.camps, 5)}
-      ${renderPopularSection('🍖 음식', popular.foods, 5)}
-      ${renderPopularSection('🛠 장비', popular.items, 5)}
+      ${renderPopularSection('🏕 캠핑장', popular.camps, 5, 'camps')}
+      ${renderPopularSection('🍖 음식', popular.foods, 5, 'foods')}
+      ${renderPopularSection('🛠 장비', popular.items, 5, 'items')}
     </div>
 
     <!-- 카테고리 (별도 카드) -->
@@ -2261,11 +2275,12 @@ function renderStats(container, data) {
   `;
 }
 
-function renderPopularSection(label, items, limit = 5) {
+function renderPopularSection(label, items, limit = 5, sectionKey = '') {
   if (items.length === 0) return '';
+  const sectionCls = sectionKey ? ` sub-${sectionKey}` : '';
   return `
-    <div class="stats-popular-sub">${label}</div>
-    <div class="stats-list">
+    <div class="stats-popular-sub${sectionCls}">${label}</div>
+    <div class="stats-list${sectionCls}">
       ${items.slice(0, limit).map((it, i) => {
         const hasUrl = !!it.url;
         const tag = hasUrl ? 'a' : 'div';
@@ -2299,8 +2314,8 @@ function campPlatformBadgeHtml(it) {
 function renderSeriesPopular(label, items, limit = 8) {
   if (items.length === 0) return '';
   return `
-    <div class="stats-popular-sub">${label}</div>
-    <div class="stats-list">
+    <div class="stats-popular-sub sub-series">${label}</div>
+    <div class="stats-list sub-series">
       ${items.slice(0, limit).map((it, i) => {
         const hasUrl = !!it.url;
         const tag = hasUrl ? 'a' : 'div';
