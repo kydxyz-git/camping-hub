@@ -349,6 +349,41 @@
     flex: 1; min-width: 0;
     color: var(--text);
   }
+  /* 카테고리 뱃지 (인기 콘텐츠 - 카테고리 섹션) */
+  .stats-category-badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px;
+    font-size: 12px; font-weight: 700;
+    color: #fff;
+    border-radius: 999px;
+    white-space: nowrap;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+  /* 등록일 작은 회색 텍스트 (인기 콘텐츠 항목 우측에 표시) */
+  .stats-row-date {
+    margin-left: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 400;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  /* 수정 폼 상단에 표시되는 등록일/수정일 메타 */
+  .form-meta {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--surface-2, #f6f6f4);
+    border-radius: 6px;
+  }
+  .form-meta b {
+    color: var(--text);
+    font-weight: 600;
+    margin-left: 4px;
+  }
   .stats-empty {
     padding: 16px; text-align: center; color: var(--muted); font-size: 12px;
   }
@@ -1193,6 +1228,34 @@ function escapeHtml(s) {
   })[c]);
 }
 
+// ISO 날짜 → "YYYY.MM.DD" 짧은 형식
+function fmtDateShort(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}.${m}.${day}`;
+  } catch { return ''; }
+}
+
+// ISO 날짜 → "2026.05.21 11:53" 상세 형식
+function fmtDateTime(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    return `${y}.${m}.${day} ${hh}:${mm}`;
+  } catch { return ''; }
+}
+
 function normalizeText(s) {
   return String(s ?? '').toLowerCase().replace(/\s+/g, '');
 }
@@ -1804,6 +1867,17 @@ function renderDashboard() {
 // 통계 (Cloudflare Worker /stats 조회 + 시각화)
 // ════════════════════════════════════════════════════════════════════
 const STATS_API = 'https://kyd-stats.kydxyz.workers.dev/stats';
+
+// 카테고리 (탭) 한글 라벨 + 컬러 매핑
+// 메인 사이트의 TAB_HASH_MAP과 동기화: stories/camps/foods/items
+const CATEGORY_META = {
+  'stories': { label: '캠핑이야기', color: '#7e6a8f' },
+  'camps':   { label: '다녀온 캠핑장', color: '#4a7c4e' },
+  'foods':   { label: '추천 음식', color: '#c97a4a' },
+  'items':   { label: '추천 템', color: '#5b6d8f' },
+  '':        { label: '홈', color: '#888' },
+};
+
 let _statsCache = null;
 let _statsCacheAt = 0;
 
@@ -1909,19 +1983,33 @@ function renderStats(container, data) {
     return '';
   }
 
+  // created_at 매핑 헬퍼
+  function resolveCreatedAt(category, key) {
+    if (category === 'camps' && campById[key]) return campById[key].created_at || '';
+    if (category === 'foods' && foodById[key]) return foodById[key].created_at || '';
+    if (category === 'items' && itemById[key]) return itemById[key].created_at || '';
+    if (/^\d+$/.test(key)) {
+      const arr = category === 'camps' ? cache.camps : category === 'foods' ? cache.foods : cache.items;
+      const obj = arr && arr[+key];
+      return obj && obj.created_at ? obj.created_at : '';
+    }
+    return '';
+  }
+
   for (const [path, count] of Object.entries(data.pages || {})) {
     const p = path.replace(/^\/?#?/, '');
-    const parts = p.split('/');  // decode는 resolveName에서 하므로 여기선 raw 유지
+    const parts = p.split('/');
 
     if (parts[0] === 'camps' && parts[1] !== undefined && parts[1] !== '') {
       popular.camps.push({
         name: resolveName('camps', parts[1]),
         url: resolveUrl('camps', parts[1]),
+        created_at: resolveCreatedAt('camps', parts[1]),
         count, path,
       });
     } else if (parts[0] === 'series' && parts[1] !== undefined && parts[2] !== undefined) {
       // 표시용 메타 정보 분리: emoji, seriesName, epTitle, color
-      let emoji = '', seriesName = '', epTitle = '', color = '#888', url = '';
+      let emoji = '', seriesName = '', epTitle = '', color = '#888', url = '', created_at = '';
       if (epById[parts[2]]) {
         const { ep, series } = epById[parts[2]];
         emoji = series.emoji || '';
@@ -1929,6 +2017,7 @@ function renderStats(container, data) {
         epTitle = ep.title || '';
         color = series.color || '#888';
         url = ep.url || '';
+        created_at = ep.created_at || '';
       } else if (/^\d+$/.test(parts[1]) && /^\d+$/.test(parts[2])) {
         const s = cache.series[+parts[1]];
         const ep = s && s.eps[+parts[2]];
@@ -1936,6 +2025,7 @@ function renderStats(container, data) {
           emoji = s.emoji || ''; seriesName = s.name || ''; epTitle = ep.title || '';
           color = s.color || '#888';
           url = ep.url || '';
+          created_at = ep.created_at || '';
         } else {
           seriesName = `(삭제됨)`; epTitle = `#${parts[1]}/${parts[2]}`;
         }
@@ -1943,30 +2033,49 @@ function renderStats(container, data) {
         try { seriesName = decodeURIComponent(parts[1]); } catch { seriesName = parts[1]; }
         try { epTitle = decodeURIComponent(parts[2]); } catch { epTitle = parts[2]; }
       }
-      popular.series.push({ emoji, seriesName, epTitle, color, url, count, path });
+      popular.series.push({ emoji, seriesName, epTitle, color, url, created_at, count, path });
     } else if (parts[0] === 'foods' && parts[1] !== undefined) {
       popular.foods.push({
         name: resolveName('foods', parts[1]),
         url: resolveUrl('foods', parts[1]),
+        created_at: resolveCreatedAt('foods', parts[1]),
         count, path,
       });
     } else if (parts[0] === 'items' && parts[1] !== undefined) {
       popular.items.push({
         name: resolveName('items', parts[1]),
         url: resolveUrl('items', parts[1]),
+        created_at: resolveCreatedAt('items', parts[1]),
         count, path,
       });
     } else {
-      // 카테고리 (/, /series, /camps 등)
-      const label = parts[0] || '홈';
-      popular.category.push({ name: label, count, path });
+      // 카테고리 (/, /series, /camps 등) - 한글 라벨 + 컬러 매핑
+      const raw = parts[0] || '';
+      const meta = CATEGORY_META[raw] || CATEGORY_META[''];
+      popular.category.push({
+        rawKey: raw,
+        name: meta.label,
+        color: meta.color,
+        count, path,
+      });
     }
   }
   for (const k in popular) popular[k].sort((a, b) => b.count - a.count);
 
-  // 외부 링크 클릭 분류는 인기 콘텐츠와 사실상 동일 정보라 제거
-  // (필요 시 나중에 전환율 차원으로 부활 가능)
-
+  // ── 3. 기타 외부 링크 (data-track-external 명시된 버튼들) ──
+  // 그래가파트너스 / Clip Creators / DM / 메일 / 인스타 프로필 등
+  // context가 '__external__' 인 click 이벤트만 추출
+  const externalClicks = [];
+  for (const [key, count] of Object.entries(data.clicks || {})) {
+    const sepIdx = key.indexOf('::');
+    if (sepIdx === -1) continue; // context 없는 옛 데이터 무시
+    const context = key.slice(0, sepIdx);
+    const target = key.slice(sepIdx + 2);
+    if (context === '__external__') {
+      externalClicks.push({ target, count });
+    }
+  }
+  externalClicks.sort((a, b) => b.count - a.count);
 
   // ── 4. 검색어 정렬 (category:query 형식) ──
   const searches = Object.entries(data.searches || {})
@@ -2035,7 +2144,23 @@ function renderStats(container, data) {
       ${renderSeriesPopular('🎬 시리즈 EP', popular.series, 8)}
       ${renderPopularSection('🍖 음식', popular.foods, 5)}
       ${renderPopularSection('🛠 장비', popular.items, 5)}
-      ${renderPopularSection('📂 카테고리', popular.category, 5)}
+      ${renderCategoryPopular('📂 카테고리', popular.category, 5)}
+    </div>
+
+    <!-- 기타 외부링크 (그래가파트너스 / Clip Creators / DM / 메일 / 인스타 프로필) -->
+    <div class="card">
+      <div class="stats-section-title">🔗 기타 외부링크</div>
+      ${externalClicks.length === 0
+        ? '<div class="stats-empty">아직 외부링크 클릭이 없어요</div>'
+        : `<div class="stats-list">
+            ${externalClicks.map((it, i) => `
+              <div class="stats-row">
+                <span class="stats-row-rank">${i + 1}</span>
+                <span class="stats-row-label">${escapeHtml(it.target)}</span>
+                <span class="stats-row-count">${it.count.toLocaleString()}</span>
+              </div>
+            `).join('')}
+          </div>`}
     </div>
 
     <!-- 인기 검색어 -->
@@ -2099,10 +2224,11 @@ function renderPopularSection(label, items, limit = 5) {
         const hasUrl = !!it.url;
         const tag = hasUrl ? 'a' : 'div';
         const attrs = hasUrl ? `href="${escapeHtml(it.url)}" target="_blank" rel="noopener"` : '';
+        const dateTxt = it.created_at ? fmtDateShort(it.created_at) : '';
         return `
         <${tag} class="stats-row${hasUrl ? ' is-link' : ''}" ${attrs}>
           <span class="stats-row-rank">${i + 1}</span>
-          <span class="stats-row-label">${escapeHtml(it.name)}</span>
+          <span class="stats-row-label">${escapeHtml(it.name)}${dateTxt ? `<span class="stats-row-date">${dateTxt}</span>` : ''}</span>
           <span class="stats-row-count">${it.count.toLocaleString()}</span>
         </${tag}>
       `;
@@ -2120,6 +2246,7 @@ function renderSeriesPopular(label, items, limit = 8) {
         const hasUrl = !!it.url;
         const tag = hasUrl ? 'a' : 'div';
         const attrs = hasUrl ? `href="${escapeHtml(it.url)}" target="_blank" rel="noopener"` : '';
+        const dateTxt = it.created_at ? fmtDateShort(it.created_at) : '';
         return `
         <${tag} class="stats-row stats-series-row${hasUrl ? ' is-link' : ''}" ${attrs}>
           <span class="stats-row-rank">${i + 1}</span>
@@ -2128,11 +2255,32 @@ function renderSeriesPopular(label, items, limit = 8) {
               ${escapeHtml(it.emoji || '')} ${escapeHtml(it.seriesName || '')}
             </span>
             <span class="stats-series-title">${escapeHtml(it.epTitle || '')}</span>
+            ${dateTxt ? `<span class="stats-row-date">${dateTxt}</span>` : ''}
           </span>
           <span class="stats-row-count">${it.count.toLocaleString()}</span>
         </${tag}>
       `;
       }).join('')}
+    </div>
+  `;
+}
+
+function renderCategoryPopular(label, items, limit = 5) {
+  if (items.length === 0) return '';
+  return `
+    <div class="stats-popular-sub">${label}</div>
+    <div class="stats-list">
+      ${items.slice(0, limit).map((it, i) => `
+        <div class="stats-row">
+          <span class="stats-row-rank">${i + 1}</span>
+          <span class="stats-row-label">
+            <span class="stats-category-badge" style="background:${escapeHtml(it.color || '#888')};">
+              ${escapeHtml(it.name || '')}
+            </span>
+          </span>
+          <span class="stats-row-count">${it.count.toLocaleString()}</span>
+        </div>
+      `).join('')}
     </div>
   `;
 }
@@ -2271,6 +2419,8 @@ function renderCampDetail(idx) {
         <div class="detail-row"><div class="detail-key">별점</div><div class="detail-val">${camp.rating ? '⭐'.repeat(Math.floor(camp.rating)) + (camp.rating % 1 ? '½' : '') + ` (${camp.rating})` : '-'}</div></div>
         <div class="detail-row"><div class="detail-key">다녀온</div><div class="detail-val">${camp.visits || 0}회</div></div>
         <div class="detail-row"><div class="detail-key">URL</div><div class="detail-val">${camp.url ? `<a href="${escapeHtml(camp.url)}" target="_blank" rel="noopener">${escapeHtml(camp.url)}</a>` : '-'}</div></div>
+        <div class="detail-row"><div class="detail-key">등록일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(camp.created_at) || '-'}</div></div>
+        <div class="detail-row"><div class="detail-key">수정일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(camp.updated_at) || '-'}</div></div>
       </div>
       <div style="font-size:13px;font-weight:600;margin-bottom:8px;">이미지 ${(camp.imgs || []).length}장</div>
       ${(camp.imgs || []).length > 0 ? `
@@ -2375,12 +2525,21 @@ function _renderCampFormUI() {
       </label>
     `).join('');
 
+  const _editCamp = isEdit ? (cache.camps[_campForm.editIdx] || {}) : null;
+  const _formMetaHtml = isEdit && _editCamp ? `
+    <div class="form-meta">
+      <span>📅 등록일 <b>${fmtDateTime(_editCamp.created_at) || '-'}</b></span>
+      <span>✏️ 수정일 <b>${fmtDateTime(_editCamp.updated_at) || '-'}</b></span>
+    </div>
+  ` : '';
+
   c.innerHTML = `
     <div class="page-header">
       <button class="page-back" id="back-btn">← ${isEdit ? '돌아가기' : '캠핑장 목록'}</button>
     </div>
     <div class="card">
       <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">${isEdit ? '캠핑장 수정' : '새 캠핑장 추가'}</h2>
+      ${_formMetaHtml}
       <div class="form-grid">
 
         <div class="form-field">
@@ -2677,9 +2836,11 @@ async function submitCampForm() {
     }
 
     // 4) 캠핑장 객체 구성
+    const _nowIso = new Date().toISOString();
+    const _oldCamp = isEdit ? cache.camps[_campForm.editIdx] : null;
     const campObj = {
       id: isEdit
-        ? (cache.camps[_campForm.editIdx].id || makeContentId('camp', _campForm.name.trim()))
+        ? (_oldCamp.id || makeContentId('camp', _campForm.name.trim()))
         : makeContentId('camp', _campForm.name.trim()),
       name: _campForm.name.trim(),
       region: _campForm.region,
@@ -2691,7 +2852,9 @@ async function submitCampForm() {
       imgs: finalImgs,
       rating: _campForm.rating,
       visits: _campForm.visits,
-      published: isEdit ? (cache.camps[_campForm.editIdx].published !== false) : true,
+      published: isEdit ? (_oldCamp.published !== false) : true,
+      created_at: isEdit ? (_oldCamp.created_at || _nowIso) : _nowIso,
+      updated_at: _nowIso,
     };
 
     if (isEdit) {
@@ -3141,6 +3304,8 @@ function renderEpDetail(si, ei) {
         <div class="detail-row"><div class="detail-key">제목</div><div class="detail-val">${escapeHtml(ep.title)}</div></div>
         <div class="detail-row"><div class="detail-key">릴스 URL</div><div class="detail-val">${ep.url ? `<a href="${escapeHtml(ep.url)}" target="_blank" rel="noopener">${escapeHtml(ep.url)}</a>` : '-'}</div></div>
         <div class="detail-row"><div class="detail-key">썸네일</div><div class="detail-val">${escapeHtml(ep.thumb || '-')}</div></div>
+        <div class="detail-row"><div class="detail-key">등록일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(ep.created_at) || '-'}</div></div>
+        <div class="detail-row"><div class="detail-key">수정일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(ep.updated_at) || '-'}</div></div>
       </div>
       <div class="detail-actions">
         <a class="btn btn-secondary" href="#series/${si}/${ei}/edit">✏️ 수정</a>
@@ -3221,12 +3386,21 @@ function _renderEpFormUI() {
   document.getElementById('topbar-title').innerHTML = isEdit ? '🎬 EP 수정' : '🎬 EP 추가';
   const c = document.getElementById('app-content');
 
+  const _editEp = isEdit && cache.series[_epForm.editSi] ? cache.series[_epForm.editSi].eps[_epForm.editEi] : null;
+  const _formMetaHtml = isEdit && _editEp ? `
+    <div class="form-meta">
+      <span>📅 등록일 <b>${fmtDateTime(_editEp.created_at) || '-'}</b></span>
+      <span>✏️ 수정일 <b>${fmtDateTime(_editEp.updated_at) || '-'}</b></span>
+    </div>
+  ` : '';
+
   c.innerHTML = `
     <div class="page-header">
       <button class="page-back" id="back-btn">← ${isEdit ? '돌아가기' : '시리즈 목록'}</button>
     </div>
     <div class="card">
       <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">${isEdit ? 'EP 수정' : '새 EP 추가'}</h2>
+      ${_formMetaHtml}
       <div class="form-grid">
 
         <div class="form-field">
@@ -3426,13 +3600,16 @@ async function submitEpForm() {
       const imageChanged = _epForm.imageChanged;
 
       // 새 EP 객체
+      const _nowIsoEp = new Date().toISOString();
       const updatedEp = {
         id: oldEp.id || makeContentId('ep', `${newSeries[_epForm.seriesIdx].name}_${_epForm.title.trim()}_${ep}`),
         ep: ep,
         title: _epForm.title.trim(),
         url: _epForm.url.trim(),
         thumb: newThumbField,
-        published: oldEp.published !== false,  // 기존 published 유지
+        published: oldEp.published !== false,
+        created_at: oldEp.created_at || _nowIsoEp,
+        updated_at: _nowIsoEp,
       };
 
       // 시리즈가 같으면 자리 유지 (정렬 모드가 ep_desc/asc면 자동 재정렬되므로 그냥 두기)
@@ -3501,6 +3678,7 @@ async function submitEpForm() {
       // === 추가 모드 (기존 로직) ===
       const slug = getSeriesSlug(series.name, ep);
       const imagePath = `images/series/${slug}.jpg`;
+      const _nowIsoEpNew = new Date().toISOString();
       const newEp = {
         id: makeContentId('ep', `${series.name}_${_epForm.title.trim()}_${ep}`),
         ep: ep,
@@ -3508,6 +3686,8 @@ async function submitEpForm() {
         url: _epForm.url.trim(),
         thumb: `./${imagePath}`,
         published: true,
+        created_at: _nowIsoEpNew,
+        updated_at: _nowIsoEpNew,
       };
 
       const targetSeries = newSeries[_epForm.seriesIdx];
@@ -3800,6 +3980,7 @@ async function submitSeriesForm() {
 
     const updatedSeries = JSON.parse(JSON.stringify(cache.series));
 
+    const _nowIsoS = new Date().toISOString();
     if (isEdit) {
       // 기존 시리즈 정보 업데이트 (eps와 published는 유지)
       const old = updatedSeries[_seriesForm.editSi];
@@ -3811,6 +3992,8 @@ async function submitSeriesForm() {
         published: old.published !== false,
         sort: _seriesForm.sort,
         eps: old.eps,
+        created_at: old.created_at || _nowIsoS,
+        updated_at: _nowIsoS,
       };
     } else {
       updatedSeries.push({
@@ -3821,6 +4004,8 @@ async function submitSeriesForm() {
         published: true,
         sort: _seriesForm.sort,
         eps: [],
+        created_at: _nowIsoS,
+        updated_at: _nowIsoS,
       });
     }
 
@@ -3972,6 +4157,8 @@ function renderProductDetail(item, opts) {
         <div class="detail-row"><div class="detail-key">가격</div><div class="detail-val">${priceHtml(item)}</div></div>
         <div class="detail-row"><div class="detail-key">링크</div><div class="detail-val">${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.url)}</a>` : '-'}</div></div>
         <div class="detail-row"><div class="detail-key">이미지</div><div class="detail-val" style="font-family:ui-monospace,monospace;font-size:11px;">${escapeHtml(item.thumb || '-')}</div></div>
+        <div class="detail-row"><div class="detail-key">등록일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(item.created_at) || '-'}</div></div>
+        <div class="detail-row"><div class="detail-key">수정일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(item.updated_at) || '-'}</div></div>
       </div>
       <div class="detail-actions">
         <a class="btn btn-secondary" href="#${opts.listHash}/${opts.idx}/edit">✏️ 수정</a>
@@ -4114,12 +4301,21 @@ function _renderFoodFormUI() {
   document.getElementById('topbar-title').innerHTML = isEdit ? '🍖 음식 수정' : '🍖 음식 추가';
   const c = document.getElementById('app-content');
 
+  const _editFood = isEdit ? (cache.foods[_foodForm.editIdx] || {}) : null;
+  const _formMetaHtml = isEdit && _editFood ? `
+    <div class="form-meta">
+      <span>📅 등록일 <b>${fmtDateTime(_editFood.created_at) || '-'}</b></span>
+      <span>✏️ 수정일 <b>${fmtDateTime(_editFood.updated_at) || '-'}</b></span>
+    </div>
+  ` : '';
+
   c.innerHTML = `
     <div class="page-header">
       <button class="page-back" id="back-btn">← ${isEdit ? '돌아가기' : '음식 목록'}</button>
     </div>
     <div class="card">
       <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">${isEdit ? '음식 수정' : '새 음식 추가'}</h2>
+      ${_formMetaHtml}
       <div class="form-grid">
 
         <div class="form-field">
@@ -4385,9 +4581,11 @@ async function submitFoodForm() {
     const discountRate = _foodForm.discountRate ? parseInt(_foodForm.discountRate) : null;
 
     // 음식 객체
+    const _nowIsoF = new Date().toISOString();
+    const _oldFood = isEdit ? cache.foods[_foodForm.editIdx] : null;
     const foodObj = {
       id: isEdit
-        ? (cache.foods[_foodForm.editIdx].id || makeContentId('food', _foodForm.name.trim()))
+        ? (_oldFood.id || makeContentId('food', _foodForm.name.trim()))
         : makeContentId('food', _foodForm.name.trim()),
       name: _foodForm.name.trim(),
       desc: _foodForm.desc.trim(),
@@ -4397,7 +4595,9 @@ async function submitFoodForm() {
       price_original: priceOriginal,
       price_sale: priceSale,
       discount_rate: discountRate,
-      published: isEdit ? (cache.foods[_foodForm.editIdx].published !== false) : true,
+      published: isEdit ? (_oldFood.published !== false) : true,
+      created_at: isEdit ? (_oldFood.created_at || _nowIsoF) : _nowIsoF,
+      updated_at: _nowIsoF,
     };
 
     if (isEdit) {
@@ -4548,12 +4748,21 @@ function _renderItemFormUI() {
   document.getElementById('topbar-title').innerHTML = isEdit ? '🛠 장비 수정' : '🛠 장비 추가';
   const c = document.getElementById('app-content');
 
+  const _editItem = isEdit ? (cache.items[_itemForm.editIdx] || {}) : null;
+  const _formMetaHtml = isEdit && _editItem ? `
+    <div class="form-meta">
+      <span>📅 등록일 <b>${fmtDateTime(_editItem.created_at) || '-'}</b></span>
+      <span>✏️ 수정일 <b>${fmtDateTime(_editItem.updated_at) || '-'}</b></span>
+    </div>
+  ` : '';
+
   c.innerHTML = `
     <div class="page-header">
       <button class="page-back" id="back-btn">← ${isEdit ? '돌아가기' : '장비 목록'}</button>
     </div>
     <div class="card">
       <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">${isEdit ? '장비 수정' : '새 장비 추가'}</h2>
+      ${_formMetaHtml}
       <div class="form-grid">
 
         <div class="form-field">
@@ -4793,9 +5002,11 @@ async function submitItemForm() {
     const priceSale = _itemForm.priceSale ? parseInt(_itemForm.priceSale) : null;
     const discountRate = _itemForm.discountRate ? parseInt(_itemForm.discountRate) : null;
 
+    const _nowIsoI = new Date().toISOString();
+    const _oldItem = isEdit ? cache.items[_itemForm.editIdx] : null;
     const itemObj = {
       id: isEdit
-        ? (cache.items[_itemForm.editIdx].id || makeContentId('item', _itemForm.name.trim()))
+        ? (_oldItem.id || makeContentId('item', _itemForm.name.trim()))
         : makeContentId('item', _itemForm.name.trim()),
       name: _itemForm.name.trim(),
       desc: _itemForm.desc.trim(),
@@ -4805,7 +5016,9 @@ async function submitItemForm() {
       price_original: priceOriginal,
       price_sale: priceSale,
       discount_rate: discountRate,
-      published: isEdit ? (cache.items[_itemForm.editIdx].published !== false) : true,
+      published: isEdit ? (_oldItem.published !== false) : true,
+      created_at: isEdit ? (_oldItem.created_at || _nowIsoI) : _nowIsoI,
+      updated_at: _nowIsoI,
     };
 
     if (isEdit) {

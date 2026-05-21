@@ -9,7 +9,9 @@
     "price_sale": null,
     "discount_rate": null,
     "published": true,
-    "id": "food_6b6f5c2711"
+    "id": "food_6b6f5c2711",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
     "name": "[성수동 분식] 수제 고추튀김 3종",
@@ -21,7 +23,9 @@
     "price_sale": 9729,
     "discount_rate": 30,
     "published": true,
-    "id": "food_9945533a15"
+    "id": "food_9945533a15",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
     "name": "[부산 이가네] 이가네 떡볶이",
@@ -33,7 +37,9 @@
     "price_sale": null,
     "discount_rate": null,
     "published": true,
-    "id": "food_48d51f3296"
+    "id": "food_48d51f3296",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
     "name": "[전주 베테랑] 김치만두",
@@ -45,7 +51,9 @@
     "price_sale": 5382,
     "discount_rate": 10,
     "published": true,
-    "id": "food_790525d8a8"
+    "id": "food_790525d8a8",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
     "name": "[니뽕내뽕] 크뽕 (크림짬뽕)",
@@ -57,7 +65,9 @@
     "price_sale": 8100,
     "discount_rate": 10,
     "published": true,
-    "id": "food_464525ea11"
+    "id": "food_464525ea11",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
     "name": "[야키토리 토리야] 닭꼬치 염통 파닭 츠쿠네 모듬 캠핑음식 요리 숯불 구이 메뉴",
@@ -69,7 +79,9 @@
     "price_sale": 7400,
     "discount_rate": 47,
     "published": true,
-    "id": "food_592752e317"
+    "id": "food_592752e317",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
     "name": "상국이네 떡볶이",
@@ -81,6 +93,8 @@
     "price_sale": null,
     "discount_rate": null,
     "published": true,
-    "id": "food_b7f447dd02"
+    "id": "food_b7f447dd02",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   }
 ]
