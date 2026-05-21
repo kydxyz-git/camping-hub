@@ -84,17 +84,17 @@
     "updated_at": "2026-05-21T15:01:39.345Z"
   },
   {
+    "id": "food_b7f447dd02",
     "name": "상국이네 떡볶이",
     "desc": "부산 40년 전통의 쌀떡볶이",
     "url": "https://link.coupang.com/a/dUsNdt7JxQ",
     "source": "쿠팡",
     "thumb": "./images/products/6e41acce3d12.jpg",
-    "price_original": 7560,
+    "price_original": 9360,
     "price_sale": null,
     "discount_rate": null,
     "published": true,
-    "id": "food_b7f447dd02",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T02:53:18.159759+00:00"
+    "updated_at": "2026-05-21T15:02:04.688Z"
   }
 ]
