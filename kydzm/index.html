@@ -1813,47 +1813,72 @@ function renderStats(container, data) {
   }
 
   // ── 2. 인기 페이지 분류 (캠핑장/EP/음식/장비/카테고리) ──
-  // 신규 경로(이름 기반): /camps/{캠핑장명}, /series/{시리즈명}/{EP제목}, /foods/{이름}, /items/{이름}
-  // 기존 경로(idx): /camps/{idx}, /series/{si}/{ei}
-  // 둘 다 처리
+  // path 형식 3가지 호환:
+  //   1) ID 기반 (신규): /camps/camp_abc123 → cache에서 ID로 찾아 현재 이름 표시 ✅
+  //   2) 이름 기반 (옛): /camps/산청%20우니메이카 → decode해서 그대로 표시
+  //   3) 인덱스 기반 (구버전): /camps/12 → cache.camps[12].name
+  // ID 기반은 이름 바뀌어도 누적 추적 가능
   const popular = { camps: [], series: [], foods: [], items: [], category: [] };
+
+  // ID → 객체 매핑 (한 번만 만들어두고 재사용)
+  const campById = {}, foodById = {}, itemById = {};
+  const seriesById = {}, epById = {}; // ep: { ep, series } 형태
+  (cache.camps || []).forEach(c => { if (c.id) campById[c.id] = c; });
+  (cache.foods || []).forEach(f => { if (f.id) foodById[f.id] = f; });
+  (cache.items || []).forEach(i => { if (i.id) itemById[i.id] = i; });
+  (cache.series || []).forEach(s => {
+    if (s.id) seriesById[s.id] = s;
+    (s.eps || []).forEach(ep => { if (ep.id) epById[ep.id] = { ep, series: s }; });
+  });
+
+  function resolveName(category, key) {
+    // key가 ID 형식이면 cache에서 찾음, 아니면 decode해서 그대로
+    if (category === 'camps') {
+      if (campById[key]) return campById[key].name;
+    } else if (category === 'foods') {
+      if (foodById[key]) return foodById[key].name;
+    } else if (category === 'items') {
+      if (itemById[key]) return itemById[key].name;
+    }
+    // ID로 못 찾으면: 숫자면 idx 매핑, 아니면 decode
+    if (/^\d+$/.test(key)) {
+      const arr = category === 'camps' ? cache.camps : category === 'foods' ? cache.foods : cache.items;
+      const obj = arr && arr[+key];
+      return obj ? obj.name : `(삭제됨 #${key})`;
+    }
+    try { return decodeURIComponent(key); } catch { return key; }
+  }
+
   for (const [path, count] of Object.entries(data.pages || {})) {
-    const p = path.replace(/^\/?#?/, ''); // 슬래시/해시 제거
-    const parts = p.split('/').map(s => {
-      try { return decodeURIComponent(s); } catch { return s; }
-    });
+    const p = path.replace(/^\/?#?/, '');
+    const parts = p.split('/');  // decode는 resolveName에서 하므로 여기선 raw 유지
+
     if (parts[0] === 'camps' && parts[1] !== undefined && parts[1] !== '') {
-      // 숫자면 idx로 매핑, 아니면 이름 그대로
-      const isIdx = /^\d+$/.test(parts[1]);
-      const name = isIdx
-        ? (cache.camps[+parts[1]] && cache.camps[+parts[1]].name) || `(삭제됨 #${parts[1]})`
-        : parts[1];
-      popular.camps.push({ name, count, path });
+      popular.camps.push({ name: resolveName('camps', parts[1]), count, path });
     } else if (parts[0] === 'series' && parts[1] !== undefined && parts[2] !== undefined) {
-      // 신규: /series/{시리즈명}/{EP제목} → "시리즈명 - EP제목"
-      // 기존: /series/{si}/{ei} → cache 매핑
-      const isIdx = /^\d+$/.test(parts[1]) && /^\d+$/.test(parts[2]);
+      // 신규 ID 기반: /series/{seriesId}/{epId}
+      // 옛 이름 기반: /series/{이름}/{EP제목}
+      // 옛 인덱스: /series/{si}/{ei}
       let name;
-      if (isIdx) {
+      if (epById[parts[2]]) {
+        const { ep, series } = epById[parts[2]];
+        name = `${series.emoji || ''} ${series.name} - ${ep.title}`;
+      } else if (/^\d+$/.test(parts[1]) && /^\d+$/.test(parts[2])) {
         const s = cache.series[+parts[1]];
         const ep = s && s.eps[+parts[2]];
         name = (s && ep) ? `${s.emoji || ''} ${s.name} - ${ep.title}` : `(삭제됨 #${parts[1]}/${parts[2]})`;
       } else {
-        name = `${parts[1]} - ${parts[2]}`;
+        // 이름 기반 — decode
+        let seriesName = parts[1], epTitle = parts[2];
+        try { seriesName = decodeURIComponent(seriesName); } catch {}
+        try { epTitle = decodeURIComponent(epTitle); } catch {}
+        name = `${seriesName} - ${epTitle}`;
       }
       popular.series.push({ name, count, path });
     } else if (parts[0] === 'foods' && parts[1] !== undefined) {
-      const isIdx = /^\d+$/.test(parts[1]);
-      const name = isIdx
-        ? (cache.foods[+parts[1]] && cache.foods[+parts[1]].name) || `(삭제됨 #${parts[1]})`
-        : parts[1];
-      popular.foods.push({ name, count, path });
+      popular.foods.push({ name: resolveName('foods', parts[1]), count, path });
     } else if (parts[0] === 'items' && parts[1] !== undefined) {
-      const isIdx = /^\d+$/.test(parts[1]);
-      const name = isIdx
-        ? (cache.items[+parts[1]] && cache.items[+parts[1]].name) || `(삭제됨 #${parts[1]})`
-        : parts[1];
-      popular.items.push({ name, count, path });
+      popular.items.push({ name: resolveName('items', parts[1]), count, path });
     } else {
       // 카테고리 (/, /series, /camps 등)
       const label = parts[0] || '홈';
@@ -1863,17 +1888,16 @@ function renderStats(container, data) {
   for (const k in popular) popular[k].sort((a, b) => b.count - a.count);
 
   // ── 3. 외부 링크 클릭 분류 (context::target 형식) ──
-  // 신규 데이터: "/camps/{이름}::그래가" 또는 "/camps/{idx}::그래가"
-  // 기존 데이터: "그래가" (context 없음) → 기타로 분류
+  // context도 같은 3가지 형식 호환 (ID/이름/idx)
+  // resolveName + epById 매핑 재사용
   const clicksByCategory = {
-    camps: [],    // [{ contentName, target, count }]
+    camps: [],
     series: [],
     foods: [],
     items: [],
     other: [],
   };
   for (const [key, count] of Object.entries(data.clicks || {})) {
-    // "context::target" 분리
     const sepIdx = key.indexOf('::');
     let context = '', target = key;
     if (sepIdx !== -1) {
@@ -1881,51 +1905,40 @@ function renderStats(container, data) {
       target = key.slice(sepIdx + 2);
     }
 
-    // context 파싱: "/camps/이름" 또는 "/camps/idx" 또는 "/#camps" (탭만)
     const p = context.replace(/^\/?#?/, '');
-    const parts = p.split('/').filter(Boolean).map(s => {
-      try { return decodeURIComponent(s); } catch { return s; }
-    });
+    const parts = p.split('/').filter(Boolean);
 
     if (parts[0] === 'camps' && parts[1] !== undefined) {
-      const isIdx = /^\d+$/.test(parts[1]);
-      const name = isIdx
-        ? (cache.camps[+parts[1]] && cache.camps[+parts[1]].name) || `(삭제됨 #${parts[1]})`
-        : parts[1];
-      clicksByCategory.camps.push({ contentName: name, target, count });
+      clicksByCategory.camps.push({ contentName: resolveName('camps', parts[1]), target, count });
       continue;
     } else if (parts[0] === 'series' && parts[1] !== undefined && parts[2] !== undefined) {
-      const isIdx = /^\d+$/.test(parts[1]) && /^\d+$/.test(parts[2]);
       let name;
-      if (isIdx) {
+      if (epById[parts[2]]) {
+        const { ep, series } = epById[parts[2]];
+        name = `${series.emoji || ''} ${series.name} - ${ep.title}`;
+      } else if (/^\d+$/.test(parts[1]) && /^\d+$/.test(parts[2])) {
         const s = cache.series[+parts[1]];
         const ep = s && s.eps[+parts[2]];
         name = (s && ep) ? `${s.emoji || ''} ${s.name} - ${ep.title}` : `(삭제됨 #${parts[1]}/${parts[2]})`;
       } else {
-        name = `${parts[1]} - ${parts[2]}`;
+        let seriesName = parts[1], epTitle = parts[2];
+        try { seriesName = decodeURIComponent(seriesName); } catch {}
+        try { epTitle = decodeURIComponent(epTitle); } catch {}
+        name = `${seriesName} - ${epTitle}`;
       }
       clicksByCategory.series.push({ contentName: name, target, count });
       continue;
     } else if (parts[0] === 'foods' && parts[1] !== undefined) {
-      const isIdx = /^\d+$/.test(parts[1]);
-      const name = isIdx
-        ? (cache.foods[+parts[1]] && cache.foods[+parts[1]].name) || `(삭제됨 #${parts[1]})`
-        : parts[1];
-      clicksByCategory.foods.push({ contentName: name, target, count });
+      clicksByCategory.foods.push({ contentName: resolveName('foods', parts[1]), target, count });
       continue;
     } else if (parts[0] === 'items' && parts[1] !== undefined) {
-      const isIdx = /^\d+$/.test(parts[1]);
-      const name = isIdx
-        ? (cache.items[+parts[1]] && cache.items[+parts[1]].name) || `(삭제됨 #${parts[1]})`
-        : parts[1];
-      clicksByCategory.items.push({ contentName: name, target, count });
+      clicksByCategory.items.push({ contentName: resolveName('items', parts[1]), target, count });
       continue;
     }
 
-    // 카테고리 매핑 안 됨 → 기타 (인스타DM, 메일, 탭 컨텍스트, 기존 형식)
+    // 카테고리 매핑 안 됨 → 기타
     clicksByCategory.other.push({ contentName: context || '(컨텍스트 없음)', target, count });
   }
-  // 각 카테고리 정렬
   for (const k in clicksByCategory) clicksByCategory[k].sort((a, b) => b.count - a.count);
   const hasAnyClicks = Object.values(clicksByCategory).some(arr => arr.length > 0);
 
@@ -2622,6 +2635,9 @@ async function submitCampForm() {
 
     // 4) 캠핑장 객체 구성
     const campObj = {
+      id: isEdit
+        ? (cache.camps[_campForm.editIdx].id || makeContentId('camp', _campForm.name.trim()))
+        : makeContentId('camp', _campForm.name.trim()),
       name: _campForm.name.trim(),
       region: _campForm.region,
       seasons: _campForm.seasons,
@@ -3368,6 +3384,7 @@ async function submitEpForm() {
 
       // 새 EP 객체
       const updatedEp = {
+        id: oldEp.id || makeContentId('ep', `${newSeries[_epForm.seriesIdx].name}_${_epForm.title.trim()}_${ep}`),
         ep: ep,
         title: _epForm.title.trim(),
         url: _epForm.url.trim(),
@@ -3442,6 +3459,7 @@ async function submitEpForm() {
       const slug = getSeriesSlug(series.name, ep);
       const imagePath = `images/series/${slug}.jpg`;
       const newEp = {
+        id: makeContentId('ep', `${series.name}_${_epForm.title.trim()}_${ep}`),
         ep: ep,
         title: _epForm.title.trim(),
         url: _epForm.url.trim(),
@@ -3743,6 +3761,7 @@ async function submitSeriesForm() {
       // 기존 시리즈 정보 업데이트 (eps와 published는 유지)
       const old = updatedSeries[_seriesForm.editSi];
       updatedSeries[_seriesForm.editSi] = {
+        id: old.id || makeContentId('series', _seriesForm.name.trim()),
         name: _seriesForm.name.trim(),
         emoji: _seriesForm.emoji.trim(),
         color: _seriesForm.color,
@@ -3752,6 +3771,7 @@ async function submitSeriesForm() {
       };
     } else {
       updatedSeries.push({
+        id: makeContentId('series', _seriesForm.name.trim()),
         name: _seriesForm.name.trim(),
         emoji: _seriesForm.emoji.trim(),
         color: _seriesForm.color,
@@ -4259,6 +4279,19 @@ function _foodImgHash(name) {
   return ((h >>> 0).toString(16).padStart(8, '0') + (h2 >>> 0).toString(16).padStart(8, '0')).slice(0, 12);
 }
 
+// 영구 콘텐츠 ID 생성 (통계 추적용)
+// prefix: 'camp' | 'food' | 'item' | 'series' | 'ep'
+// 신규 콘텐츠 등록 시 호출, 한 번 생성되면 절대 변경되지 않음
+function makeContentId(prefix, name) {
+  const str = `${name}|${Date.now()}|${Math.random()}`;
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) & 0xffffffff;
+  let h2 = 5381;
+  for (let i = 0; i < str.length; i++) h2 = ((h2 * 33) ^ str.charCodeAt(i)) & 0xffffffff;
+  const hex = ((h >>> 0).toString(16).padStart(8, '0') + (h2 >>> 0).toString(16).padStart(8, '0')).slice(0, 10);
+  return `${prefix}_${hex}`;
+}
+
 async function submitFoodForm() {
   const isEdit = _foodForm.mode === 'edit';
 
@@ -4310,6 +4343,9 @@ async function submitFoodForm() {
 
     // 음식 객체
     const foodObj = {
+      id: isEdit
+        ? (cache.foods[_foodForm.editIdx].id || makeContentId('food', _foodForm.name.trim()))
+        : makeContentId('food', _foodForm.name.trim()),
       name: _foodForm.name.trim(),
       desc: _foodForm.desc.trim(),
       url: _foodForm.url.trim(),
@@ -4715,6 +4751,9 @@ async function submitItemForm() {
     const discountRate = _itemForm.discountRate ? parseInt(_itemForm.discountRate) : null;
 
     const itemObj = {
+      id: isEdit
+        ? (cache.items[_itemForm.editIdx].id || makeContentId('item', _itemForm.name.trim()))
+        : makeContentId('item', _itemForm.name.trim()),
       name: _itemForm.name.trim(),
       desc: _itemForm.desc.trim(),
       url: _itemForm.url.trim(),
