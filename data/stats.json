@@ -1,32 +1,36 @@
 {
   "total": {
-    "pv": 6,
-    "click": 3,
+    "pv": 11,
+    "click": 4,
     "search": 0
   },
   "daily": {
     "2026-05-21": {
-      "pv": 6,
-      "click": 3,
+      "pv": 11,
+      "click": 4,
       "search": 0,
       "devices": {
-        "desktop": 9
+        "desktop": 15
       }
     }
   },
   "pages": {
     "/#stories": 4,
+    "/": 3,
     "/series/series_304565fb77/ep_a8b40077ca": 1,
-    "/series/series_ba7cc89468/ep_73bdfba72e": 1
+    "/series/series_ba7cc89468/ep_73bdfba72e": 1,
+    "/camps/camp_e220a217fd": 1,
+    "/items/item_960c2ff01c": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 1,
     "/series/series_304565fb77/ep_a8b40077ca::인스타DM": 1,
-    "/foods/food_48d51f3296::컬리": 1
+    "/foods/food_48d51f3296::컬리": 1,
+    "/series/series_ba7cc89468/ep_27438d1204::인스타DM": 1
   },
   "searches": {},
   "devices": {
-    "desktop": 9
+    "desktop": 15
   },
-  "updated_at": "2026-05-21T02:56:33.470Z"
+  "updated_at": "2026-05-21T04:00:53.609Z"
 }
