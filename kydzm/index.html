@@ -1813,25 +1813,47 @@ function renderStats(container, data) {
   }
 
   // ── 2. 인기 페이지 분류 (캠핑장/EP/음식/장비/카테고리) ──
+  // 신규 경로(이름 기반): /camps/{캠핑장명}, /series/{시리즈명}/{EP제목}, /foods/{이름}, /items/{이름}
+  // 기존 경로(idx): /camps/{idx}, /series/{si}/{ei}
+  // 둘 다 처리
   const popular = { camps: [], series: [], foods: [], items: [], category: [] };
   for (const [path, count] of Object.entries(data.pages || {})) {
     const p = path.replace(/^\/?#?/, ''); // 슬래시/해시 제거
-    const parts = p.split('/');
+    const parts = p.split('/').map(s => {
+      try { return decodeURIComponent(s); } catch { return s; }
+    });
     if (parts[0] === 'camps' && parts[1] !== undefined && parts[1] !== '') {
-      const idx = +parts[1];
-      const camp = cache.camps[idx];
-      if (camp) popular.camps.push({ name: camp.name, count, path });
+      // 숫자면 idx로 매핑, 아니면 이름 그대로
+      const isIdx = /^\d+$/.test(parts[1]);
+      const name = isIdx
+        ? (cache.camps[+parts[1]] && cache.camps[+parts[1]].name) || `(삭제됨 #${parts[1]})`
+        : parts[1];
+      popular.camps.push({ name, count, path });
     } else if (parts[0] === 'series' && parts[1] !== undefined && parts[2] !== undefined) {
-      const si = +parts[1], ei = +parts[2];
-      const s = cache.series[si];
-      const ep = s && s.eps[ei];
-      if (s && ep) popular.series.push({ name: `${s.emoji || ''} ${ep.title}`, count, path });
+      // 신규: /series/{시리즈명}/{EP제목} → "시리즈명 - EP제목"
+      // 기존: /series/{si}/{ei} → cache 매핑
+      const isIdx = /^\d+$/.test(parts[1]) && /^\d+$/.test(parts[2]);
+      let name;
+      if (isIdx) {
+        const s = cache.series[+parts[1]];
+        const ep = s && s.eps[+parts[2]];
+        name = (s && ep) ? `${s.emoji || ''} ${s.name} - ${ep.title}` : `(삭제됨 #${parts[1]}/${parts[2]})`;
+      } else {
+        name = `${parts[1]} - ${parts[2]}`;
+      }
+      popular.series.push({ name, count, path });
     } else if (parts[0] === 'foods' && parts[1] !== undefined) {
-      const f = cache.foods[+parts[1]];
-      if (f) popular.foods.push({ name: f.name, count, path });
+      const isIdx = /^\d+$/.test(parts[1]);
+      const name = isIdx
+        ? (cache.foods[+parts[1]] && cache.foods[+parts[1]].name) || `(삭제됨 #${parts[1]})`
+        : parts[1];
+      popular.foods.push({ name, count, path });
     } else if (parts[0] === 'items' && parts[1] !== undefined) {
-      const it = cache.items[+parts[1]];
-      if (it) popular.items.push({ name: it.name, count, path });
+      const isIdx = /^\d+$/.test(parts[1]);
+      const name = isIdx
+        ? (cache.items[+parts[1]] && cache.items[+parts[1]].name) || `(삭제됨 #${parts[1]})`
+        : parts[1];
+      popular.items.push({ name, count, path });
     } else {
       // 카테고리 (/, /series, /camps 등)
       const label = parts[0] || '홈';
@@ -1841,14 +1863,14 @@ function renderStats(container, data) {
   for (const k in popular) popular[k].sort((a, b) => b.count - a.count);
 
   // ── 3. 외부 링크 클릭 분류 (context::target 형식) ──
-  // 신규 데이터: "/#camps/12::그래가" → 캠핑장 > 산청 우니메이카 > 그래가 5회
-  // 기존 데이터: "그래가" → 기타로 분류
+  // 신규 데이터: "/camps/{이름}::그래가" 또는 "/camps/{idx}::그래가"
+  // 기존 데이터: "그래가" (context 없음) → 기타로 분류
   const clicksByCategory = {
     camps: [],    // [{ contentName, target, count }]
     series: [],
     foods: [],
     items: [],
-    other: [],    // 카테고리 매핑 안 되는 것 (인스타DM, 메일 + 기존 데이터)
+    other: [],
   };
   for (const [key, count] of Object.entries(data.clicks || {})) {
     // "context::target" 분리
@@ -1859,39 +1881,48 @@ function renderStats(container, data) {
       target = key.slice(sepIdx + 2);
     }
 
-    // context의 path parse — 예: "/#camps/12", "/#series/0/3", "/#foods/5"
-    // 슬래시/해시/슬래시로 정규화
+    // context 파싱: "/camps/이름" 또는 "/camps/idx" 또는 "/#camps" (탭만)
     const p = context.replace(/^\/?#?/, '');
-    const parts = p.split('/').filter(Boolean);
+    const parts = p.split('/').filter(Boolean).map(s => {
+      try { return decodeURIComponent(s); } catch { return s; }
+    });
 
     if (parts[0] === 'camps' && parts[1] !== undefined) {
-      const camp = cache.camps[+parts[1]];
-      if (camp) {
-        clicksByCategory.camps.push({ contentName: camp.name, target, count });
-        continue;
-      }
+      const isIdx = /^\d+$/.test(parts[1]);
+      const name = isIdx
+        ? (cache.camps[+parts[1]] && cache.camps[+parts[1]].name) || `(삭제됨 #${parts[1]})`
+        : parts[1];
+      clicksByCategory.camps.push({ contentName: name, target, count });
+      continue;
     } else if (parts[0] === 'series' && parts[1] !== undefined && parts[2] !== undefined) {
-      const s = cache.series[+parts[1]];
-      const ep = s && s.eps[+parts[2]];
-      if (s && ep) {
-        clicksByCategory.series.push({ contentName: `${s.emoji || ''} ${ep.title}`, target, count });
-        continue;
+      const isIdx = /^\d+$/.test(parts[1]) && /^\d+$/.test(parts[2]);
+      let name;
+      if (isIdx) {
+        const s = cache.series[+parts[1]];
+        const ep = s && s.eps[+parts[2]];
+        name = (s && ep) ? `${s.emoji || ''} ${s.name} - ${ep.title}` : `(삭제됨 #${parts[1]}/${parts[2]})`;
+      } else {
+        name = `${parts[1]} - ${parts[2]}`;
       }
+      clicksByCategory.series.push({ contentName: name, target, count });
+      continue;
     } else if (parts[0] === 'foods' && parts[1] !== undefined) {
-      const f = cache.foods[+parts[1]];
-      if (f) {
-        clicksByCategory.foods.push({ contentName: f.name, target, count });
-        continue;
-      }
+      const isIdx = /^\d+$/.test(parts[1]);
+      const name = isIdx
+        ? (cache.foods[+parts[1]] && cache.foods[+parts[1]].name) || `(삭제됨 #${parts[1]})`
+        : parts[1];
+      clicksByCategory.foods.push({ contentName: name, target, count });
+      continue;
     } else if (parts[0] === 'items' && parts[1] !== undefined) {
-      const it = cache.items[+parts[1]];
-      if (it) {
-        clicksByCategory.items.push({ contentName: it.name, target, count });
-        continue;
-      }
+      const isIdx = /^\d+$/.test(parts[1]);
+      const name = isIdx
+        ? (cache.items[+parts[1]] && cache.items[+parts[1]].name) || `(삭제됨 #${parts[1]})`
+        : parts[1];
+      clicksByCategory.items.push({ contentName: name, target, count });
+      continue;
     }
 
-    // 카테고리 매핑 안 됨 → 기타 (인스타DM, 메일, 또는 기존 형식 데이터)
+    // 카테고리 매핑 안 됨 → 기타 (인스타DM, 메일, 탭 컨텍스트, 기존 형식)
     clicksByCategory.other.push({ contentName: context || '(컨텍스트 없음)', target, count });
   }
   // 각 카테고리 정렬
