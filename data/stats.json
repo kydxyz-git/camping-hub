@@ -1,23 +1,23 @@
 {
   "total": {
-    "pv": 22,
+    "pv": 45,
     "click": 17,
     "search": 0
   },
   "daily": {
     "2026-05-21": {
-      "pv": 22,
+      "pv": 45,
       "click": 17,
       "search": 0,
       "devices": {
-        "desktop": 39
+        "desktop": 62
       }
     }
   },
   "pages": {
-    "/#stories": 7,
-    "/": 5,
-    "/series/series_ba7cc89468/ep_ad505df37d": 3,
+    "/#stories": 19,
+    "/": 15,
+    "/series/series_ba7cc89468/ep_ad505df37d": 4,
     "/series/series_304565fb77/ep_a8b40077ca": 1,
     "/series/series_ba7cc89468/ep_73bdfba72e": 1,
     "/camps/camp_e220a217fd": 1,
@@ -36,7 +36,7 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 39
+    "desktop": 62
   },
-  "updated_at": "2026-05-21T06:00:54.496Z"
+  "updated_at": "2026-05-21T06:55:36.632Z"
 }
