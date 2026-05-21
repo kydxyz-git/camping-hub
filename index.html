@@ -1365,14 +1365,32 @@ init();
     return null;
   }
 
-  // 클릭 이벤트 캡쳐 (document에 한 번만 등록)
-  // 1) data-track-path 있는 카드 클릭 → 페이지뷰
-  // 2) 외부 링크면 클릭 이벤트도 발송 (context = cardPath 또는 현재 위치)
-  // 3) data-track-target + data-track-external 명시된 요소 → '기타 외부링크'로 분류 (context: '__external__')
-  //    예: 그래가파트너스 / Clip Creators / DM / 메일 / 인스타 프로필
+  // 카드 페이지뷰 - pointerdown 단계에서 미리 발송
+  // 이유: click → 새 탭 navigation 사이 매우 짧은 시간에 send 요청이 drop될 수 있음
+  // pointerdown은 click보다 먼저, 새 탭 열리기 한참 전에 발생 → 안전
+  function sendCardPageview(card) {
+    if (!card) return;
+    const cardPath = card.getAttribute('data-track-path') || '';
+    const cardTitle = card.getAttribute('data-track-title') || '';
+    if (!cardPath) return;
+    if (!shouldTrack(cardPath)) return;
+    send({
+      type: 'pageview',
+      path: cardPath,
+      title: cardTitle,
+    });
+  }
+
+  // pointerdown: 마우스/터치/펜 모두 잡음, 좌클릭만
+  document.addEventListener('pointerdown', function(e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    const card = e.target.closest('[data-track-path]');
+    if (card) sendCardPageview(card);
+  }, true);  // capture 단계에서 빨리
+
+  // 클릭 이벤트 캡쳐 (외부 링크 + fallback)
   document.addEventListener('click', function(e) {
     // 명시적 외부 채널 버튼 (data-track-target + data-track-external)
-    // 이건 카드 컨텍스트와 무관하게 별도 분류
     const externalBtn = e.target.closest('[data-track-external="1"]');
     if (externalBtn) {
       const explicitTarget = externalBtn.getAttribute('data-track-target') || 'unknown';
@@ -1380,39 +1398,18 @@ init();
         type: 'click',
         target: explicitTarget,
         url: externalBtn.getAttribute('href') || externalBtn.tagName.toLowerCase() === 'button' ? '#button' : '',
-        context: '__external__',  // 별도 카테고리로 분류
+        context: '__external__',
       });
-      // a 태그면 클릭 이벤트도 정상 진행 (return하지 않음)
-      // 추적 카드 매칭은 아래로 건너뜀
       return;
     }
 
-    // 추적 카드(시리즈 EP/캠핑장/음식/장비) 클릭 → 페이지뷰
+    // 카드 fallback (키보드 Enter, 일부 접근성 도구 등 pointerdown 안 발생하는 케이스)
     const card = e.target.closest('[data-track-path]');
     let cardPath = '';
     if (card) {
       cardPath = card.getAttribute('data-track-path') || '';
-      const cardTitle = card.getAttribute('data-track-title') || '';
-      if (cardPath && shouldTrack(cardPath)) {
-        // 페이지뷰 + 클릭이 같은 click 이벤트에서 발송되면 sendBeacon이 일부 무시할 수 있어서
-        // fetch로 강제 (target="_blank"라 navigation에도 영향 없음)
-        try {
-          fetch(STATS_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-            body: JSON.stringify({
-              type: 'pageview',
-              path: cardPath,
-              title: cardTitle,
-              device: DEVICE,
-              referrer: REFERRER || undefined,
-            }),
-            keepalive: true,
-            mode: 'cors',
-            credentials: 'omit',
-          }).catch(() => {});
-        } catch (e) {}
-      }
+      // pointerdown에서 이미 발송했으면 shouldTrack 1초 dedup에서 차단됨
+      sendCardPageview(card);
     }
 
     // 외부 링크 클릭 추적
