@@ -306,6 +306,26 @@
     font-weight: 600;
     color: var(--text);
   }
+  /* 시리즈 EP 행 - 컬러 배지 + EP 제목 */
+  .stats-series-row .stats-row-label {
+    display: flex; align-items: center; gap: 8px; min-width: 0;
+  }
+  .stats-series-badge {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px;
+    font-size: 11px; font-weight: 700;
+    color: #fff;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+  .stats-series-title {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 1; min-width: 0;
+    color: var(--text);
+  }
   .stats-empty {
     padding: 16px; text-align: center; color: var(--muted); font-size: 12px;
   }
@@ -1859,22 +1879,28 @@ function renderStats(container, data) {
       // 신규 ID 기반: /series/{seriesId}/{epId}
       // 옛 이름 기반: /series/{이름}/{EP제목}
       // 옛 인덱스: /series/{si}/{ei}
-      let name;
+      // 표시용 메타 정보 분리: emoji, seriesName, epTitle, color
+      let emoji = '', seriesName = '', epTitle = '', color = '#888';
       if (epById[parts[2]]) {
         const { ep, series } = epById[parts[2]];
-        name = `${series.emoji || ''} ${series.name} - ${ep.title}`;
+        emoji = series.emoji || '';
+        seriesName = series.name || '';
+        epTitle = ep.title || '';
+        color = series.color || '#888';
       } else if (/^\d+$/.test(parts[1]) && /^\d+$/.test(parts[2])) {
         const s = cache.series[+parts[1]];
         const ep = s && s.eps[+parts[2]];
-        name = (s && ep) ? `${s.emoji || ''} ${s.name} - ${ep.title}` : `(삭제됨 #${parts[1]}/${parts[2]})`;
+        if (s && ep) {
+          emoji = s.emoji || ''; seriesName = s.name || ''; epTitle = ep.title || '';
+          color = s.color || '#888';
+        } else {
+          seriesName = `(삭제됨)`; epTitle = `#${parts[1]}/${parts[2]}`;
+        }
       } else {
-        // 이름 기반 — decode
-        let seriesName = parts[1], epTitle = parts[2];
-        try { seriesName = decodeURIComponent(seriesName); } catch {}
-        try { epTitle = decodeURIComponent(epTitle); } catch {}
-        name = `${seriesName} - ${epTitle}`;
+        try { seriesName = decodeURIComponent(parts[1]); } catch { seriesName = parts[1]; }
+        try { epTitle = decodeURIComponent(parts[2]); } catch { epTitle = parts[2]; }
       }
-      popular.series.push({ name, count, path });
+      popular.series.push({ emoji, seriesName, epTitle, color, count, path });
     } else if (parts[0] === 'foods' && parts[1] !== undefined) {
       popular.foods.push({ name: resolveName('foods', parts[1]), count, path });
     } else if (parts[0] === 'items' && parts[1] !== undefined) {
@@ -1887,60 +1913,9 @@ function renderStats(container, data) {
   }
   for (const k in popular) popular[k].sort((a, b) => b.count - a.count);
 
-  // ── 3. 외부 링크 클릭 분류 (context::target 형식) ──
-  // context도 같은 3가지 형식 호환 (ID/이름/idx)
-  // resolveName + epById 매핑 재사용
-  const clicksByCategory = {
-    camps: [],
-    series: [],
-    foods: [],
-    items: [],
-    other: [],
-  };
-  for (const [key, count] of Object.entries(data.clicks || {})) {
-    const sepIdx = key.indexOf('::');
-    let context = '', target = key;
-    if (sepIdx !== -1) {
-      context = key.slice(0, sepIdx);
-      target = key.slice(sepIdx + 2);
-    }
+  // 외부 링크 클릭 분류는 인기 콘텐츠와 사실상 동일 정보라 제거
+  // (필요 시 나중에 전환율 차원으로 부활 가능)
 
-    const p = context.replace(/^\/?#?/, '');
-    const parts = p.split('/').filter(Boolean);
-
-    if (parts[0] === 'camps' && parts[1] !== undefined) {
-      clicksByCategory.camps.push({ contentName: resolveName('camps', parts[1]), target, count });
-      continue;
-    } else if (parts[0] === 'series' && parts[1] !== undefined && parts[2] !== undefined) {
-      let name;
-      if (epById[parts[2]]) {
-        const { ep, series } = epById[parts[2]];
-        name = `${series.emoji || ''} ${series.name} - ${ep.title}`;
-      } else if (/^\d+$/.test(parts[1]) && /^\d+$/.test(parts[2])) {
-        const s = cache.series[+parts[1]];
-        const ep = s && s.eps[+parts[2]];
-        name = (s && ep) ? `${s.emoji || ''} ${s.name} - ${ep.title}` : `(삭제됨 #${parts[1]}/${parts[2]})`;
-      } else {
-        let seriesName = parts[1], epTitle = parts[2];
-        try { seriesName = decodeURIComponent(seriesName); } catch {}
-        try { epTitle = decodeURIComponent(epTitle); } catch {}
-        name = `${seriesName} - ${epTitle}`;
-      }
-      clicksByCategory.series.push({ contentName: name, target, count });
-      continue;
-    } else if (parts[0] === 'foods' && parts[1] !== undefined) {
-      clicksByCategory.foods.push({ contentName: resolveName('foods', parts[1]), target, count });
-      continue;
-    } else if (parts[0] === 'items' && parts[1] !== undefined) {
-      clicksByCategory.items.push({ contentName: resolveName('items', parts[1]), target, count });
-      continue;
-    }
-
-    // 카테고리 매핑 안 됨 → 기타
-    clicksByCategory.other.push({ contentName: context || '(컨텍스트 없음)', target, count });
-  }
-  for (const k in clicksByCategory) clicksByCategory[k].sort((a, b) => b.count - a.count);
-  const hasAnyClicks = Object.values(clicksByCategory).some(arr => arr.length > 0);
 
   // ── 4. 검색어 정렬 (category:query 형식) ──
   const searches = Object.entries(data.searches || {})
@@ -2006,24 +1981,10 @@ function renderStats(container, data) {
     <div class="card">
       <div class="stats-section-title">🏆 인기 콘텐츠 TOP</div>
       ${renderPopularSection('🏕 캠핑장', popular.camps, 5)}
-      ${renderPopularSection('🎬 시리즈 EP', popular.series, 5)}
+      ${renderSeriesPopular('🎬 시리즈 EP', popular.series, 8)}
       ${renderPopularSection('🍖 음식', popular.foods, 5)}
       ${renderPopularSection('🛠 장비', popular.items, 5)}
       ${renderPopularSection('📂 카테고리', popular.category, 5)}
-    </div>
-
-    <!-- 외부 링크 클릭 -->
-    <div class="card">
-      <div class="stats-section-title">🎯 외부 링크 클릭 (전환)</div>
-      ${!hasAnyClicks
-        ? '<div class="stats-empty">아직 클릭 데이터가 없어요</div>'
-        : `
-          ${renderClickSection('🏕 캠핑장', clicksByCategory.camps, 8)}
-          ${renderClickSection('🎬 시리즈 EP', clicksByCategory.series, 8)}
-          ${renderClickSection('🍖 음식', clicksByCategory.foods, 8)}
-          ${renderClickSection('🛠 장비', clicksByCategory.items, 8)}
-          ${renderClickSection('📌 기타', clicksByCategory.other, 5)}
-        `}
     </div>
 
     <!-- 인기 검색어 -->
@@ -2087,6 +2048,27 @@ function renderPopularSection(label, items, limit = 5) {
         <div class="stats-row">
           <span class="stats-row-rank">${i + 1}</span>
           <span class="stats-row-label">${escapeHtml(it.name)}</span>
+          <span class="stats-row-count">${it.count.toLocaleString()}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderSeriesPopular(label, items, limit = 8) {
+  if (items.length === 0) return '';
+  return `
+    <div class="stats-popular-sub">${label}</div>
+    <div class="stats-list">
+      ${items.slice(0, limit).map((it, i) => `
+        <div class="stats-row stats-series-row">
+          <span class="stats-row-rank">${i + 1}</span>
+          <span class="stats-row-label">
+            <span class="stats-series-badge" style="background:${escapeHtml(it.color || '#888')};">
+              ${escapeHtml(it.emoji || '')} ${escapeHtml(it.seriesName || '')}
+            </span>
+            <span class="stats-series-title">${escapeHtml(it.epTitle || '')}</span>
+          </span>
           <span class="stats-row-count">${it.count.toLocaleString()}</span>
         </div>
       `).join('')}
