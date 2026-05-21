@@ -466,6 +466,70 @@
   .stats-trend.down { background: #ffebee; color: #c62828; }
   .stats-trend.flat { background: #f5f5f5; color: var(--muted); }
 
+  /* 콘텐츠별 분석 (신규) */
+  .ca-toggle {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .ca-toggle-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .ca-toggle-btn:hover { background: var(--accent-soft); }
+  .ca-toggle-btn.is-active {
+    background: var(--point);
+    color: var(--bg);
+    border-color: var(--point);
+  }
+  .ca-select-wrap { margin-bottom: 14px; }
+  .ca-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+  }
+  .ca-section-sub {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    margin: 16px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .ca-section-sub:first-child { margin-top: 0; }
+  .ca-loading {
+    text-align: center;
+    padding: 24px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .ca-empty {
+    text-align: center;
+    padding: 16px;
+    color: var(--muted);
+    font-size: 12px;
+    background: #f8f8f4;
+    border-radius: 6px;
+  }
+  .ca-summary {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+    text-align: right;
+  }
+
   /* 등록일 작은 회색 텍스트 (인기 콘텐츠 항목 우측에 표시) */
   .stats-row-date {
     margin-left: 8px;
@@ -2322,6 +2386,12 @@ function renderStats(container, data) {
         : renderHeatmap(heatmap, heatmapMax)}
     </div>
 
+    <!-- 📊 콘텐츠별 분석 (신규) -->
+    <div class="card" id="content-analysis-card">
+      <div class="stats-section-title">📊 콘텐츠별 분석 <span style="font-size:11px;font-weight:400;color:var(--muted);">(최근 30일)</span></div>
+      <div class="ca-loading">대시보드 로딩 중...</div>
+    </div>
+
     <!-- 레퍼러 (유입 경로) -->
     <div class="card">
       <div class="stats-section-title">🔗 유입 경로 (referrer)</div>
@@ -2388,6 +2458,9 @@ function renderStats(container, data) {
       <span style="font-size:10px;">GitHub 동기화는 매시간 정각 / 데이터는 30초 캐시</span>
     </div>
   `;
+
+  // 📊 콘텐츠별 분석 초기화 (innerHTML 후 DOM 준비됨)
+  initContentAnalysis(data);
 }
 
 function renderPopularSection(label, items, limit = 5, sectionKey = '') {
@@ -2540,6 +2613,234 @@ function renderBarChart(dates, data, max) {
     `;
   }).join('');
   return `<div class="stats-bar-chart">${bars}</div>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 📊 콘텐츠별 분석 (신규)
+// 일별 차트는 stats.daily에서, 시간대 히트맵은 raw events에서 추출
+// ════════════════════════════════════════════════════════════════════
+const EVENTS_API = 'https://kyd-stats.kydxyz.workers.dev/events';
+let _analysisMode = 'pageview';     // 'pageview' | 'click'
+let _analysisTarget = null;          // 선택된 path 또는 target+url 키
+let _analysisData = null;            // renderStats가 전달한 stats 데이터
+let _eventsCache = null;             // 30일치 events 캐시
+let _eventsCacheAt = 0;
+
+// path/target → 표시명 변환
+function analysisLabelFor(mode, key) {
+  if (mode === 'pageview') {
+    // path 형식 처리
+    if (key === '/' || key === '') return '🏠 홈';
+    const m = key.match(/^\/([^/]+)\/(.+?)\/?$/);
+    if (m) {
+      const tab = m[1], rest = decodeURIComponent(m[2]);
+      // 시리즈 EP: /series/series_xxx/ep_yyy
+      if (tab === 'series') {
+        const parts = rest.split('/');
+        if (parts.length === 2) {
+          const seriesId = parts[0], epId = parts[1];
+          // cache.series에서 직접 lookup
+          for (const s of (cache.series || [])) {
+            if (s.id !== seriesId) continue;
+            const ep = (s.eps || []).find(e => e.id === epId);
+            if (ep) return `🎬 ${s.name || '?'} · ${ep.title || epId}`;
+            return `🎬 ${s.name || '?'} · ${epId}`;
+          }
+          return `🎬 ${rest}`;
+        }
+      }
+      if (tab === 'camps') {
+        const c = (cache.camps || []).find(x => x.id === rest);
+        return `🏕 ${c?.name || rest}`;
+      }
+      if (tab === 'foods') {
+        const f = (cache.foods || []).find(x => x.id === rest);
+        return `🍖 ${f?.name || rest}`;
+      }
+      if (tab === 'items') {
+        const i = (cache.items || []).find(x => x.id === rest);
+        return `🛠 ${i?.name || rest}`;
+      }
+    }
+    // 단일 탭 path: /camps, /foods 등
+    const tabSingle = key.replace(/^\//, '').replace(/\/$/, '');
+    const tabMeta = CATEGORY_META[tabSingle];
+    if (tabMeta) return `📂 ${tabMeta.label}`;
+    return key;
+  }
+  // click target
+  return `🔗 ${key}`;
+}
+
+// stats.daily에서 특정 path/target의 일별 시계열 추출 (최근 N일)
+function buildDailySeries(data, mode, target, days = 30) {
+  const today = new Date().toISOString().slice(0, 10);
+  const todayDate = new Date(today + 'T00:00:00');
+  const dates = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(todayDate);
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().slice(0, 10));
+  }
+  const daily = data.daily || {};
+  const series = dates.map(date => {
+    const d = daily[date];
+    if (!d) return 0;
+    if (mode === 'pageview') return (d.pages || {})[target] || 0;
+    return (d.clicks || {})[target] || 0;
+  });
+  return { dates, series, total: series.reduce((a, b) => a + b, 0) };
+}
+
+// raw events에서 시간대 히트맵 빌드 (요일×24시간)
+function buildContentHeatmap(events, mode, target) {
+  const heatmap = Array.from({ length: 7 }, () => new Array(24).fill(0));
+  let max = 0;
+  for (const e of events) {
+    if (e.type !== mode) continue;
+    // pageview: e.path 비교 / click: e.target 비교 (sanitize와 동일)
+    const key = mode === 'pageview' ? (e.path || '') : (e.target || '');
+    if (key !== target) continue;
+    const d = new Date(e.ts);
+    const dayOfWeek = d.getDay();   // 로컬 (KST) 요일
+    const hour = d.getHours();      // 로컬 (KST) 시간
+    heatmap[dayOfWeek][hour]++;
+    if (heatmap[dayOfWeek][hour] > max) max = heatmap[dayOfWeek][hour];
+  }
+  return { heatmap, max };
+}
+
+// 최근 N일치 events 모두 fetch (5분 메모리 캐시)
+async function loadEventsForAnalysis(days = 30) {
+  const now = Date.now();
+  if (_eventsCache && (now - _eventsCacheAt < 5 * 60 * 1000)) {
+    return _eventsCache;
+  }
+  const today = new Date();
+  const dates = [];
+  for (let i = 0; i < days; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().slice(0, 10));
+  }
+  // 30개 병렬 fetch
+  const results = await Promise.all(dates.map(async (date) => {
+    try {
+      const r = await fetch(`${EVENTS_API}?date=${date}&t=${now}`);
+      if (!r.ok) return [];
+      const j = await r.json();
+      return j.events || [];
+    } catch { return []; }
+  }));
+  const allEvents = results.flat();
+  _eventsCache = allEvents;
+  _eventsCacheAt = now;
+  return allEvents;
+}
+
+// 콘텐츠 분석 초기화 (renderStats에서 호출)
+function initContentAnalysis(data) {
+  _analysisData = data;
+  // 모드별 사용 가능한 target 후보 (누적 카운트 기준 상위 정렬)
+  const map = _analysisMode === 'pageview' ? (data.pages || {}) : (data.clicks || {});
+  const candidates = Object.entries(map).sort((a, b) => b[1] - a[1]).map(([k]) => k);
+  if (candidates.length === 0) {
+    _analysisTarget = null;
+  } else if (!_analysisTarget || !candidates.includes(_analysisTarget)) {
+    _analysisTarget = candidates[0];
+  }
+  renderContentAnalysisCard();
+}
+
+// 카드 전체 렌더 (토글 + 셀렉트 + 차트)
+function renderContentAnalysisCard() {
+  const card = document.getElementById('content-analysis-card');
+  if (!card || !_analysisData) return;
+  const data = _analysisData;
+  const map = _analysisMode === 'pageview' ? (data.pages || {}) : (data.clicks || {});
+  const candidates = Object.entries(map).sort((a, b) => b[1] - a[1]);
+
+  card.innerHTML = `
+    <div class="stats-section-title">📊 콘텐츠별 분석 <span style="font-size:11px;font-weight:400;color:var(--muted);">(최근 30일)</span></div>
+
+    <div class="ca-toggle">
+      <button class="ca-toggle-btn ${_analysisMode === 'pageview' ? 'is-active' : ''}" data-mode="pageview">📄 콘텐츠 진입</button>
+      <button class="ca-toggle-btn ${_analysisMode === 'click' ? 'is-active' : ''}" data-mode="click">🔗 외부 링크</button>
+    </div>
+
+    ${candidates.length === 0 ? `
+      <div class="ca-empty">아직 ${_analysisMode === 'pageview' ? '페이지뷰' : '외부 링크 클릭'} 데이터가 없어요</div>
+    ` : `
+      <div class="ca-select-wrap">
+        <select class="ca-select" id="ca-target-select">
+          ${candidates.map(([key, count]) => `
+            <option value="${escapeHtml(key)}" ${key === _analysisTarget ? 'selected' : ''}>
+              ${escapeHtml(analysisLabelFor(_analysisMode, key))} (누적 ${count.toLocaleString()})
+            </option>
+          `).join('')}
+        </select>
+      </div>
+      <div id="ca-charts"></div>
+    `}
+  `;
+
+  // 토글 이벤트
+  card.querySelectorAll('.ca-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      if (mode === _analysisMode) return;
+      _analysisMode = mode;
+      _analysisTarget = null; // 모드 바뀌면 target 초기화
+      initContentAnalysis(_analysisData);
+    });
+  });
+
+  // 셀렉트 이벤트
+  const sel = document.getElementById('ca-target-select');
+  if (sel) {
+    sel.addEventListener('change', () => {
+      _analysisTarget = sel.value;
+      renderContentAnalysisCharts();
+    });
+    renderContentAnalysisCharts();
+  }
+}
+
+// 차트 영역 렌더 (일별 + 히트맵)
+async function renderContentAnalysisCharts() {
+  const container = document.getElementById('ca-charts');
+  if (!container || !_analysisData || !_analysisTarget) return;
+
+  // 1) 일별 30일 (즉시)
+  const daily = buildDailySeries(_analysisData, _analysisMode, _analysisTarget, 30);
+  const dailyMax = Math.max(1, ...daily.series);
+
+  container.innerHTML = `
+    <div class="ca-section-sub">📅 일별 (최근 30일) · 합계 ${daily.total}회</div>
+    ${daily.total === 0
+      ? '<div class="ca-empty">최근 30일간 활동이 없어요</div>'
+      : renderBarChart(daily.dates, daily.series, dailyMax)}
+
+    <div class="ca-section-sub">🕐 시간대 히트맵 (요일×시간, KST)</div>
+    <div id="ca-heatmap"><div class="ca-loading">히트맵 데이터 불러오는 중...</div></div>
+  `;
+
+  // 2) 시간대 히트맵 (events fetch 필요, 비동기)
+  try {
+    const events = await loadEventsForAnalysis(30);
+    const { heatmap, max } = buildContentHeatmap(events, _analysisMode, _analysisTarget);
+    const hmEl = document.getElementById('ca-heatmap');
+    if (!hmEl) return;
+    if (max === 0) {
+      hmEl.innerHTML = '<div class="ca-empty">최근 30일간 활동이 없어요</div>';
+    } else {
+      hmEl.innerHTML = renderHeatmap(heatmap, max) +
+        `<div class="ca-summary">총 ${events.filter(e => e.type === _analysisMode && (_analysisMode === 'pageview' ? e.path : e.target) === _analysisTarget).length}건</div>`;
+    }
+  } catch (e) {
+    const hmEl = document.getElementById('ca-heatmap');
+    if (hmEl) hmEl.innerHTML = `<div class="ca-empty">히트맵 로딩 실패: ${escapeHtml(e.message)}</div>`;
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════
