@@ -337,6 +337,17 @@
     flex-shrink: 0;
     line-height: 1.4;
     letter-spacing: -0.01em;
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* 모바일에서는 뱃지 더 작게 + 시리즈명 짧게 */
+  @media (max-width: 480px) {
+    .stats-series-badge {
+      max-width: 75px;
+      font-size: 10px;
+      padding: 2px 6px;
+    }
   }
   .stats-series-title {
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -501,26 +512,29 @@
   /* 콘텐츠별 분석 (신규) */
   .ca-toggle {
     display: flex;
-    gap: 6px;
+    gap: 2px;
     margin-bottom: 12px;
+    background: var(--accent-soft);
+    border-radius: 8px;
+    padding: 3px;
   }
   .ca-toggle-btn {
     flex: 1;
     padding: 8px 12px;
-    border: 1px solid var(--border);
-    background: var(--bg);
+    border: none;
+    background: transparent;
     color: var(--muted);
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
   }
-  .ca-toggle-btn:hover { background: var(--accent-soft); }
+  .ca-toggle-btn:hover { color: var(--text); }
   .ca-toggle-btn.is-active {
-    background: var(--point);
-    color: var(--bg);
-    border-color: var(--point);
+    background: var(--bg);
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
   }
   .ca-select-wrap { margin-bottom: 14px; }
   .ca-select {
@@ -2630,16 +2644,25 @@ function renderHeatmap(heatmap, max) {
 }
 
 function renderBarChart(dates, data, max) {
+  // 라벨 간격: 데이터 개수에 따라 자동 (모바일 가독성)
+  //  - 12개 이하 (월별): 모든 라벨
+  //  - 13~30개 (일별): 약 5개 라벨만
+  //  - 31개 이상: 약 6개 라벨만
+  const n = dates.length;
+  const labelStep = n <= 12 ? 1 : (n <= 30 ? Math.ceil(n / 5) : Math.ceil(n / 6));
   const bars = data.map((v, i) => {
     const heightPct = Math.round((v / max) * 100);
     const date = dates[i];
-    const md = date.slice(5).replace('-', '/');
-    const isFirstOfMonth = date.slice(8) === '01';
+    // YYYY-MM-DD → MM/DD,  YYYY-MM → MM월
+    const isMonthly = date.length === 7;
+    const md = isMonthly ? `${parseInt(date.slice(5), 10)}월` : date.slice(5).replace('-', '/');
+    const isLast = i === n - 1;
+    const showLabel = (i % labelStep === 0) || isLast;
     return `
       <div class="stats-bar-col" title="${date}: ${v}회">
         <div class="stats-bar-value">${v > 0 ? v : ''}</div>
         <div class="stats-bar" style="height:${heightPct}%;"></div>
-        <div class="stats-bar-label">${isFirstOfMonth || i % 5 === 0 ? md : ''}</div>
+        <div class="stats-bar-label">${showLabel ? md : ''}</div>
       </div>
     `;
   }).join('');
@@ -2935,22 +2958,20 @@ async function renderContentAnalysisCharts() {
     const monthly = buildMonthlySeriesFromDaily(_analysisData, _analysisMode, _analysisTarget, 12);
     const mMax = Math.max(1, ...monthly.series);
     container.innerHTML = `
-      <div class="ca-section-sub">📆 월별 (최근 12개월) · 합계 ${monthly.total}회</div>
       ${monthly.total === 0
         ? '<div class="ca-empty">최근 12개월간 활동이 없어요<br><span style="font-size:10px;">v6 deploy(260521) 이전 카드 데이터는 부정확할 수 있어요</span></div>'
-        : renderBarChart(monthly.labels, monthly.series, mMax)}
+        : renderBarChart(monthly.labels, monthly.series, mMax) +
+          `<div class="ca-summary">합계 ${monthly.total}회</div>`}
 
       <div class="ca-section-sub">🕐 시간대 히트맵 (요일×시간, KST · 최근 30일)</div>
-      <div id="ca-heatmap"><div class="ca-loading">히트맵 데이터 불러오는 중...</div></div>
+      <div id="ca-heatmap"><div class="ca-loading">히트맵 불러오는 중...</div></div>
     `;
   } else {
     // 일별: raw events 기반 (events fetch 필요)
     container.innerHTML = `
-      <div class="ca-section-sub">📅 일별 (최근 30일)</div>
       <div id="ca-daily"><div class="ca-loading">일별 데이터 불러오는 중...</div></div>
-
       <div class="ca-section-sub">🕐 시간대 히트맵 (요일×시간, KST)</div>
-      <div id="ca-heatmap"><div class="ca-loading">히트맵 데이터 불러오는 중...</div></div>
+      <div id="ca-heatmap"><div class="ca-loading">히트맵 불러오는 중...</div></div>
     `;
   }
 
