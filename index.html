@@ -921,6 +921,12 @@ function saInit() {
     g.querySelector('.sa-right').classList.toggle('sa-hide', noScroll);
   });
 }
+// 윈도우 리사이즈 시 화살표 표시 재계산 (debounce 100ms)
+let _saResizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(_saResizeTimer);
+  _saResizeTimer = setTimeout(saInit, 100);
+});
 /* ─── 상품 카드 렌더 ─── */
 function renderProducts(containerId, dataArr) {
   const grid = document.getElementById(containerId);
@@ -1190,7 +1196,13 @@ async function init() {
     autoExtras  = [...new Set(visibleCamps.flatMap(c => c.extras))].sort((a,b) => a.localeCompare(b,'ko'));
 
     renderConfig();
-    renderSeries(); setTimeout(saInit, 50);
+    renderSeries();
+    // 화살표 초기화: 여러 시점에 호출해서 이미지 로딩 등 타이밍 이슈 대응
+    setTimeout(saInit, 50);
+    setTimeout(saInit, 300);
+    setTimeout(saInit, 1000);
+    // 이미지 로드 완료 후에도 한 번 더
+    window.addEventListener('load', saInit, { once: true });
     renderEnv();
     renderChips('region-chips', usedRegions, state.region, 'rcnt');
     renderChips('season-chips', usedSeasons, state.season, 'scnt');
