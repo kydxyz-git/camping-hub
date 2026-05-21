@@ -1390,6 +1390,78 @@
 
 <script>
 // ════════════════════════════════════════════════════════════════════
+// 인스타 URL 정규화 + 인앱 외부 전환 (메인 사이트와 동일 로직)
+// admin 대시보드의 인기 콘텐츠 TOP, 시리즈 EP 카드 등의 인스타 링크에도 적용
+// ════════════════════════════════════════════════════════════════════
+(function() {
+  const ua = navigator.userAgent || '';
+  const isIOS = /iPhone|iPad|iPod/i.test(ua);
+  const isAndroid = /Android/i.test(ua);
+  const isInstagramInApp = /Instagram/i.test(ua);
+  const isMetaInApp = isInstagramInApp || /FBAN|FBAV/i.test(ua);
+
+  function normalizeInstagramUrl(url) {
+    try {
+      const u = new URL(url);
+      const host = u.hostname.replace(/^www\./, '').toLowerCase();
+      if (host !== 'instagram.com') return url;
+      // /reel/, /reels/, /tv/ → /p/ (인스타 앱 라우팅 안정)
+      u.pathname = u.pathname.replace(/^\/(reel|reels|tv)\//i, '/p/');
+      const removeParams = ['igsh', 'igshid', 'ig_rid', 'utm_source', 'utm_medium', 'utm_campaign'];
+      for (const p of removeParams) u.searchParams.delete(p);
+      return u.toString();
+    } catch {
+      return url;
+    }
+  }
+
+  function normalizeAllInstagramAnchors() {
+    document.querySelectorAll('a[href*="instagram.com"]').forEach(a => {
+      const orig = a.getAttribute('href');
+      if (!orig) return;
+      const norm = normalizeInstagramUrl(orig);
+      if (norm !== orig) a.setAttribute('href', norm);
+    });
+  }
+  // 동적 렌더 후에도 호출 가능 (renderStats, renderDashboard 등에서)
+  window.normalizeAllInstagramAnchors = normalizeAllInstagramAnchors;
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', normalizeAllInstagramAnchors);
+  } else {
+    normalizeAllInstagramAnchors();
+  }
+
+  function openInExternalBrowser(url) {
+    if (isIOS) {
+      window.location.href = url.replace(/^https?:\/\//, 'x-safari-https://');
+    } else if (isAndroid) {
+      const intentUrl = 'intent://' + url.replace(/^https?:\/\//, '') +
+        '#Intent;scheme=https;action=android.intent.action.VIEW;' +
+        'category=android.intent.category.BROWSABLE;' +
+        'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+      window.location.href = intentUrl;
+    } else {
+      window.open(url, '_blank', 'noopener');
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href || !/^https?:\/\/(www\.)?instagram\.com/i.test(href)) return;
+    const normalized = normalizeInstagramUrl(href);
+    if (isMetaInApp) {
+      e.preventDefault();
+      openInExternalBrowser(normalized);
+    } else if (normalized !== href) {
+      // 일반 브라우저: anchor href를 정규화 URL로 교체 → 브라우저 기본 navigation
+      a.setAttribute('href', normalized);
+    }
+  }, true);
+})();
+
+// ════════════════════════════════════════════════════════════════════
 // 패스워드 해시 — SHA-256
 // 변경: python3 -c "import hashlib; print(hashlib.sha256('새비밀번호'.encode()).hexdigest())"
 // ════════════════════════════════════════════════════════════════════
@@ -2507,6 +2579,11 @@ function renderStats(container, data) {
 
   // 📊 콘텐츠별 분석 초기화 (innerHTML 후 DOM 준비됨)
   initContentAnalysis(data);
+
+  // 동적 렌더된 인스타 anchor (인기 콘텐츠 TOP 등) href 정규화
+  if (typeof window.normalizeAllInstagramAnchors === 'function') {
+    window.normalizeAllInstagramAnchors();
+  }
 }
 
 function renderPopularSection(label, items, limit = 5, sectionKey = '') {

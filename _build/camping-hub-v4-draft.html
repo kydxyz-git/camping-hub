@@ -910,6 +910,22 @@ function applyMarquee() {
     }
   }
 
+  // 페이지 내 모든 인스타 anchor href를 미리 정규화 (이중 안전망)
+  function normalizeAllInstagramAnchors() {
+    document.querySelectorAll('a[href*="instagram.com"]').forEach(a => {
+      const orig = a.getAttribute('href');
+      if (!orig) return;
+      const norm = normalizeInstagramUrl(orig);
+      if (norm !== orig) a.setAttribute('href', norm);
+    });
+  }
+  window.normalizeAllInstagramAnchors = normalizeAllInstagramAnchors;
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', normalizeAllInstagramAnchors);
+  } else {
+    normalizeAllInstagramAnchors();
+  }
+
   function openInExternalBrowser(url) {
     if (isIOS) {
       // iOS: x-safari-https:// 스킴으로 Safari 강제 호출
@@ -917,15 +933,12 @@ function applyMarquee() {
       window.location.href = safariUrl;
     } else if (isAndroid) {
       // Android: intent:// 스킴으로 사용자 기본 브라우저(삼성 인터넷/Chrome/Whale 등)로 강제 호출
-      // package 미지정 → Android가 사용자가 설정한 기본 브라우저로 자동 열기
-      // S.browser_fallback_url로 실패 시 원본 URL fallback
       const intentUrl = 'intent://' + url.replace(/^https?:\/\//, '') +
         '#Intent;scheme=https;action=android.intent.action.VIEW;' +
         'category=android.intent.category.BROWSABLE;' +
         'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
       window.location.href = intentUrl;
     } else {
-      // 알 수 없는 인앱 브라우저: fallback으로 원본 URL
       window.open(url, '_blank', 'noopener');
     }
   }
@@ -941,13 +954,10 @@ function applyMarquee() {
       e.preventDefault();
       openInExternalBrowser(normalized);
     } else if (normalized !== href) {
-      // 일반 브라우저: URL이 정규화됐으면 새 탭으로 정규화 URL 열기
-      e.preventDefault();
-      const target = a.getAttribute('target') || '_blank';
-      if (target === '_blank') window.open(normalized, '_blank', 'noopener');
-      else window.location.href = normalized;
+      // 일반 브라우저: anchor href를 정규화 URL로 교체 (window.open은 Universal Link 트리거 안 되는 경우 있음)
+      a.setAttribute('href', normalized);
     }
-    // 정규화도 안 됐고 인앱도 아니면 기본 동작 유지 (anchor가 그대로 열림)
+    // 정규화도 안 됐고 인앱도 아니면 기본 동작 유지
   }, true);
 })();
 
