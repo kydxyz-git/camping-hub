@@ -1,19 +1,5 @@
 [
   {
-    "id": "food_9945533a15",
-    "name": "[성수동 분식] 수제 고추튀김 3종",
-    "desc": "추억의 분식",
-    "url": "https://lounge.kurly.com/link/FrKx-kUIT",
-    "source": "컬리",
-    "thumb": "./images/products/food-02.jpg",
-    "price_original": 12900,
-    "price_sale": null,
-    "discount_rate": null,
-    "published": true,
-    "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T15:00:20.596Z"
-  },
-  {
     "name": "툇골 오리 주물럭",
     "desc": "부추무침이 진짜 별미",
     "url": "https://link.coupang.com/a/cGtreE",
@@ -26,6 +12,20 @@
     "id": "food_6b6f5c2711",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
     "updated_at": "2026-05-21T02:53:18.159759+00:00"
+  },
+  {
+    "id": "food_9945533a15",
+    "name": "[성수동 분식] 수제 고추튀김 3종",
+    "desc": "추억의 분식",
+    "url": "https://lounge.kurly.com/link/FrKx-kUIT",
+    "source": "컬리",
+    "thumb": "./images/products/food-02.jpg",
+    "price_original": 12900,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T15:00:20.596Z"
   },
   {
     "id": "food_48d51f3296",
