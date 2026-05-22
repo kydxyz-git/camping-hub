@@ -1,33 +1,31 @@
-# 캠핑 허브 빌드 자산 백업
+# 캠핑 허브 빌드 자산 (Deprecated)
 
-이 폴더는 **새 Claude 채팅 세션에서 작업을 이어가기 위한 백업**입니다.
+⚠️ **이 폴더는 더 이상 빌드에 사용되지 않습니다.** (260521+)
 
-## 파일
+## 현재 빌드 흐름
 
-- `camping-hub-v4-draft.html` — HTML/CSS/JS 진실소스 (수정은 항상 이 파일에서)
-- `sync_data.json` — 노션 4개 DB + 사이트 텍스트 캐시 (5종 동기화 데이터)
+`index.html`이 런타임에 `data/*.json` 파일을 fetch로 로드합니다:
+- `data/config.json` — 사이트 텍스트
+- `data/series.json` — 인스타 시리즈
+- `data/foods.json` — 추천 음식
+- `data/items.json` — 추천 템
+- `data/camps.json` — 캠핑장 카탈로그
 
-## 새 채팅 시작 시 복원 절차
+동기화 시 변경되는 것은 `data/*.json`만이며, `index.html`은 직접 수정합니다.
+`_build/camping-hub-v4-draft.html`은 옛 lambda re.sub 빌드 흐름의 잔존물로,
+다음 빌드에 영향을 주지 않습니다.
 
+## 보존 이유
+
+- 과거 채팅 메모리 + 운영가이드 5장/12-2/13-3이 `_build/`를 참조
+- 즉시 삭제 시 새 채팅 세션에서 컨텍스트 혼란 가능
+- 보존하되 deprecated 명시
+
+## 새 채팅 시작 시 복원 절차 (참고)
+
+`sync_data.json`만 복원하면 됨:
 ```bash
-# 1. Repo clone
 cd /home/claude
 git clone https://github.com/kydxyz-git/camping-hub.git gh-camping-hub
-
-# 2. 빌드 자산 복원
-cp gh-camping-hub/_build/camping-hub-v4-draft.html /mnt/user-data/outputs/
-cp gh-camping-hub/_build/sync_data.json /home/claude/
+cp gh-camping-hub/_build/sync_data.json /home/claude/  # 노션 page_id 캐시 용도
 ```
-
-이후 Claude는 평소처럼 "동기화해줘" 요청을 처리할 수 있습니다.
-
-## 동기화 절차 (참고)
-
-1. 노션 4개 DB fetch (변경사항 식별)
-2. 신규 이미지 다운로드 (signed URL → PIL → JPEG)
-3. sync_data.json 갱신
-4. HTML 빌드 (re.sub lambda로 5개 동기화 영역 주입)
-5. node --check 구문 검증
-6. git push → GitHub Pages 배포
-
-자세한 내용은 노션 페이지 "캠핑허브웹사이트_운영가이드_260422" 참조.

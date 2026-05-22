@@ -536,15 +536,45 @@
     color: var(--text);
     box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
   }
-  .ca-select-wrap { margin-bottom: 14px; }
+  .ca-select-wrap {
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .ca-select-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--point);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
   .ca-select {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    padding: 14px 40px 14px 14px;
+    border: 2px solid var(--point);
+    border-radius: 10px;
     background: var(--bg);
     color: var(--text);
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    /* 우측 chevron 아이콘 (point 색상) */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none' stroke='%234a7c4e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 5 7 9 11 5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 14px 14px;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+  .ca-select:hover {
+    box-shadow: 0 2px 8px rgba(74,124,78,0.18);
+  }
+  .ca-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74,124,78,0.18);
   }
   .ca-section-sub {
     font-size: 12px;
@@ -3012,6 +3042,7 @@ function renderContentAnalysisCard() {
       <div class="ca-empty">아직 ${_analysisMode === 'pageview' ? '페이지뷰' : '외부 링크 클릭'} 데이터가 없어요</div>
     ` : `
       <div class="ca-select-wrap">
+        <label class="ca-select-label">🎯 분석할 ${_analysisMode === 'pageview' ? '콘텐츠' : '외부 링크'} 선택</label>
         <select class="ca-select" id="ca-target-select">
           ${candidates.map(([key, count]) => `
             <option value="${escapeHtml(key)}" ${key === _analysisTarget ? 'selected' : ''}>
