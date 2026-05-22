@@ -4039,7 +4039,7 @@ function renderSeriesList() {
                 ${SORT_MODES.map(m => `<option value="${m.value}" ${(s.sort || 'ep_desc') === m.value ? 'selected' : ''}>${m.label}</option>`).join('')}
               </select>
             </div>
-            ${(s.sort === 'random') ? `<div class="series-sort-note">🎲 메인 사이트에서는 매 페이지 로드마다 다른 순서로 보입니다 (admin은 입력 순서)</div>` : ''}
+            ${(s.sort === 'random') ? `<div class="series-sort-note">🎲 메인 사이트에서는 매 페이지 로드마다 다른 순서로 보입니다 (admin은 입력 순서)<br>✨ 최근 7일 이내 신규 EP는 항상 상위에 노출됩니다</div>` : ''}
             <div class="ep-sortable" data-ep-sortable="${si}">
               ${getSortedEpsForAdmin(s).map(({ ep, ei }) => {
                 const epPub = ep.published !== false;
