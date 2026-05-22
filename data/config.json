@@ -25,6 +25,6 @@
   "headerBadgeNaver": "Clip Creators",
   "headerBadgeNaverIcon": "./images/refs/clipcreators-icon.png",
   "headerBadgeNaverUrl": "https://naver.me/F5sDt9uw",
-  "foodsSort": "random",
+  "foodsSort": "manual",
   "itemsSort": "random"
 }
