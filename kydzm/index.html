@@ -652,12 +652,18 @@
     font-weight: 600;
   }
 
-  /* 카테고리 prefix (드롭다운 트리거 + 옵션 공용)
-     인기 콘텐츠 TOP의 .stats-series-badge와 동일한 형태로 통일 */
-  .ca-cat-prefix {
+  /* 드롭다운 안에서 사용되는 뱃지들 (.stats-platform-badge + .ca-cat-prefix.is-series)
+     인기 콘텐츠 TOP과 동일한 형태로 통일 */
+  .ca-cdd-trigger .stats-platform-badge,
+  .ca-cdd-option .stats-platform-badge,
+  .ca-cat-prefix.is-series {
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+  /* 시리즈 뱃지 (인라인 style로 색상 받음) - .stats-series-badge와 동일 형태 */
+  .ca-cat-prefix.is-series {
     display: inline-flex;
     align-items: center;
-    flex-shrink: 0;
     padding: 2px 8px;
     border-radius: 4px;
     color: #fff;
@@ -666,22 +672,20 @@
     line-height: 1.4;
     letter-spacing: -0.01em;
     white-space: nowrap;
-    margin-right: 8px;
   }
-  /* 카테고리별 기본 컬러 (시리즈는 인라인 style로 본래 색상 적용) */
-  .ca-cat-prefix[data-cat="camps"]    { background: #5E6C4F; }
-  .ca-cat-prefix[data-cat="foods"]    { background: #C94A4A; }
-  .ca-cat-prefix[data-cat="items"]    { background: #4A6FA5; }
-  .ca-cat-prefix[data-cat="external"] { background: #8a8a8a; }
-  /* 모바일: 뱃지 조금 작게 + 최대폭 + ellipsis (인기 콘텐츠 TOP 동일 패턴) */
+  /* 모바일에서는 뱃지 더 작게 + 잘림 */
   @media (max-width: 480px) {
-    .ca-cat-prefix {
+    .ca-cdd-trigger .stats-platform-badge,
+    .ca-cdd-option .stats-platform-badge,
+    .ca-cat-prefix.is-series {
+      margin-right: 6px;
+    }
+    .ca-cat-prefix.is-series {
       max-width: 75px;
       font-size: 10px;
       padding: 2px 6px;
       overflow: hidden;
       text-overflow: ellipsis;
-      margin-right: 6px;
     }
     .ca-cdd-trigger, .ca-cdd-option { font-size: 11px; }
     .ca-cdd-option { padding: 8px 10px; }
@@ -3032,28 +3036,43 @@ function analysisLabelFor(mode, key) {
   return `${prefix} · ${name}`;
 }
 
-// 카테고리 prefix HTML
-// - 시리즈: 해당 시리즈의 본래 color (인기 콘텐츠 TOP과 동일)
-// - 캠핑장/음식/장비/기타: 카테고리별 단일 컬러
-// PC/모바일 모두 컬러 뱃지 형태 (style 인라인으로 color 전달)
-function renderCatPrefix(mode, prefixText, opts) {
-  opts = opts || {};
-  const seriesColor = opts.seriesColor || null;
-  if (mode === 'series' && seriesColor) {
-    // 시리즈: 본래 컬러를 인라인 style로 적용
-    return `<span class="ca-cat-prefix is-series" style="background:${escapeHtml(seriesColor)};">${escapeHtml(prefixText)}</span>`;
+// 카테고리 prefix HTML — 인기 콘텐츠 TOP과 동일한 뱃지 사용
+// - 시리즈: cache.series.color로 컬러 뱃지 (시리즈명)
+// - 캠핑장: campPlatformBadgeHtml (그래가/네이버/캠핏/땡큐)
+// - 음식/장비: sourcePlatformBadgeHtml (쿠팡/컬리/네이버 등)
+// - 기타: 회색 뱃지
+function renderDropdownBadge(mode, key) {
+  // 시리즈
+  if (mode === 'series') {
+    const seriesId = (key.match(/^\/series\/([^/]+)/) || [])[1];
+    const s = (cache.series || []).find(x => x.id === seriesId);
+    const color = s?.color || '#888';
+    const label = s?.name || '시리즈';
+    return `<span class="ca-cat-prefix is-series" style="background:${escapeHtml(color)};">${escapeHtml(label)}</span>`;
   }
-  // 그 외: data-cat 기반 CSS 적용
-  return `<span class="ca-cat-prefix" data-cat="${escapeHtml(mode)}">${escapeHtml(prefixText)}</span>`;
-}
-
-// 시리즈 path에서 해당 시리즈의 color 찾기
-function findSeriesColor(path) {
-  const m = path.match(/^\/series\/([^/]+)/);
-  if (!m) return null;
-  const seriesId = m[1];
-  const s = (cache.series || []).find(x => x.id === seriesId);
-  return s ? (s.color || null) : null;
+  // 캠핑장 → 예약 플랫폼 뱃지 (campPlatformBadgeHtml과 동일 로직)
+  if (mode === 'camps') {
+    const campId = (key.match(/^\/camps\/(.+?)\/?$/) || [])[1];
+    const camp = (cache.camps || []).find(x => x.id === campId);
+    if (!camp) return '<span class="stats-platform-badge bg-etc">캠핑장</span>';
+    return campPlatformBadgeHtml(camp);
+  }
+  // 음식 → 구매 플랫폼 뱃지
+  if (mode === 'foods') {
+    const foodId = (key.match(/^\/foods\/(.+?)\/?$/) || [])[1];
+    const food = (cache.foods || []).find(x => x.id === foodId);
+    if (!food || !food.source) return '<span class="stats-platform-badge bg-etc">음식</span>';
+    return sourcePlatformBadgeHtml(food.source);
+  }
+  // 장비 → 구매 플랫폼 뱃지
+  if (mode === 'items') {
+    const itemId = (key.match(/^\/items\/(.+?)\/?$/) || [])[1];
+    const item = (cache.items || []).find(x => x.id === itemId);
+    if (!item || !item.source) return '<span class="stats-platform-badge bg-etc">장비</span>';
+    return sourcePlatformBadgeHtml(item.source);
+  }
+  // 기타
+  return '<span class="stats-platform-badge bg-etc">기타</span>';
 }
 
 // 일별 시계열: raw events에서 추출 (최근 N일, KST 기준)
@@ -3218,19 +3237,17 @@ function renderContentAnalysisCard() {
         <div class="ca-cdd" id="ca-cdd">
           <button type="button" class="ca-cdd-trigger" id="ca-cdd-trigger" aria-haspopup="listbox" aria-expanded="false">
             <span class="ca-cdd-trigger-label" id="ca-cdd-trigger-label">${(() => {
-              const { prefix, name } = analysisLabelParts(_analysisMode, _analysisTarget);
-              const seriesColor = _analysisMode === 'series' ? findSeriesColor(_analysisTarget) : null;
-              return `${renderCatPrefix(_analysisMode, prefix, { seriesColor })}<span class="ca-cdd-option-name">${escapeHtml(name)}</span>`;
+              const { name } = analysisLabelParts(_analysisMode, _analysisTarget);
+              return `${renderDropdownBadge(_analysisMode, _analysisTarget)}<span class="ca-cdd-option-name">${escapeHtml(name)}</span>`;
             })()}</span>
           </button>
           <div class="ca-cdd-panel" role="listbox">
             ${candidates.map(([key, count]) => {
-              const { prefix, name } = analysisLabelParts(_analysisMode, key);
+              const { name } = analysisLabelParts(_analysisMode, key);
               const isSel = key === _analysisTarget;
-              const seriesColor = _analysisMode === 'series' ? findSeriesColor(key) : null;
               return `
                 <div class="ca-cdd-option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(key)}" role="option" aria-selected="${isSel}">
-                  ${renderCatPrefix(_analysisMode, prefix, { seriesColor })}
+                  ${renderDropdownBadge(_analysisMode, key)}
                   <span class="ca-cdd-option-name">${escapeHtml(name)}</span>
                   <span class="ca-cdd-option-count">${count.toLocaleString()}</span>
                 </div>
