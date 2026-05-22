@@ -536,6 +536,19 @@
     color: var(--text);
     box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
   }
+  /* 5등분 토글 (시리즈 / 캠핑장 / 음식 / 장비 / 기타) */
+  .ca-toggle-5 .ca-toggle-btn {
+    padding: 8px 4px;
+    font-size: 12px;
+    letter-spacing: -0.02em;
+  }
+  @media (max-width: 480px) {
+    .ca-toggle-5 .ca-toggle-btn {
+      padding: 7px 2px;
+      font-size: 11px;
+    }
+  }
+
   .ca-select-wrap {
     margin-bottom: 14px;
     position: relative;
@@ -2795,13 +2808,28 @@ function renderBarChart(dates, data, max) {
 // 시간대 히트맵: raw events 기반
 // ════════════════════════════════════════════════════════════════════
 const EVENTS_API = 'https://kyd-stats.kydxyz.workers.dev/events';
-let _analysisMode = 'pageview';      // 'pageview' | 'click'
-let _analysisTarget = null;           // 선택된 path (pageview) 또는 target (click)
+// 5개 카테고리: series / camps / foods / items / external
+// 기본값 series. 외부 액션(인스타 프로필/DM/메일/그래가/Clip Creators)은 click 이벤트(__external__),
+// 나머지 4개는 pageview
+let _analysisMode = 'series';
+let _analysisTarget = null;           // 선택된 path (콘텐츠) 또는 target (외부)
 let _analysisPeriod = 'daily';        // 'daily' (30일) | 'monthly' (12개월)
 let _analysisData = null;             // renderStats가 전달한 stats 데이터
 let _eventsCache = null;              // raw events 캐시
 let _eventsCacheAt = 0;
 let _eventsCacheDays = 0;             // 캐시된 일수
+
+// 카테고리 메타 (toggle 라벨, content path prefix)
+const ANALYSIS_CATEGORIES = [
+  { key: 'series',   label: '🎬 시리즈', pathRegex: /^\/series\/[^/]+/, isExternal: false },
+  { key: 'camps',    label: '🏕 캠핑장', pathRegex: /^\/camps\/[^/]+/,  isExternal: false },
+  { key: 'foods',    label: '🍖 음식',   pathRegex: /^\/foods\/[^/]+/,  isExternal: false },
+  { key: 'items',    label: '🛠 장비',   pathRegex: /^\/items\/[^/]+/,  isExternal: false },
+  { key: 'external', label: '🔗 기타',   pathRegex: null,               isExternal: true  },
+];
+function getCategoryMeta(key) {
+  return ANALYSIS_CATEGORIES.find(c => c.key === key) || ANALYSIS_CATEGORIES[0];
+}
 
 // click 키 파싱: `context::target` → { ctx, target }
 function parseClickKey(key) {
@@ -2810,71 +2838,63 @@ function parseClickKey(key) {
   return { ctx: key.slice(0, sepIdx), target: key.slice(sepIdx + 2) };
 }
 
-// 콘텐츠 path 판별: /series/xxx, /camps/xxx, /foods/xxx, /items/xxx
-function isContentPath(path) {
-  return /^\/(series|camps|foods|items)\/[^/]+/.test(path || '');
+// 카테고리별 후보 산출 (현재 _analysisData 기준 누적 카운트 정렬)
+function getCandidatesForCategory(key, data) {
+  const meta = getCategoryMeta(key);
+  if (meta.isExternal) {
+    // 외부(기타): click 키 중 context === '__external__' 만 target별 합산
+    const byTarget = {};
+    for (const [k, count] of Object.entries(data.clicks || {})) {
+      const { ctx, target } = parseClickKey(k);
+      if (ctx !== '__external__') continue;
+      byTarget[target] = (byTarget[target] || 0) + count;
+    }
+    return Object.entries(byTarget).sort((a, b) => b[1] - a[1]);
+  }
+  // 콘텐츠: pages 중 path가 카테고리 regex 매칭만
+  return Object.entries(data.pages || {})
+    .filter(([path]) => meta.pathRegex.test(path))
+    .sort((a, b) => b[1] - a[1]);
 }
 
-// path/target → 표시명 변환
+// path/target → 표시명 변환 (mode = 카테고리 key)
 function analysisLabelFor(mode, key) {
-  if (mode === 'pageview') {
-    if (key === '/' || key === '') return '🏠 홈';
-    const m = key.match(/^\/([^/]+)\/(.+?)\/?$/);
-    if (m) {
-      const tab = m[1], rest = decodeURIComponent(m[2]);
-      if (tab === 'series') {
-        const parts = rest.split('/');
-        if (parts.length === 2) {
-          const seriesId = parts[0], epId = parts[1];
-          for (const s of (cache.series || [])) {
-            if (s.id !== seriesId) continue;
-            const ep = (s.eps || []).find(e => e.id === epId);
-            if (ep) return `🎬 ${s.name || '?'} · ${ep.title || epId}`;
-            return `🎬 ${s.name || '?'} · ${epId}`;
-          }
-          return `🎬 ${rest}`;
+  if (mode === 'external') {
+    // 외부 (click target은 이미 한글)
+    return `🔗 ${key}`;
+  }
+  // 콘텐츠 (series/camps/foods/items): path에서 id 추출 후 cache lookup
+  if (key === '/' || key === '') return '🏠 홈';
+  const m = key.match(/^\/([^/]+)\/(.+?)\/?$/);
+  if (m) {
+    const tab = m[1], rest = decodeURIComponent(m[2]);
+    if (tab === 'series') {
+      const parts = rest.split('/');
+      if (parts.length === 2) {
+        const seriesId = parts[0], epId = parts[1];
+        for (const s of (cache.series || [])) {
+          if (s.id !== seriesId) continue;
+          const ep = (s.eps || []).find(e => e.id === epId);
+          if (ep) return `🎬 ${s.name || '?'} · ${ep.title || epId}`;
+          return `🎬 ${s.name || '?'} · ${epId}`;
         }
-      }
-      if (tab === 'camps') {
-        const c = (cache.camps || []).find(x => x.id === rest);
-        return `🏕 ${c?.name || rest}`;
-      }
-      if (tab === 'foods') {
-        const f = (cache.foods || []).find(x => x.id === rest);
-        return `🍖 ${f?.name || rest}`;
-      }
-      if (tab === 'items') {
-        const i = (cache.items || []).find(x => x.id === rest);
-        return `🛠 ${i?.name || rest}`;
+        return `🎬 ${rest}`;
       }
     }
-    const tabSingle = key.replace(/^\//, '').replace(/\/$/, '');
-    const tabMeta = CATEGORY_META[tabSingle];
-    if (tabMeta) return `📂 ${tabMeta.label}`;
-    return key;
+    if (tab === 'camps') {
+      const c = (cache.camps || []).find(x => x.id === rest);
+      return `🏕 ${c?.name || rest}`;
+    }
+    if (tab === 'foods') {
+      const f = (cache.foods || []).find(x => x.id === rest);
+      return `🍖 ${f?.name || rest}`;
+    }
+    if (tab === 'items') {
+      const i = (cache.items || []).find(x => x.id === rest);
+      return `🛠 ${i?.name || rest}`;
+    }
   }
-  // click: target 이미 한글
-  return `🔗 ${key}`;
-}
-
-// 외부 링크: context === '__external__' click 키만 target별로 합산
-// (data-track-external="1" 명시 버튼: 인스타 프로필/DM 보내기/메일/그래가/Clip Creators)
-// 카드 안의 인스타 URL 클릭(콘텐츠 이동의 부산물)은 제외
-function aggregateExternalClicksByTarget(clicks) {
-  const byTarget = {};
-  for (const [key, count] of Object.entries(clicks || {})) {
-    const { ctx, target } = parseClickKey(key);
-    if (ctx !== '__external__') continue;
-    byTarget[target] = (byTarget[target] || 0) + count;
-  }
-  return byTarget;
-}
-
-// 콘텐츠 진입: 콘텐츠 path(/series/xxx, /camps/xxx 등)만 후보로
-function getContentPageCandidates(pages) {
-  return Object.entries(pages || {})
-    .filter(([path]) => isContentPath(path))
-    .sort((a, b) => b[1] - a[1]);
+  return key;
 }
 
 // 일별 시계열: raw events에서 추출 (최근 N일, KST 기준)
@@ -2897,15 +2917,17 @@ function buildDailySeriesFromEvents(events, mode, target, days = 30) {
     dateMap[ds] = 0;
   }
   for (const e of events) {
-    if (e.type !== mode) continue;
-    if (mode === 'pageview') {
-      if (e.path !== target) continue;
-    } else {
-      // click: 명시적 외부 버튼(__external__)만 + target 매칭
+    // mode = 'external' → click 이벤트만, 그 외(series/camps/foods/items) → pageview만
+    const meta = getCategoryMeta(mode);
+    if (meta.isExternal) {
+      if (e.type !== 'click') continue;
       if (e.ctx !== '__external__') continue;
       if (e.target !== target) continue;
+    } else {
+      if (e.type !== 'pageview') continue;
+      if (e.path !== target) continue;
     }
-    // e.ts는 epoch ms (UTC). KST 변환은 new Date(e.ts) 후 getFullYear/Month/Date가 로컬 시간 사용
+    // e.ts는 epoch ms (UTC). 로컬 시간(KST) 기준 날짜 매핑
     const dt = new Date(e.ts);
     const kstDate = localDateStr(dt);
     if (kstDate in dateMap) dateMap[kstDate]++;
@@ -2926,20 +2948,22 @@ function buildMonthlySeriesFromDaily(data, mode, target, months = 12) {
     labels.push(ym);
     monthMap[ym] = 0;
   }
+  const meta = getCategoryMeta(mode);
   const daily = data.daily || {};
   for (const [date, d] of Object.entries(daily)) {
     const ym = date.slice(0, 7);
     if (!(ym in monthMap)) continue;
-    if (mode === 'pageview') {
-      monthMap[ym] += (d.pages || {})[target] || 0;
-    } else {
-      // click: __external__ context + target 매칭만 합산
+    if (meta.isExternal) {
+      // 외부: __external__ context + target 매칭만 합산
       for (const [key, count] of Object.entries(d.clicks || {})) {
         const parsed = parseClickKey(key);
         if (parsed.ctx !== '__external__') continue;
         if (parsed.target !== target) continue;
         monthMap[ym] += count;
       }
+    } else {
+      // 콘텐츠: pages에서 path 매칭
+      monthMap[ym] += (d.pages || {})[target] || 0;
     }
   }
   const series = labels.map(ym => monthMap[ym]);
@@ -2950,14 +2974,15 @@ function buildMonthlySeriesFromDaily(data, mode, target, months = 12) {
 function buildContentHeatmap(events, mode, target) {
   const heatmap = Array.from({ length: 7 }, () => new Array(24).fill(0));
   let max = 0;
+  const meta = getCategoryMeta(mode);
   for (const e of events) {
-    if (e.type !== mode) continue;
-    if (mode === 'pageview') {
-      if (e.path !== target) continue;
-    } else {
-      // click: 명시적 외부 버튼만 + target 매칭
+    if (meta.isExternal) {
+      if (e.type !== 'click') continue;
       if (e.ctx !== '__external__') continue;
       if (e.target !== target) continue;
+    } else {
+      if (e.type !== 'pageview') continue;
+      if (e.path !== target) continue;
     }
     const d = new Date(e.ts);
     const dayOfWeek = d.getDay();   // 로컬(KST) 요일
@@ -2999,16 +3024,7 @@ async function loadEventsForAnalysis(days = 30) {
 // 콘텐츠 분석 초기화
 function initContentAnalysis(data) {
   _analysisData = data;
-  // 모드별 후보:
-  // - pageview: 콘텐츠 path(/series/xxx, /camps/xxx 등)만
-  // - click: __external__ context만 (인스타 프로필/DM/메일/그래가/Clip Creators)
-  let candidates;
-  if (_analysisMode === 'pageview') {
-    candidates = getContentPageCandidates(data.pages || {});
-  } else {
-    const byTarget = aggregateExternalClicksByTarget(data.clicks || {});
-    candidates = Object.entries(byTarget).sort((a, b) => b[1] - a[1]);
-  }
+  const candidates = getCandidatesForCategory(_analysisMode, data);
   if (candidates.length === 0) {
     _analysisTarget = null;
   } else if (!_analysisTarget || !candidates.map(c => c[0]).includes(_analysisTarget)) {
@@ -3017,32 +3033,29 @@ function initContentAnalysis(data) {
   renderContentAnalysisCard();
 }
 
-// 카드 전체 렌더
+// 카드 전체 렌더 (5개 카테고리 토글: 시리즈 / 캠핑장 / 음식 / 장비 / 기타)
 function renderContentAnalysisCard() {
   const card = document.getElementById('content-analysis-card');
   if (!card || !_analysisData) return;
   const data = _analysisData;
-  let candidates;
-  if (_analysisMode === 'pageview') {
-    candidates = getContentPageCandidates(data.pages || {});
-  } else {
-    const byTarget = aggregateExternalClicksByTarget(data.clicks || {});
-    candidates = Object.entries(byTarget).sort((a, b) => b[1] - a[1]);
-  }
+  const candidates = getCandidatesForCategory(_analysisMode, data);
+  const meta = getCategoryMeta(_analysisMode);
 
   card.innerHTML = `
     <div class="stats-section-title">📊 콘텐츠별 분석</div>
 
-    <div class="ca-toggle">
-      <button class="ca-toggle-btn ${_analysisMode === 'pageview' ? 'is-active' : ''}" data-mode="pageview">📄 콘텐츠 진입</button>
-      <button class="ca-toggle-btn ${_analysisMode === 'click' ? 'is-active' : ''}" data-mode="click">🔗 외부 링크</button>
+    <!-- 5개 카테고리 토글 (가로 5등분, 짧은 라벨 + 작은 폰트) -->
+    <div class="ca-toggle ca-toggle-5">
+      ${ANALYSIS_CATEGORIES.map(c => `
+        <button class="ca-toggle-btn ${_analysisMode === c.key ? 'is-active' : ''}" data-mode="${c.key}">${c.label}</button>
+      `).join('')}
     </div>
 
     ${candidates.length === 0 ? `
-      <div class="ca-empty">아직 ${_analysisMode === 'pageview' ? '페이지뷰' : '외부 링크 클릭'} 데이터가 없어요</div>
+      <div class="ca-empty">아직 ${escapeHtml(meta.label)} 데이터가 없어요</div>
     ` : `
       <div class="ca-select-wrap">
-        <label class="ca-select-label">🎯 분석할 ${_analysisMode === 'pageview' ? '콘텐츠' : '외부 링크'} 선택</label>
+        <label class="ca-select-label">🎯 ${escapeHtml(meta.label.replace(/^[^\s]+\s/, ''))} 선택</label>
         <select class="ca-select" id="ca-target-select">
           ${candidates.map(([key, count]) => `
             <option value="${escapeHtml(key)}" ${key === _analysisTarget ? 'selected' : ''}>
@@ -3061,7 +3074,7 @@ function renderContentAnalysisCard() {
     `}
   `;
 
-  // 모드 토글
+  // 카테고리 토글
   card.querySelectorAll('.ca-toggle-btn[data-mode]').forEach(btn => {
     btn.addEventListener('click', () => {
       const mode = btn.dataset.mode;
