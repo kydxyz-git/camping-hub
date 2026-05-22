@@ -786,6 +786,23 @@ function showToast(msg) {
   window._toastTimer = setTimeout(() => t.classList.remove('is-visible'), 1800);
 }
 
+/* ─── 랜덤 셔플 + 최근 N일 가산
+   "랜덤 정렬을 유지하되, created_at 기준 7일 이내 신규 항목이 사용자에게 먼저 보이도록"
+   - 최근 N일 그룹 셔플 → 그 이후 항목 셔플 → 이어붙임
+   - created_at 없으면 older로 처리 */
+function sortRecentFirst(arr, days) {
+  const cutoff = Date.now() - (days || 7) * 86400000;
+  const recent = [], older = [];
+  for (const item of arr) {
+    const ts = item.created_at ? new Date(item.created_at).getTime() : 0;
+    if (ts && ts >= cutoff) recent.push(item);
+    else older.push(item);
+  }
+  recent.sort(() => Math.random() - 0.5);
+  older.sort(() => Math.random() - 0.5);
+  return [...recent, ...older];
+}
+
 /* ─── 시리즈 렌더 ─── */
 function renderSeries() {
   const wrap = document.getElementById('series-wrap');
@@ -802,8 +819,8 @@ function renderSeries() {
       // 수동: 데이터 배열 순서 그대로
       sortedEps = [...s.eps];
     } else if (mode === 'random') {
-      // 랜덤: 매 로드마다 셔플
-      sortedEps = [...s.eps].sort(() => Math.random() - 0.5);
+      // 랜덤: 매 로드마다 셔플 + 최근 7일 신규 EP 가산 (created_at 기준)
+      sortedEps = sortRecentFirst(s.eps, 7);
     } else if (mode === 'ep_asc') {
       // 오름차순: EP.01, EP.02, ... (ep=0은 맨 뒤 랜덤)
       sortedEps = [...s.eps].sort((a, b) => {
@@ -932,9 +949,10 @@ function renderProducts(containerId, dataArr) {
   const grid = document.getElementById(containerId);
   // 통계 추적 카테고리 (food-grid → foods, item-grid → items)
   const trackCategory = containerId === 'food-grid' ? 'foods' : containerId === 'item-grid' ? 'items' : 'product';
-  // 비공개 항목 제외 + 매 페이지 로드마다 랜덤 셔플
+  // 비공개 항목 제외 + 최근 7일 신규 가산 후 매 페이지 로드마다 랜덤 셔플
+  // (created_at 기준 7일 이내는 셔플된 상위 그룹, 그 이전은 셔플된 하위 그룹)
   const visible = (dataArr || []).filter(x => x.published !== false);
-  const shuffled = visible.slice().sort(() => Math.random() - 0.5);
+  const shuffled = sortRecentFirst(visible, 7);
   if (!shuffled.length) {
     grid.innerHTML = `<div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--text-sub);font-size:13px;">아직 등록된 항목이 없어요</div>`;
     return;
