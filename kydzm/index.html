@@ -1311,6 +1311,17 @@
   }
   .drag-handle--ep:hover { opacity: 1; }
 
+  /* 음식/장비 리스트용 드래그 핸들 (EP 패턴 동일) */
+  .drag-handle--product {
+    width: 24px; height: 24px;
+    font-size: 14px;
+    opacity: 0.55;
+    margin-right: 6px;
+    padding: 4px;
+    flex-shrink: 0;
+  }
+  .drag-handle--product:hover { opacity: 1; }
+
   /* EP 저장 바 (시리즈 내부 → 톤다운) */
   .save-bar--ep {
     position: static;
@@ -4232,6 +4243,89 @@ async function changeSeriesSort(si, newSort, selectEl) {
   }
 }
 
+// 음식/장비 정렬 모드 변경 (config.json에 foodsSort/itemsSort 저장)
+async function changeProductSort(type, newSort, selectEl) {
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    selectEl.value = (cache.config && cache.config[type + 'Sort']) || 'random';
+    return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+  }
+  const prevVal = selectEl.value;
+  selectEl.disabled = true;
+  const progress = document.createElement('div');
+  progress.className = 'submit-progress is-active';
+  progress.innerHTML = `
+    <div class="submit-progress-card">
+      <div class="submit-progress-spinner"></div>
+      <div class="submit-progress-text">정렬 모드 변경 중...</div>
+      <div class="submit-progress-sub">GitHub 업로드</div>
+    </div>
+  `;
+  document.body.appendChild(progress);
+  try {
+    const newConfig = JSON.parse(JSON.stringify(cache.config || {}));
+    newConfig[type + 'Sort'] = newSort;
+    const modeLabel = (PRODUCT_SORT_MODES.find(m => m.value === newSort) || {}).label || newSort;
+    const typeLabel = type === 'foods' ? '음식' : '장비';
+    const message = `sort(admin): ${typeLabel} 정렬 → ${modeLabel}`;
+    await ghCommitMultipleFiles([
+      { path: 'data/config.json', content: JSON.stringify(newConfig, null, 2) + '\n', encoding: 'utf-8' },
+    ], message);
+    cache.config = newConfig;
+    cache.loadedAt = Date.now();
+    progress.remove();
+    selectEl.disabled = false;
+    showToast(`${typeLabel} 정렬 → ${modeLabel}`, 'success');
+    // 리스트 다시 그려서 admin 화면도 새 정렬 반영 (manual은 드래그 핸들 노출)
+    if (type === 'foods') renderFoodList();
+    else renderItemList();
+  } catch (e) {
+    console.error(e);
+    progress.remove();
+    selectEl.disabled = false;
+    selectEl.value = prevVal;
+    showToast('변경 실패: ' + e.message, 'error', 4000);
+  }
+}
+
+// 음식/장비 수동 순서 commit (드래그앤드롭 후 호출)
+async function saveProductOrder(type, newOrder) {
+  if (!newOrder || !newOrder.length) return;
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+    if (type === 'foods') renderFoodList(); else renderItemList();
+    return;
+  }
+  const progress = document.createElement('div');
+  progress.className = 'submit-progress is-active';
+  progress.innerHTML = `
+    <div class="submit-progress-card">
+      <div class="submit-progress-spinner"></div>
+      <div class="submit-progress-text">순서 저장 중...</div>
+      <div class="submit-progress-sub">GitHub 업로드</div>
+    </div>
+  `;
+  document.body.appendChild(progress);
+  try {
+    const cacheKey = type;
+    const origArr = cache[cacheKey];
+    const reordered = newOrder.map(i => origArr[i]);
+    const typeLabel = type === 'foods' ? '음식' : '장비';
+    const dataPath = `data/${cacheKey}.json`;
+    await ghCommitMultipleFiles([
+      { path: dataPath, content: JSON.stringify(reordered, null, 2) + '\n', encoding: 'utf-8' },
+    ], `sort(admin): ${typeLabel} 수동 순서 변경`);
+    cache[cacheKey] = reordered;
+    cache.loadedAt = Date.now();
+    progress.remove();
+    showToast('순서 저장 완료', 'success');
+  } catch (e) {
+    console.error(e);
+    progress.remove();
+    showToast('순서 저장 실패: ' + e.message, 'error', 4000);
+    if (type === 'foods') renderFoodList(); else renderItemList();
+  }
+}
+
 async function saveSeriesOrder(newOrder) {
   if (!newOrder || !newOrder.length) return;
   if (!localStorage.getItem(STORAGE_KEYS.token)) {
@@ -4881,6 +4975,28 @@ const SORT_MODES = [
   { value: 'manual',  label: '수동',           desc: '저장된 순서 그대로' },
 ];
 
+// 음식/장비용 정렬 모드 (시리즈와 다름: EP 개념 없음)
+const PRODUCT_SORT_MODES = [
+  { value: 'random', label: '🎲 랜덤',   desc: '✨ 최근 7일 신규 상위 + 셔플' },
+  { value: 'latest', label: '🔝 최신순', desc: 'created_at 내림차순' },
+  { value: 'manual', label: '📝 수동',   desc: '드래그로 순서 변경' },
+];
+
+// admin 음식/장비 정렬 (드래그앤드롭이 작동하려면 manual에선 visible만, 다른 모드는 정렬 적용)
+function getSortedProductsForAdmin(dataArr, mode) {
+  const indexed = (dataArr || []).map((x, idx) => ({ x, idx }));
+  if (mode === 'manual') return indexed;
+  if (mode === 'latest') {
+    return [...indexed].sort((a, b) => {
+      const ta = a.x.created_at ? new Date(a.x.created_at).getTime() : 0;
+      const tb = b.x.created_at ? new Date(b.x.created_at).getTime() : 0;
+      return tb - ta;
+    });
+  }
+  // random은 admin에선 입력 순서 그대로 (사용자 메시지: "admin은 입력 순서")
+  return indexed;
+}
+
 // admin 화면에서 EP를 sort 모드에 맞춰 정렬 (원본 인덱스 함께 반환)
 function getSortedEpsForAdmin(series) {
   const mode = series.sort || 'ep_desc';
@@ -5168,14 +5284,17 @@ function priceHtml(item) {
 }
 
 // 리스트 카드 한 줄
-function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey) {
+function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
+  opts = opts || {};
   const thumb = item.thumb
     ? `<img src="../${item.thumb.replace(/^\.\//, '')}" alt="" loading="lazy">`
     : fallbackEmoji;
   const src = item.source ? `<span style="font-size:11px;color:var(--muted);margin-right:6px;">${escapeHtml(item.source)}</span>` : '';
   const isPub = item.published !== false;
+  const handle = opts.manual ? `<span class="drag-handle drag-handle--product" title="드래그해서 순서 변경">⋮⋮</span>` : '';
   return `
-    <div class="list-item ${isPub ? '' : 'is-unpublished'}">
+    <div class="list-item ${isPub ? '' : 'is-unpublished'}" data-idx="${item._idx}">
+      ${handle}
       <a class="list-item-link" href="#${hrefPrefix}/${item._idx}">
         <div class="list-item-thumb">${thumb}</div>
         <div class="list-item-body">
@@ -5228,8 +5347,15 @@ function renderProductList(dataArr, searchVar, opts) {
   document.getElementById('topbar-title').innerHTML = `${opts.icon} ${opts.label}`;
   const c = document.getElementById('app-content');
   const q = opts.getSearch();
-  const arr = dataArr
-    .map((x, idx) => ({ ...x, _idx: idx }))
+  // 정렬 모드 (config.json) 가져오기 + admin 표시용 정렬 적용
+  const sortKey = opts.type + 'Sort';
+  const currentSort = (cache.config && cache.config[sortKey]) || 'random';
+  const isManual = currentSort === 'manual';
+  const isSearchActive = q && q.length > 0;
+  // 정렬 후 _idx 포함 (원본 인덱스 유지)
+  const sortedIndexed = getSortedProductsForAdmin(dataArr, currentSort);
+  const arr = sortedIndexed
+    .map(({ x, idx }) => ({ ...x, _idx: idx }))
     .filter(x => matchSearch(x, q, ['name', 'desc', 'source']));
   c.innerHTML = `
     <div class="page-header">
@@ -5240,11 +5366,28 @@ function renderProductList(dataArr, searchVar, opts) {
     <div class="search-bar">
       <input class="input" id="prod-search" placeholder="${opts.placeholder}" value="${escapeHtml(q)}">
     </div>
-    <div class="list">
-      ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey)).join('')}
+    <div class="series-sort-bar" style="margin:8px 0 4px;">
+      <span class="series-sort-label">${opts.label} 정렬:</span>
+      <select class="series-sort-select" id="prod-sort-select">
+        ${PRODUCT_SORT_MODES.map(m => `<option value="${m.value}" ${currentSort === m.value ? 'selected' : ''}>${m.label}</option>`).join('')}
+      </select>
+    </div>
+    ${currentSort === 'random' ? `<div class="series-sort-note">🎲 메인 사이트에서는 매 페이지 로드마다 다른 순서로 보입니다 (admin은 입력 순서)<br>✨ 최근 7일 이내 신규는 항상 상위에 노출됩니다</div>` : ''}
+    ${currentSort === 'manual' && !isSearchActive ? `<div class="series-sort-note">📝 ⋮⋮ 핸들을 드래그해서 순서를 변경하면 자동 저장됩니다</div>` : ''}
+    ${currentSort === 'manual' && isSearchActive ? `<div class="series-sort-note" style="background:#fff3cd;border-color:#ffe69c;color:#856404;">⚠️ 검색 중에는 드래그 정렬이 비활성화됩니다 (검색을 비우세요)</div>` : ''}
+    <div class="list" id="prod-list">
+      ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: isManual && !isSearchActive })).join('')}
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
+  // 정렬 모드 변경
+  const sortSel = document.getElementById('prod-sort-select');
+  if (sortSel) {
+    sortSel.addEventListener('change', (e) => {
+      e.stopPropagation();
+      changeProductSort(opts.type, sortSel.value, sortSel);
+    });
+  }
   // 토글 핸들러
   const datasetKey = opts.dataAttrKey.replace(/-([a-z])/g, (_, ch) => ch.toUpperCase());
   c.querySelectorAll(`[data-${opts.dataAttrKey}]`).forEach(toggleEl => {
@@ -5258,6 +5401,30 @@ function renderProductList(dataArr, searchVar, opts) {
       }
     });
   });
+  // 수동 모드: 드래그앤드롭 (검색 중에는 비활성화)
+  if (isManual && !isSearchActive && typeof Sortable !== 'undefined') {
+    const listEl = document.getElementById('prod-list');
+    if (listEl) {
+      Sortable.create(listEl, {
+        handle: '.drag-handle--product',
+        animation: 180,
+        delay: 200,
+        delayOnTouchOnly: true,
+        filter: 'select, button, input, a, label.pub-toggle',
+        preventOnFilter: false,
+        ghostClass: 'sortable-ghost',
+        dragClass: 'sortable-drag',
+        onEnd: () => {
+          const newOrder = Array.from(listEl.querySelectorAll('.list-item[data-idx]'))
+            .map(el => +el.dataset.idx);
+          const originalOrder = dataArr.map((_, i) => i);
+          const changed = newOrder.some((v, i) => v !== originalOrder[i]);
+          if (!changed) return;
+          saveProductOrder(opts.type, newOrder);
+        }
+      });
+    }
+  }
   const s = document.getElementById('prod-search');
   s.oninput = (e) => { opts.setSearch(e.target.value); opts.rerender(); };
   // 검색어를 타이핑 중일 때만 포커스 유지 (첫 진입 시 모바일 키보드 자동 등장 방지)
