@@ -57,7 +57,7 @@ ls /home/claude/sync_data.json /home/claude/gh-camping-hub  # 환경 확인
 1. 변경된 항목 수정 + 신규 항목 추가
 2. **`cached_pages`에 새 page_id 등록 잊지 말기**
 3. `last_sync` 갱신
-4. `_build/sync_data.json`에도 동일하게 저장
+4. `_cache/sync_data.json`에도 동일하게 저장 (구 `_build/` → `_cache/`로 이동 됨)
 
 ### Step 6 — sitemap.xml 갱신 (SEO)
 ```bash

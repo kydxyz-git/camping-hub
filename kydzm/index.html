@@ -425,6 +425,92 @@
   .stats-platform-badge.bg-kakao   { background: #fee500; color: #3b2e2e; }
   .stats-platform-badge.bg-etc     { background: #9e9e9e; }
 
+  /* 오늘 활동 미니 카드 */
+  .today-card {
+    background: linear-gradient(135deg, #f8fbf6 0%, #f3f8f0 100%);
+    border-left: 3px solid var(--point);
+  }
+  .today-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 10px 0 12px;
+  }
+  .today-item {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .today-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .today-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .today-trend {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  .today-trend.up   { color: #2c7d35; background: rgba(74,124,78,0.15); }
+  .today-trend.down { color: #b54848; background: rgba(201,74,74,0.12); }
+  .today-trend.flat { color: var(--muted); background: var(--accent-soft); }
+  .today-top {
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .today-top-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--point);
+    flex-shrink: 0;
+  }
+  .today-top-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .today-top-count {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-left: 6px;
+  }
+  @media (max-width: 480px) {
+    .today-value { font-size: 16px; }
+    .today-item { padding: 8px 6px; }
+  }
+
+  /* 🔥 최근 7일 트렌딩 카드 */
+  .trending-card {
+    background: linear-gradient(135deg, #fff8f3 0%, #fff3eb 100%);
+    border-left: 3px solid #d97a3f;
+  }
+  .trending-card .stats-section-title {
+    color: #b86a2f;
+  }
+
   /* 시간대 히트맵 */
   .heatmap-wrap {
     overflow-x: auto;
@@ -2535,6 +2621,32 @@ function renderStats(container, data) {
   }
   for (const k in popular) popular[k].sort((a, b) => b.count - a.count);
 
+  // ── 2b. 최근 7일 트렌딩 (data.daily의 지난 7일 pages 합산 → popular과 동일 형태) ──
+  // popular과 같은 분류/이름/URL/플랫폼 정보 재사용
+  const popular7d = { camps: [], series: [], foods: [], items: [] };
+  const recent7Pages = {};
+  for (let i = 0; i < 7; i++) {
+    const dt = new Date(todayDate);
+    dt.setDate(dt.getDate() - i);
+    const dStr = dt.toISOString().slice(0, 10);
+    const dayData = data.daily[dStr];
+    if (!dayData || !dayData.pages) continue;
+    for (const [p, c] of Object.entries(dayData.pages)) {
+      recent7Pages[p] = (recent7Pages[p] || 0) + c;
+    }
+  }
+  // popular 객체에서 7d count로 다시 분류 (path 기준 lookup)
+  // popular 안에는 path 필드 있음 → 그걸로 7d count 조회
+  for (const cat of ['camps', 'series', 'foods', 'items']) {
+    for (const item of popular[cat]) {
+      const c7 = recent7Pages[item.path] || 0;
+      if (c7 > 0) {
+        popular7d[cat].push({ ...item, count: c7 });
+      }
+    }
+    popular7d[cat].sort((a, b) => b.count - a.count);
+  }
+
   // ── 3b. 시간대 히트맵 (요일×24시간, 최근 30일 기준) ──
   // 요일: 0=일, 1=월, ..., 6=토
   const heatmap = Array.from({length: 7}, () => new Array(24).fill(0));
@@ -2609,6 +2721,75 @@ function renderStats(container, data) {
   const chartData = chartDates.map(d => (data.daily[d] && data.daily[d].pv) || 0);
   const chartMax = Math.max(1, ...chartData);
 
+  // ── 6-1. 오늘 활동 상세 (페이지뷰 / 카드 클릭 / 외부 링크 클릭 / 오늘 인기 1위) ──
+  // 어제 대비 비율도 함께 계산 (어제 0이면 신규 ▲, 오늘 0이면 표시 안함)
+  const yesterday = new Date(todayDate);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().slice(0, 10);
+  const todayData = data.daily[today] || { pv: 0, pages: {}, clicks: {} };
+  const yesterdayData = data.daily[yesterdayStr] || { pv: 0, pages: {}, clicks: {} };
+  // 콘텐츠 카드 클릭(=콘텐츠 path 페이지뷰) vs 일반 페이지뷰 구분
+  const isContentPathFn = (p) => /^\/(series|camps|foods|items)\/[^/]+/.test(p || '');
+  let todayCardViews = 0, todayVisits = 0;
+  for (const [p, c] of Object.entries(todayData.pages || {})) {
+    if (isContentPathFn(p)) todayCardViews += c;
+    else todayVisits += c;
+  }
+  let yesterdayCardViews = 0, yesterdayVisits = 0;
+  for (const [p, c] of Object.entries(yesterdayData.pages || {})) {
+    if (isContentPathFn(p)) yesterdayCardViews += c;
+    else yesterdayVisits += c;
+  }
+  // 오늘 외부 링크 클릭 (__external__만)
+  let todayExternalClicks = 0, yesterdayExternalClicks = 0;
+  for (const [k, c] of Object.entries(todayData.clicks || {})) {
+    if (k.startsWith('__external__::')) todayExternalClicks += c;
+  }
+  for (const [k, c] of Object.entries(yesterdayData.clicks || {})) {
+    if (k.startsWith('__external__::')) yesterdayExternalClicks += c;
+  }
+  // 오늘 인기 콘텐츠 1위 (콘텐츠 path 중 가장 많이 본 것)
+  const todayContentRanking = Object.entries(todayData.pages || {})
+    .filter(([p]) => isContentPathFn(p))
+    .sort((a, b) => b[1] - a[1]);
+  let todayTopName = '없음';
+  let todayTopCount = 0;
+  if (todayContentRanking.length > 0) {
+    const [topPath, topCount] = todayContentRanking[0];
+    todayTopCount = topCount;
+    // path → 이름 변환 (series/camps/foods/items)
+    const m = topPath.match(/^\/([^/]+)\/(.+?)\/?$/);
+    if (m) {
+      const tab = m[1], rest = decodeURIComponent(m[2]);
+      if (tab === 'series') {
+        const parts = rest.split('/');
+        if (parts.length === 2) {
+          const s = (cache.series || []).find(x => x.id === parts[0]);
+          const ep = s && (s.eps || []).find(e => e.id === parts[1]);
+          todayTopName = ep ? `🎬 ${ep.title}` : '🎬 ' + rest;
+        }
+      } else if (tab === 'camps') {
+        const c = (cache.camps || []).find(x => x.id === rest);
+        todayTopName = c ? `🏕 ${c.name}` : '🏕 ' + rest;
+      } else if (tab === 'foods') {
+        const f = (cache.foods || []).find(x => x.id === rest);
+        todayTopName = f ? `🍖 ${f.name}` : '🍖 ' + rest;
+      } else if (tab === 'items') {
+        const i = (cache.items || []).find(x => x.id === rest);
+        todayTopName = i ? `🛠 ${i.name}` : '🛠 ' + rest;
+      }
+    }
+  }
+  // 트렌드 표시 헬퍼
+  function trendHtml(todayN, yesterdayN) {
+    if (yesterdayN === 0 && todayN === 0) return '';
+    if (yesterdayN === 0) return `<span class="today-trend up">신규 ▲</span>`;
+    const pct = Math.round((todayN - yesterdayN) / yesterdayN * 100);
+    if (pct >= 5) return `<span class="today-trend up">↑ ${pct}%</span>`;
+    if (pct <= -5) return `<span class="today-trend down">↓ ${Math.abs(pct)}%</span>`;
+    return `<span class="today-trend flat">─</span>`;
+  }
+
   // ── 7. updated_at ──
   const updated = data.updated_at
     ? new Date(data.updated_at).toLocaleString('ko-KR', { hour12: false })
@@ -2639,15 +2820,49 @@ function renderStats(container, data) {
       </div>
     </div>
 
+    <!-- 오늘 활동 미니 카드 (페이지뷰/카드클릭/외부링크/오늘 1위) -->
+    <div class="card today-card">
+      <div class="stats-section-title">📅 오늘 활동 <span style="font-size:11px;font-weight:400;color:var(--muted);">(${today})</span></div>
+      <div class="today-grid">
+        <div class="today-item">
+          <div class="today-label">방문</div>
+          <div class="today-value">${todayVisits.toLocaleString()} ${trendHtml(todayVisits, yesterdayVisits)}</div>
+        </div>
+        <div class="today-item">
+          <div class="today-label">카드 클릭</div>
+          <div class="today-value">${todayCardViews.toLocaleString()} ${trendHtml(todayCardViews, yesterdayCardViews)}</div>
+        </div>
+        <div class="today-item">
+          <div class="today-label">외부 링크</div>
+          <div class="today-value">${todayExternalClicks.toLocaleString()} ${trendHtml(todayExternalClicks, yesterdayExternalClicks)}</div>
+        </div>
+      </div>
+      <div class="today-top">
+        <div class="today-top-label">🏆 오늘 인기 1위</div>
+        <div class="today-top-name">${todayTopName === '없음' ? '<span style="color:var(--muted);">오늘 아직 콘텐츠 클릭이 없어요</span>' : `${escapeHtml(todayTopName)} <span class="today-top-count">${todayTopCount}회</span>`}</div>
+      </div>
+    </div>
+
     <!-- 30일 차트 -->
     <div class="card stats-chart-card">
       <div class="stats-section-title">최근 30일 방문</div>
       ${renderBarChart(chartDates, chartData, chartMax)}
     </div>
 
+    <!-- 🔥 최근 7일 트렌딩 (7일 내 누적 카운트, 데이터 없는 카테고리 숨김) -->
+    ${(popular7d.series.length + popular7d.camps.length + popular7d.foods.length + popular7d.items.length) > 0 ? `
+    <div class="card trending-card">
+      <div class="stats-section-title">🔥 최근 7일 트렌딩</div>
+      ${popular7d.series.length > 0 ? renderSeriesPopular('🎬 시리즈 EP', popular7d.series, 5) : ''}
+      ${popular7d.camps.length > 0 ? renderPopularSection('🏕 캠핑장', popular7d.camps, 5, 'camps') : ''}
+      ${popular7d.foods.length > 0 ? renderPopularSection('🍖 음식', popular7d.foods, 5, 'foods') : ''}
+      ${popular7d.items.length > 0 ? renderPopularSection('🛠 장비', popular7d.items, 5, 'items') : ''}
+    </div>
+    ` : ''}
+
     <!-- 인기 콘텐츠 -->
     <div class="card">
-      <div class="stats-section-title">🏆 인기 콘텐츠 TOP</div>
+      <div class="stats-section-title">🏆 인기 콘텐츠 TOP <span style="font-size:11px;font-weight:400;color:var(--muted);">(누적)</span></div>
       ${renderSeriesPopular('🎬 시리즈 EP', popular.series, 8)}
       ${renderPopularSection('🏕 캠핑장', popular.camps, 5, 'camps')}
       ${renderPopularSection('🍖 음식', popular.foods, 5, 'foods')}
