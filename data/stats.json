@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 231,
+    "pv": 232,
     "click": 85,
     "search": 0
   },
   "pages": {
-    "/": 42,
+    "/": 43,
     "/series/series_ba7cc89468/ep_ad505df37d": 29,
     "/series/series_304565fb77/ep_c2e684a351": 13,
     "/series/series_873cdcaf61/ep_7dd208fe26": 4,
@@ -75,11 +75,11 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 48,
+    "desktop": 49,
     "mobile": 268
   },
   "referrers": {
-    "direct": 78,
+    "direct": 79,
     "인스타그램": 151
   },
   "daily": {
@@ -257,11 +257,11 @@
       ]
     },
     "2026-05-23": {
-      "pv": 14,
+      "pv": 15,
       "click": 14,
       "search": 0,
       "pages": {
-        "/": 2,
+        "/": 3,
         "/series/series_ba7cc89468/ep_ad505df37d": 1,
         "/series/series_ba7cc89468/ep_3acff3998f": 1,
         "/series/series_ba7cc89468/ep_b953456d73": 1,
@@ -282,11 +282,11 @@
       "searches": {},
       "devices": {
         "mobile": 27,
-        "desktop": 1
+        "desktop": 2
       },
       "referrers": {
         "인스타그램": 13,
-        "direct": 1
+        "direct": 2
       },
       "hourly": [
         0,
@@ -294,7 +294,7 @@
         0,
         0,
         1,
-        0,
+        1,
         0,
         0,
         0,
@@ -316,5 +316,5 @@
       ]
     }
   },
-  "updated_at": "2026-05-23T05:00:47.930Z"
+  "updated_at": "2026-05-23T06:00:47.927Z"
 }
