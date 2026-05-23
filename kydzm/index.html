@@ -1764,6 +1764,30 @@ async function sha256(text) {
     .map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// ─── KST(UTC+9) 기준 날짜 헬퍼 ──────────────────────────────────────
+// 통계 데이터는 모두 한국 시간 기준으로 일별 집계되어야 함 (캠핑 사이트는 한국 사용자만)
+// 브라우저가 KST가 아닌 환경(해외 출장 등)에서도 일관되게 KST로 변환
+const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+// Date 객체 → KST 기준 YYYY-MM-DD 문자열
+function kstDateStr(d) {
+  if (!(d instanceof Date)) d = new Date(d);
+  const kst = new Date(d.getTime() + KST_OFFSET_MS);
+  return kst.toISOString().slice(0, 10);
+}
+
+// 오늘(KST) YYYY-MM-DD
+function kstToday() {
+  return kstDateStr(new Date());
+}
+
+// YYYY-MM-DD 문자열 → KST 기준 Date 객체 (그 날 00:00:00 KST = UTC 15:00 전날)
+// 비교용 (>=, <)으로만 쓰면 충분
+function kstDateFromStr(yyyyMmDd) {
+  // ISO에 KST timezone 명시 → 정확한 UTC 시각으로 변환됨
+  return new Date(yyyyMmDd + 'T00:00:00+09:00');
+}
+
 function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -2454,18 +2478,18 @@ async function loadAndRenderStats(forceRefresh = false) {
 }
 
 function renderStats(container, data) {
-  // ── 1. 기간별 카운트 계산 ──
-  const today = new Date().toISOString().slice(0, 10);
+  // ── 1. 기간별 카운트 계산 (KST 기준) ──
+  const today = kstToday();
   const now = new Date();
   // 최근 7일/30일
   const periods = { today: 0, week: 0, month: 0 };
-  const todayDate = new Date(today + 'T00:00:00');
+  const todayDate = kstDateFromStr(today);
   const weekAgo = new Date(todayDate); weekAgo.setDate(weekAgo.getDate() - 6);
   const monthAgo = new Date(todayDate); monthAgo.setDate(monthAgo.getDate() - 29);
 
   const dailyEntries = Object.entries(data.daily || {}).sort();
   for (const [date, d] of dailyEntries) {
-    const dt = new Date(date + 'T00:00:00');
+    const dt = kstDateFromStr(date);
     if (date === today) periods.today += d.pv;
     if (dt >= weekAgo) periods.week += d.pv;
     if (dt >= monthAgo) periods.month += d.pv;
@@ -2628,7 +2652,7 @@ function renderStats(container, data) {
   for (let i = 0; i < 7; i++) {
     const dt = new Date(todayDate);
     dt.setDate(dt.getDate() - i);
-    const dStr = dt.toISOString().slice(0, 10);
+    const dStr = kstDateStr(dt);
     const dayData = data.daily[dStr];
     if (!dayData || !dayData.pages) continue;
     for (const [p, c] of Object.entries(dayData.pages)) {
@@ -2647,13 +2671,14 @@ function renderStats(container, data) {
     popular7d[cat].sort((a, b) => b.count - a.count);
   }
 
-  // ── 3b. 시간대 히트맵 (요일×24시간, 최근 30일 기준) ──
+  // ── 3b. 시간대 히트맵 (요일×24시간, 최근 30일 기준 KST) ──
   // 요일: 0=일, 1=월, ..., 6=토
   const heatmap = Array.from({length: 7}, () => new Array(24).fill(0));
   let heatmapMax = 0;
   for (const [date, d] of dailyEntries) {
-    const dt = new Date(date + 'T00:00:00');
+    const dt = kstDateFromStr(date);
     if (dt < monthAgo) continue;
+    // KST 요일: date 문자열이 이미 KST 기준이므로 그날의 요일 계산
     const dayOfWeek = dt.getDay();
     const hourly = d.hourly || [];
     for (let h = 0; h < 24; h++) {
@@ -2668,11 +2693,11 @@ function renderStats(container, data) {
     .slice(0, 10)
     .map(([name, count]) => ({ name, count }));
 
-  // ── 3d. 7일 vs 지난 7일 트렌드 ──
+  // ── 3d. 7일 vs 지난 7일 트렌드 (KST 기준) ──
   const last7Ago = new Date(todayDate); last7Ago.setDate(last7Ago.getDate() - 13);
   let week_now = 0, week_prev = 0;
   for (const [date, d] of dailyEntries) {
-    const dt = new Date(date + 'T00:00:00');
+    const dt = kstDateFromStr(date);
     if (dt >= weekAgo) week_now += d.pv;
     else if (dt >= last7Ago) week_prev += d.pv;
   }
@@ -2711,21 +2736,20 @@ function renderStats(container, data) {
     tablet: Math.round((devices.tablet || 0) / deviceTotal * 100),
   };
 
-  // ── 6. 30일 차트 데이터 ──
+  // ── 6. 30일 차트 데이터 (KST 기준) ──
   const chartDates = [];
   for (let i = 29; i >= 0; i--) {
     const dt = new Date(todayDate);
     dt.setDate(dt.getDate() - i);
-    chartDates.push(dt.toISOString().slice(0, 10));
+    chartDates.push(kstDateStr(dt));
   }
   const chartData = chartDates.map(d => (data.daily[d] && data.daily[d].pv) || 0);
   const chartMax = Math.max(1, ...chartData);
 
-  // ── 6-1. 오늘 활동 상세 (페이지뷰 / 카드 클릭 / 외부 링크 클릭 / 오늘 인기 1위) ──
-  // 어제 대비 비율도 함께 계산 (어제 0이면 신규 ▲, 오늘 0이면 표시 안함)
+  // ── 6-1. 오늘 활동 상세 (KST 기준) ──
   const yesterday = new Date(todayDate);
   yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().slice(0, 10);
+  const yesterdayStr = kstDateStr(yesterday);
   const todayData = data.daily[today] || { pv: 0, pages: {}, clicks: {} };
   const yesterdayData = data.daily[yesterdayStr] || { pv: 0, pages: {}, clicks: {} };
   // 콘텐츠 카드 클릭(=콘텐츠 path 페이지뷰) vs 일반 페이지뷰 구분
@@ -3303,20 +3327,14 @@ function renderDropdownBadge(mode, key) {
 
 // 일별 시계열: raw events에서 추출 (최근 N일, KST 기준)
 function buildDailySeriesFromEvents(events, mode, target, days = 30) {
-  // 로컬(KST) 날짜 문자열 생성 헬퍼
-  const localDateStr = (d) => {
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  };
+  // KST 헬퍼 사용 (위에 정의된 kstDateStr)
   const today = new Date();
   const dates = [];
   const dateMap = {};
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
-    const ds = localDateStr(d);
+    const ds = kstDateStr(d);
     dates.push(ds);
     dateMap[ds] = 0;
   }
@@ -3331,9 +3349,9 @@ function buildDailySeriesFromEvents(events, mode, target, days = 30) {
       if (e.type !== 'pageview') continue;
       if (e.path !== target) continue;
     }
-    // e.ts는 epoch ms (UTC). 로컬 시간(KST) 기준 날짜 매핑
+    // e.ts는 epoch ms (UTC). KST 기준 날짜 매핑
     const dt = new Date(e.ts);
-    const kstDate = localDateStr(dt);
+    const kstDate = kstDateStr(dt);
     if (kstDate in dateMap) dateMap[kstDate]++;
   }
   const series = dates.map(d => dateMap[d]);
@@ -3374,7 +3392,7 @@ function buildMonthlySeriesFromDaily(data, mode, target, months = 12) {
   return { labels, series, total: series.reduce((a, b) => a + b, 0) };
 }
 
-// 시간대 히트맵: raw events에서 추출 (요일×24시간, 브라우저 로컬 시간 = KST)
+// 시간대 히트맵: raw events에서 추출 (요일×24시간, 명시적 KST 기준)
 function buildContentHeatmap(events, mode, target) {
   const heatmap = Array.from({ length: 7 }, () => new Array(24).fill(0));
   let max = 0;
@@ -3388,9 +3406,10 @@ function buildContentHeatmap(events, mode, target) {
       if (e.type !== 'pageview') continue;
       if (e.path !== target) continue;
     }
-    const d = new Date(e.ts);
-    const dayOfWeek = d.getDay();   // 로컬(KST) 요일
-    const hour = d.getHours();      // 로컬(KST) 시간
+    // UTC ts → KST 시각으로 변환 후 요일/시 계산 (브라우저 로컬 의존성 제거)
+    const kst = new Date(e.ts + KST_OFFSET_MS);
+    const dayOfWeek = kst.getUTCDay();   // KST 기준 요일
+    const hour = kst.getUTCHours();      // KST 기준 시
     heatmap[dayOfWeek][hour]++;
     if (heatmap[dayOfWeek][hour] > max) max = heatmap[dayOfWeek][hour];
   }
@@ -5065,7 +5084,7 @@ async function submitEpForm() {
         targetSeries.eps.unshift(newEp);
       }
 
-      const today = new Date().toISOString().slice(0, 10);
+      const today = kstToday();
       const sitemapResp = await fetch(`../sitemap.xml?v=${Date.now()}`);
       const sitemapText = await sitemapResp.text();
       const newSitemap = sitemapText.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g, `<lastmod>${today}</lastmod>`);
