@@ -1,14 +1,14 @@
 {
   "total": {
-    "pv": 420,
-    "click": 149,
+    "pv": 425,
+    "click": 151,
     "search": 0
   },
   "pages": {
-    "/": 77,
+    "/": 80,
     "/series/series_ba7cc89468/ep_ad505df37d": 42,
     "/series/series_304565fb77/ep_c2e684a351": 22,
-    "/series/series_873cdcaf61/ep_7dd208fe26": 8,
+    "/series/series_873cdcaf61/ep_7dd208fe26": 9,
     "/series/series_e8c17ad5da/ep_e46450a717": 11,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 13,
     "/#stories": 2,
@@ -52,7 +52,7 @@
     "/camps/camp_ed97486488": 2,
     "/camps/camp_c6d9da8748": 2,
     "/camps/camp_8625b4018d": 1,
-    "/items/item_960c2ff01c": 2,
+    "/items/item_960c2ff01c": 3,
     "/items/item_48f6974ac5": 1,
     "/camps/camp_8f72106bcf": 1,
     "/camps/camp_e220a217fd": 2,
@@ -78,7 +78,7 @@
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 56,
     "/series/series_304565fb77/ep_c2e684a351::인스타DM": 5,
-    "/series/series_873cdcaf61/ep_7dd208fe26::인스타DM": 9,
+    "/series/series_873cdcaf61/ep_7dd208fe26::인스타DM": 10,
     "/series/series_e8c17ad5da/ep_e46450a717::인스타DM": 2,
     "/series/series_c0b82ea145/ep_39cf2ffa99::인스타DM": 1,
     "__external__::DM 보내기": 3,
@@ -94,7 +94,7 @@
     "/series/series_304565fb77/ep_d7955f38a0::인스타DM": 4,
     "/foods/food_6b6f5c2711::쿠팡": 2,
     "__external__::그래가파트너스": 3,
-    "/items/item_960c2ff01c::네이버예약": 2,
+    "/items/item_960c2ff01c::네이버예약": 3,
     "/items/item_48f6974ac5::쿠팡": 1,
     "/camps/camp_82599ba9bf::땡큐캠핑": 1,
     "/camps/camp_c47fbddb56::땡큐캠핑": 1,
@@ -103,11 +103,11 @@
   "searches": {},
   "devices": {
     "desktop": 50,
-    "mobile": 519
+    "mobile": 526
   },
   "referrers": {
     "direct": 83,
-    "인스타그램": 334
+    "인스타그램": 339
   },
   "daily": {
     "2026-05-21": {
@@ -356,13 +356,13 @@
       ]
     },
     "2026-05-24": {
-      "pv": 173,
-      "click": 60,
+      "pv": 178,
+      "click": 62,
       "search": 0,
       "pages": {
         "/series/series_304565fb77/ep_d7955f38a0": 9,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 4,
-        "/": 32,
+        "/": 35,
         "/#foods": 1,
         "/foods/food_b7f447dd02": 2,
         "/series/series_ba7cc89468/ep_ad505df37d": 13,
@@ -380,13 +380,13 @@
         "/series/series_ba7cc89468/ep_b953456d73": 9,
         "/series/series_ba7cc89468/ep_27438d1204": 8,
         "/series/series_304565fb77/ep_a8b40077ca": 6,
-        "/series/series_873cdcaf61/ep_7dd208fe26": 4,
+        "/series/series_873cdcaf61/ep_7dd208fe26": 5,
         "/series/series_ba7cc89468/ep_73bdfba72e": 8,
         "/series/series_e8c17ad5da/ep_7a390bade9": 3,
         "/series/series_873cdcaf61/ep_cf2282cf4e": 6,
         "/series/series_e8c17ad5da/ep_e46450a717": 2,
         "/series/series_e8c17ad5da/ep_ff868ac30c": 2,
-        "/items/item_960c2ff01c": 1,
+        "/items/item_960c2ff01c": 2,
         "/camps/camp_d9699234d4": 1,
         "/camps/camp_2dee32afa2": 1,
         "/camps/camp_e7783e56dc": 1,
@@ -416,7 +416,7 @@
       "clicks": {
         "/camps/camp_82599ba9bf::땡큐캠핑": 1,
         "/camps/camp_c47fbddb56::땡큐캠핑": 1,
-        "/series/series_873cdcaf61/ep_7dd208fe26::인스타DM": 7,
+        "/series/series_873cdcaf61/ep_7dd208fe26::인스타DM": 8,
         "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 22,
         "/series/series_ba7cc89468/ep_73bdfba72e::인스타DM": 3,
         "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 4,
@@ -427,17 +427,17 @@
         "/series/series_304565fb77/ep_a8b40077ca::인스타DM": 1,
         "__external__::DM 보내기": 1,
         "__external__::인스타 프로필": 1,
-        "/items/item_960c2ff01c::네이버예약": 1,
+        "/items/item_960c2ff01c::네이버예약": 2,
         "/series/series_873cdcaf61/ep_cf2282cf4e::인스타DM": 1,
         "/foods/food_6b6f5c2711::쿠팡": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 232,
+        "mobile": 239,
         "desktop": 1
       },
       "referrers": {
-        "인스타그램": 168,
+        "인스타그램": 173,
         "direct": 4
       },
       "hourly": [
@@ -455,7 +455,7 @@
         13,
         69,
         40,
-        0,
+        5,
         0,
         0,
         0,
@@ -468,5 +468,5 @@
       ]
     }
   },
-  "updated_at": "2026-05-24T14:00:56.402Z"
+  "updated_at": "2026-05-24T15:00:48.322Z"
 }
