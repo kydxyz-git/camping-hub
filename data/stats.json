@@ -1,20 +1,20 @@
 {
   "total": {
-    "pv": 436,
+    "pv": 445,
     "click": 157,
     "search": 0
   },
   "pages": {
-    "/": 84,
+    "/": 87,
     "/series/series_ba7cc89468/ep_ad505df37d": 43,
-    "/series/series_304565fb77/ep_c2e684a351": 23,
+    "/series/series_304565fb77/ep_c2e684a351": 24,
     "/series/series_873cdcaf61/ep_7dd208fe26": 10,
     "/series/series_e8c17ad5da/ep_e46450a717": 11,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 13,
     "/#stories": 2,
-    "/series/series_ba7cc89468/ep_73bdfba72e": 24,
-    "/series/series_ba7cc89468/ep_3acff3998f": 33,
-    "/series/series_ba7cc89468/ep_27438d1204": 14,
+    "/series/series_ba7cc89468/ep_73bdfba72e": 25,
+    "/series/series_ba7cc89468/ep_3acff3998f": 34,
+    "/series/series_ba7cc89468/ep_27438d1204": 15,
     "/series/series_304565fb77/ep_a8b40077ca": 12,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 14,
     "/series/series_e8c17ad5da/ep_7a390bade9": 9,
@@ -23,7 +23,7 @@
     "/series/series_304565fb77/ep_d7955f38a0": 24,
     "/foods/food_592752e317": 3,
     "/foods/food_790525d8a8": 6,
-    "/series/series_e8c17ad5da/ep_e383972ec6": 5,
+    "/series/series_e8c17ad5da/ep_e383972ec6": 6,
     "/camps/camp_e5a202316d": 3,
     "/camps/camp_8e1adf57aa": 3,
     "/camps/camp_e06cb829df": 3,
@@ -35,7 +35,7 @@
     "/#items": 2,
     "/foods/food_9945533a15": 1,
     "/foods/food_9966103a5b": 2,
-    "/series/series_ba7cc89468/ep_b953456d73": 12,
+    "/series/series_ba7cc89468/ep_b953456d73": 13,
     "/camps/camp_e1e0dde7b3": 1,
     "/camps/camp_357cccb118": 3,
     "/camps/camp_873dcfe92d": 1,
@@ -103,11 +103,11 @@
   "searches": {},
   "devices": {
     "desktop": 50,
-    "mobile": 543
+    "mobile": 552
   },
   "referrers": {
-    "direct": 83,
-    "인스타그램": 350
+    "direct": 90,
+    "인스타그램": 352
   },
   "daily": {
     "2026-05-21": {
@@ -356,18 +356,18 @@
       ]
     },
     "2026-05-24": {
-      "pv": 189,
+      "pv": 198,
       "click": 68,
       "search": 0,
       "pages": {
         "/series/series_304565fb77/ep_d7955f38a0": 9,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 4,
-        "/": 39,
+        "/": 42,
         "/#foods": 1,
         "/foods/food_b7f447dd02": 2,
         "/series/series_ba7cc89468/ep_ad505df37d": 14,
-        "/series/series_ba7cc89468/ep_3acff3998f": 12,
-        "/series/series_304565fb77/ep_c2e684a351": 10,
+        "/series/series_ba7cc89468/ep_3acff3998f": 13,
+        "/series/series_304565fb77/ep_c2e684a351": 11,
         "/camps/camp_8f72106bcf": 1,
         "/camps/camp_e220a217fd": 2,
         "/camps/camp_0741c2c7b7": 1,
@@ -377,11 +377,11 @@
         "/camps/camp_b2804ced5e": 1,
         "/camps/camp_133dd5b2c6": 2,
         "/camps/camp_357cccb118": 2,
-        "/series/series_ba7cc89468/ep_b953456d73": 10,
-        "/series/series_ba7cc89468/ep_27438d1204": 8,
+        "/series/series_ba7cc89468/ep_b953456d73": 11,
+        "/series/series_ba7cc89468/ep_27438d1204": 9,
         "/series/series_304565fb77/ep_a8b40077ca": 6,
         "/series/series_873cdcaf61/ep_7dd208fe26": 6,
-        "/series/series_ba7cc89468/ep_73bdfba72e": 9,
+        "/series/series_ba7cc89468/ep_73bdfba72e": 10,
         "/series/series_e8c17ad5da/ep_7a390bade9": 3,
         "/series/series_873cdcaf61/ep_cf2282cf4e": 6,
         "/series/series_e8c17ad5da/ep_e46450a717": 2,
@@ -401,7 +401,7 @@
         "/camps/camp_55791da55f": 1,
         "/camps/camp_a9c16113fe": 1,
         "/camps/camp_3f541ff6e3": 1,
-        "/series/series_e8c17ad5da/ep_e383972ec6": 4,
+        "/series/series_e8c17ad5da/ep_e383972ec6": 5,
         "/camps/camp_e5a202316d": 1,
         "/camps/camp_e06cb829df": 1,
         "/foods/food_790525d8a8": 1,
@@ -433,12 +433,12 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 256,
+        "mobile": 265,
         "desktop": 1
       },
       "referrers": {
-        "인스타그램": 184,
-        "direct": 4
+        "인스타그램": 186,
+        "direct": 11
       },
       "hourly": [
         0,
@@ -462,11 +462,11 @@
         2,
         0,
         5,
-        0,
+        9,
         0,
         0
       ]
     }
   },
-  "updated_at": "2026-05-24T21:00:51.238Z"
+  "updated_at": "2026-05-24T22:00:49.681Z"
 }
