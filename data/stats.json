@@ -1,26 +1,26 @@
 {
   "total": {
-    "pv": 254,
-    "click": 89,
+    "pv": 269,
+    "click": 91,
     "search": 0
   },
   "pages": {
-    "/": 48,
-    "/series/series_ba7cc89468/ep_ad505df37d": 29,
-    "/series/series_304565fb77/ep_c2e684a351": 13,
+    "/": 49,
+    "/series/series_ba7cc89468/ep_ad505df37d": 31,
+    "/series/series_304565fb77/ep_c2e684a351": 14,
     "/series/series_873cdcaf61/ep_7dd208fe26": 4,
     "/series/series_e8c17ad5da/ep_e46450a717": 9,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 10,
     "/#stories": 2,
     "/series/series_ba7cc89468/ep_73bdfba72e": 15,
-    "/series/series_ba7cc89468/ep_3acff3998f": 21,
+    "/series/series_ba7cc89468/ep_3acff3998f": 22,
     "/series/series_ba7cc89468/ep_27438d1204": 6,
     "/series/series_304565fb77/ep_a8b40077ca": 6,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 8,
     "/series/series_e8c17ad5da/ep_7a390bade9": 6,
     "/#camps": 1,
     "/#foods": 5,
-    "/series/series_304565fb77/ep_d7955f38a0": 16,
+    "/series/series_304565fb77/ep_d7955f38a0": 17,
     "/foods/food_592752e317": 3,
     "/foods/food_790525d8a8": 5,
     "/series/series_e8c17ad5da/ep_e383972ec6": 1,
@@ -37,7 +37,7 @@
     "/foods/food_9966103a5b": 1,
     "/series/series_ba7cc89468/ep_b953456d73": 2,
     "/camps/camp_e1e0dde7b3": 1,
-    "/camps/camp_357cccb118": 1,
+    "/camps/camp_357cccb118": 2,
     "/camps/camp_873dcfe92d": 1,
     "/camps/camp_bb40ee2105": 1,
     "/camps/camp_17e022c947": 1,
@@ -45,15 +45,21 @@
     "/camps/camp_51082836b6": 1,
     "/camps/camp_ec631c9ffe": 1,
     "/camps/camp_fd26ab4286": 1,
-    "/camps/camp_0741c2c7b7": 1,
-    "/camps/camp_c284aeffe4": 1,
+    "/camps/camp_0741c2c7b7": 2,
+    "/camps/camp_c284aeffe4": 2,
     "/camps/camp_9ada4f994a": 1,
     "/camps/camp_6cc478b0b1": 1,
     "/camps/camp_ed97486488": 1,
     "/camps/camp_c6d9da8748": 1,
     "/camps/camp_8625b4018d": 1,
     "/items/item_960c2ff01c": 1,
-    "/items/item_48f6974ac5": 1
+    "/items/item_48f6974ac5": 1,
+    "/camps/camp_8f72106bcf": 1,
+    "/camps/camp_e220a217fd": 1,
+    "/camps/camp_c47fbddb56": 1,
+    "/camps/camp_82599ba9bf": 1,
+    "/camps/camp_b2804ced5e": 1,
+    "/camps/camp_133dd5b2c6": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 34,
@@ -75,16 +81,18 @@
     "/foods/food_6b6f5c2711::쿠팡": 1,
     "__external__::그래가파트너스": 3,
     "/items/item_960c2ff01c::네이버예약": 1,
-    "/items/item_48f6974ac5::쿠팡": 1
+    "/items/item_48f6974ac5::쿠팡": 1,
+    "/camps/camp_82599ba9bf::땡큐캠핑": 1,
+    "/camps/camp_c47fbddb56::땡큐캠핑": 1
   },
   "searches": {},
   "devices": {
     "desktop": 50,
-    "mobile": 293
+    "mobile": 310
   },
   "referrers": {
     "direct": 80,
-    "인스타그램": 172
+    "인스타그램": 187
   },
   "daily": {
     "2026-05-21": {
@@ -333,24 +341,39 @@
       ]
     },
     "2026-05-24": {
-      "pv": 7,
-      "click": 0,
+      "pv": 22,
+      "click": 2,
       "search": 0,
       "pages": {
-        "/series/series_304565fb77/ep_d7955f38a0": 1,
+        "/series/series_304565fb77/ep_d7955f38a0": 2,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 1,
-        "/": 3,
+        "/": 4,
         "/#foods": 1,
-        "/foods/food_b7f447dd02": 1
+        "/foods/food_b7f447dd02": 1,
+        "/series/series_ba7cc89468/ep_ad505df37d": 2,
+        "/series/series_ba7cc89468/ep_3acff3998f": 1,
+        "/series/series_304565fb77/ep_c2e684a351": 1,
+        "/camps/camp_8f72106bcf": 1,
+        "/camps/camp_e220a217fd": 1,
+        "/camps/camp_0741c2c7b7": 1,
+        "/camps/camp_c284aeffe4": 1,
+        "/camps/camp_c47fbddb56": 1,
+        "/camps/camp_82599ba9bf": 1,
+        "/camps/camp_b2804ced5e": 1,
+        "/camps/camp_133dd5b2c6": 1,
+        "/camps/camp_357cccb118": 1
       },
-      "clicks": {},
+      "clicks": {
+        "/camps/camp_82599ba9bf::땡큐캠핑": 1,
+        "/camps/camp_c47fbddb56::땡큐캠핑": 1
+      },
       "searches": {},
       "devices": {
-        "mobile": 6,
+        "mobile": 23,
         "desktop": 1
       },
       "referrers": {
-        "인스타그램": 6,
+        "인스타그램": 21,
         "direct": 1
       },
       "hourly": [
@@ -359,7 +382,7 @@
         3,
         2,
         2,
-        0,
+        15,
         0,
         0,
         0,
@@ -381,5 +404,5 @@
       ]
     }
   },
-  "updated_at": "2026-05-24T05:00:37.086Z"
+  "updated_at": "2026-05-24T06:00:37.526Z"
 }
