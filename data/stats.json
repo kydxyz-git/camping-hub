@@ -1,14 +1,14 @@
 {
   "total": {
-    "pv": 425,
+    "pv": 428,
     "click": 151,
     "search": 0
   },
   "pages": {
-    "/": 80,
+    "/": 81,
     "/series/series_ba7cc89468/ep_ad505df37d": 42,
-    "/series/series_304565fb77/ep_c2e684a351": 22,
-    "/series/series_873cdcaf61/ep_7dd208fe26": 9,
+    "/series/series_304565fb77/ep_c2e684a351": 23,
+    "/series/series_873cdcaf61/ep_7dd208fe26": 10,
     "/series/series_e8c17ad5da/ep_e46450a717": 11,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 13,
     "/#stories": 2,
@@ -103,11 +103,11 @@
   "searches": {},
   "devices": {
     "desktop": 50,
-    "mobile": 526
+    "mobile": 529
   },
   "referrers": {
     "direct": 83,
-    "인스타그램": 339
+    "인스타그램": 342
   },
   "daily": {
     "2026-05-21": {
@@ -356,18 +356,18 @@
       ]
     },
     "2026-05-24": {
-      "pv": 178,
+      "pv": 181,
       "click": 62,
       "search": 0,
       "pages": {
         "/series/series_304565fb77/ep_d7955f38a0": 9,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 4,
-        "/": 35,
+        "/": 36,
         "/#foods": 1,
         "/foods/food_b7f447dd02": 2,
         "/series/series_ba7cc89468/ep_ad505df37d": 13,
         "/series/series_ba7cc89468/ep_3acff3998f": 11,
-        "/series/series_304565fb77/ep_c2e684a351": 9,
+        "/series/series_304565fb77/ep_c2e684a351": 10,
         "/camps/camp_8f72106bcf": 1,
         "/camps/camp_e220a217fd": 2,
         "/camps/camp_0741c2c7b7": 1,
@@ -380,7 +380,7 @@
         "/series/series_ba7cc89468/ep_b953456d73": 9,
         "/series/series_ba7cc89468/ep_27438d1204": 8,
         "/series/series_304565fb77/ep_a8b40077ca": 6,
-        "/series/series_873cdcaf61/ep_7dd208fe26": 5,
+        "/series/series_873cdcaf61/ep_7dd208fe26": 6,
         "/series/series_ba7cc89468/ep_73bdfba72e": 8,
         "/series/series_e8c17ad5da/ep_7a390bade9": 3,
         "/series/series_873cdcaf61/ep_cf2282cf4e": 6,
@@ -433,11 +433,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 239,
+        "mobile": 242,
         "desktop": 1
       },
       "referrers": {
-        "인스타그램": 173,
+        "인스타그램": 176,
         "direct": 4
       },
       "hourly": [
@@ -457,7 +457,7 @@
         40,
         5,
         0,
-        0,
+        3,
         0,
         0,
         0,
@@ -468,5 +468,5 @@
       ]
     }
   },
-  "updated_at": "2026-05-24T15:00:48.322Z"
+  "updated_at": "2026-05-24T16:00:47.892Z"
 }
