@@ -1,19 +1,19 @@
 {
   "total": {
-    "pv": 639,
+    "pv": 643,
     "click": 267,
     "search": 0
   },
   "pages": {
-    "/": 143,
-    "/series/series_ba7cc89468/ep_ad505df37d": 65,
+    "/": 144,
+    "/series/series_ba7cc89468/ep_ad505df37d": 66,
     "/series/series_304565fb77/ep_c2e684a351": 37,
     "/series/series_873cdcaf61/ep_7dd208fe26": 12,
     "/series/series_e8c17ad5da/ep_e46450a717": 18,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 15,
     "/#stories": 2,
-    "/series/series_ba7cc89468/ep_73bdfba72e": 39,
-    "/series/series_ba7cc89468/ep_3acff3998f": 53,
+    "/series/series_ba7cc89468/ep_73bdfba72e": 40,
+    "/series/series_ba7cc89468/ep_3acff3998f": 54,
     "/series/series_ba7cc89468/ep_27438d1204": 25,
     "/series/series_304565fb77/ep_a8b40077ca": 22,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 19,
@@ -103,11 +103,11 @@
   "searches": {},
   "devices": {
     "desktop": 52,
-    "mobile": 854
+    "mobile": 858
   },
   "referrers": {
     "direct": 104,
-    "인스타그램": 531,
+    "인스타그램": 535,
     "페이스북": 1
   },
   "daily": {
@@ -469,20 +469,20 @@
       ]
     },
     "2026-05-25": {
-      "pv": 172,
+      "pv": 176,
       "click": 74,
       "search": 0,
       "pages": {
-        "/": 52,
-        "/series/series_ba7cc89468/ep_ad505df37d": 19,
+        "/": 53,
+        "/series/series_ba7cc89468/ep_ad505df37d": 20,
         "/#items": 1,
         "/series/series_304565fb77/ep_a8b40077ca": 9,
         "/series/series_e8c17ad5da/ep_7a390bade9": 9,
-        "/series/series_ba7cc89468/ep_3acff3998f": 17,
+        "/series/series_ba7cc89468/ep_3acff3998f": 18,
         "/series/series_ba7cc89468/ep_b953456d73": 9,
         "/series/series_ba7cc89468/ep_27438d1204": 9,
         "/series/series_304565fb77/ep_c2e684a351": 12,
-        "/series/series_ba7cc89468/ep_73bdfba72e": 11,
+        "/series/series_ba7cc89468/ep_73bdfba72e": 12,
         "/series/series_873cdcaf61/ep_cf2282cf4e": 3,
         "/series/series_e8c17ad5da/ep_e383972ec6": 4,
         "/series/series_e8c17ad5da/ep_e46450a717": 7,
@@ -507,11 +507,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 244,
+        "mobile": 248,
         "desktop": 2
       },
       "referrers": {
-        "인스타그램": 157,
+        "인스타그램": 161,
         "direct": 14,
         "페이스북": 1
       },
@@ -530,7 +530,7 @@
         12,
         12,
         13,
-        0,
+        4,
         0,
         0,
         0,
@@ -543,5 +543,5 @@
       ]
     }
   },
-  "updated_at": "2026-05-25T14:00:56.528Z"
+  "updated_at": "2026-05-25T15:00:53.195Z"
 }
