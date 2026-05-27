@@ -1180,22 +1180,30 @@
     "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
+    "id": "camp_02c72e06a3",
     "name": "단양소풍캠핑장",
     "region": "충북",
-    "seasons": [],
+    "seasons": [
+      "여름",
+      "가을"
+    ],
     "landscape": [
       "계곡"
     ],
     "extras": [],
     "graega": false,
     "url": "https://camp.dytc.or.kr/",
-    "imgs": [],
+    "imgs": [
+      "./images/camps/41d87552168a.jpg",
+      "./images/camps/41d87552168a-2.jpg",
+      "./images/camps/41d87552168a-3.jpg",
+      "./images/camps/41d87552168a-4.jpg"
+    ],
     "rating": 0,
-    "visits": 1,
+    "visits": 2,
     "published": true,
-    "id": "camp_02c72e06a3",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T02:53:18.159759+00:00"
+    "updated_at": "2026-05-27T07:21:37.795Z"
   },
   {
     "name": "경산갓바위캠핑장",
