@@ -889,17 +889,19 @@
   }
   .search-bar-btn {
     flex-shrink: 0;
-    padding: 0 16px;
-    background: var(--point);
+    padding: 0 18px;
+    min-height: 40px;
+    background: #1a1a1a;
     color: #fff;
     border: none;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
+    transition: background 0.15s, transform 0.1s;
   }
-  .search-bar-btn:hover { opacity: 0.9; }
+  .search-bar-btn:hover { background: #333; }
   .search-bar-btn:active { transform: scale(0.97); }
   .list { display: flex; flex-direction: column; gap: 6px; }
   .list-empty {
