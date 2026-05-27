@@ -1,19 +1,19 @@
 {
   "total": {
-    "pv": 964,
-    "click": 388,
+    "pv": 968,
+    "click": 391,
     "search": 0
   },
   "pages": {
-    "/": 203,
-    "/series/series_ba7cc89468/ep_ad505df37d": 90,
+    "/": 204,
+    "/series/series_ba7cc89468/ep_ad505df37d": 91,
     "/series/series_304565fb77/ep_c2e684a351": 48,
     "/series/series_873cdcaf61/ep_7dd208fe26": 18,
     "/series/series_e8c17ad5da/ep_e46450a717": 21,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 20,
     "/#stories": 3,
-    "/series/series_ba7cc89468/ep_73bdfba72e": 53,
-    "/series/series_ba7cc89468/ep_3acff3998f": 80,
+    "/series/series_ba7cc89468/ep_73bdfba72e": 54,
+    "/series/series_ba7cc89468/ep_3acff3998f": 81,
     "/series/series_ba7cc89468/ep_27438d1204": 34,
     "/series/series_304565fb77/ep_a8b40077ca": 31,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 21,
@@ -94,14 +94,14 @@
     "/camps/camp_02c72e06a3": 1
   },
   "clicks": {
-    "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 130,
+    "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 131,
     "/series/series_304565fb77/ep_c2e684a351::인스타DM": 7,
     "/series/series_873cdcaf61/ep_7dd208fe26::인스타DM": 11,
     "/series/series_e8c17ad5da/ep_e46450a717::인스타DM": 6,
     "/series/series_c0b82ea145/ep_39cf2ffa99::인스타DM": 1,
     "__external__::DM 보내기": 5,
-    "/series/series_ba7cc89468/ep_73bdfba72e::인스타DM": 58,
-    "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 55,
+    "/series/series_ba7cc89468/ep_73bdfba72e::인스타DM": 59,
+    "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 56,
     "/series/series_ba7cc89468/ep_27438d1204::인스타DM": 25,
     "/series/series_873cdcaf61/ep_cf2282cf4e::인스타DM": 7,
     "/series/series_e8c17ad5da/ep_7a390bade9::인스타DM": 4,
@@ -133,11 +133,11 @@
   "searches": {},
   "devices": {
     "desktop": 87,
-    "mobile": 1265
+    "mobile": 1272
   },
   "referrers": {
     "direct": 142,
-    "인스타그램": 798,
+    "인스타그램": 802,
     "페이스북": 1,
     "구글": 20
   },
@@ -723,13 +723,13 @@
       ]
     },
     "2026-05-27": {
-      "pv": 72,
-      "click": 37,
+      "pv": 76,
+      "click": 40,
       "search": 0,
       "pages": {
-        "/": 14,
-        "/series/series_ba7cc89468/ep_ad505df37d": 6,
-        "/series/series_ba7cc89468/ep_3acff3998f": 7,
+        "/": 15,
+        "/series/series_ba7cc89468/ep_ad505df37d": 7,
+        "/series/series_ba7cc89468/ep_3acff3998f": 8,
         "/series/series_ba7cc89468/ep_b953456d73": 2,
         "/series/series_ba7cc89468/ep_27438d1204": 3,
         "/series/series_873cdcaf61/ep_cf2282cf4e": 1,
@@ -738,7 +738,7 @@
         "/series/series_c0b82ea145/ep_39cf2ffa99": 1,
         "/series/series_e8c17ad5da/ep_e46450a717": 1,
         "/#stories": 1,
-        "/series/series_ba7cc89468/ep_73bdfba72e": 3,
+        "/series/series_ba7cc89468/ep_73bdfba72e": 4,
         "/camps/camp_e5a202316d": 2,
         "/#camps": 2,
         "/series/series_304565fb77/ep_c2e684a351": 2,
@@ -765,11 +765,11 @@
         "/camps/camp_c6d9da8748": 1
       },
       "clicks": {
-        "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 8,
-        "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 3,
+        "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 9,
+        "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 4,
         "/series/series_ba7cc89468/ep_b953456d73::인스타DM": 6,
         "__external__::그래가파트너스": 1,
-        "/series/series_ba7cc89468/ep_73bdfba72e::인스타DM": 14,
+        "/series/series_ba7cc89468/ep_73bdfba72e::인스타DM": 15,
         "/series/series_ba7cc89468/ep_27438d1204::인스타DM": 1,
         "/camps/camp_02c72e06a3::camp.dytc.or.kr": 2,
         "/camps/camp_e06cb829df::네이버": 1,
@@ -777,11 +777,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 96,
+        "mobile": 103,
         "desktop": 13
       },
       "referrers": {
-        "인스타그램": 63,
+        "인스타그램": 67,
         "direct": 9
       },
       "hourly": [
@@ -803,7 +803,7 @@
         13,
         0,
         6,
-        0,
+        4,
         0,
         0,
         0,
@@ -812,5 +812,5 @@
       ]
     }
   },
-  "updated_at": "2026-05-27T18:00:41.716Z"
+  "updated_at": "2026-05-27T19:00:43.666Z"
 }
