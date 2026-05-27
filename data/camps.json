@@ -1188,22 +1188,23 @@
       "가을"
     ],
     "landscape": [
-      "계곡"
+      "계곡",
+      "산"
     ],
     "extras": [],
     "graega": false,
-    "url": "https://camp.dytc.or.kr/",
+    "url": "https://m.place.naver.com/accommodation/1667975888/room?entry=plt&businessCategory=camping",
     "imgs": [
       "./images/camps/41d87552168a.jpg",
       "./images/camps/41d87552168a-2.jpg",
       "./images/camps/41d87552168a-3.jpg",
       "./images/camps/41d87552168a-4.jpg"
     ],
-    "rating": 0,
+    "rating": 5,
     "visits": 2,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-27T07:21:37.795Z"
+    "updated_at": "2026-05-27T15:57:11.067Z"
   },
   {
     "name": "경산갓바위캠핑장",
