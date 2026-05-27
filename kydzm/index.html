@@ -870,9 +870,10 @@
     background: var(--accent-soft); padding: 4px 10px; border-radius: 100px;
     font-weight: 700;
   }
+  /* 검색 바: input + 조회 버튼 같은 높이 */
   .search-bar {
     margin-bottom: 16px; position: relative;
-    display: flex; gap: 6px; align-items: center;
+    display: flex; gap: 8px; align-items: stretch;  /* stretch로 자식 자동 같은 높이 */
   }
   .search-bar-input-wrap {
     flex: 1; position: relative;
@@ -880,6 +881,8 @@
   .search-bar-input-wrap input {
     padding-left: 38px;
     width: 100%;
+    height: 100%;  /* wrap에 맞춤 */
+    box-sizing: border-box;
   }
   .search-bar-input-wrap::before {
     content: '🔍';
@@ -887,22 +890,32 @@
     transform: translateY(-50%);
     font-size: 14px; opacity: 0.5;
   }
+  /* 조회 버튼: PC 기본 (input과 같은 높이로 자동 정렬) */
   .search-bar-btn {
     flex-shrink: 0;
-    padding: 0 10px;
-    min-height: 30px;
+    padding: 0 16px;
     background: #1a1a1a;
     color: #fff;
     border: none;
-    border-radius: 5px;
-    font-size: 12px;
-    font-weight: 600;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
     transition: background 0.15s, transform 0.1s;
+    /* min-height/height 명시 안 함 → align-items: stretch가 자동으로 input과 같은 높이로 늘림 */
   }
   .search-bar-btn:hover { background: #333; }
   .search-bar-btn:active { transform: scale(0.97); }
+  /* 모바일: 폰트 약간 키우고 padding 늘림 (터치 영역 확보) */
+  @media (max-width: 480px) {
+    .search-bar { gap: 6px; }
+    .search-bar-btn {
+      padding: 0 14px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+  }
   .list { display: flex; flex-direction: column; gap: 6px; }
   .list-empty {
     padding: 40px 20px; text-align: center;
