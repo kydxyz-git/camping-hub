@@ -7,6 +7,16 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_4da176323e",
+        "ep": 6,
+        "title": "한국의 라오스, 김삿갓 계곡",
+        "url": "https://www.instagram.com/reel/DY26LeXT930/?igsh=MTh0dTk1OGsydjVx",
+        "thumb": "./images/series/summer-ep06.jpg",
+        "published": true,
+        "created_at": "2026-05-27T22:02:54.498Z",
+        "updated_at": "2026-05-27T22:02:54.498Z"
+      },
+      {
         "ep": 5,
         "title": "200번 방문객이 있는 캠핑장",
         "url": "https://www.instagram.com/reel/DYdGtAtTMKg/?igsh=YjNyN3lwcGloNmoy",
