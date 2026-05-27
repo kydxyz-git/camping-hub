@@ -1037,10 +1037,17 @@ function match(c) {
 }
 function sortCamps(arr) {
   return [...arr].sort((a, b) => {
-    if (a.graega !== b.graega) return (b.graega?1:0) - (a.graega?1:0); // 1. 그래가 최우선
+    // 1. 그래가 예약 가능 캠핑장 최우선
+    if (a.graega !== b.graega) return (b.graega?1:0) - (a.graega?1:0);
+    // 2. 이미지 등록된 곳 우선 (imgs 배열 비어있지 않으면 1)
+    const ai = (a.imgs && a.imgs.length > 0) ? 1 : 0;
+    const bi = (b.imgs && b.imgs.length > 0) ? 1 : 0;
+    if (ai !== bi) return bi - ai;
+    // 3. 방문 횟수 내림차순
     const va = a.visits||0, vb = b.visits||0;
-    if (va !== vb) return vb - va;                                       // 2. 방문 횟수 내림차순
-    return a.name.localeCompare(b.name, 'ko');                          // 3. 가나다 순
+    if (va !== vb) return vb - va;
+    // 4. 이름 가나다 순
+    return a.name.localeCompare(b.name, 'ko');
   });
 }
 function renderGrid() {
