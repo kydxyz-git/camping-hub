@@ -3684,7 +3684,19 @@ function renderCampList() {
     });
   });
   const search = document.getElementById('camp-search');
-  search.oninput = (e) => { _campSearch = e.target.value; renderCampList(); };
+  // 한글 IME 조합 중에는 rerender 차단 (조합 중 자모 분리 버그 방지)
+  let _campIsComposing = false;
+  search.addEventListener('compositionstart', () => { _campIsComposing = true; });
+  search.addEventListener('compositionend', (e) => {
+    _campIsComposing = false;
+    _campSearch = e.target.value;
+    renderCampList();
+  });
+  search.oninput = (e) => {
+    if (_campIsComposing) return;  // 조합 중에는 차단
+    _campSearch = e.target.value;
+    renderCampList();
+  };
   // 검색어를 타이핑 중일 때만 포커스 유지 (첫 진입 시 모바일 키보드 자동 등장 방지)
   if (_campSearch.length > 0) {
     setTimeout(() => {
@@ -5660,7 +5672,19 @@ function renderProductList(dataArr, searchVar, opts) {
     }
   }
   const s = document.getElementById('prod-search');
-  s.oninput = (e) => { opts.setSearch(e.target.value); opts.rerender(); };
+  // 한글 IME 조합 중에는 rerender 차단 (조합 중 자모 분리 버그 방지)
+  let _prodIsComposing = false;
+  s.addEventListener('compositionstart', () => { _prodIsComposing = true; });
+  s.addEventListener('compositionend', (e) => {
+    _prodIsComposing = false;
+    opts.setSearch(e.target.value);
+    opts.rerender();
+  });
+  s.oninput = (e) => {
+    if (_prodIsComposing) return;  // 조합 중에는 차단
+    opts.setSearch(e.target.value);
+    opts.rerender();
+  };
   // 검색어를 타이핑 중일 때만 포커스 유지 (첫 진입 시 모바일 키보드 자동 등장 방지)
   if (q.length > 0) {
     setTimeout(() => { const pos = q.length; s.focus(); s.setSelectionRange(pos, pos); }, 0);
