@@ -872,16 +872,35 @@
   }
   .search-bar {
     margin-bottom: 16px; position: relative;
+    display: flex; gap: 6px;
   }
-  .search-bar input {
+  .search-bar-input-wrap {
+    flex: 1; position: relative;
+  }
+  .search-bar-input-wrap input {
     padding-left: 38px;
+    width: 100%;
   }
-  .search-bar::before {
+  .search-bar-input-wrap::before {
     content: '🔍';
     position: absolute; left: 12px; top: 50%;
     transform: translateY(-50%);
     font-size: 14px; opacity: 0.5;
   }
+  .search-bar-btn {
+    flex-shrink: 0;
+    padding: 0 16px;
+    background: var(--point);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .search-bar-btn:hover { opacity: 0.9; }
+  .search-bar-btn:active { transform: scale(0.97); }
   .list { display: flex; flex-direction: column; gap: 6px; }
   .list-empty {
     padding: 40px 20px; text-align: center;
@@ -3639,7 +3658,10 @@ function renderCampList() {
       <div class="page-count">${arr.length} / ${cache.camps.length}</div>
     </div>
     <div class="search-bar">
-      <input class="input" id="camp-search" placeholder="캠핑장명, 지역, 시즌 등" value="${escapeHtml(_campSearch)}">
+      <div class="search-bar-input-wrap">
+        <input class="input" id="camp-search" placeholder="캠핑장명, 지역, 시즌 등" value="${escapeHtml(_campSearch)}">
+      </div>
+      <button class="search-bar-btn" id="camp-search-btn" type="button">조회</button>
     </div>
     <div class="list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(camp => {
@@ -3684,19 +3706,20 @@ function renderCampList() {
     });
   });
   const search = document.getElementById('camp-search');
-  // 한글 IME 조합 중에는 rerender 차단 (조합 중 자모 분리 버그 방지)
-  let _campIsComposing = false;
-  search.addEventListener('compositionstart', () => { _campIsComposing = true; });
-  search.addEventListener('compositionend', (e) => {
-    _campIsComposing = false;
-    _campSearch = e.target.value;
-    renderCampList();
-  });
-  search.oninput = (e) => {
-    if (_campIsComposing) return;  // 조합 중에는 차단
-    _campSearch = e.target.value;
+  const searchBtn = document.getElementById('camp-search-btn');
+  // 조회 동작: 검색어 갱신 + rerender (IME 조합 깨짐 방지 위해 입력 즉시 rerender X)
+  const doCampSearch = () => {
+    _campSearch = search.value;
     renderCampList();
   };
+  searchBtn.onclick = doCampSearch;
+  // 엔터키 → 조회 자동 실행 (IME 조합 중 엔터는 isComposing=true → 차단해서 한글 조합 안 깨짐)
+  search.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.isComposing) {
+      e.preventDefault();
+      doCampSearch();
+    }
+  });
   // 검색어를 타이핑 중일 때만 포커스 유지 (첫 진입 시 모바일 키보드 자동 등장 방지)
   if (_campSearch.length > 0) {
     setTimeout(() => {
@@ -5610,7 +5633,10 @@ function renderProductList(dataArr, searchVar, opts) {
       <div class="page-count">${arr.length} / ${dataArr.length}</div>
     </div>
     <div class="search-bar">
-      <input class="input" id="prod-search" placeholder="${opts.placeholder}" value="${escapeHtml(q)}">
+      <div class="search-bar-input-wrap">
+        <input class="input" id="prod-search" placeholder="${opts.placeholder}" value="${escapeHtml(q)}">
+      </div>
+      <button class="search-bar-btn" id="prod-search-btn" type="button">조회</button>
     </div>
     <div class="series-sort-bar" style="margin:8px 0 4px;">
       <span class="series-sort-label">${opts.label} 정렬:</span>
@@ -5672,19 +5698,20 @@ function renderProductList(dataArr, searchVar, opts) {
     }
   }
   const s = document.getElementById('prod-search');
-  // 한글 IME 조합 중에는 rerender 차단 (조합 중 자모 분리 버그 방지)
-  let _prodIsComposing = false;
-  s.addEventListener('compositionstart', () => { _prodIsComposing = true; });
-  s.addEventListener('compositionend', (e) => {
-    _prodIsComposing = false;
-    opts.setSearch(e.target.value);
-    opts.rerender();
-  });
-  s.oninput = (e) => {
-    if (_prodIsComposing) return;  // 조합 중에는 차단
-    opts.setSearch(e.target.value);
+  const sBtn = document.getElementById('prod-search-btn');
+  // 조회 동작 (입력 즉시 rerender X — IME 조합 깨짐 방지)
+  const doProdSearch = () => {
+    opts.setSearch(s.value);
     opts.rerender();
   };
+  sBtn.onclick = doProdSearch;
+  // 엔터키 → 조회 자동 실행 (한글 조합 중 엔터는 isComposing=true → 차단)
+  s.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.isComposing) {
+      e.preventDefault();
+      doProdSearch();
+    }
+  });
   // 검색어를 타이핑 중일 때만 포커스 유지 (첫 진입 시 모바일 키보드 자동 등장 방지)
   if (q.length > 0) {
     setTimeout(() => { const pos = q.length; s.focus(); s.setSelectionRange(pos, pos); }, 0);
