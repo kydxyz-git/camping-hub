@@ -606,31 +606,60 @@
       font-size: 12px;
       font-weight: 600;
     }
-    /* 원형 닷 마커 (background + border-color는 인라인 style로 플랫폼별 지정) */
-    .camp-marker {
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      border: 2px solid #5E6C4F;  /* border-color는 인라인 style로 override됨 */
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-      position: relative;
-      transition: transform 0.15s ease;
+    /* 칩 마커 (줌 레벨 반응형)
+       wrap: leaflet의 마커 컨테이너 오버라이드 (오버플로 허용)
+       chip: 실제 보이는 라운드 사각 칩
+       background + border-color는 인라인 style로 플랫폼별 지정 */
+    .camp-chip-wrap {
+      width: 0; height: 0;  /* 마커 좌표를 중심으로 자식이 자유롭게 배치 */
+      overflow: visible !important;
     }
-    .camp-marker:hover { transform: scale(1.4); z-index: 1000; }
-    /* EP 연결된 캠핑장 (영상 있음) - 살짝 크게 + 🎬 배지 */
-    .camp-marker.has-ep {
-      width: 22px; height: 22px;
+    .camp-chip {
+      position: absolute;
+      top: 0; left: 0;
+      transform: translate(-50%, -50%);  /* 좌표가 칩의 중심 */
+      background: #5E6C4F;
+      border: 1.5px solid #3a4530;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      padding: 3px 7px;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.15s ease, padding 0.2s ease;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .camp-chip:hover {
+      transform: translate(-50%, -50%) scale(1.15);
+      z-index: 1000;
+    }
+    .camp-chip-label {
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.2px;
+    }
+    /* 줌 작을 때 (level 0): 작은 닷 (이름 없음) */
+    .camp-chip.is-dot {
+      width: 14px; height: 14px;
+      padding: 0;
+      border-radius: 50%;
+      border-width: 2px;
+    }
+    /* EP 연결 캠핑장 */
+    .camp-chip.has-ep {
       border-width: 2.5px;
     }
-    .camp-marker-ep-badge {
+    .camp-chip-ep-badge {
       position: absolute;
-      top: -8px; right: -8px;
-      width: 16px; height: 16px;
+      top: -7px; right: -7px;
+      width: 14px; height: 14px;
       background: #fff;
       border: 1.5px solid #d97a3f;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      font-size: 7px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
       line-height: 1;
     }
     /* 클러스터 마커 (markercluster 기본 스타일 override) */
@@ -1631,27 +1660,51 @@ function _renderCampMap(camps) {
         disableClusteringAtZoom: 12,  // 12 이상 줌인하면 개별 마커
       })
     : null;
+  // 줌 레벨 기반 라벨 모드 결정
+  // - level 0: 작은 칩 (이름 없음, 색만)
+  // - level 1: 앞 2글자
+  // - level 2: 앞 4글자
+  // - level 3: 풀 네임
+  function _labelLevelForZoom(z) {
+    if (z >= 13) return 3;
+    if (z >= 11) return 2;
+    if (z >= 9)  return 1;
+    return 0;
+  }
+  function _truncateName(name, level) {
+    if (level === 0) return '';
+    if (level === 3) return name;
+    const maxChars = level === 1 ? 2 : 4;
+    return name.length <= maxChars ? name : name.slice(0, maxChars);
+  }
+  const markerData = [];  // {marker, c, platform, hasEp}
   for (const c of camps) {
     const isGraega = !!c.graega;
     const hasEp = epCampIds.has(c.id);
     const platform = _getPlatform(c);
-    // 원형 닷 마커 (일반 18px / EP 22px)
-    const size = hasEp ? 22 : 18;
+    // 초기 줌 레벨로 라벨 결정
+    const initialZoom = map.getZoom();
+    const level = _labelLevelForZoom(initialZoom);
+    const label = _truncateName(c.name, level);
     const markerHtml = `
-      <div class="camp-marker ${hasEp ? 'has-ep' : ''}" style="background:${platform.color};border-color:${platform.borderColor};">
-        ${hasEp ? '<span class="camp-marker-ep-badge">🎬</span>' : ''}
+      <div class="camp-chip ${hasEp ? 'has-ep' : ''} ${level === 0 ? 'is-dot' : ''}"
+           style="background:${platform.color};border-color:${platform.borderColor};"
+           data-name="${_mapEscHtml(c.name)}">
+        ${label ? `<span class="camp-chip-label">${_mapEscHtml(label)}</span>` : ''}
+        ${hasEp ? '<span class="camp-chip-ep-badge">🎬</span>' : ''}
       </div>
     `;
     const icon = L.divIcon({
       html: markerHtml,
-      className: '',
-      iconSize: [size, size],
-      iconAnchor: [size/2, size/2],     // 닷의 중심이 좌표
-      popupAnchor: [0, -(size/2 + 2)],
+      className: 'camp-chip-wrap',  // 외부 박스 스타일 (오버플로 허용)
+      iconSize: null,                 // CSS로 자동 크기
+      iconAnchor: [0, 0],            // CSS에서 transform으로 중심 정렬
+      popupAnchor: [0, -10],
     });
     const marker = L.marker([c.lat, c.lng], { icon, zIndexOffset: hasEp ? 1000 : 0 });
     if (cluster) cluster.addLayer(marker);
     else marker.addTo(map);
+    markerData.push({ marker, c, platform, hasEp });
 
     // 팝업 콘텐츠
     // 이미지: 여러 장이면 슬라이드쇼 (3초 간격 자동 회전)
@@ -1754,6 +1807,33 @@ function _renderCampMap(camps) {
   }
   // 클러스터 활성화 시 한 번에 map에 추가
   if (cluster) map.addLayer(cluster);
+
+  // 줌 변경 시 모든 마커 라벨 갱신 (개별 마커 div를 직접 수정)
+  function _updateAllMarkerLabels() {
+    const z = map.getZoom();
+    const level = _labelLevelForZoom(z);
+    for (const { marker, c, platform, hasEp } of markerData) {
+      const label = _truncateName(c.name, level);
+      const newHtml = `
+        <div class="camp-chip ${hasEp ? 'has-ep' : ''} ${level === 0 ? 'is-dot' : ''}"
+             style="background:${platform.color};border-color:${platform.borderColor};"
+             data-name="${_mapEscHtml(c.name)}">
+          ${label ? `<span class="camp-chip-label">${_mapEscHtml(label)}</span>` : ''}
+          ${hasEp ? '<span class="camp-chip-ep-badge">🎬</span>' : ''}
+        </div>
+      `;
+      // 마커 icon을 새 div로 교체
+      const newIcon = L.divIcon({
+        html: newHtml,
+        className: 'camp-chip-wrap',
+        iconSize: null,
+        iconAnchor: [0, 0],
+        popupAnchor: [0, -10],
+      });
+      marker.setIcon(newIcon);
+    }
+  }
+  map.on('zoomend', _updateAllMarkerLabels);
 
   // 모든 마커가 보이도록 줌 자동 조정
   if (bounds.length === 1) {
