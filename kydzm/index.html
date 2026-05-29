@@ -3867,6 +3867,11 @@ function renderCampDetail(idx) {
             return `<div style="margin:2px 0;"><a href="#series/${si}/${ei}">${escapeHtml(s.emoji || '🎬')} ${escapeHtml(s.name)} · ${epLabel} - ${escapeHtml(ep.title)}</a></div>`;
           }).join('');
         })()}</div></div>
+        <div class="detail-row"><div class="detail-key">🎬 개별 영상</div><div class="detail-val">${(() => {
+          const vids = camp.videos || [];
+          if (vids.length === 0) return '<span style="color:var(--muted);">— 없음</span>';
+          return vids.map((url, i) => `<div style="margin:2px 0;"><a href="${escapeHtml(url)}" target="_blank" rel="noopener">🎬 영상 ${i+1} — ${escapeHtml(url.slice(0, 40))}…</a></div>`).join('');
+        })()}</div></div>
         <div class="detail-row"><div class="detail-key">URL</div><div class="detail-val">${camp.url ? `<a href="${escapeHtml(camp.url)}" target="_blank" rel="noopener">${escapeHtml(camp.url)}</a>` : '-'}</div></div>
         <div class="detail-row"><div class="detail-key">등록일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(camp.created_at) || '-'}</div></div>
         <div class="detail-row"><div class="detail-key">수정일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(camp.updated_at) || '-'}</div></div>
@@ -3914,6 +3919,7 @@ let _campForm = {
   visits: 0,
   lat: null,            // 위도 (예: 37.5665)
   lng: null,            // 경도 (예: 126.9780)
+  videos: [],           // 개별 릴스 URL 배열 (시리즈 EP와 별개)
   // 이미지: 두 종류 혼재
   //   { type: 'existing', src: './images/camps/xxx.jpg' }  ← 기존 이미지
   //   { type: 'new', base64: '...', previewUrl: 'data:...', size: 123 }  ← 새로 업로드
@@ -3940,6 +3946,7 @@ function renderCampAddForm() {
     name: '', region: '', seasons: [], landscape: [], extras: [],
     graega: false, url: '', rating: 0, visits: 0,
     lat: null, lng: null,
+    videos: [],
     images: [],
   };
   _renderCampFormUI();
@@ -3961,6 +3968,7 @@ function renderCampEditForm(idx) {
     visits: c.visits || 0,
     lat: (typeof c.lat === 'number') ? c.lat : null,
     lng: (typeof c.lng === 'number') ? c.lng : null,
+    videos: [...(c.videos || [])],
     images: (c.imgs || []).map(src => ({ type: 'existing', src })),
   };
   _renderCampFormUI();
@@ -4065,6 +4073,18 @@ function _renderCampFormUI() {
           </div>
           <div class="help" style="margin-top:6px;">
             💡 직접 좌표 입력도 가능 (구글맵 빈공간 우클릭 → 좌표 클릭 → paste)
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="label">🎬 영상 URL (개별 릴스)</label>
+          <div id="cf-videos-list"></div>
+          <div class="row" style="gap:6px;margin-top:6px;">
+            <input type="text" id="cf-video-input" class="input" placeholder="https://www.instagram.com/reel/... 붙여넣기" style="flex:1;min-width:0;">
+            <button type="button" class="btn btn-sm" id="cf-video-add-btn" style="white-space:nowrap;">+ 추가</button>
+          </div>
+          <div class="help" style="margin-top:6px;">
+            💡 시리즈 EP가 아닌 개별 릴스를 캠핑장에 연결. 여러 개 추가 가능. 지도 팝업의 '영상보기'에 함께 표시됨
           </div>
         </div>
 
@@ -4317,6 +4337,50 @@ function _renderCampFormUI() {
     _setPickerMsg('🗑 좌표 삭제됨');
   };
 
+  // ─── 영상 URL 여러개 관리 ───
+  function _renderVideosList() {
+    const listEl = $('cf-videos-list');
+    if (!listEl) return;
+    if (_campForm.videos.length === 0) {
+      listEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:4px 0;">아직 추가된 영상이 없어요</div>';
+      return;
+    }
+    listEl.innerHTML = _campForm.videos.map((url, i) => `
+      <div class="video-item" style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--bg);border:1px solid var(--line);border-radius:6px;margin-bottom:4px;">
+        <span style="font-size:11px;color:var(--muted);flex-shrink:0;">🎬 ${i+1}</span>
+        <a href="${escapeHtml(url)}" target="_blank" rel="noopener" style="flex:1;min-width:0;font-size:12px;color:var(--point);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(url)}</a>
+        <button type="button" class="video-del-btn" data-i="${i}" style="flex-shrink:0;padding:2px 8px;background:#c94a4a;color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;">삭제</button>
+      </div>
+    `).join('');
+    // 삭제 버튼 핸들러
+    listEl.querySelectorAll('.video-del-btn').forEach(btn => {
+      btn.onclick = (e) => {
+        const i = +e.target.dataset.i;
+        _campForm.videos.splice(i, 1);
+        _renderVideosList();
+      };
+    });
+  }
+  function _addVideo() {
+    const input = $('cf-video-input');
+    const url = input.value.trim();
+    if (!url) { showToast('영상 URL을 입력하세요', 'error'); return; }
+    if (!/^https?:\/\//i.test(url)) { showToast('http:// 또는 https://로 시작하는 URL이어야 해요', 'error'); return; }
+    if (_campForm.videos.includes(url)) { showToast('이미 추가된 영상이에요', 'error'); return; }
+    _campForm.videos.push(url);
+    input.value = '';
+    _renderVideosList();
+    showToast('🎬 영상 추가됨', 'success', 1500);
+  }
+  $('cf-video-add-btn').onclick = _addVideo;
+  $('cf-video-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.isComposing) {
+      e.preventDefault();
+      _addVideo();
+    }
+  });
+  _renderVideosList();
+
   // extras 자유 입력
   $('cf-extras').oninput = (e) => {
     _campForm.extras = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
@@ -4427,6 +4491,7 @@ function resetCampForm() {
     name: '', region: '', seasons: [], landscape: [], extras: [],
     graega: false, url: '', rating: 0, visits: 0,
     lat: null, lng: null,
+    videos: [],
     images: [],
   };
 }
@@ -4544,6 +4609,10 @@ async function submitCampForm() {
     // 좌표 (값 있을 때만 포함 — null/undefined는 JSON에서 깔끔하게 생략)
     if (typeof _campForm.lat === 'number' && !isNaN(_campForm.lat)) campObj.lat = _campForm.lat;
     if (typeof _campForm.lng === 'number' && !isNaN(_campForm.lng)) campObj.lng = _campForm.lng;
+    // 개별 영상 URL (비어있지 않을 때만 포함)
+    if (Array.isArray(_campForm.videos) && _campForm.videos.length > 0) {
+      campObj.videos = _campForm.videos.slice();
+    }
 
     if (isEdit) {
       newCamps[_campForm.editIdx] = campObj;
