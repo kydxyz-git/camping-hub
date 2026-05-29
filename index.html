@@ -596,6 +596,48 @@
       transform: rotate(45deg);
       line-height: 1;
     }
+    /* 사진 마커 (캠핑장 썸네일) */
+    .camp-marker-photo {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      border: 3px solid #5E6C4F;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+      overflow: hidden;
+      background: #fff;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .camp-marker-photo:hover {
+      transform: scale(1.15);
+      z-index: 1000;
+    }
+    .camp-marker-photo.is-graega {
+      border-color: #4a7c4e;
+      box-shadow: 0 3px 10px rgba(74,124,78,0.5);
+    }
+    .camp-marker-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .camp-marker-photo-badge {
+      position: absolute;
+      bottom: -2px; right: -2px;
+      min-width: 18px; height: 18px;
+      padding: 0 4px;
+      background: #1a1a1a;
+      color: #fff;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+    }
+    .camp-marker-photo.is-graega .camp-marker-photo-badge {
+      background: #4a7c4e;
+    }
     /* 좌표 미등록 섹션 */
     .map-nocoord-section {
       padding: 16px;
@@ -1475,10 +1517,16 @@ function _renderCampMap(camps) {
   const map = L.map('camp-map', {
     center: initialCenter,
     zoom: 7,
-    minZoom: 6,
+    minZoom: 7,        // 너무 축소 못하게 (한국이 충분히 채우는 정도)
     maxZoom: 17,
     zoomControl: true,
     attributionControl: true,
+    // 한국 영역으로 드래그 제한 (남쪽 제주 ~ 북쪽 강원, 서쪽 백령 ~ 동쪽 독도)
+    maxBounds: [
+      [33.0, 124.5],  // 남서쪽 (제주 서남쪽)
+      [38.7, 132.0],  // 북동쪽 (독도 동쪽)
+    ],
+    maxBoundsViscosity: 1.0,  // 경계 밖으로 절대 못 가게 (탄성 막)
   });
   _mapInstance = map;
 
@@ -1493,17 +1541,22 @@ function _renderCampMap(camps) {
   for (const c of camps) {
     const visits = c.visits || 0;
     const isGraega = !!c.graega;
-    const markerHtml = `
-      <div class="camp-marker ${isGraega ? 'is-graega' : ''}">
-        <span class="camp-marker-inner">${visits > 0 ? visits : ''}</span>
-      </div>
-    `;
+    const thumbUrl = c.imgs && c.imgs[0] ? c.imgs[0] : null;
+    // 이미지 있으면 사진 마커, 없으면 기존 핀 마커
+    const markerHtml = thumbUrl
+      ? `<div class="camp-marker-photo ${isGraega ? 'is-graega' : ''}">
+           <img src="${thumbUrl}" alt="" loading="lazy">
+           ${visits > 0 ? `<span class="camp-marker-photo-badge">${visits}</span>` : ''}
+         </div>`
+      : `<div class="camp-marker ${isGraega ? 'is-graega' : ''}">
+           <span class="camp-marker-inner">${visits > 0 ? visits : '?'}</span>
+         </div>`;
     const icon = L.divIcon({
       html: markerHtml,
-      className: '',  // 기본 leaflet 클래스 제거
-      iconSize: [28, 28],
-      iconAnchor: [14, 28],
-      popupAnchor: [0, -24],
+      className: '',
+      iconSize: thumbUrl ? [48, 48] : [28, 28],
+      iconAnchor: thumbUrl ? [24, 48] : [14, 28],
+      popupAnchor: thumbUrl ? [0, -44] : [0, -24],
     });
     const marker = L.marker([c.lat, c.lng], { icon }).addTo(map);
 
