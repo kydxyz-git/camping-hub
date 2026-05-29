@@ -587,8 +587,11 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       transform: rotate(-45deg);
       display: flex; align-items: center; justify-content: center;
+      position: relative;
+      transition: transform 0.15s ease;
     }
-    .camp-marker.is-graega { background: #4a7c4e; }
+    .camp-marker:hover { transform: rotate(-45deg) scale(1.15); z-index: 1000; }
+    .camp-marker.is-graega { background: #1a1a1a; }
     .camp-marker-inner {
       color: #fff;
       font-weight: 800;
@@ -596,48 +599,47 @@
       transform: rotate(45deg);
       line-height: 1;
     }
-    /* 사진 마커 (캠핑장 썸네일) */
-    .camp-marker-photo {
-      width: 48px; height: 48px;
-      border-radius: 50%;
-      border: 3px solid #5E6C4F;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.35);
-      overflow: hidden;
-      background: #fff;
-      position: relative;
-      cursor: pointer;
-      transition: transform 0.15s ease;
+    /* EP 연결된 캠핑장 (영상 있음) - 더 큰 핀 + 주황 테두리 + 🎬 배지 */
+    .camp-marker.has-ep {
+      width: 36px; height: 36px;
+      border: 3px solid #d97a3f;
+      box-shadow: 0 3px 10px rgba(217,122,63,0.5);
     }
-    .camp-marker-photo:hover {
-      transform: scale(1.15);
-      z-index: 1000;
+    .camp-marker.has-ep .camp-marker-inner {
+      font-size: 13px;
     }
-    .camp-marker-photo.is-graega {
-      border-color: #4a7c4e;
-      box-shadow: 0 3px 10px rgba(74,124,78,0.5);
-    }
-    .camp-marker-photo img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .camp-marker-photo-badge {
+    .camp-marker-ep-badge {
       position: absolute;
-      bottom: -2px; right: -2px;
-      min-width: 18px; height: 18px;
-      padding: 0 4px;
-      background: #1a1a1a;
-      color: #fff;
-      border: 2px solid #fff;
-      border-radius: 10px;
-      font-size: 10px;
-      font-weight: 800;
+      top: -10px; right: -10px;
+      width: 22px; height: 22px;
+      background: #fff;
+      border: 2px solid #d97a3f;
+      border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      line-height: 1;
+      font-size: 11px;
+      transform: rotate(45deg);  /* 핀이 -45deg 회전했으니 다시 회복 */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    .camp-marker-photo.is-graega .camp-marker-photo-badge {
-      background: #4a7c4e;
+    /* 예약 버튼 플랫폼별 색상 */
+    .camp-popup-link {
+      display: block;
+      width: 100%;
+      padding: 10px 14px;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      box-sizing: border-box;
+      transition: opacity 0.15s;
     }
+    .camp-popup-link:hover { opacity: 0.9; }
+    .camp-popup-link.btn-graega { background: #1a1a1a; }
+    .camp-popup-link.btn-naver  { background: #03C75A; }
+    .camp-popup-link.btn-camfit { background: #2D8F4C; }
+    .camp-popup-link.btn-thankq { background: #FF6B2C; }
+    .camp-popup-link.btn-etc    { background: #5E6C4F; }
     /* 좌표 미등록 섹션 */
     .map-nocoord-section {
       padding: 16px;
@@ -1536,29 +1538,39 @@ function _renderCampMap(camps) {
     maxZoom: 19,
   }).addTo(map);
 
+  // EP 연결 캠핑장 ID set 만들기 (시리즈 EP의 camp_id 기준)
+  const epCampIds = new Set();
+  const seriesArr = (typeof series !== 'undefined' && Array.isArray(series)) ? series : [];
+  for (const s of seriesArr) {
+    if (s.published === false) continue;
+    for (const ep of (s.eps || [])) {
+      if (ep.published === false) continue;
+      if (ep.camp_id) epCampIds.add(ep.camp_id);
+    }
+  }
+
   // 마커 그룹
   const bounds = [];
   for (const c of camps) {
     const visits = c.visits || 0;
     const isGraega = !!c.graega;
-    const thumbUrl = c.imgs && c.imgs[0] ? c.imgs[0] : null;
-    // 이미지 있으면 사진 마커, 없으면 기존 핀 마커
-    const markerHtml = thumbUrl
-      ? `<div class="camp-marker-photo ${isGraega ? 'is-graega' : ''}">
-           <img src="${thumbUrl}" alt="" loading="lazy">
-           ${visits > 0 ? `<span class="camp-marker-photo-badge">${visits}</span>` : ''}
-         </div>`
-      : `<div class="camp-marker ${isGraega ? 'is-graega' : ''}">
-           <span class="camp-marker-inner">${visits > 0 ? visits : '?'}</span>
-         </div>`;
+    const hasEp = epCampIds.has(c.id);
+    // 핀 마커 (사진 마커 제거)
+    const markerHtml = `
+      <div class="camp-marker ${isGraega ? 'is-graega' : ''} ${hasEp ? 'has-ep' : ''}">
+        ${hasEp ? '<span class="camp-marker-ep-badge">🎬</span>' : ''}
+        <span class="camp-marker-inner">${visits > 0 ? visits : ''}</span>
+      </div>
+    `;
+    const size = hasEp ? 36 : 28;
     const icon = L.divIcon({
       html: markerHtml,
       className: '',
-      iconSize: thumbUrl ? [48, 48] : [28, 28],
-      iconAnchor: thumbUrl ? [24, 48] : [14, 28],
-      popupAnchor: thumbUrl ? [0, -44] : [0, -24],
+      iconSize: [size, size],
+      iconAnchor: [size/2, size],
+      popupAnchor: [0, -(size - 4)],
     });
-    const marker = L.marker([c.lat, c.lng], { icon }).addTo(map);
+    const marker = L.marker([c.lat, c.lng], { icon, zIndexOffset: hasEp ? 1000 : 0 }).addTo(map);
 
     // 팝업 콘텐츠
     const img = c.imgs && c.imgs[0]
@@ -1568,18 +1580,30 @@ function _renderCampMap(camps) {
     if (c.region) metaParts.push(c.region);
     if (visits > 0) metaParts.push(`${visits}회 방문`);
     if (isGraega) metaParts.push('그래가');
+    if (hasEp) metaParts.push('🎬 영상 있음');
     const meta = metaParts.join(' · ');
-    // 링크: 예약 URL이 있으면 그쪽으로, 없으면 다녀온 캠핑장 탭으로
+    // 예약 버튼: 플랫폼별 색상 + 라벨
+    let btnCls = 'btn-etc', btnLabel = '예약하러 가기 →';
+    if (isGraega) { btnCls = 'btn-graega'; btnLabel = '그래가에서 예약 →'; }
+    else if (c.url) {
+      const u = c.url.toLowerCase();
+      if (u.includes('naver.com'))      { btnCls = 'btn-naver';  btnLabel = '네이버 예약 →'; }
+      else if (u.includes('camfit.co.kr')) { btnCls = 'btn-camfit'; btnLabel = '캠핏 예약 →'; }
+      else if (u.includes('thankqcamping.com') || u.includes('camperstory.com')) {
+        btnCls = 'btn-thankq'; btnLabel = '땡큐캠핑 예약 →';
+      }
+    }
     const linkAttrs = c.url
       ? `href="${_mapEscHtml(c.url)}" target="_blank" rel="noopener" data-track-path="/camps/${_mapEscHtml(c.id || '')}" data-track-title="${_mapEscHtml(c.name)}"`
       : `href="#camps"`;
-    const linkText = c.url ? '예약하러 가기 →' : '캠핑장 목록 보기 →';
+    const finalLabel = c.url ? btnLabel : '캠핑장 목록 보기 →';
+    const finalCls = c.url ? btnCls : 'btn-etc';
     const popupHtml = `
       <div class="camp-popup">
         ${img}
-        <div class="camp-popup-title">${_mapEscHtml(c.name)}</div>
+        <div class="camp-popup-title">${_mapEscHtml(c.name)}${hasEp ? ' <span style="font-size:11px;color:#d97a3f;">🎬</span>' : ''}</div>
         ${meta ? `<div class="camp-popup-meta">${_mapEscHtml(meta)}</div>` : ''}
-        <a class="camp-popup-link" ${linkAttrs}>${linkText}</a>
+        <a class="camp-popup-link ${finalCls}" ${linkAttrs}>${finalLabel}</a>
       </div>
     `;
     marker.bindPopup(popupHtml, { maxWidth: 240, autoPan: true });
