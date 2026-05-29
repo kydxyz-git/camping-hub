@@ -4056,10 +4056,10 @@ function _renderCampFormUI() {
           </div>
           <div class="coord-picker-wrap">
             <div class="coord-picker-toolbar">
-              <input type="text" id="coord-picker-search" placeholder="장소 검색 (예: ${escapeHtml(_campForm.name || '캠핑장명')})">
+              <input type="text" id="coord-picker-search" placeholder="주소 또는 장소명 (예: ${escapeHtml(_campForm.name || '경남 산청군 단성면')})">
               <button type="button" id="coord-picker-search-btn">검색</button>
               <button type="button" id="coord-picker-clear-btn" style="background:#6c757d;">좌표 삭제</button>
-              <div class="picker-msg" id="coord-picker-msg">💡 지도를 클릭하면 그 위치 좌표가 입력됩니다. 마커는 드래그로 미세 조정 가능.</div>
+              <div class="picker-msg" id="coord-picker-msg">💡 주소(도로명/지번)나 장소명으로 검색하세요. 안 찾아지면 지도 클릭으로 직접 좌표 설정 가능. 마커는 드래그로 미세 조정.</div>
             </div>
             <div id="coord-picker-map"></div>
           </div>
@@ -4230,32 +4230,75 @@ function _renderCampFormUI() {
   // 장소 검색 (Nominatim — OSM 무료 지오코딩, 사용량 1req/sec 제한)
   const searchInput = $('coord-picker-search');
   const searchBtn = $('coord-picker-search-btn');
+  // 검색어가 주소처럼 보이는지 (광역시도/시/군/구/동/리/면/길/로 등 키워드)
+  function _looksLikeAddress(q) {
+    const addressKeywords = /(특별시|광역시|도|시|군|구|동|읍|면|리|길|로|번지|번길|아파트|빌딩|호|층)/;
+    return addressKeywords.test(q);
+  }
   // 초기값: 캠핑장명 또는 빈 값
   if (_campForm.name) searchInput.value = _campForm.name;
   async function _doPickerSearch() {
     const q = searchInput.value.trim();
     if (!q) { _setPickerMsg('검색어를 입력하세요', true); return; }
     _setPickerMsg('🔍 검색 중...');
+    const isAddress = _looksLikeAddress(q);
     try {
-      // 한국 국가 제한 + 한국어 우선
-      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&countrycodes=kr&limit=5&accept-language=ko`;
+      // 한국 국가 제한 + 한국어 우선, 주소면 addressdetails 활성화
+      const baseParams = `format=json&countrycodes=kr&limit=5&accept-language=ko${isAddress ? '&addressdetails=1' : ''}`;
+      const url = `https://nominatim.openstreetmap.org/search?${baseParams}&q=${encodeURIComponent(q)}`;
       const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
       const data = await resp.json();
       if (!data || data.length === 0) {
-        _setPickerMsg('검색 결과 없음. 다른 키워드 시도 또는 지도에서 직접 클릭하세요.', true);
+        _setPickerMsg('❌ 검색 결과 없음. 다른 키워드 시도 또는 지도에서 직접 클릭하세요.', true);
         return;
       }
+      // 첫 결과 자동 적용
       const top = data[0];
       const lat = +parseFloat(top.lat).toFixed(7);
       const lng = +parseFloat(top.lon).toFixed(7);
       latInput.value = lat; lngInput.value = lng;
       _campForm.lat = lat; _campForm.lng = lng;
       _coordPickerMoveMarker(lat, lng, true);
-      _setPickerMsg(`📍 검색됨 ${data.length}건 중 1순위 적용: ${top.display_name.slice(0, 50)}... (드래그로 미세조정 가능)`);
+      // 결과가 여러개면 후보 목록도 메시지에 표시 (다른 결과로 선택 가능)
+      if (data.length > 1) {
+        _coordPickerCandidates = data;  // 임시 저장
+        const candidatesHtml = data.slice(0, 5).map((r, i) => {
+          const label = (r.display_name || '').slice(0, 60);
+          const isActive = i === 0;
+          return `<span class="picker-candidate ${isActive ? 'is-active' : ''}" data-i="${i}" style="cursor:pointer;padding:2px 6px;margin:2px;display:inline-block;background:${isActive ? '#1a1a1a' : '#e8e8e8'};color:${isActive ? '#fff' : '#333'};border-radius:3px;font-size:11px;">${i+1}순위</span>`;
+        }).join(' ');
+        pickerMsg.innerHTML = `📍 <b>1순위 적용:</b> ${(top.display_name || '').slice(0, 50)}<br><small style="color:#666;">${data.length}개 후보 (클릭으로 변경):</small> ${candidatesHtml}`;
+        pickerMsg.style.color = 'var(--muted)';
+        // 후보 클릭 핸들러
+        pickerMsg.querySelectorAll('.picker-candidate').forEach(el => {
+          el.onclick = (e) => {
+            const i = +e.currentTarget.dataset.i;
+            const r = _coordPickerCandidates[i];
+            if (!r) return;
+            const lat2 = +parseFloat(r.lat).toFixed(7);
+            const lng2 = +parseFloat(r.lon).toFixed(7);
+            latInput.value = lat2; lngInput.value = lng2;
+            _campForm.lat = lat2; _campForm.lng = lng2;
+            _coordPickerMoveMarker(lat2, lng2, true);
+            // active 상태 갱신
+            pickerMsg.querySelectorAll('.picker-candidate').forEach(s => {
+              s.classList.remove('is-active');
+              s.style.background = '#e8e8e8';
+              s.style.color = '#333';
+            });
+            e.currentTarget.classList.add('is-active');
+            e.currentTarget.style.background = '#1a1a1a';
+            e.currentTarget.style.color = '#fff';
+          };
+        });
+      } else {
+        _setPickerMsg(`📍 적용: ${(top.display_name || '').slice(0, 60)} (드래그로 미세조정 가능)`);
+      }
     } catch (e) {
       _setPickerMsg('검색 실패: ' + e.message, true);
     }
   }
+  let _coordPickerCandidates = [];
   searchBtn.onclick = _doPickerSearch;
   searchInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.isComposing) {
