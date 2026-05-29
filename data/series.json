@@ -219,15 +219,15 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_39cf2ffa99",
         "ep": 1,
         "title": "철쭉 명소 바로 옆 캠핑장",
         "url": "https://www.instagram.com/reel/DXoK6lqk38D/?igsh=MWZhcjEzdGMzNGxiZQ==",
-        "thumb": "./images/series/spring-autumn-ep01.jpg",
-        "page_id": "34f02bbd-cd95-80c9-a03a-f1b13356298a",
+        "thumb": "./images/series/spring-fall-ep01.jpg",
         "published": true,
-        "id": "ep_39cf2ffa99",
         "created_at": "2026-05-21T02:53:18.159759+00:00",
-        "updated_at": "2026-05-21T02:53:18.159759+00:00"
+        "updated_at": "2026-05-29T09:56:31.470Z",
+        "camp_id": "camp_82599ba9bf"
       }
     ],
     "id": "series_c0b82ea145",
