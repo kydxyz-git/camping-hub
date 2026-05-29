@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 1237,
-    "click": 480,
+    "pv": 1239,
+    "click": 481,
     "search": 0
   },
   "pages": {
-    "/": 253,
+    "/": 254,
     "/series/series_ba7cc89468/ep_ad505df37d": 106,
     "/series/series_304565fb77/ep_c2e684a351": 58,
     "/series/series_873cdcaf61/ep_7dd208fe26": 24,
@@ -92,7 +92,7 @@
     "/camps/camp_0380055336": 5,
     "/camps/camp_7fafd07d0a": 2,
     "/camps/camp_02c72e06a3": 3,
-    "/series/series_ba7cc89468/ep_4da176323e": 22,
+    "/series/series_ba7cc89468/ep_4da176323e": 23,
     "/camps/camp_f756d38620": 1,
     "/#map": 3
   },
@@ -132,17 +132,17 @@
     "/camps/camp_922e05eeae::camfit.co.kr": 1,
     "/camps/camp_02c72e06a3::camp.dytc.or.kr": 2,
     "/camps/camp_e06cb829df::네이버": 1,
-    "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 21,
+    "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 22,
     "/camps/camp_55791da55f::www.xn--hq1bk3iuobz1y.net": 2
   },
   "searches": {},
   "devices": {
     "desktop": 93,
-    "mobile": 1624
+    "mobile": 1627
   },
   "referrers": {
     "direct": 161,
-    "인스타그램": 1049,
+    "인스타그램": 1051,
     "페이스북": 2,
     "구글": 20
   },
@@ -932,12 +932,12 @@
       ]
     },
     "2026-05-29": {
-      "pv": 73,
-      "click": 19,
+      "pv": 75,
+      "click": 20,
       "search": 0,
       "pages": {
-        "/": 12,
-        "/series/series_ba7cc89468/ep_4da176323e": 3,
+        "/": 13,
+        "/series/series_ba7cc89468/ep_4da176323e": 4,
         "/series/series_ba7cc89468/ep_ad505df37d": 3,
         "/series/series_ba7cc89468/ep_73bdfba72e": 5,
         "/series/series_ba7cc89468/ep_27438d1204": 2,
@@ -966,7 +966,7 @@
         "/camps/camp_e220a217fd": 1
       },
       "clicks": {
-        "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 2,
+        "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 3,
         "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 6,
         "/series/series_ba7cc89468/ep_73bdfba72e::인스타DM": 4,
         "/series/series_ba7cc89468/ep_27438d1204::인스타DM": 1,
@@ -978,11 +978,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 87,
+        "mobile": 90,
         "desktop": 5
       },
       "referrers": {
-        "인스타그램": 63,
+        "인스타그램": 65,
         "direct": 10
       },
       "hourly": [
@@ -994,7 +994,7 @@
         0,
         25,
         0,
-        0,
+        2,
         0,
         0,
         0,
@@ -1013,5 +1013,5 @@
       ]
     }
   },
-  "updated_at": "2026-05-29T07:00:04.643Z"
+  "updated_at": "2026-05-29T08:53:26.678Z"
 }
