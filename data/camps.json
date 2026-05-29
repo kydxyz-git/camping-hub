@@ -27,9 +27,12 @@
     "visits": 15,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-29T11:38:28.111Z",
+    "updated_at": "2026-05-29T11:42:19.180Z",
     "lat": 35.5258436,
-    "lng": 128.0382407
+    "lng": 128.0382407,
+    "videos": [
+      "https://www.instagram.com/p/DSBgkkHkx8C/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
+    ]
   },
   {
     "id": "camp_b8d29b3f00",
