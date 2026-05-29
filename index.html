@@ -610,63 +610,48 @@
       font-size: 12px;
       font-weight: 600;
     }
-    /* 깃발 마커 (세로 막대 + 삼각형 깃발)
+    /* 미니멀 핀 마커 (SVG 물방울 + 안에 흰 점)
        wrap: leaflet 컨테이너 오버라이드 (오버플로 허용)
-       pole: 막대 (좌표는 막대 아래 끝)
-       banner: 플랫폼 색 깃발 (삼각형 또는 사각) */
-    .camp-flag-wrap {
+       pin: 실제 핀 div (SVG 포함)
+       svg fill + stroke는 인라인으로 플랫폼별 지정 */
+    .camp-pin-wrap {
       width: 0; height: 0;
       overflow: visible !important;
     }
-    .camp-flag {
+    .camp-pin {
       position: absolute;
-      /* 좌표가 막대 아래 끝에 오도록: 좌측 절반 + 위 100% 이동 */
-      transform: translate(-1.5px, -100%);
+      /* SVG 24x32: 좌표가 핀 아래 끝(32)에 오도록 */
+      transform: translate(-12px, -32px);
       cursor: pointer;
       transition: transform 0.15s ease;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
     }
-    .camp-flag:hover {
-      transform: translate(-1.5px, -100%) scale(1.2);
+    .camp-pin:hover {
+      transform: translate(-12px, -32px) scale(1.2);
       z-index: 1000;
     }
-    /* 막대 (회색, 얇음) */
-    .camp-flag-pole {
-      width: 2px;
-      height: 22px;
-      background: #555;
-      border-radius: 1px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    .camp-pin svg {
+      width: 24px;
+      height: 32px;
+      display: block;
     }
-    /* 깃발 (막대 상단 우측에 부착) */
-    .camp-flag-banner {
+    /* 큰 핀 (줌인 시) */
+    .camp-pin.is-large {
+      transform: translate(-16px, -42px);
+      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.35));
+    }
+    .camp-pin.is-large:hover {
+      transform: translate(-16px, -42px) scale(1.2);
+    }
+    .camp-pin.is-large svg {
+      width: 32px;
+      height: 42px;
+    }
+    /* EP 연결: 핀 우상단에 🎬 배지 */
+    .camp-pin-ep-badge {
       position: absolute;
-      top: 0;
-      left: 2px;
-      width: 16px;
-      height: 11px;
-      background: #5E6C4F;  /* 인라인 style로 override */
-      border: 1.5px solid #3a4530;  /* border-color는 인라인 style로 override */
-      border-left: none;
-      /* 삼각형 깃발 모양: 우측에 V자 노치 */
-      clip-path: polygon(0% 0%, 100% 0%, 75% 50%, 100% 100%, 0% 100%);
-      box-shadow: 1px 1px 2px rgba(0,0,0,0.25);
-    }
-    /* 큰 깃발 (줌인 시) */
-    .camp-flag.is-large .camp-flag-pole {
-      height: 30px;
-      width: 2.5px;
-    }
-    .camp-flag.is-large .camp-flag-banner {
-      width: 22px;
-      height: 15px;
-      left: 2.5px;
-      border-width: 2px;
-    }
-    /* EP 연결: 깃발 위에 🎬 배지 */
-    .camp-flag-ep-badge {
-      position: absolute;
-      top: -8px;
-      left: 14px;
+      top: -4px;
+      right: -6px;
       width: 14px;
       height: 14px;
       background: #fff;
@@ -676,13 +661,14 @@
       font-size: 7px;
       box-shadow: 0 1px 2px rgba(0,0,0,0.2);
       line-height: 1;
+      filter: none;
     }
-    .camp-flag.is-large .camp-flag-ep-badge {
-      top: -10px;
-      left: 20px;
-      width: 16px;
-      height: 16px;
-      font-size: 8px;
+    .camp-pin.is-large .camp-pin-ep-badge {
+      top: -6px;
+      right: -8px;
+      width: 18px;
+      height: 18px;
+      font-size: 9px;
     }
     /* 클러스터 마커 (markercluster 기본 스타일 override) */
     .marker-cluster-small,
@@ -1685,9 +1671,9 @@ function _renderCampMap(camps) {
         disableClusteringAtZoom: 12,  // 12 이상 줌인하면 개별 마커
       })
     : null;
-  // 줌 레벨 기반 마커 크기 결정 (모바일에선 글자 안 보여서 크기만 변경)
-  // - level 0: 작은 깃발 (줌아웃)
-  // - level 1: 큰 깃발 (줌인)
+  // 줌 레벨 기반 마커 크기 결정
+  // - level 0: 작은 핀 (줌아웃)
+  // - level 1: 큰 핀 (줌인)
   function _markerSizeForZoom(z) {
     return z >= 11 ? 1 : 0;
   }
@@ -1696,22 +1682,27 @@ function _renderCampMap(camps) {
     const isGraega = !!c.graega;
     const hasEp = epCampIds.has(c.id);
     const platform = _getPlatform(c);
-    // 깃발 마커
+    // 미니멀 핀 마커 (SVG 물방울 모양 + 안에 흰 점)
     const sizeLevel = _markerSizeForZoom(map.getZoom());
     const markerHtml = `
-      <div class="camp-flag ${hasEp ? 'has-ep' : ''} ${sizeLevel === 1 ? 'is-large' : ''}"
+      <div class="camp-pin ${hasEp ? 'has-ep' : ''} ${sizeLevel === 1 ? 'is-large' : ''}"
            data-name="${_mapEscHtml(c.name)}">
-        <div class="camp-flag-pole"></div>
-        <div class="camp-flag-banner" style="background:${platform.color};border-color:${platform.borderColor};"></div>
-        ${hasEp ? '<span class="camp-flag-ep-badge">🎬</span>' : ''}
+        <svg viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 0 C5.4 0 0 5.4 0 12 C0 19.5 7.5 26 12 32 C16.5 26 24 19.5 24 12 C24 5.4 18.6 0 12 0 Z"
+                fill="${platform.color}"
+                stroke="${platform.borderColor}"
+                stroke-width="1"/>
+          <circle cx="12" cy="12" r="4" fill="#fff"/>
+        </svg>
+        ${hasEp ? '<span class="camp-pin-ep-badge">🎬</span>' : ''}
       </div>
     `;
     const icon = L.divIcon({
       html: markerHtml,
-      className: 'camp-flag-wrap',
+      className: 'camp-pin-wrap',
       iconSize: null,
       iconAnchor: [0, 0],
-      popupAnchor: [0, -24],
+      popupAnchor: [0, -28],
     });
     const marker = L.marker([c.lat, c.lng], { icon, zIndexOffset: hasEp ? 1000 : 0 });
     if (cluster) cluster.addLayer(marker);
@@ -1820,25 +1811,30 @@ function _renderCampMap(camps) {
   // 클러스터 활성화 시 한 번에 map에 추가
   if (cluster) map.addLayer(cluster);
 
-  // 줌 변경 시 모든 마커 크기 갱신 (작은 깃발/큰 깃발)
+  // 줌 변경 시 모든 마커 크기 갱신 (작은 핀/큰 핀)
   function _updateAllMarkerLabels() {
     const z = map.getZoom();
     const sizeLevel = _markerSizeForZoom(z);
     for (const { marker, c, platform, hasEp } of markerData) {
       const newHtml = `
-        <div class="camp-flag ${hasEp ? 'has-ep' : ''} ${sizeLevel === 1 ? 'is-large' : ''}"
+        <div class="camp-pin ${hasEp ? 'has-ep' : ''} ${sizeLevel === 1 ? 'is-large' : ''}"
              data-name="${_mapEscHtml(c.name)}">
-          <div class="camp-flag-pole"></div>
-          <div class="camp-flag-banner" style="background:${platform.color};border-color:${platform.borderColor};"></div>
-          ${hasEp ? '<span class="camp-flag-ep-badge">🎬</span>' : ''}
+          <svg viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0 C5.4 0 0 5.4 0 12 C0 19.5 7.5 26 12 32 C16.5 26 24 19.5 24 12 C24 5.4 18.6 0 12 0 Z"
+                  fill="${platform.color}"
+                  stroke="${platform.borderColor}"
+                  stroke-width="1"/>
+            <circle cx="12" cy="12" r="4" fill="#fff"/>
+          </svg>
+          ${hasEp ? '<span class="camp-pin-ep-badge">🎬</span>' : ''}
         </div>
       `;
       const newIcon = L.divIcon({
         html: newHtml,
-        className: 'camp-flag-wrap',
+        className: 'camp-pin-wrap',
         iconSize: null,
         iconAnchor: [0, 0],
-        popupAnchor: [0, -24],
+        popupAnchor: [0, -28],
       });
       marker.setIcon(newIcon);
     }
