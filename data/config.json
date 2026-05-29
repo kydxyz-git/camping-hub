@@ -26,5 +26,6 @@
   "headerBadgeNaverIcon": "./images/refs/clipcreators-icon.png",
   "headerBadgeNaverUrl": "https://naver.me/5ajsIHzm",
   "foodsSort": "random",
-  "itemsSort": "random"
+  "itemsSort": "random",
+  "tab5": "🗺 지도"
 }

@@ -513,6 +513,117 @@
       }
     }
   </style>
+
+  <!-- Leaflet 지도 CSS (JS는 #map 탭 진입 시 lazy load) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <style>
+    /* 지도 탭 */
+    #t5 { padding: 0; }
+    .map-intro {
+      padding: 14px 16px 10px;
+      background: linear-gradient(135deg, #f8fbf6 0%, #f3f8f0 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    .map-intro-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .map-intro-sub {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+    #camp-map {
+      width: 100%;
+      height: calc(100vh - 220px);
+      min-height: 400px;
+      background: #e8eef3;
+    }
+    @media (max-width: 760px) {
+      #camp-map { height: calc(100vh - 200px); min-height: 350px; }
+    }
+    /* 마커 팝업 */
+    .camp-popup {
+      min-width: 180px;
+      max-width: 220px;
+    }
+    .camp-popup-img {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      background: #f0f0f0;
+    }
+    .camp-popup-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .camp-popup-meta {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+    }
+    .camp-popup-link {
+      display: inline-block;
+      padding: 6px 12px;
+      background: var(--point);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    /* 커스텀 마커 (그래가/일반 색상 구분) */
+    .camp-marker {
+      width: 28px; height: 28px;
+      border-radius: 50% 50% 50% 0;
+      background: #5E6C4F;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transform: rotate(-45deg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .camp-marker.is-graega { background: #4a7c4e; }
+    .camp-marker-inner {
+      color: #fff;
+      font-weight: 800;
+      font-size: 11px;
+      transform: rotate(45deg);
+      line-height: 1;
+    }
+    /* 좌표 미등록 섹션 */
+    .map-nocoord-section {
+      padding: 16px;
+      background: var(--bg-soft);
+      border-top: 1px solid var(--line);
+    }
+    .map-nocoord-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-sub);
+      margin: 0 0 10px;
+    }
+    .map-nocoord-list {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .map-nocoord-item {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--text-sub);
+      text-decoration: none;
+    }
+    .map-nocoord-item:hover { background: var(--accent-soft); color: var(--text); }
+  </style>
 </head>
 <body>
 
@@ -564,6 +675,7 @@ async function loadData() {
     <button class="tab-btn" data-tab="t2" id="tab-btn-2"></button>
     <button class="tab-btn" data-tab="t3" id="tab-btn-3"></button>
     <button class="tab-btn" data-tab="t4" id="tab-btn-4"></button>
+    <button class="tab-btn" data-tab="t5" id="tab-btn-5"></button>
   </nav>
 
   <!-- 탭 1: 캠핑이야기 -->
@@ -617,6 +729,19 @@ async function loadData() {
       <div class="product-grid" id="item-grid"></div>
     </section>
     <div class="price-notice" id="price-notice-item"></div>
+  </div>
+
+  <!-- 탭 5: 캠핑장 지도 -->
+  <div id="t5" class="tab-content">
+    <div class="map-intro">
+      <div class="map-intro-text" id="map-intro-text">📍 다녀온 캠핑장을 지도로 확인하세요</div>
+      <div class="map-intro-sub" id="map-intro-sub"></div>
+    </div>
+    <div id="camp-map"></div>
+    <div class="map-nocoord-section" id="map-nocoord-section" style="display:none;">
+      <h3 class="map-nocoord-title">📍❌ 좌표 미등록 캠핑장</h3>
+      <div class="map-nocoord-list" id="map-nocoord-list"></div>
+    </div>
   </div>
 
   <!-- 푸터 -->
@@ -717,6 +842,7 @@ function renderConfig() {
   document.getElementById('tab-btn-2').textContent  = siteConfig.tab2;
   document.getElementById('tab-btn-3').textContent  = siteConfig.tab3;
   document.getElementById('tab-btn-4').textContent  = siteConfig.tab4;
+  document.getElementById('tab-btn-5').textContent  = siteConfig.tab5 || '🗺 지도';
   // 추천 음식 탭(t3): 쿠팡 + 컬리 통합 문구
   document.getElementById('partners-line1').textContent  = siteConfig.foodPartnersLine1 || siteConfig.partnersLine1;
   document.getElementById('partners-line2').textContent  = siteConfig.foodPartnersLine2 || siteConfig.partnersLine2;
@@ -1237,8 +1363,8 @@ function applyMarquee() {
 })();
 
 /* ─── 탭 전환 + 해시 라우팅 ─── */
-const TAB_HASH_MAP = { 't1': 'stories', 't2': 'camps', 't3': 'foods', 't4': 'items' };
-const HASH_TAB_MAP = { 'stories': 't1', 'camps': 't2', 'foods': 't3', 'items': 't4' };
+const TAB_HASH_MAP = { 't1': 'stories', 't2': 'camps', 't3': 'foods', 't4': 'items', 't5': 'map' };
+const HASH_TAB_MAP = { 'stories': 't1', 'camps': 't2', 'foods': 't3', 'items': 't4', 'map': 't5' };
 
 function activateTab(tabId, updateHash) {
   const btn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
@@ -1253,6 +1379,10 @@ function activateTab(tabId, updateHash) {
     requestAnimationFrame(() => requestAnimationFrame(applyMarquee));
     setTimeout(applyMarquee, 300);
   }
+  // 지도 탭(t5) 진입 시 lazy init
+  if (tabId === 't5' && typeof initCampMap === 'function') {
+    initCampMap();
+  }
   if (updateHash) {
     const newHash = TAB_HASH_MAP[tabId];
     if (newHash && window.location.hash !== '#' + newHash) {
@@ -1264,6 +1394,141 @@ function activateTab(tabId, updateHash) {
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => activateTab(btn.dataset.tab, true));
 });
+
+// ════════════════════════════════════════════════════════════════════
+// 캠핑장 지도 (Leaflet + OpenStreetMap)
+// 첫 진입 시 Leaflet JS lazy load → 마커 표시 → 한 번만 init
+// ════════════════════════════════════════════════════════════════════
+let _mapInitState = 'idle';  // 'idle' | 'loading' | 'ready'
+let _mapInstance = null;
+
+function initCampMap() {
+  if (_mapInitState !== 'idle') return;  // 한 번만 init
+  _mapInitState = 'loading';
+
+  // 데이터 분류
+  const allCamps = (typeof camps !== 'undefined' && Array.isArray(camps) ? camps : []).filter(c => c.published !== false);
+  const withCoord = allCamps.filter(c => typeof c.lat === 'number' && typeof c.lng === 'number');
+  const noCoord = allCamps.filter(c => !(typeof c.lat === 'number' && typeof c.lng === 'number'));
+
+  // 인트로 텍스트 업데이트
+  const sub = document.getElementById('map-intro-sub');
+  if (sub) {
+    sub.textContent = `${withCoord.length}곳 표시 중${noCoord.length > 0 ? ` · ${noCoord.length}곳은 좌표 미등록` : ''}`;
+  }
+
+  // 좌표 없는 캠핑장 리스트 렌더
+  if (noCoord.length > 0) {
+    const sec = document.getElementById('map-nocoord-section');
+    const list = document.getElementById('map-nocoord-list');
+    sec.style.display = '';
+    list.innerHTML = noCoord.map(c => {
+      const attrs = c.url
+        ? `href="${escapeHtml(c.url)}" target="_blank" rel="noopener"`
+        : `href="#camps"`;
+      return `<a class="map-nocoord-item" ${attrs}>${escapeHtml(c.name)}</a>`;
+    }).join('');
+  }
+
+  // 좌표 있는 캠핑장이 0개면 빈 지도 + 안내
+  if (withCoord.length === 0) {
+    document.getElementById('camp-map').innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-sub);font-size:13px;text-align:center;padding:20px;">' +
+      '아직 좌표가 등록된 캠핑장이 없어요<br><span style="font-size:11px;opacity:0.7;">관리자 페이지에서 좌표를 추가하세요</span></div>';
+    _mapInitState = 'ready';
+    return;
+  }
+
+  // Leaflet JS lazy load
+  const script = document.createElement('script');
+  script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+  script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+  script.crossOrigin = '';
+  script.onload = () => _renderCampMap(withCoord);
+  script.onerror = () => {
+    document.getElementById('camp-map').innerHTML =
+      '<div style="padding:20px;color:#c94a4a;">지도 라이브러리 로드 실패. 새로고침해주세요.</div>';
+    _mapInitState = 'idle';
+  };
+  document.head.appendChild(script);
+}
+
+function _renderCampMap(camps) {
+  // 한국 중심 좌표
+  const initialCenter = [36.5, 127.8];
+  const map = L.map('camp-map', {
+    center: initialCenter,
+    zoom: 7,
+    minZoom: 6,
+    maxZoom: 17,
+    zoomControl: true,
+    attributionControl: true,
+  });
+  _mapInstance = map;
+
+  // OSM 타일
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19,
+  }).addTo(map);
+
+  // 마커 그룹
+  const bounds = [];
+  for (const c of camps) {
+    const visits = c.visits || 0;
+    const isGraega = !!c.graega;
+    const markerHtml = `
+      <div class="camp-marker ${isGraega ? 'is-graega' : ''}">
+        <span class="camp-marker-inner">${visits > 0 ? visits : ''}</span>
+      </div>
+    `;
+    const icon = L.divIcon({
+      html: markerHtml,
+      className: '',  // 기본 leaflet 클래스 제거
+      iconSize: [28, 28],
+      iconAnchor: [14, 28],
+      popupAnchor: [0, -24],
+    });
+    const marker = L.marker([c.lat, c.lng], { icon }).addTo(map);
+
+    // 팝업 콘텐츠
+    const img = c.imgs && c.imgs[0]
+      ? `<img class="camp-popup-img" src="${c.imgs[0]}" alt="" loading="lazy">`
+      : '';
+    const metaParts = [];
+    if (c.region) metaParts.push(c.region);
+    if (visits > 0) metaParts.push(`${visits}회 방문`);
+    if (isGraega) metaParts.push('그래가');
+    const meta = metaParts.join(' · ');
+    // 링크: 예약 URL이 있으면 그쪽으로, 없으면 다녀온 캠핑장 탭으로
+    const linkAttrs = c.url
+      ? `href="${escapeHtml(c.url)}" target="_blank" rel="noopener" data-track-path="/camps/${escapeHtml(c.id || '')}" data-track-title="${escapeHtml(c.name)}"`
+      : `href="#camps"`;
+    const linkText = c.url ? '예약하러 가기 →' : '캠핑장 목록 보기 →';
+    const popupHtml = `
+      <div class="camp-popup">
+        ${img}
+        <div class="camp-popup-title">${escapeHtml(c.name)}</div>
+        ${meta ? `<div class="camp-popup-meta">${escapeHtml(meta)}</div>` : ''}
+        <a class="camp-popup-link" ${linkAttrs}>${linkText}</a>
+      </div>
+    `;
+    marker.bindPopup(popupHtml, { maxWidth: 240, autoPan: true });
+    bounds.push([c.lat, c.lng]);
+  }
+
+  // 모든 마커가 보이도록 줌 자동 조정
+  if (bounds.length === 1) {
+    map.setView(bounds[0], 11);
+  } else if (bounds.length > 1) {
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 11 });
+  }
+
+  // 지도 리사이즈 대응 (탭 전환 시 가끔 깨짐)
+  setTimeout(() => map.invalidateSize(), 100);
+
+  _mapInitState = 'ready';
+}
 
 // 페이지 로드 시 URL 해시에 따라 초기 탭 결정
 function applyHashTab() {
