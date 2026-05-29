@@ -1498,7 +1498,13 @@ function initCampMap() {
   _mapInitState = 'loading';
 
   // 데이터 분류
-  const allCamps = (typeof camps !== 'undefined' && Array.isArray(camps) ? camps : []).filter(c => c.published !== false);
+  // 데이터가 아직 로드 안 됐으면 대기 후 재시도 (페이지 첫 진입 시 race condition)
+  if (typeof camps === 'undefined' || !Array.isArray(camps)) {
+    _mapInitState = 'idle';  // 복구해서 다음 시도 가능하게
+    setTimeout(() => initCampMap(), 300);
+    return;
+  }
+  const allCamps = camps.filter(c => c.published !== false);
   const withCoord = allCamps.filter(c => typeof c.lat === 'number' && typeof c.lng === 'number');
   const noCoord = allCamps.filter(c => !(typeof c.lat === 'number' && typeof c.lng === 'number'));
 
