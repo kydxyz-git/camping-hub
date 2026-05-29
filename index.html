@@ -1401,6 +1401,17 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 let _mapInitState = 'idle';  // 'idle' | 'loading' | 'ready'
 let _mapInstance = null;
 
+// HTML escape (메인 사이트에 공용 헬퍼 없어서 인라인 정의)
+function _mapEscHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function initCampMap() {
   if (_mapInitState !== 'idle') return;  // 한 번만 init
   _mapInitState = 'loading';
@@ -1423,9 +1434,9 @@ function initCampMap() {
     sec.style.display = '';
     list.innerHTML = noCoord.map(c => {
       const attrs = c.url
-        ? `href="${escapeHtml(c.url)}" target="_blank" rel="noopener"`
+        ? `href="${_mapEscHtml(c.url)}" target="_blank" rel="noopener"`
         : `href="#camps"`;
-      return `<a class="map-nocoord-item" ${attrs}>${escapeHtml(c.name)}</a>`;
+      return `<a class="map-nocoord-item" ${attrs}>${_mapEscHtml(c.name)}</a>`;
     }).join('');
   }
 
@@ -1507,14 +1518,14 @@ function _renderCampMap(camps) {
     const meta = metaParts.join(' · ');
     // 링크: 예약 URL이 있으면 그쪽으로, 없으면 다녀온 캠핑장 탭으로
     const linkAttrs = c.url
-      ? `href="${escapeHtml(c.url)}" target="_blank" rel="noopener" data-track-path="/camps/${escapeHtml(c.id || '')}" data-track-title="${escapeHtml(c.name)}"`
+      ? `href="${_mapEscHtml(c.url)}" target="_blank" rel="noopener" data-track-path="/camps/${_mapEscHtml(c.id || '')}" data-track-title="${_mapEscHtml(c.name)}"`
       : `href="#camps"`;
     const linkText = c.url ? '예약하러 가기 →' : '캠핑장 목록 보기 →';
     const popupHtml = `
       <div class="camp-popup">
         ${img}
-        <div class="camp-popup-title">${escapeHtml(c.name)}</div>
-        ${meta ? `<div class="camp-popup-meta">${escapeHtml(meta)}</div>` : ''}
+        <div class="camp-popup-title">${_mapEscHtml(c.name)}</div>
+        ${meta ? `<div class="camp-popup-meta">${_mapEscHtml(meta)}</div>` : ''}
         <a class="camp-popup-link" ${linkAttrs}>${linkText}</a>
       </div>
     `;
