@@ -1583,15 +1583,15 @@ function _openVideoChooser(listId) {
   overlay.onclick = (e) => { if (e.target === overlay) _closeVideoChooser(); };
   const itemsHtml = data.videos.map((v, i) => `
     <a class="video-chooser-item" href="${_mapEscHtml(v.url)}" target="_blank" rel="noopener">
-      <span class="video-chooser-item-icon">🎬</span>
-      <span class="video-chooser-item-label">${_mapEscHtml(v.label || ('영상 ' + (i+1)))}</span>
+      <span class="video-chooser-item-icon">📱</span>
+      <span class="video-chooser-item-label">${_mapEscHtml(v.label || ('콘텐츠 ' + (i+1)))}</span>
       <span class="video-chooser-item-arrow">→</span>
     </a>
   `).join('');
   overlay.innerHTML = `
     <div class="video-chooser-box">
       <div class="video-chooser-header">
-        <span class="video-chooser-title">🎬 ${_mapEscHtml(data.name)} 영상 ${data.videos.length}개</span>
+        <span class="video-chooser-title">📱 ${_mapEscHtml(data.name)} 콘텐츠 ${data.videos.length}개</span>
         <button class="video-chooser-close" onclick="_closeVideoChooser()">✕</button>
       </div>
       <div class="video-chooser-list">${itemsHtml}</div>
@@ -1810,7 +1810,7 @@ function _renderCampMap(camps) {
     }
     // 개별 영상
     for (let vi = 0; vi < (c.videos || []).length; vi++) {
-      videoList.push({ url: c.videos[vi], label: `영상 ${videoList.length + 1}` });
+      videoList.push({ url: c.videos[vi], label: `콘텐츠 ${videoList.length + 1}` });
     }
 
     // 버튼 영역: 영상 있으면 [영상보기 | 예약하기] 분할, 없으면 예약만
@@ -1822,7 +1822,7 @@ function _renderCampMap(camps) {
       // 영상 1개: 바로 그 영상으로
       btnsHtml = `
         <div class="camp-popup-btns">
-          <a class="camp-popup-link camp-popup-link-half btn-instagram" href="${_mapEscHtml(videoList[0].url)}" target="_blank" rel="noopener">🎬 영상보기</a>
+          <a class="camp-popup-link camp-popup-link-half btn-instagram" href="${_mapEscHtml(videoList[0].url)}" target="_blank" rel="noopener">📱 콘텐츠 보기</a>
           <a class="camp-popup-link camp-popup-link-half" style="background:${platform.color};" ${bookAttrs}>${platform.btnLabel.replace(' →', '')}</a>
         </div>
       `;
@@ -1833,7 +1833,7 @@ function _renderCampMap(camps) {
       window._campVideoLists[videoListId] = { name: c.name, videos: videoList };
       btnsHtml = `
         <div class="camp-popup-btns">
-          <a class="camp-popup-link camp-popup-link-half btn-instagram" href="#" onclick="event.preventDefault(); _openVideoChooser('${videoListId}');">🎬 영상 ${videoList.length}개</a>
+          <a class="camp-popup-link camp-popup-link-half btn-instagram" href="#" onclick="event.preventDefault(); _openVideoChooser('${videoListId}');">📱 콘텐츠 ${videoList.length}개</a>
           <a class="camp-popup-link camp-popup-link-half" style="background:${platform.color};" ${bookAttrs}>${platform.btnLabel.replace(' →', '')}</a>
         </div>
       `;
