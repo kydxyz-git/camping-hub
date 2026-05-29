@@ -711,32 +711,6 @@
     .camp-popup-link.btn-instagram {
       background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     }
-    /* 좌표 미등록 섹션 */
-    .map-nocoord-section {
-      padding: 16px;
-      background: var(--bg-soft);
-      border-top: 1px solid var(--line);
-    }
-    .map-nocoord-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-sub);
-      margin: 0 0 10px;
-    }
-    .map-nocoord-list {
-      display: flex; flex-wrap: wrap; gap: 6px;
-    }
-    .map-nocoord-item {
-      display: inline-block;
-      padding: 4px 10px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 4px;
-      font-size: 12px;
-      color: var(--text-sub);
-      text-decoration: none;
-    }
-    .map-nocoord-item:hover { background: var(--accent-soft); color: var(--text); }
   </style>
 </head>
 <body>
@@ -850,10 +824,6 @@ async function loadData() {
   <!-- 탭 5: 캠핑장 지도 -->
   <div id="t5" class="tab-content">
     <div id="camp-map"></div>
-    <div class="map-nocoord-section" id="map-nocoord-section" style="display:none;">
-      <h3 class="map-nocoord-title">📍❌ 좌표 미등록 캠핑장</h3>
-      <div class="map-nocoord-list" id="map-nocoord-list"></div>
-    </div>
   </div>
 
   <!-- 푸터 -->
@@ -1539,20 +1509,6 @@ function initCampMap() {
   }
   const allCamps = camps.filter(c => c.published !== false);
   const withCoord = allCamps.filter(c => typeof c.lat === 'number' && typeof c.lng === 'number');
-  const noCoord = allCamps.filter(c => !(typeof c.lat === 'number' && typeof c.lng === 'number'));
-
-  // 좌표 없는 캠핑장 리스트 렌더
-  if (noCoord.length > 0) {
-    const sec = document.getElementById('map-nocoord-section');
-    const list = document.getElementById('map-nocoord-list');
-    sec.style.display = '';
-    list.innerHTML = noCoord.map(c => {
-      const attrs = c.url
-        ? `href="${_mapEscHtml(c.url)}" target="_blank" rel="noopener"`
-        : `href="#camps"`;
-      return `<a class="map-nocoord-item" ${attrs}>${_mapEscHtml(c.name)}</a>`;
-    }).join('');
-  }
 
   // 좌표 있는 캠핑장이 0개면 빈 지도 + 안내
   if (withCoord.length === 0) {
