@@ -548,14 +548,40 @@
       min-width: 180px;
       max-width: 220px;
     }
-    .camp-popup-img {
+    /* 이미지 슬라이드쇼 */
+    .camp-popup-slides {
+      position: relative;
       width: 100%;
       aspect-ratio: 4/5;
-      object-fit: cover;
       border-radius: 6px;
       margin-bottom: 8px;
       background: #f0f0f0;
+      overflow: hidden;
     }
+    .camp-popup-slide {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .camp-popup-slide.is-active { opacity: 1; }
+    .camp-popup-dots {
+      position: absolute;
+      bottom: 6px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 4px;
+      padding: 3px 6px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 10px;
+    }
+    .camp-popup-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      transition: background 0.2s;
+    }
+    .camp-popup-dot.is-active { background: #fff; }
     .camp-popup-title {
       font-size: 13px;
       font-weight: 700;
@@ -623,6 +649,20 @@
     }
     .camp-popup-link:hover { opacity: 0.9; color: #fff !important; }
     .camp-popup-link:visited { color: #fff !important; }
+    /* 분할 버튼 (영상보기 + 예약하기) */
+    .camp-popup-btns {
+      display: flex;
+      gap: 4px;
+    }
+    .camp-popup-link-half {
+      flex: 1;
+      padding: 10px 8px;
+      font-size: 12px;
+    }
+    /* 인스타그램 영상보기 버튼 (인스타 공식 그라데이션) */
+    .camp-popup-link.btn-instagram {
+      background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    }
     /* 좌표 미등록 섹션 */
     .map-nocoord-section {
       padding: 16px;
@@ -1568,9 +1608,24 @@ function _renderCampMap(camps) {
     const marker = L.marker([c.lat, c.lng], { icon, zIndexOffset: hasEp ? 1000 : 0 }).addTo(map);
 
     // 팝업 콘텐츠
-    const img = c.imgs && c.imgs[0]
-      ? `<img class="camp-popup-img" src="${c.imgs[0]}" alt="" loading="lazy">`
-      : '';
+    // 이미지: 여러 장이면 슬라이드쇼 (3초 간격 자동 회전)
+    const imgs = c.imgs || [];
+    let imgHtml = '';
+    if (imgs.length > 0) {
+      const slidesId = 'cps_' + (c.id || Math.random().toString(36).slice(2, 8));
+      const slidesHtml = imgs.map((src, i) => `
+        <img class="camp-popup-slide ${i === 0 ? 'is-active' : ''}" data-i="${i}" src="${src}" alt="" loading="lazy">
+      `).join('');
+      const dotsHtml = imgs.length > 1
+        ? `<div class="camp-popup-dots">${imgs.map((_, i) => `<span class="camp-popup-dot ${i === 0 ? 'is-active' : ''}" data-i="${i}"></span>`).join('')}</div>`
+        : '';
+      imgHtml = `
+        <div class="camp-popup-slides" data-slides-id="${slidesId}" data-count="${imgs.length}">
+          ${slidesHtml}
+          ${dotsHtml}
+        </div>
+      `;
+    }
     const visits = c.visits || 0;
     const metaParts = [];
     if (c.region) metaParts.push(c.region);
@@ -1578,19 +1633,77 @@ function _renderCampMap(camps) {
     if (isGraega) metaParts.push('그래가');
     if (hasEp) metaParts.push('🎬 영상 있음');
     const meta = metaParts.join(' · ');
-    // 예약 버튼: _getPlatform 헬퍼로 마커와 동일 색상 사용
-    const linkAttrs = c.url
+
+    // EP 영상 URL 찾기 (이 캠핑장과 연결된 EP 중 첫 번째)
+    let epUrl = null;
+    if (hasEp) {
+      for (const s of seriesArr) {
+        if (s.published === false) continue;
+        for (const ep of (s.eps || [])) {
+          if (ep.published === false) continue;
+          if (ep.camp_id === c.id && ep.url) { epUrl = ep.url; break; }
+        }
+        if (epUrl) break;
+      }
+    }
+
+    // 버튼 영역: EP URL 있으면 [영상보기 | 예약하기] 분할, 없으면 예약만
+    const bookAttrs = c.url
       ? `href="${_mapEscHtml(c.url)}" target="_blank" rel="noopener" data-track-path="/camps/${_mapEscHtml(c.id || '')}" data-track-title="${_mapEscHtml(c.name)}"`
       : `href="#camps"`;
+    let btnsHtml;
+    if (epUrl) {
+      // 두 버튼: 영상보기 (인스타 그라데이션) | 예약하기 (플랫폼 색)
+      btnsHtml = `
+        <div class="camp-popup-btns">
+          <a class="camp-popup-link camp-popup-link-half btn-instagram" href="${_mapEscHtml(epUrl)}" target="_blank" rel="noopener">🎬 영상보기</a>
+          <a class="camp-popup-link camp-popup-link-half" style="background:${platform.color};" ${bookAttrs}>${platform.btnLabel.replace(' →', '')}</a>
+        </div>
+      `;
+    } else {
+      btnsHtml = `<a class="camp-popup-link" style="background:${platform.color};" ${bookAttrs}>${platform.btnLabel}</a>`;
+    }
+
     const popupHtml = `
       <div class="camp-popup">
-        ${img}
+        ${imgHtml}
         <div class="camp-popup-title">${_mapEscHtml(c.name)}${hasEp ? ' <span style="font-size:11px;color:#d97a3f;">🎬</span>' : ''}</div>
         ${meta ? `<div class="camp-popup-meta">${_mapEscHtml(meta)}</div>` : ''}
-        <a class="camp-popup-link" style="background:${platform.color};" ${linkAttrs}>${platform.btnLabel}</a>
+        ${btnsHtml}
       </div>
     `;
     marker.bindPopup(popupHtml, { maxWidth: 240, autoPan: true });
+    // 팝업 열릴 때 슬라이드쇼 시작 (3초 간격)
+    if (imgs.length > 1) {
+      marker.on('popupopen', (e) => {
+        const popupEl = e.popup.getElement();
+        if (!popupEl) return;
+        const slidesContainer = popupEl.querySelector('.camp-popup-slides');
+        if (!slidesContainer) return;
+        const slides = popupEl.querySelectorAll('.camp-popup-slide');
+        const dots = popupEl.querySelectorAll('.camp-popup-dot');
+        const count = slides.length;
+        let current = 0;
+        // 기존 interval 정리
+        if (slidesContainer._slideInterval) clearInterval(slidesContainer._slideInterval);
+        slidesContainer._slideInterval = setInterval(() => {
+          slides[current].classList.remove('is-active');
+          if (dots[current]) dots[current].classList.remove('is-active');
+          current = (current + 1) % count;
+          slides[current].classList.add('is-active');
+          if (dots[current]) dots[current].classList.add('is-active');
+        }, 3000);
+      });
+      marker.on('popupclose', (e) => {
+        const popupEl = e.popup.getElement();
+        if (!popupEl) return;
+        const slidesContainer = popupEl.querySelector('.camp-popup-slides');
+        if (slidesContainer && slidesContainer._slideInterval) {
+          clearInterval(slidesContainer._slideInterval);
+          slidesContainer._slideInterval = null;
+        }
+      });
+    }
     bounds.push([c.lat, c.lng]);
   }
 
