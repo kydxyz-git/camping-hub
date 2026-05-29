@@ -516,6 +516,8 @@
 
   <!-- Leaflet 지도 CSS (JS는 #map 탭 진입 시 lazy load) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" crossorigin="">
   <style>
     /* 지도 탭 */
     #t5 { padding: 0; }
@@ -604,34 +606,46 @@
       font-size: 12px;
       font-weight: 600;
     }
-    /* 커스텀 핀 마커 (배경색은 인라인 style로 플랫폼별 지정) */
+    /* 원형 닷 마커 (background + border-color는 인라인 style로 플랫폼별 지정) */
     .camp-marker {
-      width: 28px; height: 28px;
-      border-radius: 50% 50% 50% 0;
-      border: 2px solid #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      transform: rotate(-45deg);
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 2px solid #5E6C4F;  /* border-color는 인라인 style로 override됨 */
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
       position: relative;
       transition: transform 0.15s ease;
     }
-    .camp-marker:hover { transform: rotate(-45deg) scale(1.15); z-index: 1000; }
-    /* EP 연결된 캠핑장 (영상 있음) - 더 큰 핀 + 주황 테두리 + 🎬 배지 */
+    .camp-marker:hover { transform: scale(1.4); z-index: 1000; }
+    /* EP 연결된 캠핑장 (영상 있음) - 살짝 크게 + 🎬 배지 */
     .camp-marker.has-ep {
-      width: 36px; height: 36px;
-      border: 3px solid #d97a3f;
-      box-shadow: 0 3px 10px rgba(217,122,63,0.5);
+      width: 22px; height: 22px;
+      border-width: 2.5px;
     }
     .camp-marker-ep-badge {
       position: absolute;
-      top: -10px; right: -10px;
-      width: 22px; height: 22px;
+      top: -8px; right: -8px;
+      width: 16px; height: 16px;
       background: #fff;
-      border: 2px solid #d97a3f;
+      border: 1.5px solid #d97a3f;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 11px;
-      transform: rotate(45deg);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      font-size: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      line-height: 1;
+    }
+    /* 클러스터 마커 (markercluster 기본 스타일 override) */
+    .marker-cluster-small,
+    .marker-cluster-medium,
+    .marker-cluster-large {
+      background: rgba(94,108,79,0.5);
+    }
+    .marker-cluster-small div,
+    .marker-cluster-medium div,
+    .marker-cluster-large div {
+      background: #5E6C4F;
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
     }
     /* 예약 버튼 (배경색은 인라인 style로 플랫폼별 지정, 글자는 흰색 통일) */
     .camp-popup-link {
@@ -1516,17 +1530,32 @@ function initCampMap() {
     return;
   }
 
-  // Leaflet JS lazy load
-  const script = document.createElement('script');
-  script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-  script.crossOrigin = '';
-  script.onload = () => _renderCampMap(withCoord);
-  script.onerror = () => {
-    document.getElementById('camp-map').innerHTML =
-      '<div style="padding:20px;color:#c94a4a;">지도 라이브러리 로드 실패. 새로고침해주세요.</div>';
-    _mapInitState = 'idle';
-  };
-  document.head.appendChild(script);
+  // Leaflet JS lazy load + markercluster 플러그인
+  function _loadLeafletScripts(onReady) {
+    const leafletScript = document.createElement('script');
+    leafletScript.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    leafletScript.crossOrigin = '';
+    leafletScript.onload = () => {
+      // markercluster 플러그인 로드
+      const clusterScript = document.createElement('script');
+      clusterScript.src = 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js';
+      clusterScript.crossOrigin = '';
+      clusterScript.onload = onReady;
+      clusterScript.onerror = () => {
+        // 클러스터 로드 실패해도 일반 마커로 진행
+        console.warn('markercluster load failed, fallback to plain markers');
+        onReady();
+      };
+      document.head.appendChild(clusterScript);
+    };
+    leafletScript.onerror = () => {
+      document.getElementById('camp-map').innerHTML =
+        '<div style="padding:20px;color:#c94a4a;">지도 라이브러리 로드 실패. 새로고침해주세요.</div>';
+      _mapInitState = 'idle';
+    };
+    document.head.appendChild(leafletScript);
+  }
+  _loadLeafletScripts(() => _renderCampMap(withCoord));
 }
 
 function _renderCampMap(camps) {
@@ -1573,39 +1602,50 @@ function _renderCampMap(camps) {
   }
 
   // 플랫폼 판별 헬퍼 (마커 색상 + 버튼 색상 통일)
+  // borderColor: 마커 테두리용 어두운 톤 (대비 강화)
   function _getPlatform(c) {
-    if (c.graega) return { key: 'graega', color: '#1a1a1a', btnLabel: '예약사이트 →' };
-    if (!c.url) return { key: 'etc', color: '#5E6C4F', btnLabel: '캠핑장 목록 보기 →' };
+    if (c.graega) return { key: 'graega', color: '#1a1a1a', borderColor: '#000', btnLabel: '예약사이트 →' };
+    if (!c.url) return { key: 'etc', color: '#5E6C4F', borderColor: '#3a4530', btnLabel: '캠핑장 목록 보기 →' };
     const u = c.url.toLowerCase();
-    if (u.includes('naver.com'))      return { key: 'naver',  color: '#03C75A', btnLabel: '예약사이트 →' };
-    if (u.includes('camfit.co.kr'))   return { key: 'camfit', color: '#2D8F4C', btnLabel: '예약사이트 →' };
+    if (u.includes('naver.com'))      return { key: 'naver',  color: '#03C75A', borderColor: '#017a37', btnLabel: '예약사이트 →' };
+    if (u.includes('camfit.co.kr'))   return { key: 'camfit', color: '#2D8F4C', borderColor: '#1c5f31', btnLabel: '예약사이트 →' };
     if (u.includes('thankqcamping.com') || u.includes('camperstory.com')) {
-      return { key: 'thankq', color: '#FF6B2C', btnLabel: '예약사이트 →' };
+      return { key: 'thankq', color: '#FF6B2C', borderColor: '#c44a14', btnLabel: '예약사이트 →' };
     }
-    return { key: 'etc', color: '#5E6C4F', btnLabel: '예약사이트 →' };
+    return { key: 'etc', color: '#5E6C4F', borderColor: '#3a4530', btnLabel: '예약사이트 →' };
   }
 
-  // 마커 그룹
+  // 마커 그룹 + 클러스터링
   const bounds = [];
+  const cluster = (typeof L.markerClusterGroup === 'function')
+    ? L.markerClusterGroup({
+        showCoverageOnHover: false,
+        maxClusterRadius: 50,
+        spiderfyOnMaxZoom: true,
+        disableClusteringAtZoom: 12,  // 12 이상 줌인하면 개별 마커
+      })
+    : null;
   for (const c of camps) {
     const isGraega = !!c.graega;
     const hasEp = epCampIds.has(c.id);
     const platform = _getPlatform(c);
-    // 핀 마커 (숫자 제거, 플랫폼 색상)
+    // 원형 닷 마커 (일반 18px / EP 22px)
+    const size = hasEp ? 22 : 18;
     const markerHtml = `
-      <div class="camp-marker ${hasEp ? 'has-ep' : ''}" style="background:${platform.color};">
+      <div class="camp-marker ${hasEp ? 'has-ep' : ''}" style="background:${platform.color};border-color:${platform.borderColor};">
         ${hasEp ? '<span class="camp-marker-ep-badge">🎬</span>' : ''}
       </div>
     `;
-    const size = hasEp ? 36 : 28;
     const icon = L.divIcon({
       html: markerHtml,
       className: '',
       iconSize: [size, size],
-      iconAnchor: [size/2, size],
-      popupAnchor: [0, -(size - 4)],
+      iconAnchor: [size/2, size/2],     // 닷의 중심이 좌표
+      popupAnchor: [0, -(size/2 + 2)],
     });
-    const marker = L.marker([c.lat, c.lng], { icon, zIndexOffset: hasEp ? 1000 : 0 }).addTo(map);
+    const marker = L.marker([c.lat, c.lng], { icon, zIndexOffset: hasEp ? 1000 : 0 });
+    if (cluster) cluster.addLayer(marker);
+    else marker.addTo(map);
 
     // 팝업 콘텐츠
     // 이미지: 여러 장이면 슬라이드쇼 (3초 간격 자동 회전)
@@ -1706,6 +1746,8 @@ function _renderCampMap(camps) {
     }
     bounds.push([c.lat, c.lng]);
   }
+  // 클러스터 활성화 시 한 번에 map에 추가
+  if (cluster) map.addLayer(cluster);
 
   // 모든 마커가 보이도록 줌 자동 조정
   if (bounds.length === 1) {
