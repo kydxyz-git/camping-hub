@@ -3662,9 +3662,26 @@ let _campSearch = '';
 function renderCampList() {
   document.getElementById('topbar-title').innerHTML = '🏕 캠핑장';
   const c = document.getElementById('app-content');
-  const arr = cache.camps
-    .map((x, idx) => ({ ...x, _idx: idx }))
-    .filter(x => matchSearch(x, _campSearch, ['name', 'region', 'extras', 'landscape', 'seasons']));
+  // 좌표 등록 현황
+  const total = cache.camps.length;
+  const withCoord = cache.camps.filter(x => typeof x.lat === 'number' && typeof x.lng === 'number').length;
+  const coordProgress = total ? Math.round(withCoord / total * 100) : 0;
+  // 검색 필터: ":no-coord" 또는 "좌표없음" 입력 시 좌표 미등록만 보여주기
+  let arr;
+  const sq = _campSearch.trim();
+  if (sq === ':no-coord' || sq === '좌표없음') {
+    arr = cache.camps
+      .map((x, idx) => ({ ...x, _idx: idx }))
+      .filter(x => !(typeof x.lat === 'number' && typeof x.lng === 'number'));
+  } else if (sq === ':coord' || sq === '좌표있음') {
+    arr = cache.camps
+      .map((x, idx) => ({ ...x, _idx: idx }))
+      .filter(x => typeof x.lat === 'number' && typeof x.lng === 'number');
+  } else {
+    arr = cache.camps
+      .map((x, idx) => ({ ...x, _idx: idx }))
+      .filter(x => matchSearch(x, _campSearch, ['name', 'region', 'extras', 'landscape', 'seasons']));
+  }
 
   c.innerHTML = `
     <div class="page-header">
@@ -3674,9 +3691,17 @@ function renderCampList() {
     </div>
     <div class="search-bar">
       <div class="search-bar-input-wrap">
-        <input class="input" id="camp-search" placeholder="캠핑장명, 지역, 시즌 등" value="${escapeHtml(_campSearch)}">
+        <input class="input" id="camp-search" placeholder="캠핑장명, 지역, 시즌 (또는 :no-coord)" value="${escapeHtml(_campSearch)}">
       </div>
       <button class="search-bar-btn" id="camp-search-btn" type="button">조회</button>
+    </div>
+    <div class="coord-progress-card" style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,#f8fbf6 0%,#f3f8f0 100%);border-left:3px solid var(--point);border-radius:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span style="font-size:12px;font-weight:700;color:var(--point);">📍 좌표 등록</span>
+      <span style="font-size:13px;font-weight:600;">${withCoord} / ${total} (${coordProgress}%)</span>
+      <div style="flex:1;min-width:80px;height:6px;background:rgba(0,0,0,0.08);border-radius:3px;overflow:hidden;">
+        <div style="width:${coordProgress}%;height:100%;background:var(--point);"></div>
+      </div>
+      ${withCoord < total ? `<button id="filter-no-coord" type="button" style="padding:4px 10px;background:#1a1a1a;color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;">미등록만 보기</button>` : ''}
     </div>
     <div class="list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(camp => {
@@ -3686,6 +3711,7 @@ function renderCampList() {
           ? `<img src="../${camp.imgs[0].replace(/^\.\//, '')}" alt="" loading="lazy">`
           : '🏕';
         const isPub = camp.published !== false;
+        const hasCoord = typeof camp.lat === 'number' && typeof camp.lng === 'number';
         // 뱃지 메타: 지역 뱃지 + 시즌 뱃지 + 횟수 텍스트 (빈 값은 생략)
         const metaParts = [];
         if (camp.region) metaParts.push(`<span class="meta-badge meta-badge--region">${escapeHtml(camp.region)}</span>`);
@@ -3696,7 +3722,7 @@ function renderCampList() {
             <a class="list-item-link" href="#camps/${camp._idx}">
               <div class="list-item-thumb">${thumb}</div>
               <div class="list-item-body">
-                <div class="list-item-title">${escapeHtml(camp.name)}${camp.graega ? ' <span class="badge badge-graega" style="font-size:9px;padding:1px 5px;">G</span>' : ''}</div>
+                <div class="list-item-title">${escapeHtml(camp.name)}${camp.graega ? ' <span class="badge badge-graega" style="font-size:9px;padding:1px 5px;">G</span>' : ''}${!hasCoord ? ' <span title="좌표 미등록" style="font-size:11px;color:#c94a4a;">📍❌</span>' : ''}</div>
                 <div class="list-item-meta-row">${metaParts.join('')}</div>
               </div>
             </a>
@@ -3708,6 +3734,14 @@ function renderCampList() {
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
+  // 미등록만 보기 버튼
+  const filterBtn = document.getElementById('filter-no-coord');
+  if (filterBtn) {
+    filterBtn.onclick = () => {
+      _campSearch = ':no-coord';
+      renderCampList();
+    };
+  }
   // 토글 핸들러
   c.querySelectorAll('[data-camp-idx]').forEach(toggleEl => {
     const cb = toggleEl.querySelector('input');
@@ -3811,6 +3845,8 @@ let _campForm = {
   url: '',
   rating: 0,
   visits: 0,
+  lat: null,            // 위도 (예: 37.5665)
+  lng: null,            // 경도 (예: 126.9780)
   // 이미지: 두 종류 혼재
   //   { type: 'existing', src: './images/camps/xxx.jpg' }  ← 기존 이미지
   //   { type: 'new', base64: '...', previewUrl: 'data:...', size: 123 }  ← 새로 업로드
@@ -3836,6 +3872,7 @@ function renderCampAddForm() {
     mode: 'add', editIdx: null,
     name: '', region: '', seasons: [], landscape: [], extras: [],
     graega: false, url: '', rating: 0, visits: 0,
+    lat: null, lng: null,
     images: [],
   };
   _renderCampFormUI();
@@ -3855,6 +3892,8 @@ function renderCampEditForm(idx) {
     url: c.url || '',
     rating: c.rating || 0,
     visits: c.visits || 0,
+    lat: (typeof c.lat === 'number') ? c.lat : null,
+    lng: (typeof c.lng === 'number') ? c.lng : null,
     images: (c.imgs || []).map(src => ({ type: 'existing', src })),
   };
   _renderCampFormUI();
@@ -3943,6 +3982,19 @@ function _renderCampFormUI() {
         </div>
 
         <div class="form-field">
+          <label class="label">📍 좌표 (위도/경도)</label>
+          <div class="row" style="gap:6px;">
+            <input type="number" id="cf-lat" class="input" step="0.0000001" placeholder="위도 (예: 37.5665)" value="${_campForm.lat ?? ''}" style="flex:1;min-width:0;">
+            <input type="number" id="cf-lng" class="input" step="0.0000001" placeholder="경도 (예: 126.9780)" value="${_campForm.lng ?? ''}" style="flex:1;min-width:0;">
+          </div>
+          <div class="help" style="margin-top:6px;">
+            💡 <b>네이버지도</b>: 캠핑장 검색 → 마커 우클릭(PC) 또는 길게 누름(모바일) → "이 위치 좌표복사"<br>
+            💡 <b>구글지도</b>: 캠핑장 검색 → 마커 우클릭 → 맨 위 "37.567, 126.978" 클릭하면 복사됨<br>
+            💡 좌표 통째 붙여넣기: 위도 칸에 "37.5665, 126.9780" 형태 paste하면 자동 분리
+          </div>
+        </div>
+
+        <div class="form-field">
           <label class="label">이미지 (최대 10장)</label>
           <label class="form-image-drop" id="cf-image-drop">
             <input type="file" id="cf-image" accept="image/*" multiple>
@@ -3980,6 +4032,56 @@ function _renderCampFormUI() {
   $('cf-rating').oninput = (e) => { _campForm.rating = parseFloat(e.target.value) || 0; };
   $('cf-visits').oninput = (e) => { _campForm.visits = parseInt(e.target.value) || 0; };
   $('cf-graega').onchange = (e) => { _campForm.graega = e.target.checked; };
+
+  // 좌표 입력 + paste 통째 분리 ("37.5665, 126.978" 형태)
+  function _parseLatLngString(s) {
+    if (!s) return null;
+    // 공백/콤마/세미콜론으로 두 숫자 추출
+    const m = s.replace(/[，;\t]/g, ',').match(/([-+]?\d+\.?\d*)\s*,\s*([-+]?\d+\.?\d*)/);
+    if (!m) return null;
+    const lat = parseFloat(m[1]);
+    const lng = parseFloat(m[2]);
+    if (isNaN(lat) || isNaN(lng)) return null;
+    // 한국 범위 대략 검증 (위도 33~39, 경도 124~132)
+    if (lat < 33 || lat > 39 || lng < 124 || lng > 132) return null;
+    return { lat, lng };
+  }
+  const latInput = $('cf-lat');
+  const lngInput = $('cf-lng');
+  latInput.oninput = (e) => {
+    const v = e.target.value.trim();
+    _campForm.lat = v === '' ? null : (parseFloat(v) || null);
+  };
+  lngInput.oninput = (e) => {
+    const v = e.target.value.trim();
+    _campForm.lng = v === '' ? null : (parseFloat(v) || null);
+  };
+  // 위도 칸에 "lat, lng" 통째 paste 시 자동 분리
+  latInput.addEventListener('paste', (e) => {
+    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+    const parsed = _parseLatLngString(pasted);
+    if (parsed) {
+      e.preventDefault();
+      latInput.value = parsed.lat;
+      lngInput.value = parsed.lng;
+      _campForm.lat = parsed.lat;
+      _campForm.lng = parsed.lng;
+      showToast(`📍 좌표 자동 입력: ${parsed.lat}, ${parsed.lng}`, 'success', 2500);
+    }
+  });
+  // 경도 칸에도 동일 처리 (혹시 순서 바꿔 paste할 때)
+  lngInput.addEventListener('paste', (e) => {
+    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+    const parsed = _parseLatLngString(pasted);
+    if (parsed) {
+      e.preventDefault();
+      latInput.value = parsed.lat;
+      lngInput.value = parsed.lng;
+      _campForm.lat = parsed.lat;
+      _campForm.lng = parsed.lng;
+      showToast(`📍 좌표 자동 입력: ${parsed.lat}, ${parsed.lng}`, 'success', 2500);
+    }
+  });
 
   // extras 자유 입력
   $('cf-extras').oninput = (e) => {
@@ -4090,6 +4192,7 @@ function resetCampForm() {
     mode: 'add', editIdx: null,
     name: '', region: '', seasons: [], landscape: [], extras: [],
     graega: false, url: '', rating: 0, visits: 0,
+    lat: null, lng: null,
     images: [],
   };
 }
@@ -4204,6 +4307,9 @@ async function submitCampForm() {
       created_at: isEdit ? (_oldCamp.created_at || _nowIso) : _nowIso,
       updated_at: _nowIso,
     };
+    // 좌표 (값 있을 때만 포함 — null/undefined는 JSON에서 깔끔하게 생략)
+    if (typeof _campForm.lat === 'number' && !isNaN(_campForm.lat)) campObj.lat = _campForm.lat;
+    if (typeof _campForm.lng === 'number' && !isNaN(_campForm.lng)) campObj.lng = _campForm.lng;
 
     if (isEdit) {
       newCamps[_campForm.editIdx] = campObj;
