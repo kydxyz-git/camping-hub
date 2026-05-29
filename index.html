@@ -681,6 +681,82 @@
       font-weight: 700;
       font-size: 12px;
     }
+    /* 영상 선택 레이어 팝업 */
+    .video-chooser-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: vcFadeIn 0.2s ease;
+    }
+    @keyframes vcFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .video-chooser-box {
+      background: #fff;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 360px;
+      max-height: 70vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      animation: vcSlideUp 0.25s ease;
+    }
+    @keyframes vcSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .video-chooser-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .video-chooser-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .video-chooser-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: var(--text-sub);
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+    }
+    .video-chooser-list {
+      overflow-y: auto;
+      padding: 8px;
+    }
+    .video-chooser-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .video-chooser-item:hover {
+      background: linear-gradient(45deg, rgba(240,148,51,0.08), rgba(188,24,136,0.08));
+    }
+    .video-chooser-item-icon { font-size: 16px; flex-shrink: 0; }
+    .video-chooser-item-label {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .video-chooser-item-arrow {
+      color: var(--text-sub);
+      font-size: 14px;
+      flex-shrink: 0;
+    }
     /* 예약 버튼 (배경색은 인라인 style로 플랫폼별 지정, 글자는 흰색 통일) */
     .camp-popup-link {
       display: block;
@@ -1495,6 +1571,39 @@ function _mapEscHtml(s) {
     .replace(/'/g, '&#39;');
 }
 
+// 영상 선택 레이어 팝업 (영상 2개 이상일 때)
+function _openVideoChooser(listId) {
+  const data = (window._campVideoLists || {})[listId];
+  if (!data) return;
+  // 기존 레이어 제거
+  _closeVideoChooser();
+  const overlay = document.createElement('div');
+  overlay.id = 'video-chooser-overlay';
+  overlay.className = 'video-chooser-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) _closeVideoChooser(); };
+  const itemsHtml = data.videos.map((v, i) => `
+    <a class="video-chooser-item" href="${_mapEscHtml(v.url)}" target="_blank" rel="noopener">
+      <span class="video-chooser-item-icon">🎬</span>
+      <span class="video-chooser-item-label">${_mapEscHtml(v.label || ('영상 ' + (i+1)))}</span>
+      <span class="video-chooser-item-arrow">→</span>
+    </a>
+  `).join('');
+  overlay.innerHTML = `
+    <div class="video-chooser-box">
+      <div class="video-chooser-header">
+        <span class="video-chooser-title">🎬 ${_mapEscHtml(data.name)} 영상 ${data.videos.length}개</span>
+        <button class="video-chooser-close" onclick="_closeVideoChooser()">✕</button>
+      </div>
+      <div class="video-chooser-list">${itemsHtml}</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+function _closeVideoChooser() {
+  const el = document.getElementById('video-chooser-overlay');
+  if (el) el.remove();
+}
+
 function initCampMap() {
   if (_mapInitState !== 'idle') return;  // 한 번만 init
   _mapInitState = 'loading';
@@ -1579,7 +1688,7 @@ function _renderCampMap(camps) {
     maxZoom: 19,
   }).addTo(map);
 
-  // EP 연결 캠핑장 ID set 만들기 (시리즈 EP의 camp_id 기준)
+  // 영상 있는 캠핑장 ID set (EP 연결 OR 개별 videos)
   const epCampIds = new Set();
   const seriesArr = (typeof series !== 'undefined' && Array.isArray(series)) ? series : [];
   for (const s of seriesArr) {
@@ -1588,6 +1697,10 @@ function _renderCampMap(camps) {
       if (ep.published === false) continue;
       if (ep.camp_id) epCampIds.add(ep.camp_id);
     }
+  }
+  // 개별 영상 있는 캠핑장도 추가
+  for (const c of camps) {
+    if (Array.isArray(c.videos) && c.videos.length > 0) epCampIds.add(c.id);
   }
 
   // 플랫폼 판별 헬퍼 (마커 색상 + 버튼 색상 통일)
@@ -1681,29 +1794,46 @@ function _renderCampMap(camps) {
     if (isGraega) metaParts.push('그래가');
     const meta = metaParts.join(' · ');
 
-    // EP 영상 URL 찾기 (이 캠핑장과 연결된 EP 중 첫 번째)
-    let epUrl = null;
+    // 영상 목록 수집: EP 연결 영상(전부) + 개별 videos
+    const videoList = [];  // { url, label }
     if (hasEp) {
       for (const s of seriesArr) {
         if (s.published === false) continue;
         for (const ep of (s.eps || [])) {
           if (ep.published === false) continue;
-          if (ep.camp_id === c.id && ep.url) { epUrl = ep.url; break; }
+          if (ep.camp_id === c.id && ep.url) {
+            const epLabel = ep.ep > 0 ? `${s.name} EP.${String(ep.ep).padStart(2, '0')}` : s.name;
+            videoList.push({ url: ep.url, label: `${epLabel} - ${ep.title || ''}`.trim() });
+          }
         }
-        if (epUrl) break;
       }
     }
+    // 개별 영상
+    for (let vi = 0; vi < (c.videos || []).length; vi++) {
+      videoList.push({ url: c.videos[vi], label: `영상 ${videoList.length + 1}` });
+    }
 
-    // 버튼 영역: EP URL 있으면 [영상보기 | 예약하기] 분할, 없으면 예약만
+    // 버튼 영역: 영상 있으면 [영상보기 | 예약하기] 분할, 없으면 예약만
     const bookAttrs = c.url
       ? `href="${_mapEscHtml(c.url)}" target="_blank" rel="noopener" data-track-path="/camps/${_mapEscHtml(c.id || '')}" data-track-title="${_mapEscHtml(c.name)}"`
       : `href="#camps"`;
     let btnsHtml;
-    if (epUrl) {
-      // 두 버튼: 영상보기 (인스타 그라데이션) | 예약하기 (플랫폼 색)
+    if (videoList.length === 1) {
+      // 영상 1개: 바로 그 영상으로
       btnsHtml = `
         <div class="camp-popup-btns">
-          <a class="camp-popup-link camp-popup-link-half btn-instagram" href="${_mapEscHtml(epUrl)}" target="_blank" rel="noopener">🎬 영상보기</a>
+          <a class="camp-popup-link camp-popup-link-half btn-instagram" href="${_mapEscHtml(videoList[0].url)}" target="_blank" rel="noopener">🎬 영상보기</a>
+          <a class="camp-popup-link camp-popup-link-half" style="background:${platform.color};" ${bookAttrs}>${platform.btnLabel.replace(' →', '')}</a>
+        </div>
+      `;
+    } else if (videoList.length >= 2) {
+      // 영상 2개+: 영상보기 클릭 시 레이어 팝업 (전역에 영상 목록 저장)
+      const videoListId = 'vl_' + (c.id || Math.random().toString(36).slice(2, 8));
+      window._campVideoLists = window._campVideoLists || {};
+      window._campVideoLists[videoListId] = { name: c.name, videos: videoList };
+      btnsHtml = `
+        <div class="camp-popup-btns">
+          <a class="camp-popup-link camp-popup-link-half btn-instagram" href="#" onclick="event.preventDefault(); _openVideoChooser('${videoListId}');">🎬 영상 ${videoList.length}개</a>
           <a class="camp-popup-link camp-popup-link-half" style="background:${platform.color};" ${bookAttrs}>${platform.btnLabel.replace(' →', '')}</a>
         </div>
       `;
