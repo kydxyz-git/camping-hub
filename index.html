@@ -782,6 +782,8 @@ async function loadData() {
   foods      = results[2];
   items      = results[3];
   camps      = results[4];
+  // 데이터 로드 완료 플래그 (지도 init race condition 해결용)
+  window._dataLoaded = true;
 }
 </script>
 
@@ -1550,7 +1552,8 @@ function initCampMap() {
 
   // 데이터 분류
   // 데이터가 아직 로드 안 됐으면 대기 후 재시도 (페이지 첫 진입 시 race condition)
-  if (typeof camps === 'undefined' || !Array.isArray(camps)) {
+  // camps는 빈 배열로 초기화되므로 _dataLoaded 플래그로 정확히 판정
+  if (!window._dataLoaded || typeof camps === 'undefined' || !Array.isArray(camps)) {
     _mapInitState = 'idle';  // 복구해서 다음 시도 가능하게
     setTimeout(() => initCampMap(), 300);
     return;
