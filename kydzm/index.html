@@ -4865,6 +4865,7 @@ let _epForm = {
   ep: '',
   title: '',
   url: '',
+  camp_id: '',       // 연결된 캠핑장 id (선택, '' = 미연결)
   imageBase64: null,
   imagePreviewUrl: null,  // data URL (새 이미지) 또는 './images/...' (기존 이미지)
   imageSize: 0,
@@ -4887,6 +4888,7 @@ function renderEpAddForm() {
       seriesIdx: 0,
       ep: suggestNextEp(0),
       title: '', url: '',
+      camp_id: '',
       imageBase64: null, imagePreviewUrl: null, imageSize: 0,
       imageChanged: false,
       _initialized: true,
@@ -4909,6 +4911,7 @@ function renderEpEditForm(si, ei) {
     ep: ep.ep || 0,
     title: ep.title || '',
     url: ep.url || '',
+    camp_id: ep.camp_id || '',
     imageBase64: null,
     imagePreviewUrl: ep.thumb ? '../' + ep.thumb.replace(/^\.\//, '') : null,
     imageSize: 0,
@@ -4965,6 +4968,20 @@ function _renderEpFormUI() {
         </div>
 
         <div class="form-field">
+          <label class="label" for="f-camp">🏕 연결된 캠핑장</label>
+          <select id="f-camp">
+            <option value="">— 연결 안 함 —</option>
+            ${(cache.camps || []).slice().sort((a,b) => (a.name||'').localeCompare(b.name||'', 'ko')).map(c => {
+              const hasCoord = typeof c.lat === 'number' && typeof c.lng === 'number';
+              const gIcon = c.graega ? '⭐ ' : '';
+              const coordIcon = hasCoord ? '📍 ' : '';
+              return `<option value="${escapeHtml(c.id)}" ${c.id === _epForm.camp_id ? 'selected' : ''}>${gIcon}${coordIcon}${escapeHtml(c.name)}</option>`;
+            }).join('')}
+          </select>
+          <div class="help">이 EP가 다녀온 캠핑장. 지도 탭에서 🎬 강조 표시됨. 📍 표시는 좌표 등록된 캠핑장</div>
+        </div>
+
+        <div class="form-field">
           <label class="label">썸네일 이미지 ${isEdit ? '' : '*'}</label>
           <label class="form-image-drop" id="f-image-drop">
             <input type="file" id="f-image" accept="image/*">
@@ -5007,6 +5024,7 @@ function _renderEpFormUI() {
   $('f-ep').oninput = (e) => { _epForm.ep = e.target.value; };
   $('f-title').oninput = (e) => { _epForm.title = e.target.value; };
   $('f-url').oninput = (e) => { _epForm.url = e.target.value; };
+  $('f-camp').onchange = (e) => { _epForm.camp_id = e.target.value || ''; };
 
   // 이미지 업로드 + 드래그&드롭
   const drop = $('f-image-drop');
@@ -5085,6 +5103,7 @@ function resetEpForm() {
   _epForm = {
     mode: 'add', editSi: null, editEi: null,
     seriesIdx: 0, ep: '', title: '', url: '',
+    camp_id: '',
     imageBase64: null, imagePreviewUrl: null, imageSize: 0,
     imageChanged: false,
     _initialized: false,
@@ -5148,6 +5167,8 @@ async function submitEpForm() {
         created_at: oldEp.created_at || _nowIsoEp,
         updated_at: _nowIsoEp,
       };
+      // 캠핑장 연결 (값 있을 때만 필드 포함)
+      if (_epForm.camp_id) updatedEp.camp_id = _epForm.camp_id;
 
       // 시리즈가 같으면 자리 유지 (정렬 모드가 ep_desc/asc면 자동 재정렬되므로 그냥 두기)
       // 시리즈가 바뀌면 원래 시리즈에서 제거 + 새 시리즈에 삽입
@@ -5226,6 +5247,7 @@ async function submitEpForm() {
         created_at: _nowIsoEpNew,
         updated_at: _nowIsoEpNew,
       };
+      if (_epForm.camp_id) newEp.camp_id = _epForm.camp_id;
 
       const targetSeries = newSeries[_epForm.seriesIdx];
       if (ep > 0) {
