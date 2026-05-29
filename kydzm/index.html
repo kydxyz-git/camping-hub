@@ -3848,6 +3848,25 @@ function renderCampDetail(idx) {
         <div class="detail-row"><div class="detail-key">추가 태그</div><div class="detail-val">${(camp.extras || []).map(s => `<span class="badge">${escapeHtml(s)}</span>`).join('') || '<span style="color:var(--muted)">-</span>'}</div></div>
         <div class="detail-row"><div class="detail-key">별점</div><div class="detail-val">${camp.rating ? '⭐'.repeat(Math.floor(camp.rating)) + (camp.rating % 1 ? '½' : '') + ` (${camp.rating})` : '-'}</div></div>
         <div class="detail-row"><div class="detail-key">다녀온</div><div class="detail-val">${camp.visits || 0}회</div></div>
+        <div class="detail-row"><div class="detail-key">📍 좌표</div><div class="detail-val">${(() => {
+          if (typeof camp.lat === 'number' && typeof camp.lng === 'number') {
+            return `<span style="font-family:monospace;">${camp.lat}, ${camp.lng}</span>`;
+          }
+          return '<span style="color:#c94a4a;">📍❌ 미등록</span>';
+        })()}</div></div>
+        <div class="detail-row"><div class="detail-key">🎬 연결 EP</div><div class="detail-val">${(() => {
+          const linkedEps = [];
+          (cache.series || []).forEach((s, si) => {
+            (s.eps || []).forEach((ep, ei) => {
+              if (ep.camp_id === camp.id) linkedEps.push({ s, si, ep, ei });
+            });
+          });
+          if (linkedEps.length === 0) return '<span style="color:var(--muted);">— 연결된 EP 없음</span>';
+          return linkedEps.map(({ s, si, ep, ei }) => {
+            const epLabel = ep.ep > 0 ? `EP.${String(ep.ep).padStart(2, '0')}` : '단편';
+            return `<div style="margin:2px 0;"><a href="#series/${si}/${ei}">${escapeHtml(s.emoji || '🎬')} ${escapeHtml(s.name)} · ${epLabel} - ${escapeHtml(ep.title)}</a></div>`;
+          }).join('');
+        })()}</div></div>
         <div class="detail-row"><div class="detail-key">URL</div><div class="detail-val">${camp.url ? `<a href="${escapeHtml(camp.url)}" target="_blank" rel="noopener">${escapeHtml(camp.url)}</a>` : '-'}</div></div>
         <div class="detail-row"><div class="detail-key">등록일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(camp.created_at) || '-'}</div></div>
         <div class="detail-row"><div class="detail-key">수정일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(camp.updated_at) || '-'}</div></div>
@@ -5013,6 +5032,14 @@ function renderEpDetail(si, ei) {
         <div class="detail-row"><div class="detail-key">제목</div><div class="detail-val">${escapeHtml(ep.title)}</div></div>
         <div class="detail-row"><div class="detail-key">릴스 URL</div><div class="detail-val">${ep.url ? `<a href="${escapeHtml(ep.url)}" target="_blank" rel="noopener">${escapeHtml(ep.url)}</a>` : '-'}</div></div>
         <div class="detail-row"><div class="detail-key">썸네일</div><div class="detail-val">${escapeHtml(ep.thumb || '-')}</div></div>
+        <div class="detail-row"><div class="detail-key">🏕 캠핑장</div><div class="detail-val">${(() => {
+          if (!ep.camp_id) return '<span style="color:var(--muted);">— 연결 안 됨</span>';
+          const linkedCamp = (cache.camps || []).find(x => x.id === ep.camp_id);
+          if (!linkedCamp) return `<span style="color:#c94a4a;">⚠️ ${escapeHtml(ep.camp_id)} (캠핑장 찾을 수 없음)</span>`;
+          const hasCoord = typeof linkedCamp.lat === 'number' && typeof linkedCamp.lng === 'number';
+          const campIdx = cache.camps.indexOf(linkedCamp);
+          return `<a href="#camps/${campIdx}">${linkedCamp.graega ? '⭐ ' : ''}${hasCoord ? '📍 ' : ''}${escapeHtml(linkedCamp.name)}</a>${!hasCoord ? ' <span style="color:#c94a4a;font-size:11px;">(좌표 미등록)</span>' : ''}`;
+        })()}</div></div>
         <div class="detail-row"><div class="detail-key">등록일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(ep.created_at) || '-'}</div></div>
         <div class="detail-row"><div class="detail-key">수정일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(ep.updated_at) || '-'}</div></div>
       </div>
