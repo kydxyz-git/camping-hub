@@ -3870,7 +3870,12 @@ function renderCampDetail(idx) {
         <div class="detail-row"><div class="detail-key">📱 개별 콘텐츠</div><div class="detail-val">${(() => {
           const vids = camp.videos || [];
           if (vids.length === 0) return '<span style="color:var(--muted);">— 없음</span>';
-          return vids.map((url, i) => `<div style="margin:2px 0;"><a href="${escapeHtml(url)}" target="_blank" rel="noopener">📱 콘텐츠 ${i+1} — ${escapeHtml(url.slice(0, 40))}…</a></div>`).join('');
+          return vids.map((v, i) => {
+            const url = (typeof v === 'string') ? v : (v.url || '');
+            const title = (typeof v === 'string') ? '' : (v.title || '');
+            const label = title || `콘텐츠 ${i+1}`;
+            return `<div style="margin:2px 0;"><a href="${escapeHtml(url)}" target="_blank" rel="noopener">📱 ${escapeHtml(label)}</a></div>`;
+          }).join('');
         })()}</div></div>
         <div class="detail-row"><div class="detail-key">URL</div><div class="detail-val">${camp.url ? `<a href="${escapeHtml(camp.url)}" target="_blank" rel="noopener">${escapeHtml(camp.url)}</a>` : '-'}</div></div>
         <div class="detail-row"><div class="detail-key">등록일</div><div class="detail-val" style="font-size:12px;color:var(--muted);">${fmtDateTime(camp.created_at) || '-'}</div></div>
@@ -4079,12 +4084,15 @@ function _renderCampFormUI() {
         <div class="form-field">
           <label class="label">📱 개별 콘텐츠 URL</label>
           <div id="cf-videos-list"></div>
-          <div class="row" style="gap:6px;margin-top:6px;">
-            <input type="text" id="cf-video-input" class="input" placeholder="https://www.instagram.com/... 붙여넣기 (릴스/게시물)" style="flex:1;min-width:0;">
-            <button type="button" class="btn btn-sm" id="cf-video-add-btn" style="white-space:nowrap;">+ 추가</button>
+          <div style="margin-top:6px;">
+            <input type="text" id="cf-video-title" class="input" placeholder="제목 (선택, 비우면 '콘텐츠 N')" style="margin-bottom:4px;">
+            <div class="row" style="gap:6px;">
+              <input type="text" id="cf-video-input" class="input" placeholder="https://www.instagram.com/... (릴스/게시물)" style="flex:1;min-width:0;">
+              <button type="button" class="btn btn-sm" id="cf-video-add-btn" style="white-space:nowrap;">+ 추가</button>
+            </div>
           </div>
           <div class="help" style="margin-top:6px;">
-            💡 시리즈 EP가 아닌 개별 릴스·게시물을 캠핑장에 연결. 여러 개 추가 가능. 지도 팝업의 '콘텐츠 보기'에 함께 표시됨
+            💡 시리즈 EP가 아닌 개별 릴스·게시물을 캠핑장에 연결. 제목 입력하면 콘텐츠 보기 목록에 표시됨
           </div>
         </div>
 
@@ -4345,13 +4353,22 @@ function _renderCampFormUI() {
       listEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:4px 0;">아직 추가된 콘텐츠가 없어요</div>';
       return;
     }
-    listEl.innerHTML = _campForm.videos.map((url, i) => `
+    listEl.innerHTML = _campForm.videos.map((v, i) => {
+      // 구버전 호환: 문자열이면 {url, title:''}로 간주
+      const url = (typeof v === 'string') ? v : (v.url || '');
+      const title = (typeof v === 'string') ? '' : (v.title || '');
+      const displayTitle = title || `콘텐츠 ${i+1}`;
+      return `
       <div class="video-item" style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--bg);border:1px solid var(--line);border-radius:6px;margin-bottom:4px;">
         <span style="font-size:11px;color:var(--muted);flex-shrink:0;">📱 ${i+1}</span>
-        <a href="${escapeHtml(url)}" target="_blank" rel="noopener" style="flex:1;min-width:0;font-size:12px;color:var(--point);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(url)}</a>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(displayTitle)}</div>
+          <a href="${escapeHtml(url)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--point);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;">${escapeHtml(url)}</a>
+        </div>
         <button type="button" class="video-del-btn" data-i="${i}" style="flex-shrink:0;padding:2px 8px;background:#c94a4a;color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;">삭제</button>
       </div>
-    `).join('');
+    `;
+    }).join('');
     // 삭제 버튼 핸들러
     listEl.querySelectorAll('.video-del-btn').forEach(btn => {
       btn.onclick = (e) => {
@@ -4363,12 +4380,17 @@ function _renderCampFormUI() {
   }
   function _addVideo() {
     const input = $('cf-video-input');
+    const titleInput = $('cf-video-title');
     const url = input.value.trim();
+    const title = titleInput.value.trim();
     if (!url) { showToast('콘텐츠 URL을 입력하세요', 'error'); return; }
     if (!/^https?:\/\//i.test(url)) { showToast('http:// 또는 https://로 시작하는 URL이어야 해요', 'error'); return; }
-    if (_campForm.videos.includes(url)) { showToast('이미 추가된 콘텐츠예요', 'error'); return; }
-    _campForm.videos.push(url);
+    // URL 중복 체크 (객체/문자열 모두)
+    const exists = _campForm.videos.some(v => (typeof v === 'string' ? v : v.url) === url);
+    if (exists) { showToast('이미 추가된 콘텐츠예요', 'error'); return; }
+    _campForm.videos.push({ url, title });
     input.value = '';
+    titleInput.value = '';
     _renderVideosList();
     showToast('📱 콘텐츠 추가됨', 'success', 1500);
   }

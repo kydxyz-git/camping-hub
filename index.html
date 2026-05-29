@@ -773,15 +773,19 @@
     }
     .camp-popup-link:hover { opacity: 0.9; color: #fff !important; }
     .camp-popup-link:visited { color: #fff !important; }
-    /* 분할 버튼 (영상보기 + 예약하기) */
+    /* 분할 버튼 (콘텐츠 보기 + 예약하기) */
     .camp-popup-btns {
       display: flex;
-      gap: 4px;
+      gap: 5px;
     }
     .camp-popup-link-half {
       flex: 1;
-      padding: 10px 8px;
+      padding: 10px 6px;
       font-size: 12px;
+      white-space: nowrap;     /* 줄바꿈 방지 */
+      letter-spacing: -0.3px;  /* 한글 살짝 좁혀서 한 줄에 */
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     /* 인스타그램 영상보기 버튼 (인스타 공식 그라데이션) */
     .camp-popup-link.btn-instagram {
@@ -1810,7 +1814,11 @@ function _renderCampMap(camps) {
     }
     // 개별 영상
     for (let vi = 0; vi < (c.videos || []).length; vi++) {
-      videoList.push({ url: c.videos[vi], label: `콘텐츠 ${videoList.length + 1}` });
+      const v = c.videos[vi];
+      const vUrl = (typeof v === 'string') ? v : (v.url || '');
+      const vTitle = (typeof v === 'string') ? '' : (v.title || '');
+      if (!vUrl) continue;
+      videoList.push({ url: vUrl, label: vTitle || `콘텐츠 ${videoList.length + 1}` });
     }
 
     // 버튼 영역: 영상 있으면 [영상보기 | 예약하기] 분할, 없으면 예약만
