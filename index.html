@@ -515,8 +515,7 @@
   </style>
 
   <!-- Leaflet 지도 CSS (JS는 #map 탭 진입 시 lazy load) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <style>
     /* 지도 탭 */
     #t5 { padding: 0; }
@@ -1442,7 +1441,6 @@ function initCampMap() {
   // Leaflet JS lazy load
   const script = document.createElement('script');
   script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-  script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
   script.crossOrigin = '';
   script.onload = () => _renderCampMap(withCoord);
   script.onerror = () => {
@@ -1456,6 +1454,13 @@ function initCampMap() {
 function _renderCampMap(camps) {
   // 한국 중심 좌표
   const initialCenter = [36.5, 127.8];
+  // 컨테이너가 display:none 상태이거나 크기 0이면 잠시 후 재시도
+  const container = document.getElementById('camp-map');
+  if (!container || container.offsetHeight === 0) {
+    setTimeout(() => _renderCampMap(camps), 200);
+    return;
+  }
+
   const map = L.map('camp-map', {
     center: initialCenter,
     zoom: 7,
@@ -1524,8 +1529,10 @@ function _renderCampMap(camps) {
     map.fitBounds(bounds, { padding: [40, 40], maxZoom: 11 });
   }
 
-  // 지도 리사이즈 대응 (탭 전환 시 가끔 깨짐)
+  // 지도 리사이즈 대응 (탭 전환 시 가끔 깨짐) - 여러 시점에 호출
   setTimeout(() => map.invalidateSize(), 100);
+  setTimeout(() => map.invalidateSize(), 500);
+  setTimeout(() => map.invalidateSize(), 1500);
 
   _mapInitState = 'ready';
 }
