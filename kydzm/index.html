@@ -1627,7 +1627,55 @@
     .detail-key { width: 70px; font-size: 12px; }
     .detail-val { font-size: 13px; }
   }
+
+  /* 좌표 피커 미니맵 */
+  .coord-picker-wrap {
+    margin-top: 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #e8eef3;
+  }
+  .coord-picker-toolbar {
+    display: flex;
+    gap: 6px;
+    padding: 8px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .coord-picker-toolbar input {
+    flex: 1; min-width: 120px;
+    padding: 6px 10px;
+    font-size: 13px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+  }
+  .coord-picker-toolbar button {
+    padding: 6px 12px;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .coord-picker-toolbar button:hover { background: #333; }
+  .coord-picker-toolbar .picker-msg {
+    font-size: 11px; color: var(--muted);
+    width: 100%;
+  }
+  #coord-picker-map {
+    width: 100%;
+    height: 280px;
+  }
 </style>
+
+<!-- Leaflet CSS (좌표 피커용) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 </head>
 <body>
 
@@ -3987,10 +4035,17 @@ function _renderCampFormUI() {
             <input type="number" id="cf-lat" class="input" step="0.0000001" placeholder="위도 (예: 37.5665)" value="${_campForm.lat ?? ''}" style="flex:1;min-width:0;">
             <input type="number" id="cf-lng" class="input" step="0.0000001" placeholder="경도 (예: 126.9780)" value="${_campForm.lng ?? ''}" style="flex:1;min-width:0;">
           </div>
+          <div class="coord-picker-wrap">
+            <div class="coord-picker-toolbar">
+              <input type="text" id="coord-picker-search" placeholder="장소 검색 (예: ${escapeHtml(_campForm.name || '캠핑장명')})">
+              <button type="button" id="coord-picker-search-btn">검색</button>
+              <button type="button" id="coord-picker-clear-btn" style="background:#6c757d;">좌표 삭제</button>
+              <div class="picker-msg" id="coord-picker-msg">💡 지도를 클릭하면 그 위치 좌표가 입력됩니다. 마커는 드래그로 미세 조정 가능.</div>
+            </div>
+            <div id="coord-picker-map"></div>
+          </div>
           <div class="help" style="margin-top:6px;">
-            💡 <b>네이버지도</b>: 캠핑장 검색 → 마커 우클릭(PC) 또는 길게 누름(모바일) → "이 위치 좌표복사"<br>
-            💡 <b>구글지도</b>: 캠핑장 검색 → 마커 우클릭 → 맨 위 "37.567, 126.978" 클릭하면 복사됨<br>
-            💡 좌표 통째 붙여넣기: 위도 칸에 "37.5665, 126.9780" 형태 paste하면 자동 분리
+            💡 직접 좌표 입력도 가능 (구글맵 빈공간 우클릭 → 좌표 클릭 → paste)
           </div>
         </div>
 
@@ -4067,6 +4122,7 @@ function _renderCampFormUI() {
       _campForm.lat = parsed.lat;
       _campForm.lng = parsed.lng;
       showToast(`📍 좌표 자동 입력: ${parsed.lat}, ${parsed.lng}`, 'success', 2500);
+      _coordPickerMoveMarker(parsed.lat, parsed.lng, true);
     }
   });
   // 경도 칸에도 동일 처리 (혹시 순서 바꿔 paste할 때)
@@ -4080,8 +4136,124 @@ function _renderCampFormUI() {
       _campForm.lat = parsed.lat;
       _campForm.lng = parsed.lng;
       showToast(`📍 좌표 자동 입력: ${parsed.lat}, ${parsed.lng}`, 'success', 2500);
+      _coordPickerMoveMarker(parsed.lat, parsed.lng, true);
     }
   });
+
+  // ─── 좌표 피커 미니맵 (Leaflet lazy load) ───
+  let _pickerMap = null;
+  let _pickerMarker = null;
+  const pickerMsg = $('coord-picker-msg');
+  function _setPickerMsg(text, isError) {
+    pickerMsg.textContent = text;
+    pickerMsg.style.color = isError ? '#c94a4a' : 'var(--muted)';
+  }
+  // 마커 이동 + 입력 칸 업데이트 (centerMap=true면 지도도 center 이동)
+  function _coordPickerMoveMarker(lat, lng, centerMap) {
+    if (!_pickerMap || !window.L) return;
+    if (_pickerMarker) {
+      _pickerMarker.setLatLng([lat, lng]);
+    } else {
+      _pickerMarker = L.marker([lat, lng], { draggable: true }).addTo(_pickerMap);
+      _pickerMarker.on('dragend', (e) => {
+        const ll = e.target.getLatLng();
+        const lat2 = +ll.lat.toFixed(7), lng2 = +ll.lng.toFixed(7);
+        latInput.value = lat2; lngInput.value = lng2;
+        _campForm.lat = lat2; _campForm.lng = lng2;
+        _setPickerMsg(`✅ 드래그 완료: ${lat2}, ${lng2}`);
+      });
+    }
+    if (centerMap) _pickerMap.setView([lat, lng], Math.max(_pickerMap.getZoom(), 14));
+  }
+  // Leaflet 로드 + 지도 init
+  function _initPickerMap() {
+    if (_pickerMap) return;  // 한 번만
+    const initLat = (typeof _campForm.lat === 'number') ? _campForm.lat : 36.5;
+    const initLng = (typeof _campForm.lng === 'number') ? _campForm.lng : 127.8;
+    const initZoom = (typeof _campForm.lat === 'number') ? 14 : 7;
+    _pickerMap = L.map('coord-picker-map', {
+      center: [initLat, initLng], zoom: initZoom,
+      minZoom: 6, maxZoom: 18,
+      maxBounds: [[33.0, 124.5], [38.7, 132.0]],
+      maxBoundsViscosity: 1.0,
+    });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap', maxZoom: 19,
+    }).addTo(_pickerMap);
+    // 기존 좌표 있으면 마커 표시
+    if (typeof _campForm.lat === 'number' && typeof _campForm.lng === 'number') {
+      _coordPickerMoveMarker(_campForm.lat, _campForm.lng, false);
+    }
+    // 지도 클릭 → 마커 이동 + 좌표 입력
+    _pickerMap.on('click', (e) => {
+      const lat = +e.latlng.lat.toFixed(7);
+      const lng = +e.latlng.lng.toFixed(7);
+      latInput.value = lat; lngInput.value = lng;
+      _campForm.lat = lat; _campForm.lng = lng;
+      _coordPickerMoveMarker(lat, lng, false);
+      _setPickerMsg(`✅ 좌표 설정: ${lat}, ${lng}`);
+    });
+    setTimeout(() => _pickerMap.invalidateSize(), 100);
+    setTimeout(() => _pickerMap.invalidateSize(), 500);
+  }
+  // Leaflet 라이브러리 동적 로드
+  function _loadLeafletAndInit() {
+    if (window.L) { _initPickerMap(); return; }
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.crossOrigin = '';
+    script.onload = () => _initPickerMap();
+    script.onerror = () => _setPickerMsg('지도 로드 실패. 새로고침해주세요.', true);
+    document.head.appendChild(script);
+  }
+  _loadLeafletAndInit();
+
+  // 장소 검색 (Nominatim — OSM 무료 지오코딩, 사용량 1req/sec 제한)
+  const searchInput = $('coord-picker-search');
+  const searchBtn = $('coord-picker-search-btn');
+  // 초기값: 캠핑장명 또는 빈 값
+  if (_campForm.name) searchInput.value = _campForm.name;
+  async function _doPickerSearch() {
+    const q = searchInput.value.trim();
+    if (!q) { _setPickerMsg('검색어를 입력하세요', true); return; }
+    _setPickerMsg('🔍 검색 중...');
+    try {
+      // 한국 국가 제한 + 한국어 우선
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&countrycodes=kr&limit=5&accept-language=ko`;
+      const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      const data = await resp.json();
+      if (!data || data.length === 0) {
+        _setPickerMsg('검색 결과 없음. 다른 키워드 시도 또는 지도에서 직접 클릭하세요.', true);
+        return;
+      }
+      const top = data[0];
+      const lat = +parseFloat(top.lat).toFixed(7);
+      const lng = +parseFloat(top.lon).toFixed(7);
+      latInput.value = lat; lngInput.value = lng;
+      _campForm.lat = lat; _campForm.lng = lng;
+      _coordPickerMoveMarker(lat, lng, true);
+      _setPickerMsg(`📍 검색됨 ${data.length}건 중 1순위 적용: ${top.display_name.slice(0, 50)}... (드래그로 미세조정 가능)`);
+    } catch (e) {
+      _setPickerMsg('검색 실패: ' + e.message, true);
+    }
+  }
+  searchBtn.onclick = _doPickerSearch;
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.isComposing) {
+      e.preventDefault();
+      _doPickerSearch();
+    }
+  });
+  // 좌표 삭제
+  $('coord-picker-clear-btn').onclick = () => {
+    latInput.value = ''; lngInput.value = '';
+    _campForm.lat = null; _campForm.lng = null;
+    if (_pickerMarker) {
+      _pickerMap.removeLayer(_pickerMarker);
+      _pickerMarker = null;
+    }
+    _setPickerMsg('🗑 좌표 삭제됨');
+  };
 
   // extras 자유 입력
   $('cf-extras').oninput = (e) => {
