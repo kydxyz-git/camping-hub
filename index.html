@@ -1679,7 +1679,6 @@ function _renderCampMap(camps) {
     if (c.region) metaParts.push(c.region);
     if (visits > 0) metaParts.push(`${visits}회 방문`);
     if (isGraega) metaParts.push('그래가');
-    if (hasEp) metaParts.push('🎬 영상 있음');
     const meta = metaParts.join(' · ');
 
     // EP 영상 URL 찾기 (이 캠핑장과 연결된 EP 중 첫 번째)
@@ -1715,7 +1714,7 @@ function _renderCampMap(camps) {
     const popupHtml = `
       <div class="camp-popup">
         ${imgHtml}
-        <div class="camp-popup-title">${_mapEscHtml(c.name)}${hasEp ? ' <span style="font-size:11px;color:#d97a3f;">🎬</span>' : ''}</div>
+        <div class="camp-popup-title">${_mapEscHtml(c.name)}</div>
         ${meta ? `<div class="camp-popup-meta">${_mapEscHtml(meta)}</div>` : ''}
         ${btnsHtml}
       </div>
