@@ -1574,15 +1574,15 @@ function _renderCampMap(camps) {
 
   // 플랫폼 판별 헬퍼 (마커 색상 + 버튼 색상 통일)
   function _getPlatform(c) {
-    if (c.graega) return { key: 'graega', color: '#1a1a1a', btnLabel: '그래가에서 예약 →' };
+    if (c.graega) return { key: 'graega', color: '#1a1a1a', btnLabel: '예약사이트 →' };
     if (!c.url) return { key: 'etc', color: '#5E6C4F', btnLabel: '캠핑장 목록 보기 →' };
     const u = c.url.toLowerCase();
-    if (u.includes('naver.com'))      return { key: 'naver',  color: '#03C75A', btnLabel: '네이버 예약 →' };
-    if (u.includes('camfit.co.kr'))   return { key: 'camfit', color: '#2D8F4C', btnLabel: '캠핏 예약 →' };
+    if (u.includes('naver.com'))      return { key: 'naver',  color: '#03C75A', btnLabel: '예약사이트 →' };
+    if (u.includes('camfit.co.kr'))   return { key: 'camfit', color: '#2D8F4C', btnLabel: '예약사이트 →' };
     if (u.includes('thankqcamping.com') || u.includes('camperstory.com')) {
-      return { key: 'thankq', color: '#FF6B2C', btnLabel: '땡큐캠핑 예약 →' };
+      return { key: 'thankq', color: '#FF6B2C', btnLabel: '예약사이트 →' };
     }
-    return { key: 'etc', color: '#5E6C4F', btnLabel: '예약하러 가기 →' };
+    return { key: 'etc', color: '#5E6C4F', btnLabel: '예약사이트 →' };
   }
 
   // 마커 그룹
