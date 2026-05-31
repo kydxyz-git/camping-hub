@@ -1,20 +1,20 @@
 {
   "total": {
-    "pv": 1498,
-    "click": 609,
+    "pv": 1509,
+    "click": 611,
     "search": 0
   },
   "pages": {
-    "/": 309,
-    "/series/series_ba7cc89468/ep_ad505df37d": 125,
+    "/": 312,
+    "/series/series_ba7cc89468/ep_ad505df37d": 126,
     "/series/series_304565fb77/ep_c2e684a351": 65,
     "/series/series_873cdcaf61/ep_7dd208fe26": 28,
     "/series/series_e8c17ad5da/ep_e46450a717": 27,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 26,
     "/#stories": 5,
-    "/series/series_ba7cc89468/ep_73bdfba72e": 91,
-    "/series/series_ba7cc89468/ep_3acff3998f": 116,
-    "/series/series_ba7cc89468/ep_27438d1204": 61,
+    "/series/series_ba7cc89468/ep_73bdfba72e": 93,
+    "/series/series_ba7cc89468/ep_3acff3998f": 117,
+    "/series/series_ba7cc89468/ep_27438d1204": 62,
     "/series/series_304565fb77/ep_a8b40077ca": 56,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 26,
     "/series/series_e8c17ad5da/ep_7a390bade9": 30,
@@ -35,7 +35,7 @@
     "/#items": 4,
     "/foods/food_9945533a15": 1,
     "/foods/food_9966103a5b": 2,
-    "/series/series_ba7cc89468/ep_b953456d73": 56,
+    "/series/series_ba7cc89468/ep_b953456d73": 57,
     "/camps/camp_e1e0dde7b3": 4,
     "/camps/camp_357cccb118": 5,
     "/camps/camp_873dcfe92d": 2,
@@ -92,7 +92,7 @@
     "/camps/camp_0380055336": 5,
     "/camps/camp_7fafd07d0a": 3,
     "/camps/camp_02c72e06a3": 5,
-    "/series/series_ba7cc89468/ep_4da176323e": 43,
+    "/series/series_ba7cc89468/ep_4da176323e": 45,
     "/camps/camp_f756d38620": 1,
     "/#map": 11,
     "/camps/camp_b8d29b3f00": 2,
@@ -134,7 +134,7 @@
     "/camps/camp_922e05eeae::camfit.co.kr": 1,
     "/camps/camp_02c72e06a3::camp.dytc.or.kr": 2,
     "/camps/camp_e06cb829df::네이버": 1,
-    "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 57,
+    "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 59,
     "/camps/camp_55791da55f::www.xn--hq1bk3iuobz1y.net": 2,
     "/camps/camp_b8d29b3f00::그래가": 1,
     "/#map::인스타DM": 9,
@@ -146,11 +146,11 @@
   "searches": {},
   "devices": {
     "desktop": 114,
-    "mobile": 1993
+    "mobile": 2006
   },
   "referrers": {
     "direct": 188,
-    "인스타그램": 1240,
+    "인스타그램": 1251,
     "페이스북": 36,
     "구글": 20,
     "네이버": 5
@@ -1113,19 +1113,19 @@
       ]
     },
     "2026-05-31": {
-      "pv": 116,
-      "click": 60,
+      "pv": 127,
+      "click": 62,
       "search": 0,
       "pages": {
-        "/": 27,
-        "/series/series_ba7cc89468/ep_4da176323e": 10,
-        "/series/series_ba7cc89468/ep_ad505df37d": 7,
-        "/series/series_ba7cc89468/ep_73bdfba72e": 8,
-        "/series/series_ba7cc89468/ep_27438d1204": 8,
-        "/series/series_ba7cc89468/ep_3acff3998f": 7,
+        "/": 30,
+        "/series/series_ba7cc89468/ep_4da176323e": 12,
+        "/series/series_ba7cc89468/ep_ad505df37d": 8,
+        "/series/series_ba7cc89468/ep_73bdfba72e": 10,
+        "/series/series_ba7cc89468/ep_27438d1204": 9,
+        "/series/series_ba7cc89468/ep_3acff3998f": 8,
         "/series/series_304565fb77/ep_a8b40077ca": 12,
         "/series/series_e8c17ad5da/ep_ff868ac30c": 3,
-        "/series/series_ba7cc89468/ep_b953456d73": 5,
+        "/series/series_ba7cc89468/ep_b953456d73": 6,
         "/series/series_e8c17ad5da/ep_e46450a717": 2,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 2,
         "/camps/camp_b8d29b3f00": 1,
@@ -1148,7 +1148,7 @@
         "/camps/camp_7fafd07d0a": 1
       },
       "clicks": {
-        "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 26,
+        "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 28,
         "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 4,
         "/series/series_ba7cc89468/ep_73bdfba72e::인스타DM": 4,
         "/series/series_ba7cc89468/ep_27438d1204::인스타DM": 8,
@@ -1161,12 +1161,12 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 175,
+        "mobile": 188,
         "desktop": 1
       },
       "referrers": {
         "페이스북": 28,
-        "인스타그램": 79,
+        "인스타그램": 90,
         "direct": 5
       },
       "hourly": [
@@ -1183,7 +1183,7 @@
         11,
         10,
         2,
-        0,
+        11,
         0,
         0,
         0,
@@ -1197,5 +1197,5 @@
       ]
     }
   },
-  "updated_at": "2026-05-31T13:00:49.806Z"
+  "updated_at": "2026-05-31T14:00:49.883Z"
 }
