@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 1496,
+    "pv": 1498,
     "click": 609,
     "search": 0
   },
   "pages": {
-    "/": 308,
+    "/": 309,
     "/series/series_ba7cc89468/ep_ad505df37d": 125,
     "/series/series_304565fb77/ep_c2e684a351": 65,
     "/series/series_873cdcaf61/ep_7dd208fe26": 28,
@@ -15,7 +15,7 @@
     "/series/series_ba7cc89468/ep_73bdfba72e": 91,
     "/series/series_ba7cc89468/ep_3acff3998f": 116,
     "/series/series_ba7cc89468/ep_27438d1204": 61,
-    "/series/series_304565fb77/ep_a8b40077ca": 55,
+    "/series/series_304565fb77/ep_a8b40077ca": 56,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 26,
     "/series/series_e8c17ad5da/ep_7a390bade9": 30,
     "/#camps": 6,
@@ -146,11 +146,11 @@
   "searches": {},
   "devices": {
     "desktop": 114,
-    "mobile": 1991
+    "mobile": 1993
   },
   "referrers": {
     "direct": 188,
-    "인스타그램": 1238,
+    "인스타그램": 1240,
     "페이스북": 36,
     "구글": 20,
     "네이버": 5
@@ -1113,17 +1113,17 @@
       ]
     },
     "2026-05-31": {
-      "pv": 114,
+      "pv": 116,
       "click": 60,
       "search": 0,
       "pages": {
-        "/": 26,
+        "/": 27,
         "/series/series_ba7cc89468/ep_4da176323e": 10,
         "/series/series_ba7cc89468/ep_ad505df37d": 7,
         "/series/series_ba7cc89468/ep_73bdfba72e": 8,
         "/series/series_ba7cc89468/ep_27438d1204": 8,
         "/series/series_ba7cc89468/ep_3acff3998f": 7,
-        "/series/series_304565fb77/ep_a8b40077ca": 11,
+        "/series/series_304565fb77/ep_a8b40077ca": 12,
         "/series/series_e8c17ad5da/ep_ff868ac30c": 3,
         "/series/series_ba7cc89468/ep_b953456d73": 5,
         "/series/series_e8c17ad5da/ep_e46450a717": 2,
@@ -1161,12 +1161,12 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 173,
+        "mobile": 175,
         "desktop": 1
       },
       "referrers": {
         "페이스북": 28,
-        "인스타그램": 77,
+        "인스타그램": 79,
         "direct": 5
       },
       "hourly": [
@@ -1182,7 +1182,7 @@
         31,
         11,
         10,
-        0,
+        2,
         0,
         0,
         0,
@@ -1197,5 +1197,5 @@
       ]
     }
   },
-  "updated_at": "2026-05-31T12:00:49.027Z"
+  "updated_at": "2026-05-31T13:00:49.806Z"
 }
