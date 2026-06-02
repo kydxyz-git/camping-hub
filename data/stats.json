@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 1684,
-    "click": 670,
+    "pv": 1686,
+    "click": 671,
     "search": 0
   },
   "pages": {
@@ -32,7 +32,7 @@
     "/series/series_e8c17ad5da/ep_ff868ac30c": 26,
     "/foods/food_464525ea11": 4,
     "/foods/food_6b6f5c2711": 7,
-    "/#items": 5,
+    "/#items": 6,
     "/foods/food_9945533a15": 3,
     "/foods/food_9966103a5b": 3,
     "/series/series_ba7cc89468/ep_b953456d73": 60,
@@ -52,7 +52,7 @@
     "/camps/camp_ed97486488": 4,
     "/camps/camp_c6d9da8748": 6,
     "/camps/camp_8625b4018d": 3,
-    "/items/item_960c2ff01c": 13,
+    "/items/item_960c2ff01c": 14,
     "/items/item_48f6974ac5": 5,
     "/camps/camp_8f72106bcf": 6,
     "/camps/camp_e220a217fd": 17,
@@ -117,7 +117,7 @@
     "/series/series_304565fb77/ep_d7955f38a0::인스타DM": 14,
     "/foods/food_6b6f5c2711::쿠팡": 3,
     "__external__::그래가파트너스": 4,
-    "/items/item_960c2ff01c::네이버예약": 11,
+    "/items/item_960c2ff01c::네이버예약": 12,
     "/items/item_48f6974ac5::쿠팡": 4,
     "/camps/camp_82599ba9bf::땡큐캠핑": 1,
     "/camps/camp_c47fbddb56::땡큐캠핑": 1,
@@ -146,11 +146,11 @@
   "searches": {},
   "devices": {
     "desktop": 116,
-    "mobile": 2238
+    "mobile": 2241
   },
   "referrers": {
     "direct": 232,
-    "인스타그램": 1380,
+    "인스타그램": 1382,
     "페이스북": 37,
     "구글": 20,
     "네이버": 5
@@ -1289,8 +1289,8 @@
       ]
     },
     "2026-06-02": {
-      "pv": 60,
-      "click": 31,
+      "pv": 62,
+      "click": 32,
       "search": 0,
       "pages": {
         "/": 15,
@@ -1309,7 +1309,9 @@
         "/series/series_304565fb77/ep_a8b40077ca": 2,
         "/series/series_e8c17ad5da/ep_7a390bade9": 1,
         "/series/series_e8c17ad5da/ep_e46450a717": 1,
-        "/series/series_873cdcaf61/ep_7dd208fe26": 1
+        "/series/series_873cdcaf61/ep_7dd208fe26": 1,
+        "/#items": 1,
+        "/items/item_960c2ff01c": 1
       },
       "clicks": {
         "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 7,
@@ -1319,16 +1321,17 @@
         "/series/series_ba7cc89468/ep_b953456d73::인스타DM": 1,
         "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 1,
         "/series/series_873cdcaf61/ep_7dd208fe26::인스타DM": 14,
-        "/series/series_e8c17ad5da/ep_ff868ac30c::인스타DM": 1
+        "/series/series_e8c17ad5da/ep_ff868ac30c::인스타DM": 1,
+        "/items/item_960c2ff01c::네이버예약": 1
       },
       "searches": {},
       "devices": {
         "desktop": 1,
-        "mobile": 90
+        "mobile": 93
       },
       "referrers": {
         "direct": 19,
-        "인스타그램": 41
+        "인스타그램": 43
       },
       "hourly": [
         0,
@@ -1349,7 +1352,7 @@
         0,
         0,
         4,
-        0,
+        2,
         0,
         0,
         0,
@@ -1358,5 +1361,5 @@
       ]
     }
   },
-  "updated_at": "2026-06-02T18:00:37.710Z"
+  "updated_at": "2026-06-02T19:00:35.843Z"
 }
