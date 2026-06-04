@@ -26,5 +26,19 @@
     "id": "item_960c2ff01c",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
     "updated_at": "2026-05-21T02:53:18.159759+00:00"
+  },
+  {
+    "id": "item_200bd59067",
+    "name": "텔레신 MNM-001 맥세이프 미니멀 실리콘 넥마운트",
+    "desc": "1인칭 시점 촬영 필수 악세사리",
+    "url": "https://naver.me/GFsAAKGG",
+    "source": "네이버",
+    "thumb": "./images/products/cdd23e3d20b7.jpg",
+    "price_original": 27000,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-06-04T23:55:23.406Z",
+    "updated_at": "2026-06-04T23:55:23.406Z"
   }
 ]
