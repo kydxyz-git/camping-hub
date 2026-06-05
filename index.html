@@ -1324,6 +1324,9 @@ function match(c) {
   return true;
 }
 function sortCamps(arr) {
+  // 그래가 그룹 랜덤용: 호출 시점마다 캠핑장에 1회용 랜덤 키 부여 (안정적 비교)
+  const randKey = new Map();
+  for (const c of arr) randKey.set(c, Math.random());
   return [...arr].sort((a, b) => {
     // 1. 그래가 예약 가능 캠핑장 최우선
     if (a.graega !== b.graega) return (b.graega?1:0) - (a.graega?1:0);
@@ -1331,7 +1334,9 @@ function sortCamps(arr) {
     const ai = (a.imgs && a.imgs.length > 0) ? 1 : 0;
     const bi = (b.imgs && b.imgs.length > 0) ? 1 : 0;
     if (ai !== bi) return bi - ai;
-    // 3. 방문 횟수 내림차순
+    // 3-A. 그래가 그룹: 방문 횟수 빼고 랜덤
+    if (a.graega && b.graega) return randKey.get(a) - randKey.get(b);
+    // 3-B. 비그래가 그룹: 방문 횟수 내림차순
     const va = a.visits||0, vb = b.visits||0;
     if (va !== vb) return vb - va;
     // 4. 이름 가나다 순
