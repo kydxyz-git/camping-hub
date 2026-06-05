@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 1938,
-    "click": 788,
+    "pv": 1939,
+    "click": 789,
     "search": 0
   },
   "pages": {
@@ -98,7 +98,8 @@
     "/camps/camp_b8d29b3f00": 2,
     "/camps/camp_e2b57e4e5d": 1,
     "/series/series_ba7cc89468/ep_c56ed16c13": 17,
-    "/camps/camp_a9bbd60ec3": 3
+    "/camps/camp_a9bbd60ec3": 3,
+    "/items/item_200bd59067": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 178,
@@ -146,16 +147,17 @@
     "/camps/camp_02c72e06a3::네이버예약": 2,
     "/series/series_ba7cc89468/ep_c56ed16c13::인스타DM": 29,
     "/camps/camp_a9bbd60ec3::그래가": 2,
-    "/camps/camp_d9699234d4::네이버": 1
+    "/camps/camp_d9699234d4::네이버": 1,
+    "/items/item_200bd59067::네이버예약": 1
   },
   "searches": {},
   "devices": {
     "desktop": 126,
-    "mobile": 2600
+    "mobile": 2602
   },
   "referrers": {
     "direct": 259,
-    "인스타그램": 1592,
+    "인스타그램": 1593,
     "페이스북": 37,
     "구글": 20,
     "네이버": 5,
@@ -1534,7 +1536,51 @@
         2,
         0
       ]
+    },
+    "2026-06-05": {
+      "pv": 1,
+      "click": 1,
+      "search": 0,
+      "pages": {
+        "/items/item_200bd59067": 1
+      },
+      "clicks": {
+        "/items/item_200bd59067::네이버예약": 1
+      },
+      "searches": {},
+      "devices": {
+        "mobile": 2
+      },
+      "referrers": {
+        "인스타그램": 1
+      },
+      "hourly": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   },
-  "updated_at": "2026-06-04T23:00:29.103Z"
+  "updated_at": "2026-06-05T00:00:29.060Z"
 }
