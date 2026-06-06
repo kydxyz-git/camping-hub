@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 2074,
-    "click": 822,
+    "pv": 2075,
+    "click": 823,
     "search": 0
   },
   "pages": {
-    "/": 440,
+    "/": 441,
     "/series/series_ba7cc89468/ep_ad505df37d": 168,
     "/series/series_304565fb77/ep_c2e684a351": 85,
     "/series/series_873cdcaf61/ep_7dd208fe26": 39,
@@ -116,7 +116,7 @@
     "/series/series_ba7cc89468/ep_27438d1204::인스타DM": 63,
     "/series/series_873cdcaf61/ep_cf2282cf4e::인스타DM": 11,
     "/series/series_e8c17ad5da/ep_7a390bade9::인스타DM": 5,
-    "__external__::Clip Creators": 3,
+    "__external__::Clip Creators": 4,
     "__external__::메일 보내기": 4,
     "__external__::인스타 프로필": 2,
     "/series/series_304565fb77/ep_a8b40077ca::인스타DM": 7,
@@ -158,11 +158,11 @@
   "searches": {},
   "devices": {
     "desktop": 130,
-    "mobile": 2766
+    "mobile": 2768
   },
   "referrers": {
     "direct": 276,
-    "인스타그램": 1711,
+    "인스타그램": 1712,
     "페이스북": 37,
     "구글": 20,
     "네이버": 5,
@@ -1632,25 +1632,26 @@
       ]
     },
     "2026-06-06": {
-      "pv": 9,
-      "click": 1,
+      "pv": 10,
+      "click": 2,
       "search": 0,
       "pages": {
-        "/": 5,
+        "/": 6,
         "/series/series_ba7cc89468/ep_4da176323e": 1,
         "/series/series_ba7cc89468/ep_ad505df37d": 1,
         "/series/series_873cdcaf61/ep_7dd208fe26": 1,
         "/series/series_e8c17ad5da/ep_7a390bade9": 1
       },
       "clicks": {
-        "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 1
+        "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 1,
+        "__external__::Clip Creators": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 10
+        "mobile": 12
       },
       "referrers": {
-        "인스타그램": 9
+        "인스타그램": 10
       },
       "hourly": [
         2,
@@ -1660,7 +1661,7 @@
         3,
         0,
         2,
-        0,
+        1,
         0,
         0,
         0,
@@ -1680,5 +1681,5 @@
       ]
     }
   },
-  "updated_at": "2026-06-06T07:00:19.840Z"
+  "updated_at": "2026-06-06T08:00:19.425Z"
 }
