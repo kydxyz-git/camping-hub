@@ -7,6 +7,16 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_00a18099de",
+        "ep": 8,
+        "title": "계곡 하나는 진짜 TOP 👀",
+        "url": "https://www.instagram.com/reel/DZVvV3TzbF5/?igsh=c3pwbXVlbjFkNzJ5",
+        "thumb": "./images/series/summer-ep08.jpg",
+        "published": true,
+        "created_at": "2026-06-08T21:34:02.908Z",
+        "updated_at": "2026-06-08T21:34:02.908Z"
+      },
+      {
         "id": "ep_c56ed16c13",
         "ep": 7,
         "title": "6월부터 더 좋아지는 곳",
