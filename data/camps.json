@@ -1265,13 +1265,14 @@
     "graega": false,
     "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=3795",
     "imgs": [
-      "./images/camps/d25b5ad71855.jpg"
+      "./images/camps/d25b5ad71855.jpg",
+      "./images/camps/d25b5ad71855-2.jpg"
     ],
     "rating": 4,
     "visits": 2,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-06-09T05:35:28.861Z",
+    "updated_at": "2026-06-09T05:36:18.880Z",
     "lat": 35.2886591,
     "lng": 127.7591482
   },
