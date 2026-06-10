@@ -42,18 +42,18 @@
     "updated_at": "2026-06-10T07:24:38.667Z"
   },
   {
+    "id": "food_790525d8a8",
     "name": "[전주 베테랑] 김치만두",
     "desc": "전주 유명 맛집의 인기 메뉴",
     "url": "https://lounge.kurly.com/link/tbku-uJpL",
     "source": "컬리",
     "thumb": "./images/products/food-04.jpg",
     "price_original": 5980,
-    "price_sale": 5382,
+    "price_sale": 5380,
     "discount_rate": 10,
     "published": true,
-    "id": "food_790525d8a8",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T02:53:18.159759+00:00"
+    "updated_at": "2026-06-10T07:24:57.132Z"
   },
   {
     "id": "food_464525ea11",
