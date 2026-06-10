@@ -124,5 +124,19 @@
     "published": true,
     "created_at": "2026-06-10T07:18:19.619Z",
     "updated_at": "2026-06-10T07:18:19.619Z"
+  },
+  {
+    "id": "food_8924631470",
+    "name": "[한식곳간] 아롱사태 수육전",
+    "desc": "푸짐하게 담은 고소한 수육",
+    "url": "https://lounge.kurly.com/link/AqHZ-WVJr",
+    "source": "컬리",
+    "thumb": "./images/products/accf19fdbdd9.jpg",
+    "price_original": 21900,
+    "price_sale": 19710,
+    "discount_rate": 10,
+    "published": true,
+    "created_at": "2026-06-10T07:19:38.944Z",
+    "updated_at": "2026-06-10T07:19:38.944Z"
   }
 ]
