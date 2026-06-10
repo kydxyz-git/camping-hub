@@ -110,5 +110,19 @@
     "published": true,
     "created_at": "2026-05-22T01:52:29.180Z",
     "updated_at": "2026-05-22T01:53:58.416Z"
+  },
+  {
+    "id": "food_673fc958f6",
+    "name": "[병천아우내] 순대 4종",
+    "desc": "모든, 마늘, 야채, 고추순대 4종",
+    "url": "https://lounge.kurly.com/link/BYvE-pAEb",
+    "source": "컬리",
+    "thumb": "./images/products/cf9431dd7605.jpg",
+    "price_original": 5900,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-06-10T07:18:19.619Z",
+    "updated_at": "2026-06-10T07:18:19.619Z"
   }
 ]
