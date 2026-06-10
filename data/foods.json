@@ -77,11 +77,11 @@
     "source": "네이버",
     "thumb": "./images/products/food-06.jpg",
     "price_original": 14000,
-    "price_sale": 7900,
-    "discount_rate": 44,
+    "price_sale": 6600,
+    "discount_rate": 53,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T15:01:39.345Z"
+    "updated_at": "2026-06-10T07:25:17.165Z"
   },
   {
     "id": "food_b7f447dd02",
