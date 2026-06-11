@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 2703,
-    "click": 1086,
+    "pv": 2707,
+    "click": 1087,
     "search": 0
   },
   "pages": {
@@ -19,9 +19,9 @@
     "/series/series_873cdcaf61/ep_cf2282cf4e": 50,
     "/series/series_e8c17ad5da/ep_7a390bade9": 46,
     "/#camps": 9,
-    "/#foods": 5,
+    "/#foods": 7,
     "/series/series_304565fb77/ep_d7955f38a0": 90,
-    "/foods/food_592752e317": 6,
+    "/foods/food_592752e317": 7,
     "/foods/food_790525d8a8": 9,
     "/series/series_e8c17ad5da/ep_e383972ec6": 30,
     "/camps/camp_e5a202316d": 20,
@@ -105,7 +105,8 @@
     "/series/series_873cdcaf61/ep_4f183af0df": 14,
     "/series/series_ba7cc89468/ep_00a18099de": 44,
     "/camps/camp_43b6759cd3": 2,
-    "/series/series_304565fb77/ep_17f905660e": 3
+    "/series/series_304565fb77/ep_17f905660e": 3,
+    "/foods/food_8924631470": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 204,
@@ -163,15 +164,16 @@
     "/camps/camp_6ecd104353::camfit.co.kr": 2,
     "/camps/camp_c6d9da8748::www.camfit.co.kr": 1,
     "/camps/camp_17e022c947::www.sanddune.co.kr": 1,
-    "/camps/camp_7fafd07d0a::camp.xticket.kr": 1
+    "/camps/camp_7fafd07d0a::camp.xticket.kr": 1,
+    "/foods/food_8924631470::컬리": 1
   },
   "searches": {},
   "devices": {
     "desktop": 155,
-    "mobile": 3634
+    "mobile": 3639
   },
   "referrers": {
-    "direct": 337,
+    "direct": 341,
     "인스타그램": 2243,
     "페이스북": 63,
     "구글": 20,
@@ -2039,8 +2041,8 @@
       ]
     },
     "2026-06-11": {
-      "pv": 25,
-      "click": 14,
+      "pv": 29,
+      "click": 15,
       "search": 0,
       "pages": {
         "/": 2,
@@ -2064,7 +2066,10 @@
         "/camps/camp_7fafd07d0a": 1,
         "/camps/camp_0741c2c7b7": 1,
         "/#camps": 1,
-        "/series/series_ba7cc89468/ep_00a18099de": 1
+        "/series/series_ba7cc89468/ep_00a18099de": 1,
+        "/#foods": 2,
+        "/foods/food_8924631470": 1,
+        "/foods/food_592752e317": 1
       },
       "clicks": {
         "/camps/camp_922e05eeae::camfit.co.kr": 1,
@@ -2077,22 +2082,23 @@
         "/camps/camp_e1e0dde7b3::땡큐캠핑": 1,
         "/camps/camp_e06cb829df::네이버": 1,
         "/camps/camp_7fafd07d0a::camp.xticket.kr": 1,
-        "/series/series_ba7cc89468/ep_00a18099de::인스타DM": 1
+        "/series/series_ba7cc89468/ep_00a18099de::인스타DM": 1,
+        "/foods/food_8924631470::컬리": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 36,
+        "mobile": 41,
         "desktop": 3
       },
       "referrers": {
         "페이스북": 1,
         "인스타그램": 21,
-        "direct": 2
+        "direct": 6
       },
       "hourly": [
         1,
         24,
-        0,
+        4,
         0,
         0,
         0,
@@ -2117,5 +2123,5 @@
       ]
     }
   },
-  "updated_at": "2026-06-11T02:00:12.699Z"
+  "updated_at": "2026-06-11T03:00:06.861Z"
 }
