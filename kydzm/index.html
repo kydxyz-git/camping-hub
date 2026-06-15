@@ -1118,6 +1118,27 @@
     color: #c8252b; font-weight: 800;
     font-size: 12px; margin-left: 6px;
   }
+  /* 통화 토글 (₩ / $) */
+  .currency-toggle {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .currency-btn {
+    padding: 8px 16px;
+    background: var(--bg);
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .currency-btn.is-active {
+    background: var(--point);
+    color: #fff;
+  }
   .detail-images {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -6015,13 +6036,16 @@ function sourceBadge(source) {
   return `<span class="badge">${escapeHtml(source)}</span>`;
 }
 
-// 가격 HTML (원가/할인가/할인율)
+// 가격 HTML (원가/할인가/할인율) — currency: 'KRW'(기본) | 'USD'
 function priceHtml(item) {
   const o = item.price_original;
   const s = item.price_sale;
   const d = item.discount_rate;
   if (!o && !s) return '<span style="color:var(--muted)">-</span>';
-  const fmt = n => Number(n).toLocaleString('ko-KR') + '원';
+  const isUsd = item.currency === 'USD';
+  const fmt = n => isUsd
+    ? '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : Number(n).toLocaleString('ko-KR') + '원';
   if (s != null && s !== o) {
     return `<span class="price-original">${fmt(o)}</span><span class="price-sale">${fmt(s)}</span>${d ? `<span class="price-discount">${d}%</span>` : ''}`;
   }
@@ -6215,7 +6239,7 @@ function renderFoodDetail(idx) {
 // ════════════════════════════════════════════════════════════════════
 // 음식 추가/수정 폼 (통합)
 // ════════════════════════════════════════════════════════════════════
-const FOOD_SOURCES = ['쿠팡', '컬리', '네이버', '11번가', '지마켓', 'SSG', '오아시스', '기타'];
+const FOOD_SOURCES = ['쿠팡', '컬리', '네이버', '11번가', '지마켓', 'SSG', '오아시스', '알리익스프레스', '기타'];
 
 let _foodForm = {
   mode: 'add',       // 'add' | 'edit'
@@ -6224,6 +6248,7 @@ let _foodForm = {
   desc: '',
   source: '',
   url: '',
+  currency: 'KRW',   // 'KRW'(원) | 'USD'(달러)
   priceOriginal: '',
   priceSale: '',
   discountRate: '',
@@ -6237,6 +6262,7 @@ function renderFoodAddForm() {
   _foodForm = {
     mode: 'add', editIdx: null,
     name: '', desc: '', source: '', url: '',
+    currency: 'KRW',
     priceOriginal: '', priceSale: '', discountRate: '',
     imageBase64: null, imagePreviewUrl: null, imageSize: 0,
     imageChanged: false,
@@ -6253,6 +6279,7 @@ function renderFoodEditForm(idx) {
     desc: f.desc || '',
     source: f.source || '',
     url: f.url || '',
+    currency: f.currency || 'KRW',
     priceOriginal: f.price_original != null ? String(f.price_original) : '',
     priceSale: f.price_sale != null ? String(f.price_sale) : '',
     discountRate: f.discount_rate != null ? String(f.discount_rate) : '',
@@ -6324,13 +6351,21 @@ function _renderFoodFormUI() {
         </div>
 
         <div class="form-field">
-          <label class="label" for="ff-price-original">원가 (원)</label>
-          <input type="number" id="ff-price-original" class="input" min="0" placeholder="49400" value="${_foodForm.priceOriginal}">
+          <label class="label">통화</label>
+          <div class="currency-toggle" id="ff-currency-toggle">
+            <button type="button" class="currency-btn ${_foodForm.currency === 'KRW' ? 'is-active' : ''}" data-cur="KRW">₩ 원</button>
+            <button type="button" class="currency-btn ${_foodForm.currency === 'USD' ? 'is-active' : ''}" data-cur="USD">$ 달러</button>
+          </div>
         </div>
 
         <div class="form-field">
-          <label class="label" for="ff-price-sale">할인가 (원)</label>
-          <input type="number" id="ff-price-sale" class="input" min="0" placeholder="할인 없으면 비워두세요" value="${_foodForm.priceSale}">
+          <label class="label" for="ff-price-original">원가 (${_foodForm.currency === 'USD' ? '$' : '원'})</label>
+          <input type="number" id="ff-price-original" class="input" min="0" ${_foodForm.currency === 'USD' ? 'step="0.01"' : ''} placeholder="${_foodForm.currency === 'USD' ? '12.99' : '49400'}" value="${_foodForm.priceOriginal}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="ff-price-sale">할인가 (${_foodForm.currency === 'USD' ? '$' : '원'})</label>
+          <input type="number" id="ff-price-sale" class="input" min="0" ${_foodForm.currency === 'USD' ? 'step="0.01"' : ''} placeholder="할인 없으면 비워두세요" value="${_foodForm.priceSale}">
         </div>
 
         <div class="form-field">
@@ -6385,6 +6420,14 @@ function _renderFoodFormUI() {
     }
   };
 
+  // 통화 토글 (₩ / $)
+  $('ff-currency-toggle').querySelectorAll('.currency-btn').forEach(btn => {
+    btn.onclick = () => {
+      _foodForm.currency = btn.dataset.cur;
+      _renderFoodFormUI();  // 라벨/placeholder 갱신 위해 재렌더
+    };
+  });
+
   $('ff-price-original').oninput = (e) => {
     _foodForm.priceOriginal = e.target.value;
     _autoCalcDiscount();
@@ -6395,10 +6438,10 @@ function _renderFoodFormUI() {
   };
   $('ff-discount').oninput = (e) => { _foodForm.discountRate = e.target.value; };
 
-  // 원가/할인가 입력 시 할인율 자동 계산
+  // 원가/할인가 입력 시 할인율 자동 계산 (달러 소수점 지원 위해 parseFloat)
   function _autoCalcDiscount() {
-    const o = parseInt(_foodForm.priceOriginal);
-    const s = parseInt(_foodForm.priceSale);
+    const o = parseFloat(_foodForm.priceOriginal);
+    const s = parseFloat(_foodForm.priceSale);
     if (o > 0 && s > 0 && s < o) {
       const rate = Math.round((1 - s / o) * 100);
       _foodForm.discountRate = String(rate);
@@ -6484,6 +6527,7 @@ function resetFoodForm() {
   _foodForm = {
     mode: 'add', editIdx: null,
     name: '', desc: '', source: '', url: '',
+    currency: 'KRW',
     priceOriginal: '', priceSale: '', discountRate: '',
     imageBase64: null, imagePreviewUrl: null, imageSize: 0,
     imageChanged: false,
@@ -6556,9 +6600,11 @@ async function submitFoodForm() {
       files.push({ path: newPath, content: _foodForm.imageBase64, encoding: 'base64' });
     }
 
-    // 가격 정규화
-    const priceOriginal = parseInt(_foodForm.priceOriginal) || 0;
-    const priceSale = _foodForm.priceSale ? parseInt(_foodForm.priceSale) : null;
+    // 가격 정규화 (달러는 소수점 허용 → parseFloat)
+    const isUsd = _foodForm.currency === 'USD';
+    const parsePrice = (v) => isUsd ? (parseFloat(v) || 0) : (parseInt(v) || 0);
+    const priceOriginal = parsePrice(_foodForm.priceOriginal);
+    const priceSale = _foodForm.priceSale ? parsePrice(_foodForm.priceSale) : null;
     const discountRate = _foodForm.discountRate ? parseInt(_foodForm.discountRate) : null;
 
     // 음식 객체
@@ -6573,6 +6619,7 @@ async function submitFoodForm() {
       url: _foodForm.url.trim(),
       source: _foodForm.source || _detectSourceFromUrl(_foodForm.url) || '',
       thumb: thumbPath,
+      currency: _foodForm.currency || 'KRW',
       price_original: priceOriginal,
       price_sale: priceSale,
       discount_rate: discountRate,
@@ -6688,6 +6735,7 @@ function renderItemDetail(idx) {
 let _itemForm = {
   mode: 'add', editIdx: null,
   name: '', desc: '', source: '', url: '',
+  currency: 'KRW',
   priceOriginal: '', priceSale: '', discountRate: '',
   imageBase64: null, imagePreviewUrl: null, imageSize: 0,
   imageChanged: false,
@@ -6697,6 +6745,7 @@ function renderItemAddForm() {
   _itemForm = {
     mode: 'add', editIdx: null,
     name: '', desc: '', source: '', url: '',
+    currency: 'KRW',
     priceOriginal: '', priceSale: '', discountRate: '',
     imageBase64: null, imagePreviewUrl: null, imageSize: 0,
     imageChanged: false,
@@ -6713,6 +6762,7 @@ function renderItemEditForm(idx) {
     desc: it.desc || '',
     source: it.source || '',
     url: it.url || '',
+    currency: it.currency || 'KRW',
     priceOriginal: it.price_original != null ? String(it.price_original) : '',
     priceSale: it.price_sale != null ? String(it.price_sale) : '',
     discountRate: it.discount_rate != null ? String(it.discount_rate) : '',
@@ -6771,13 +6821,21 @@ function _renderItemFormUI() {
         </div>
 
         <div class="form-field">
-          <label class="label" for="if-price-original">원가 (원)</label>
-          <input type="number" id="if-price-original" class="input" min="0" placeholder="22310" value="${_itemForm.priceOriginal}">
+          <label class="label">통화</label>
+          <div class="currency-toggle" id="if-currency-toggle">
+            <button type="button" class="currency-btn ${_itemForm.currency === 'KRW' ? 'is-active' : ''}" data-cur="KRW">₩ 원</button>
+            <button type="button" class="currency-btn ${_itemForm.currency === 'USD' ? 'is-active' : ''}" data-cur="USD">$ 달러</button>
+          </div>
         </div>
 
         <div class="form-field">
-          <label class="label" for="if-price-sale">할인가 (원)</label>
-          <input type="number" id="if-price-sale" class="input" min="0" placeholder="할인 없으면 비워두세요" value="${_itemForm.priceSale}">
+          <label class="label" for="if-price-original">원가 (${_itemForm.currency === 'USD' ? '$' : '원'})</label>
+          <input type="number" id="if-price-original" class="input" min="0" ${_itemForm.currency === 'USD' ? 'step="0.01"' : ''} placeholder="${_itemForm.currency === 'USD' ? '12.99' : '22310'}" value="${_itemForm.priceOriginal}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="if-price-sale">할인가 (${_itemForm.currency === 'USD' ? '$' : '원'})</label>
+          <input type="number" id="if-price-sale" class="input" min="0" ${_itemForm.currency === 'USD' ? 'step="0.01"' : ''} placeholder="할인 없으면 비워두세요" value="${_itemForm.priceSale}">
         </div>
 
         <div class="form-field">
@@ -6832,6 +6890,14 @@ function _renderItemFormUI() {
     }
   };
 
+  // 통화 토글 (₩ / $)
+  $('if-currency-toggle').querySelectorAll('.currency-btn').forEach(btn => {
+    btn.onclick = () => {
+      _itemForm.currency = btn.dataset.cur;
+      _renderItemFormUI();  // 라벨/placeholder 갱신 위해 재렌더
+    };
+  });
+
   $('if-price-original').oninput = (e) => {
     _itemForm.priceOriginal = e.target.value;
     _autoCalcDiscount();
@@ -6843,8 +6909,8 @@ function _renderItemFormUI() {
   $('if-discount').oninput = (e) => { _itemForm.discountRate = e.target.value; };
 
   function _autoCalcDiscount() {
-    const o = parseInt(_itemForm.priceOriginal);
-    const s = parseInt(_itemForm.priceSale);
+    const o = parseFloat(_itemForm.priceOriginal);
+    const s = parseFloat(_itemForm.priceSale);
     if (o > 0 && s > 0 && s < o) {
       const rate = Math.round((1 - s / o) * 100);
       _itemForm.discountRate = String(rate);
@@ -6930,6 +6996,7 @@ function resetItemForm() {
   _itemForm = {
     mode: 'add', editIdx: null,
     name: '', desc: '', source: '', url: '',
+    currency: 'KRW',
     priceOriginal: '', priceSale: '', discountRate: '',
     imageBase64: null, imagePreviewUrl: null, imageSize: 0,
     imageChanged: false,
@@ -6978,9 +7045,11 @@ async function submitItemForm() {
       files.push({ path: newPath, content: _itemForm.imageBase64, encoding: 'base64' });
     }
 
-    // 가격 정규화
-    const priceOriginal = parseInt(_itemForm.priceOriginal) || 0;
-    const priceSale = _itemForm.priceSale ? parseInt(_itemForm.priceSale) : null;
+    // 가격 정규화 (달러는 소수점 허용 → parseFloat)
+    const isUsd = _itemForm.currency === 'USD';
+    const parsePrice = (v) => isUsd ? (parseFloat(v) || 0) : (parseInt(v) || 0);
+    const priceOriginal = parsePrice(_itemForm.priceOriginal);
+    const priceSale = _itemForm.priceSale ? parsePrice(_itemForm.priceSale) : null;
     const discountRate = _itemForm.discountRate ? parseInt(_itemForm.discountRate) : null;
 
     const _nowIsoI = new Date().toISOString();
@@ -6994,6 +7063,7 @@ async function submitItemForm() {
       url: _itemForm.url.trim(),
       source: _itemForm.source || _detectSourceFromUrl(_itemForm.url) || '',
       thumb: thumbPath,
+      currency: _itemForm.currency || 'KRW',
       price_original: priceOriginal,
       price_sale: priceSale,
       discount_rate: discountRate,

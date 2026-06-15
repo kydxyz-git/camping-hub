@@ -1274,6 +1274,11 @@ function renderProducts(containerId, dataArr) {
     const trackPath = `/${trackCategory}/${trackId}`;
     const trackTitle = (item.name || '').replace(/"/g, '&quot;');
     const trackAttrs = `data-track-path="${trackPath}" data-track-title="${trackTitle}"`;
+    // 가격 포맷 (currency: 'USD'면 $, 아니면 원)
+    const _isUsd = item.currency === 'USD';
+    const _fmtPrice = (n) => _isUsd
+      ? '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : Number(n).toLocaleString() + '원';
     return `<a class="product-card${empty?' empty':''}" href="${empty?'#':item.url}" ${empty?'':' target="_blank" rel="noopener"'} ${trackAttrs}>
       <div class="product-thumb${item.thumb?'':' ph'}">
         ${item.thumb ? `<img src="${item.thumb}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
@@ -1284,10 +1289,10 @@ function renderProducts(containerId, dataArr) {
         ${item.desc ? `<div class="product-desc">${item.desc}</div>` : ''}
         ${(item.price_sale || item.price_original) ? `
         <div class="price-wrap">
-          ${(item.price_original && item.price_sale) ? `<span class="price-original">${Number(item.price_original).toLocaleString()}원</span>` : ''}
+          ${(item.price_original && item.price_sale) ? `<span class="price-original">${_fmtPrice(item.price_original)}</span>` : ''}
           <div class="price-row">
             ${item.discount_rate ? `<span class="price-discount-rate">${item.discount_rate}%</span>` : ''}
-            ${item.price_sale ? `<span class="price-sale">${Number(item.price_sale).toLocaleString()}원</span>` : item.price_original ? `<span class="price-only">${Number(item.price_original).toLocaleString()}원</span>` : ''}
+            ${item.price_sale ? `<span class="price-sale">${_fmtPrice(item.price_sale)}</span>` : item.price_original ? `<span class="price-only">${_fmtPrice(item.price_original)}</span>` : ''}
           </div>
         </div>` : ''}
         ${!empty ? `<span class="product-link">구매하기 ${ARROW_SVG}</span>` : ''}
