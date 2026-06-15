@@ -48,11 +48,12 @@
     "url": "https://s.click.aliexpress.com/e/_c41Yo661",
     "source": "기타",
     "thumb": "./images/products/9845789086bf.jpg",
-    "price_original": 140000,
-    "price_sale": null,
-    "discount_rate": null,
+    "currency": "USD",
+    "price_original": 117,
+    "price_sale": 98.61,
+    "discount_rate": 16,
     "published": true,
     "created_at": "2026-06-15T04:18:00.596Z",
-    "updated_at": "2026-06-15T04:18:00.596Z"
+    "updated_at": "2026-06-15T04:53:49.963Z"
   }
 ]
