@@ -1,26 +1,26 @@
 {
   "total": {
-    "pv": 3158,
-    "click": 1246,
+    "pv": 3165,
+    "click": 1260,
     "search": 0
   },
   "pages": {
-    "/": 667,
+    "/": 668,
     "/series/series_ba7cc89468/ep_ad505df37d": 217,
-    "/series/series_304565fb77/ep_c2e684a351": 118,
+    "/series/series_304565fb77/ep_c2e684a351": 119,
     "/series/series_873cdcaf61/ep_7dd208fe26": 55,
     "/series/series_e8c17ad5da/ep_e46450a717": 49,
-    "/series/series_c0b82ea145/ep_39cf2ffa99": 46,
+    "/series/series_c0b82ea145/ep_39cf2ffa99": 47,
     "/#stories": 5,
     "/series/series_ba7cc89468/ep_73bdfba72e": 165,
     "/series/series_ba7cc89468/ep_3acff3998f": 199,
     "/series/series_ba7cc89468/ep_27438d1204": 131,
-    "/series/series_304565fb77/ep_a8b40077ca": 104,
+    "/series/series_304565fb77/ep_a8b40077ca": 105,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 58,
-    "/series/series_e8c17ad5da/ep_7a390bade9": 49,
+    "/series/series_e8c17ad5da/ep_7a390bade9": 50,
     "/#camps": 9,
     "/#foods": 11,
-    "/series/series_304565fb77/ep_d7955f38a0": 114,
+    "/series/series_304565fb77/ep_d7955f38a0": 115,
     "/foods/food_592752e317": 10,
     "/foods/food_790525d8a8": 10,
     "/series/series_e8c17ad5da/ep_e383972ec6": 34,
@@ -105,7 +105,7 @@
     "/series/series_873cdcaf61/ep_4f183af0df": 21,
     "/series/series_ba7cc89468/ep_00a18099de": 75,
     "/camps/camp_43b6759cd3": 2,
-    "/series/series_304565fb77/ep_17f905660e": 27,
+    "/series/series_304565fb77/ep_17f905660e": 28,
     "/foods/food_8924631470": 7,
     "/foods/food_673fc958f6": 3,
     "/items/item_75f77862cd": 3,
@@ -113,7 +113,7 @@
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 212,
-    "/series/series_304565fb77/ep_c2e684a351::인스타DM": 12,
+    "/series/series_304565fb77/ep_c2e684a351::인스타DM": 13,
     "/series/series_873cdcaf61/ep_7dd208fe26::인스타DM": 38,
     "/series/series_e8c17ad5da/ep_e46450a717::인스타DM": 8,
     "/series/series_c0b82ea145/ep_39cf2ffa99::인스타DM": 2,
@@ -127,7 +127,7 @@
     "__external__::메일 보내기": 4,
     "__external__::인스타 프로필": 2,
     "/series/series_304565fb77/ep_a8b40077ca::인스타DM": 9,
-    "/series/series_304565fb77/ep_d7955f38a0::인스타DM": 25,
+    "/series/series_304565fb77/ep_d7955f38a0::인스타DM": 27,
     "/foods/food_6b6f5c2711::쿠팡": 7,
     "__external__::그래가파트너스": 7,
     "/items/item_960c2ff01c::네이버예약": 14,
@@ -169,7 +169,7 @@
     "/camps/camp_17e022c947::www.sanddune.co.kr": 1,
     "/camps/camp_7fafd07d0a::camp.xticket.kr": 1,
     "/foods/food_8924631470::컬리": 6,
-    "/series/series_304565fb77/ep_17f905660e::인스타DM": 15,
+    "/series/series_304565fb77/ep_17f905660e::인스타DM": 26,
     "/foods/food_592752e317::네이버예약": 2,
     "/foods/food_673fc958f6::컬리": 2,
     "/items/item_75f77862cd::s.click.aliexpress.com": 3,
@@ -182,11 +182,11 @@
   "searches": {},
   "devices": {
     "desktop": 200,
-    "mobile": 4204
+    "mobile": 4225
   },
   "referrers": {
     "direct": 403,
-    "인스타그램": 2627,
+    "인스타그램": 2634,
     "페이스북": 63,
     "구글": 20,
     "네이버": 5,
@@ -2494,11 +2494,11 @@
       ]
     },
     "2026-06-16": {
-      "pv": 75,
-      "click": 29,
+      "pv": 82,
+      "click": 43,
       "search": 0,
       "pages": {
-        "/": 16,
+        "/": 17,
         "/series/series_ba7cc89468/ep_4da176323e": 3,
         "/series/series_ba7cc89468/ep_ad505df37d": 3,
         "/series/series_ba7cc89468/ep_3acff3998f": 3,
@@ -2510,7 +2510,7 @@
         "/items/item_75f77862cd": 2,
         "/items/item_960c2ff01c": 1,
         "/series/series_ba7cc89468/ep_00a18099de": 5,
-        "/series/series_304565fb77/ep_c2e684a351": 4,
+        "/series/series_304565fb77/ep_c2e684a351": 5,
         "/series/series_ba7cc89468/ep_c56ed16c13": 3,
         "/series/series_ba7cc89468/ep_27438d1204": 1,
         "/series/series_873cdcaf61/ep_4f183af0df": 1,
@@ -2518,14 +2518,15 @@
         "/series/series_e8c17ad5da/ep_e46450a717": 2,
         "/series/series_873cdcaf61/ep_116826a88d": 2,
         "/series/series_873cdcaf61/ep_cf2282cf4e": 1,
-        "/series/series_304565fb77/ep_17f905660e": 2,
-        "/series/series_304565fb77/ep_d7955f38a0": 4,
+        "/series/series_304565fb77/ep_17f905660e": 3,
+        "/series/series_304565fb77/ep_d7955f38a0": 5,
         "/foods/food_9966103a5b": 3,
         "/foods/food_8924631470": 2,
-        "/series/series_304565fb77/ep_a8b40077ca": 1,
+        "/series/series_304565fb77/ep_a8b40077ca": 2,
         "/foods/food_464525ea11": 2,
         "/series/series_873cdcaf61/ep_08c284c148": 1,
-        "/series/series_e8c17ad5da/ep_7a390bade9": 1
+        "/series/series_e8c17ad5da/ep_7a390bade9": 2,
+        "/series/series_c0b82ea145/ep_39cf2ffa99": 1
       },
       "clicks": {
         "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 1,
@@ -2535,21 +2536,22 @@
         "/foods/food_6b6f5c2711::쿠팡": 3,
         "/items/item_75f77862cd::s.click.aliexpress.com": 2,
         "/series/series_ba7cc89468/ep_00a18099de::인스타DM": 3,
-        "/series/series_304565fb77/ep_17f905660e::인스타DM": 2,
-        "/series/series_304565fb77/ep_d7955f38a0::인스타DM": 1,
+        "/series/series_304565fb77/ep_17f905660e::인스타DM": 13,
+        "/series/series_304565fb77/ep_d7955f38a0::인스타DM": 3,
         "/foods/food_9966103a5b::컬리": 1,
         "/foods/food_8924631470::컬리": 2,
         "/series/series_ba7cc89468/ep_c56ed16c13::인스타DM": 2,
         "/series/series_873cdcaf61/ep_08c284c148::인스타DM": 1,
-        "/series/series_ba7cc89468/ep_73bdfba72e::인스타DM": 1
+        "/series/series_ba7cc89468/ep_73bdfba72e::인스타DM": 1,
+        "/series/series_304565fb77/ep_c2e684a351::인스타DM": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 92,
+        "mobile": 113,
         "desktop": 12
       },
       "referrers": {
-        "인스타그램": 68,
+        "인스타그램": 75,
         "direct": 7
       },
       "hourly": [
@@ -2566,7 +2568,7 @@
         6,
         7,
         0,
-        0,
+        7,
         0,
         0,
         0,
@@ -2580,5 +2582,5 @@
       ]
     }
   },
-  "updated_at": "2026-06-16T12:00:07.657Z"
+  "updated_at": "2026-06-16T14:00:08.423Z"
 }
