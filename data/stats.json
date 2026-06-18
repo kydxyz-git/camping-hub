@@ -1,26 +1,26 @@
 {
   "total": {
-    "pv": 3326,
-    "click": 1327,
+    "pv": 3332,
+    "click": 1329,
     "search": 0
   },
   "pages": {
-    "/": 695,
+    "/": 696,
     "/series/series_ba7cc89468/ep_ad505df37d": 227,
-    "/series/series_304565fb77/ep_c2e684a351": 126,
+    "/series/series_304565fb77/ep_c2e684a351": 127,
     "/series/series_873cdcaf61/ep_7dd208fe26": 59,
     "/series/series_e8c17ad5da/ep_e46450a717": 50,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 50,
     "/#stories": 5,
     "/series/series_ba7cc89468/ep_73bdfba72e": 169,
-    "/series/series_ba7cc89468/ep_3acff3998f": 206,
-    "/series/series_ba7cc89468/ep_27438d1204": 136,
+    "/series/series_ba7cc89468/ep_3acff3998f": 207,
+    "/series/series_ba7cc89468/ep_27438d1204": 137,
     "/series/series_304565fb77/ep_a8b40077ca": 107,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 61,
     "/series/series_e8c17ad5da/ep_7a390bade9": 52,
     "/#camps": 9,
     "/#foods": 13,
-    "/series/series_304565fb77/ep_d7955f38a0": 120,
+    "/series/series_304565fb77/ep_d7955f38a0": 121,
     "/foods/food_592752e317": 13,
     "/foods/food_790525d8a8": 12,
     "/series/series_e8c17ad5da/ep_e383972ec6": 35,
@@ -92,7 +92,7 @@
     "/camps/camp_0380055336": 5,
     "/camps/camp_7fafd07d0a": 4,
     "/camps/camp_02c72e06a3": 12,
-    "/series/series_ba7cc89468/ep_4da176323e": 188,
+    "/series/series_ba7cc89468/ep_4da176323e": 189,
     "/camps/camp_f756d38620": 1,
     "/#map": 13,
     "/camps/camp_b8d29b3f00": 5,
@@ -120,14 +120,14 @@
     "__external__::DM 보내기": 6,
     "/series/series_ba7cc89468/ep_73bdfba72e::인스타DM": 135,
     "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 107,
-    "/series/series_ba7cc89468/ep_27438d1204::인스타DM": 91,
+    "/series/series_ba7cc89468/ep_27438d1204::인스타DM": 92,
     "/series/series_873cdcaf61/ep_cf2282cf4e::인스타DM": 15,
     "/series/series_e8c17ad5da/ep_7a390bade9::인스타DM": 5,
     "__external__::Clip Creators": 7,
     "__external__::메일 보내기": 4,
     "__external__::인스타 프로필": 2,
     "/series/series_304565fb77/ep_a8b40077ca::인스타DM": 10,
-    "/series/series_304565fb77/ep_d7955f38a0::인스타DM": 30,
+    "/series/series_304565fb77/ep_d7955f38a0::인스타DM": 31,
     "/foods/food_6b6f5c2711::쿠팡": 7,
     "__external__::그래가파트너스": 7,
     "/items/item_960c2ff01c::네이버예약": 15,
@@ -184,11 +184,11 @@
   "searches": {},
   "devices": {
     "desktop": 212,
-    "mobile": 4441
+    "mobile": 4449
   },
   "referrers": {
     "direct": 424,
-    "인스타그램": 2767,
+    "인스타그램": 2773,
     "페이스북": 63,
     "구글": 20,
     "네이버": 12,
@@ -2685,11 +2685,11 @@
       ]
     },
     "2026-06-18": {
-      "pv": 38,
-      "click": 16,
+      "pv": 44,
+      "click": 18,
       "search": 0,
       "pages": {
-        "/": 5,
+        "/": 6,
         "/series/series_304565fb77/ep_17f905660e": 2,
         "/series/series_873cdcaf61/ep_08c284c148": 1,
         "/series/series_e8c17ad5da/ep_e46450a717": 1,
@@ -2703,18 +2703,21 @@
         "/#foods": 1,
         "/foods/food_6b6f5c2711": 3,
         "/foods/food_592752e317": 2,
-        "/series/series_ba7cc89468/ep_3acff3998f": 1,
+        "/series/series_ba7cc89468/ep_3acff3998f": 2,
         "/#items": 1,
         "/items/item_75f77862cd": 1,
         "/items/item_960c2ff01c": 1,
-        "/series/series_304565fb77/ep_c2e684a351": 1,
+        "/series/series_304565fb77/ep_c2e684a351": 2,
         "/series/series_e8c17ad5da/ep_ff868ac30c": 1,
         "/foods/food_464525ea11": 1,
         "/foods/food_b7f447dd02": 1,
         "/foods/food_790525d8a8": 1,
         "/foods/food_673fc958f6": 1,
         "/foods/food_48d51f3296": 2,
-        "/foods/food_9966103a5b": 1
+        "/foods/food_9966103a5b": 1,
+        "/series/series_304565fb77/ep_d7955f38a0": 1,
+        "/series/series_ba7cc89468/ep_4da176323e": 1,
+        "/series/series_ba7cc89468/ep_27438d1204": 1
       },
       "clicks": {
         "/series/series_ba7cc89468/ep_00a18099de::인스타DM": 1,
@@ -2726,16 +2729,18 @@
         "/foods/food_673fc958f6::컬리": 1,
         "/foods/food_48d51f3296::컬리": 1,
         "/foods/food_592752e317::네이버예약": 1,
-        "/foods/food_9966103a5b::컬리": 1
+        "/foods/food_9966103a5b::컬리": 1,
+        "/series/series_304565fb77/ep_d7955f38a0::인스타DM": 1,
+        "/series/series_ba7cc89468/ep_27438d1204::인스타DM": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 47,
+        "mobile": 55,
         "desktop": 7
       },
       "referrers": {
         "direct": 9,
-        "인스타그램": 29
+        "인스타그램": 35
       },
       "hourly": [
         0,
@@ -2751,7 +2756,7 @@
         0,
         15,
         0,
-        0,
+        6,
         0,
         0,
         0,
@@ -2765,5 +2770,5 @@
       ]
     }
   },
-  "updated_at": "2026-06-18T12:00:07.587Z"
+  "updated_at": "2026-06-18T14:00:06.546Z"
 }
