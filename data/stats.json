@@ -1,6 +1,6 @@
 {
   "total": {
-    "pv": 3401,
+    "pv": 3402,
     "click": 1364,
     "search": 0
   },
@@ -109,7 +109,7 @@
     "/foods/food_8924631470": 9,
     "/foods/food_673fc958f6": 4,
     "/items/item_75f77862cd": 8,
-    "/series/series_873cdcaf61/ep_08c284c148": 8,
+    "/series/series_873cdcaf61/ep_08c284c148": 9,
     "/series/series_ba7cc89468/ep_97e39a4499": 4
   },
   "clicks": {
@@ -186,11 +186,11 @@
   "searches": {},
   "devices": {
     "desktop": 215,
-    "mobile": 4550
+    "mobile": 4551
   },
   "referrers": {
     "direct": 425,
-    "인스타그램": 2841,
+    "인스타그램": 2842,
     "페이스북": 63,
     "구글": 20,
     "네이버": 12,
@@ -2787,7 +2787,7 @@
       ]
     },
     "2026-06-19": {
-      "pv": 27,
+      "pv": 28,
       "click": 18,
       "search": 0,
       "pages": {
@@ -2803,7 +2803,8 @@
         "/series/series_304565fb77/ep_d7955f38a0": 1,
         "/series/series_873cdcaf61/ep_4f183af0df": 1,
         "/items/item_960c2ff01c": 1,
-        "/items/item_75f77862cd": 4
+        "/items/item_75f77862cd": 4,
+        "/series/series_873cdcaf61/ep_08c284c148": 1
       },
       "clicks": {
         "/#map::인스타DM": 1,
@@ -2818,11 +2819,11 @@
       "searches": {},
       "devices": {
         "desktop": 3,
-        "mobile": 42
+        "mobile": 43
       },
       "referrers": {
         "direct": 1,
-        "인스타그램": 26
+        "인스타그램": 27
       },
       "hourly": [
         0,
@@ -2835,7 +2836,7 @@
         0,
         0,
         0,
-        0,
+        1,
         0,
         0,
         0,
@@ -2852,5 +2853,5 @@
       ]
     }
   },
-  "updated_at": "2026-06-19T05:00:06.871Z"
+  "updated_at": "2026-06-19T11:00:06.229Z"
 }
