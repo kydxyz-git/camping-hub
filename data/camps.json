@@ -248,9 +248,15 @@
     "visits": 27,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-29T10:36:38.327Z",
+    "updated_at": "2026-06-19T01:09:23.991Z",
     "lat": 37.00513,
-    "lng": 128.97052
+    "lng": 128.97052,
+    "videos": [
+      {
+        "url": "https://www.instagram.com/reel/DZvju8xTEve/?igsh=aG5sMGJncGY4bmdx",
+        "title": "여름에 가기 좋은 계곡캠핑장 TOP4"
+      }
+    ]
   },
   {
     "id": "camp_17e022c947",
