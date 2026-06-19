@@ -1254,9 +1254,15 @@
     "visits": 2,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-27T15:57:11.067Z",
+    "updated_at": "2026-06-19T01:11:16.145Z",
     "lat": 37.07,
-    "lng": 128.53
+    "lng": 128.53,
+    "videos": [
+      {
+        "url": "https://www.instagram.com/reel/DZvju8xTEve/?igsh=aG5sMGJncGY4bmdx",
+        "title": "여름에 가기 좋은 계곡캠핑장 TOP4"
+      }
+    ]
   },
   {
     "name": "경산갓바위캠핑장",
