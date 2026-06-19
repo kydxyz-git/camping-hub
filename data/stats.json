@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 3374,
-    "click": 1346,
+    "pv": 3375,
+    "click": 1348,
     "search": 0
   },
   "pages": {
@@ -109,7 +109,8 @@
     "/foods/food_8924631470": 9,
     "/foods/food_673fc958f6": 4,
     "/items/item_75f77862cd": 4,
-    "/series/series_873cdcaf61/ep_08c284c148": 8
+    "/series/series_873cdcaf61/ep_08c284c148": 8,
+    "/series/series_ba7cc89468/ep_97e39a4499": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 223,
@@ -150,7 +151,7 @@
     "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 167,
     "/camps/camp_55791da55f::www.xn--hq1bk3iuobz1y.net": 2,
     "/camps/camp_b8d29b3f00::그래가": 2,
-    "/#map::인스타DM": 17,
+    "/#map::인스타DM": 18,
     "/#map::www.sanddune.co.kr": 1,
     "/#map::땡큐캠핑": 1,
     "/camps/camp_8e1adf57aa::그래가": 2,
@@ -179,15 +180,16 @@
     "/foods/food_9966103a5b::컬리": 3,
     "/series/series_873cdcaf61/ep_08c284c148::인스타DM": 1,
     "/camps/camp_357cccb118::www.xn--9g3b27q0ne.kr": 1,
-    "/camps/camp_133dd5b2c6::www.camfit.co.kr": 1
+    "/camps/camp_133dd5b2c6::www.camfit.co.kr": 1,
+    "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 1
   },
   "searches": {},
   "devices": {
-    "desktop": 212,
+    "desktop": 215,
     "mobile": 4508
   },
   "referrers": {
-    "direct": 424,
+    "direct": 425,
     "인스타그램": 2815,
     "페이스북": 63,
     "구글": 20,
@@ -2783,7 +2785,52 @@
         5,
         25
       ]
+    },
+    "2026-06-19": {
+      "pv": 1,
+      "click": 2,
+      "search": 0,
+      "pages": {
+        "/series/series_ba7cc89468/ep_97e39a4499": 1
+      },
+      "clicks": {
+        "/#map::인스타DM": 1,
+        "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 1
+      },
+      "searches": {},
+      "devices": {
+        "desktop": 3
+      },
+      "referrers": {
+        "direct": 1
+      },
+      "hourly": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   },
-  "updated_at": "2026-06-19T00:00:08.108Z"
+  "updated_at": "2026-06-19T02:00:06.327Z"
 }
