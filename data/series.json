@@ -7,6 +7,17 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_97e39a4499",
+        "ep": 9,
+        "title": "여름에 가기 좋은 캠핑장 TOP4",
+        "url": "https://www.instagram.com/reel/DZvju8xTEve/?igsh=aG5sMGJncGY4bmdx",
+        "thumb": "./images/series/summer-ep09.jpg",
+        "published": true,
+        "created_at": "2026-06-19T01:08:44.407Z",
+        "updated_at": "2026-06-19T01:08:44.407Z",
+        "camp_id": "camp_8625b4018d"
+      },
+      {
         "id": "ep_00a18099de",
         "ep": 8,
         "title": "계곡 하나는 진짜 TOP 👀",
