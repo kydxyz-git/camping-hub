@@ -221,6 +221,16 @@
         "published": true,
         "created_at": "2026-06-15T13:53:31.470Z",
         "updated_at": "2026-06-15T13:55:03.953Z"
+      },
+      {
+        "id": "ep_14cbfb6b11",
+        "ep": 1,
+        "title": "캠핑에 망원경 은근 쓸모있는 장비2",
+        "url": "https://www.instagram.com/p/DZyVXYNEwZZ/?igsh=MTlua3dxNTQxMXVpOQ==",
+        "thumb": "./images/series/items-ep01.jpg",
+        "published": true,
+        "created_at": "2026-06-22T08:00:49.262Z",
+        "updated_at": "2026-06-22T08:00:49.262Z"
       }
     ],
     "id": "series_873cdcaf61",
