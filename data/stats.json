@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 3731,
+    "pv": 3737,
     "click": 1459,
     "search": 0
   },
   "pages": {
-    "/": 797,
+    "/": 798,
     "/series/series_ba7cc89468/ep_ad505df37d": 240,
     "/series/series_304565fb77/ep_c2e684a351": 145,
     "/series/series_873cdcaf61/ep_7dd208fe26": 63,
@@ -32,7 +32,7 @@
     "/series/series_e8c17ad5da/ep_ff868ac30c": 48,
     "/foods/food_464525ea11": 11,
     "/foods/food_6b6f5c2711": 20,
-    "/#items": 9,
+    "/#items": 14,
     "/foods/food_9945533a15": 5,
     "/foods/food_9966103a5b": 15,
     "/series/series_ba7cc89468/ep_b953456d73": 112,
@@ -187,14 +187,14 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 219,
-    "mobile": 4968,
+    "desktop": 221,
+    "mobile": 4972,
     "tablet": 3
   },
   "referrers": {
-    "direct": 469,
+    "direct": 471,
     "인스타그램": 3036,
-    "페이스북": 142,
+    "페이스북": 146,
     "구글": 20,
     "네이버": 12,
     "link.inpock.co.kr": 4
@@ -3041,11 +3041,11 @@
       ]
     },
     "2026-06-22": {
-      "pv": 44,
+      "pv": 50,
       "click": 18,
       "search": 0,
       "pages": {
-        "/": 13,
+        "/": 14,
         "/series/series_ba7cc89468/ep_c56ed16c13": 2,
         "/series/series_ba7cc89468/ep_ad505df37d": 2,
         "/series/series_ba7cc89468/ep_73bdfba72e": 2,
@@ -3069,7 +3069,8 @@
         "/series/series_304565fb77/ep_17f905660e": 1,
         "/series/series_873cdcaf61/ep_08c284c148": 1,
         "/series/series_873cdcaf61/ep_cf2282cf4e": 1,
-        "/series/series_c0b82ea145/ep_39cf2ffa99": 1
+        "/series/series_c0b82ea145/ep_39cf2ffa99": 1,
+        "/#items": 5
       },
       "clicks": {
         "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 6,
@@ -3079,11 +3080,13 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 62
+        "mobile": 66,
+        "desktop": 2
       },
       "referrers": {
-        "direct": 28,
-        "인스타그램": 16
+        "direct": 30,
+        "인스타그램": 16,
+        "페이스북": 4
       },
       "hourly": [
         14,
@@ -3093,7 +3096,7 @@
         13,
         7,
         6,
-        0,
+        6,
         0,
         0,
         0,
@@ -3113,5 +3116,5 @@
       ]
     }
   },
-  "updated_at": "2026-06-22T07:00:06.826Z"
+  "updated_at": "2026-06-22T07:58:42.655Z"
 }
