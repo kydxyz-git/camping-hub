@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 3782,
+    "pv": 3784,
     "click": 1477,
     "search": 0
   },
   "pages": {
-    "/": 809,
+    "/": 810,
     "/series/series_ba7cc89468/ep_ad505df37d": 241,
     "/series/series_304565fb77/ep_c2e684a351": 147,
     "/series/series_873cdcaf61/ep_7dd208fe26": 64,
@@ -92,7 +92,7 @@
     "/camps/camp_0380055336": 5,
     "/camps/camp_7fafd07d0a": 5,
     "/camps/camp_02c72e06a3": 14,
-    "/series/series_ba7cc89468/ep_4da176323e": 202,
+    "/series/series_ba7cc89468/ep_4da176323e": 203,
     "/camps/camp_f756d38620": 1,
     "/#map": 13,
     "/camps/camp_b8d29b3f00": 5,
@@ -192,12 +192,12 @@
   "searches": {},
   "devices": {
     "desktop": 229,
-    "mobile": 5027,
+    "mobile": 5029,
     "tablet": 3
   },
   "referrers": {
     "direct": 479,
-    "인스타그램": 3073,
+    "인스타그램": 3075,
     "페이스북": 146,
     "구글": 20,
     "네이버": 12,
@@ -3132,18 +3132,19 @@
       ]
     },
     "2026-06-23": {
-      "pv": 9,
+      "pv": 11,
       "click": 1,
       "search": 0,
       "pages": {
-        "/": 2,
+        "/": 3,
         "/series/series_873cdcaf61/ep_eb18e20c30": 1,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 1,
         "/series/series_873cdcaf61/ep_14cbfb6b11": 1,
         "/series/series_873cdcaf61/ep_7dd208fe26": 1,
         "/series/series_873cdcaf61/ep_cf2282cf4e": 1,
         "/series/series_e8c17ad5da/ep_e46450a717": 1,
-        "/items/item_75f77862cd": 1
+        "/items/item_75f77862cd": 1,
+        "/series/series_ba7cc89468/ep_4da176323e": 1
       },
       "clicks": {
         "/items/item_75f77862cd::s.click.aliexpress.com": 1
@@ -3151,10 +3152,10 @@
       "searches": {},
       "devices": {
         "desktop": 1,
-        "mobile": 9
+        "mobile": 11
       },
       "referrers": {
-        "인스타그램": 9
+        "인스타그램": 11
       },
       "hourly": [
         1,
@@ -3164,7 +3165,7 @@
         0,
         0,
         2,
-        0,
+        2,
         0,
         0,
         0,
@@ -3184,5 +3185,5 @@
       ]
     }
   },
-  "updated_at": "2026-06-23T07:00:06.139Z"
+  "updated_at": "2026-06-23T08:00:05.887Z"
 }
