@@ -1,13 +1,13 @@
 {
   "total": {
-    "pv": 3828,
-    "click": 1493,
+    "pv": 3844,
+    "click": 1501,
     "search": 0
   },
   "pages": {
-    "/": 818,
+    "/": 822,
     "/series/series_ba7cc89468/ep_ad505df37d": 242,
-    "/series/series_304565fb77/ep_c2e684a351": 149,
+    "/series/series_304565fb77/ep_c2e684a351": 150,
     "/series/series_873cdcaf61/ep_7dd208fe26": 65,
     "/series/series_e8c17ad5da/ep_e46450a717": 61,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 58,
@@ -15,19 +15,19 @@
     "/series/series_ba7cc89468/ep_73bdfba72e": 182,
     "/series/series_ba7cc89468/ep_3acff3998f": 222,
     "/series/series_ba7cc89468/ep_27438d1204": 152,
-    "/series/series_304565fb77/ep_a8b40077ca": 108,
+    "/series/series_304565fb77/ep_a8b40077ca": 109,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 68,
     "/series/series_e8c17ad5da/ep_7a390bade9": 56,
     "/#camps": 10,
     "/#foods": 13,
     "/series/series_304565fb77/ep_d7955f38a0": 137,
-    "/foods/food_592752e317": 14,
-    "/foods/food_790525d8a8": 12,
+    "/foods/food_592752e317": 15,
+    "/foods/food_790525d8a8": 13,
     "/series/series_e8c17ad5da/ep_e383972ec6": 37,
     "/camps/camp_e5a202316d": 22,
     "/camps/camp_8e1adf57aa": 23,
     "/camps/camp_e06cb829df": 15,
-    "/foods/food_48d51f3296": 12,
+    "/foods/food_48d51f3296": 13,
     "/foods/food_b7f447dd02": 15,
     "/series/series_e8c17ad5da/ep_ff868ac30c": 49,
     "/foods/food_464525ea11": 11,
@@ -60,7 +60,7 @@
     "/camps/camp_82599ba9bf": 5,
     "/camps/camp_b2804ced5e": 7,
     "/camps/camp_133dd5b2c6": 14,
-    "/camps/camp_d9699234d4": 15,
+    "/camps/camp_d9699234d4": 16,
     "/camps/camp_2dee32afa2": 12,
     "/camps/camp_e7783e56dc": 6,
     "/camps/camp_922e05eeae": 7,
@@ -98,15 +98,15 @@
     "/camps/camp_b8d29b3f00": 5,
     "/camps/camp_e2b57e4e5d": 1,
     "/series/series_ba7cc89468/ep_c56ed16c13": 145,
-    "/camps/camp_a9bbd60ec3": 9,
+    "/camps/camp_a9bbd60ec3": 10,
     "/items/item_200bd59067": 1,
     "/series/series_873cdcaf61/ep_116826a88d": 36,
     "/series/series_e8c17ad5da/ep_7a004a6412": 23,
     "/series/series_873cdcaf61/ep_4f183af0df": 40,
-    "/series/series_ba7cc89468/ep_00a18099de": 113,
+    "/series/series_ba7cc89468/ep_00a18099de": 116,
     "/camps/camp_43b6759cd3": 2,
-    "/series/series_304565fb77/ep_17f905660e": 44,
-    "/foods/food_8924631470": 10,
+    "/series/series_304565fb77/ep_17f905660e": 45,
+    "/foods/food_8924631470": 11,
     "/foods/food_673fc958f6": 5,
     "/items/item_75f77862cd": 12,
     "/series/series_873cdcaf61/ep_08c284c148": 21,
@@ -164,7 +164,7 @@
     "/items/item_200bd59067::네이버예약": 1,
     "/series/series_873cdcaf61/ep_116826a88d::인스타DM": 6,
     "/foods/food_790525d8a8::컬리": 1,
-    "/series/series_ba7cc89468/ep_00a18099de::인스타DM": 122,
+    "/series/series_ba7cc89468/ep_00a18099de::인스타DM": 130,
     "/camps/camp_8625b4018d::땡큐캠핑": 3,
     "/foods/food_464525ea11::컬리": 2,
     "/camps/camp_6ecd104353::camfit.co.kr": 2,
@@ -191,13 +191,13 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 229,
-    "mobile": 5089,
+    "desktop": 230,
+    "mobile": 5112,
     "tablet": 3
   },
   "referrers": {
-    "direct": 489,
-    "인스타그램": 3108,
+    "direct": 490,
+    "인스타그램": 3123,
     "페이스북": 146,
     "구글": 20,
     "네이버": 12,
@@ -3132,11 +3132,11 @@
       ]
     },
     "2026-06-23": {
-      "pv": 55,
-      "click": 17,
+      "pv": 71,
+      "click": 25,
       "search": 0,
       "pages": {
-        "/": 11,
+        "/": 15,
         "/series/series_873cdcaf61/ep_eb18e20c30": 3,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 1,
         "/series/series_873cdcaf61/ep_14cbfb6b11": 2,
@@ -3149,10 +3149,10 @@
         "/series/series_ba7cc89468/ep_73bdfba72e": 1,
         "/series/series_ba7cc89468/ep_27438d1204": 2,
         "/series/series_ba7cc89468/ep_b953456d73": 1,
-        "/series/series_ba7cc89468/ep_00a18099de": 2,
+        "/series/series_ba7cc89468/ep_00a18099de": 5,
         "/series/series_ba7cc89468/ep_97e39a4499": 2,
-        "/series/series_304565fb77/ep_c2e684a351": 2,
-        "/camps/camp_d9699234d4": 1,
+        "/series/series_304565fb77/ep_c2e684a351": 3,
+        "/camps/camp_d9699234d4": 2,
         "/camps/camp_8625b4018d": 1,
         "/camps/camp_7ce3fbcc39": 1,
         "/camps/camp_f5b616b34c": 1,
@@ -3162,8 +3162,14 @@
         "/series/series_873cdcaf61/ep_116826a88d": 1,
         "/series/series_e8c17ad5da/ep_7a004a6412": 1,
         "/series/series_e8c17ad5da/ep_7a390bade9": 1,
-        "/series/series_304565fb77/ep_17f905660e": 1,
-        "/series/series_ba7cc89468/ep_ad505df37d": 1
+        "/series/series_304565fb77/ep_17f905660e": 2,
+        "/series/series_ba7cc89468/ep_ad505df37d": 1,
+        "/series/series_304565fb77/ep_a8b40077ca": 1,
+        "/foods/food_592752e317": 1,
+        "/foods/food_790525d8a8": 1,
+        "/foods/food_8924631470": 1,
+        "/foods/food_48d51f3296": 1,
+        "/camps/camp_a9bbd60ec3": 1
       },
       "clicks": {
         "/items/item_75f77862cd::s.click.aliexpress.com": 1,
@@ -3171,17 +3177,17 @@
         "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 11,
         "/camps/camp_8625b4018d::땡큐캠핑": 1,
         "/series/series_873cdcaf61/ep_14cbfb6b11::인스타DM": 1,
-        "/series/series_ba7cc89468/ep_00a18099de::인스타DM": 1,
+        "/series/series_ba7cc89468/ep_00a18099de::인스타DM": 9,
         "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 1
       },
       "searches": {},
       "devices": {
-        "desktop": 1,
-        "mobile": 71
+        "desktop": 2,
+        "mobile": 94
       },
       "referrers": {
-        "인스타그램": 44,
-        "direct": 10
+        "인스타그램": 59,
+        "direct": 11
       },
       "hourly": [
         1,
@@ -3198,7 +3204,7 @@
         7,
         1,
         9,
-        0,
+        16,
         0,
         0,
         0,
@@ -3211,5 +3217,5 @@
       ]
     }
   },
-  "updated_at": "2026-06-23T14:00:08.673Z"
+  "updated_at": "2026-06-23T15:00:09.414Z"
 }
