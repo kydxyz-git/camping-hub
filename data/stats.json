@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 3994,
+    "pv": 3996,
     "click": 1555,
     "search": 0
   },
   "pages": {
-    "/": 864,
+    "/": 865,
     "/series/series_ba7cc89468/ep_ad505df37d": 247,
     "/series/series_304565fb77/ep_c2e684a351": 157,
     "/series/series_873cdcaf61/ep_7dd208fe26": 67,
@@ -97,7 +97,7 @@
     "/#map": 13,
     "/camps/camp_b8d29b3f00": 5,
     "/camps/camp_e2b57e4e5d": 1,
-    "/series/series_ba7cc89468/ep_c56ed16c13": 154,
+    "/series/series_ba7cc89468/ep_c56ed16c13": 155,
     "/camps/camp_a9bbd60ec3": 12,
     "/items/item_200bd59067": 1,
     "/series/series_873cdcaf61/ep_116826a88d": 37,
@@ -192,12 +192,12 @@
   "searches": {},
   "devices": {
     "desktop": 240,
-    "mobile": 5306,
+    "mobile": 5308,
     "tablet": 3
   },
   "referrers": {
     "direct": 508,
-    "인스타그램": 3250,
+    "인스타그램": 3252,
     "페이스북": 151,
     "구글": 20,
     "네이버": 12,
@@ -3380,18 +3380,18 @@
       ]
     },
     "2026-06-26": {
-      "pv": 24,
+      "pv": 26,
       "click": 11,
       "search": 0,
       "pages": {
-        "/": 13,
+        "/": 14,
         "/series/series_304565fb77/ep_c2e684a351": 1,
         "/series/series_ba7cc89468/ep_97e39a4499": 2,
         "/series/series_ba7cc89468/ep_4da176323e": 2,
         "/series/series_ba7cc89468/ep_27438d1204": 1,
         "/series/series_ba7cc89468/ep_73bdfba72e": 1,
         "/series/series_ba7cc89468/ep_00a18099de": 2,
-        "/series/series_ba7cc89468/ep_c56ed16c13": 1,
+        "/series/series_ba7cc89468/ep_c56ed16c13": 2,
         "/series/series_304565fb77/ep_d7955f38a0": 1
       },
       "clicks": {
@@ -3402,11 +3402,11 @@
       "searches": {},
       "devices": {
         "desktop": 7,
-        "mobile": 28
+        "mobile": 30
       },
       "referrers": {
         "direct": 9,
-        "인스타그램": 14,
+        "인스타그램": 16,
         "페이스북": 1
       },
       "hourly": [
@@ -3419,7 +3419,7 @@
         2,
         1,
         0,
-        0,
+        2,
         0,
         0,
         0,
@@ -3437,5 +3437,5 @@
       ]
     }
   },
-  "updated_at": "2026-06-26T08:00:05.345Z"
+  "updated_at": "2026-06-26T10:00:05.474Z"
 }
