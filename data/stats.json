@@ -1,13 +1,13 @@
 {
   "total": {
-    "pv": 4054,
-    "click": 1569,
+    "pv": 4060,
+    "click": 1572,
     "search": 0
   },
   "pages": {
-    "/": 877,
+    "/": 878,
     "/series/series_ba7cc89468/ep_ad505df37d": 248,
-    "/series/series_304565fb77/ep_c2e684a351": 160,
+    "/series/series_304565fb77/ep_c2e684a351": 161,
     "/series/series_873cdcaf61/ep_7dd208fe26": 67,
     "/series/series_e8c17ad5da/ep_e46450a717": 62,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 61,
@@ -29,7 +29,7 @@
     "/camps/camp_e06cb829df": 15,
     "/foods/food_48d51f3296": 17,
     "/foods/food_b7f447dd02": 17,
-    "/series/series_e8c17ad5da/ep_ff868ac30c": 52,
+    "/series/series_e8c17ad5da/ep_ff868ac30c": 53,
     "/foods/food_464525ea11": 12,
     "/foods/food_6b6f5c2711": 21,
     "/#items": 15,
@@ -92,12 +92,12 @@
     "/camps/camp_0380055336": 5,
     "/camps/camp_7fafd07d0a": 5,
     "/camps/camp_02c72e06a3": 16,
-    "/series/series_ba7cc89468/ep_4da176323e": 210,
+    "/series/series_ba7cc89468/ep_4da176323e": 211,
     "/camps/camp_f756d38620": 1,
     "/#map": 13,
     "/camps/camp_b8d29b3f00": 5,
     "/camps/camp_e2b57e4e5d": 1,
-    "/series/series_ba7cc89468/ep_c56ed16c13": 158,
+    "/series/series_ba7cc89468/ep_c56ed16c13": 159,
     "/camps/camp_a9bbd60ec3": 12,
     "/items/item_200bd59067": 1,
     "/series/series_873cdcaf61/ep_116826a88d": 37,
@@ -110,7 +110,7 @@
     "/foods/food_673fc958f6": 6,
     "/items/item_75f77862cd": 14,
     "/series/series_873cdcaf61/ep_08c284c148": 23,
-    "/series/series_ba7cc89468/ep_97e39a4499": 42,
+    "/series/series_ba7cc89468/ep_97e39a4499": 43,
     "/series/series_873cdcaf61/ep_14cbfb6b11": 11,
     "/series/series_873cdcaf61/ep_eb18e20c30": 8,
     "/camps/camp_bcd074ef33": 1
@@ -151,7 +151,7 @@
     "/camps/camp_922e05eeae::camfit.co.kr": 2,
     "/camps/camp_02c72e06a3::camp.dytc.or.kr": 2,
     "/camps/camp_e06cb829df::네이버": 4,
-    "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 170,
+    "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 172,
     "/camps/camp_55791da55f::www.xn--hq1bk3iuobz1y.net": 2,
     "/camps/camp_b8d29b3f00::그래가": 2,
     "/#map::인스타DM": 18,
@@ -184,7 +184,7 @@
     "/series/series_873cdcaf61/ep_08c284c148::인스타DM": 2,
     "/camps/camp_357cccb118::www.xn--9g3b27q0ne.kr": 1,
     "/camps/camp_133dd5b2c6::www.camfit.co.kr": 1,
-    "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 71,
+    "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 72,
     "/series/series_e8c17ad5da/ep_7a004a6412::인스타DM": 1,
     "/series/series_873cdcaf61/ep_4f183af0df::인스타DM": 1,
     "/series/series_873cdcaf61/ep_14cbfb6b11::인스타DM": 2,
@@ -193,12 +193,12 @@
   "searches": {},
   "devices": {
     "desktop": 240,
-    "mobile": 5380,
+    "mobile": 5389,
     "tablet": 3
   },
   "referrers": {
     "direct": 512,
-    "인스타그램": 3306,
+    "인스타그램": 3312,
     "페이스북": 151,
     "구글": 20,
     "네이버": 12,
@@ -3459,34 +3459,36 @@
       ]
     },
     "2026-06-27": {
-      "pv": 17,
-      "click": 6,
+      "pv": 23,
+      "click": 9,
       "search": 0,
       "pages": {
-        "/": 6,
+        "/": 7,
         "/camps/camp_d9699234d4": 1,
         "/camps/camp_82599ba9bf": 1,
-        "/series/series_ba7cc89468/ep_97e39a4499": 1,
-        "/series/series_304565fb77/ep_c2e684a351": 1,
+        "/series/series_ba7cc89468/ep_97e39a4499": 2,
+        "/series/series_304565fb77/ep_c2e684a351": 2,
         "/series/series_304565fb77/ep_a8b40077ca": 1,
         "/series/series_ba7cc89468/ep_00a18099de": 1,
-        "/series/series_ba7cc89468/ep_c56ed16c13": 1,
-        "/series/series_ba7cc89468/ep_4da176323e": 1,
+        "/series/series_ba7cc89468/ep_c56ed16c13": 2,
+        "/series/series_ba7cc89468/ep_4da176323e": 2,
         "/camps/camp_e5a202316d": 1,
         "/camps/camp_8f72106bcf": 1,
-        "/camps/camp_02c72e06a3": 1
+        "/camps/camp_02c72e06a3": 1,
+        "/series/series_e8c17ad5da/ep_ff868ac30c": 1
       },
       "clicks": {
-        "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 3,
+        "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 4,
         "/series/series_ba7cc89468/ep_00a18099de::인스타DM": 2,
-        "/camps/camp_02c72e06a3::네이버예약": 1
+        "/camps/camp_02c72e06a3::네이버예약": 1,
+        "/series/series_ba7cc89468/ep_4da176323e::인스타DM": 2
       },
       "searches": {},
       "devices": {
-        "mobile": 23
+        "mobile": 32
       },
       "referrers": {
-        "인스타그램": 13,
+        "인스타그램": 19,
         "direct": 4
       },
       "hourly": [
@@ -3505,7 +3507,7 @@
         0,
         0,
         0,
-        0,
+        6,
         0,
         0,
         0,
@@ -3517,5 +3519,5 @@
       ]
     }
   },
-  "updated_at": "2026-06-27T11:00:05.268Z"
+  "updated_at": "2026-06-27T16:00:07.137Z"
 }
