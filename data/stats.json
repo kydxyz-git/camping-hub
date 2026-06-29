@@ -1,20 +1,20 @@
 {
   "total": {
-    "pv": 4251,
+    "pv": 4257,
     "click": 1639,
     "search": 0
   },
   "pages": {
-    "/": 914,
+    "/": 915,
     "/series/series_ba7cc89468/ep_ad505df37d": 251,
     "/series/series_304565fb77/ep_c2e684a351": 166,
     "/series/series_873cdcaf61/ep_7dd208fe26": 70,
     "/series/series_e8c17ad5da/ep_e46450a717": 65,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 66,
     "/#stories": 6,
-    "/series/series_ba7cc89468/ep_73bdfba72e": 191,
+    "/series/series_ba7cc89468/ep_73bdfba72e": 192,
     "/series/series_ba7cc89468/ep_3acff3998f": 232,
-    "/series/series_ba7cc89468/ep_27438d1204": 160,
+    "/series/series_ba7cc89468/ep_27438d1204": 161,
     "/series/series_304565fb77/ep_a8b40077ca": 113,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 70,
     "/series/series_e8c17ad5da/ep_7a390bade9": 62,
@@ -35,7 +35,7 @@
     "/#items": 15,
     "/foods/food_9945533a15": 5,
     "/foods/food_9966103a5b": 15,
-    "/series/series_ba7cc89468/ep_b953456d73": 120,
+    "/series/series_ba7cc89468/ep_b953456d73": 121,
     "/camps/camp_e1e0dde7b3": 13,
     "/camps/camp_357cccb118": 9,
     "/camps/camp_873dcfe92d": 4,
@@ -92,7 +92,7 @@
     "/camps/camp_0380055336": 5,
     "/camps/camp_7fafd07d0a": 5,
     "/camps/camp_02c72e06a3": 18,
-    "/series/series_ba7cc89468/ep_4da176323e": 219,
+    "/series/series_ba7cc89468/ep_4da176323e": 220,
     "/camps/camp_f756d38620": 1,
     "/#map": 13,
     "/camps/camp_b8d29b3f00": 6,
@@ -103,7 +103,7 @@
     "/series/series_873cdcaf61/ep_116826a88d": 38,
     "/series/series_e8c17ad5da/ep_7a004a6412": 28,
     "/series/series_873cdcaf61/ep_4f183af0df": 42,
-    "/series/series_ba7cc89468/ep_00a18099de": 140,
+    "/series/series_ba7cc89468/ep_00a18099de": 141,
     "/camps/camp_43b6759cd3": 3,
     "/series/series_304565fb77/ep_17f905660e": 57,
     "/foods/food_8924631470": 13,
@@ -196,12 +196,12 @@
   "searches": {},
   "devices": {
     "desktop": 241,
-    "mobile": 5646,
+    "mobile": 5652,
     "tablet": 3
   },
   "referrers": {
     "direct": 523,
-    "인스타그램": 3480,
+    "인스타그램": 3486,
     "페이스북": 163,
     "구글": 20,
     "네이버": 12,
@@ -3593,19 +3593,19 @@
       ]
     },
     "2026-06-29": {
-      "pv": 132,
+      "pv": 138,
       "click": 50,
       "search": 0,
       "pages": {
-        "/": 22,
+        "/": 23,
         "/series/series_ba7cc89468/ep_c56ed16c13": 5,
-        "/series/series_ba7cc89468/ep_00a18099de": 10,
+        "/series/series_ba7cc89468/ep_00a18099de": 11,
         "/series/series_304565fb77/ep_17f905660e": 4,
         "/series/series_ba7cc89468/ep_97e39a4499": 7,
-        "/series/series_ba7cc89468/ep_4da176323e": 6,
-        "/series/series_ba7cc89468/ep_27438d1204": 2,
+        "/series/series_ba7cc89468/ep_4da176323e": 7,
+        "/series/series_ba7cc89468/ep_27438d1204": 3,
         "/series/series_ba7cc89468/ep_3acff3998f": 3,
-        "/series/series_ba7cc89468/ep_73bdfba72e": 3,
+        "/series/series_ba7cc89468/ep_73bdfba72e": 4,
         "/series/series_ba7cc89468/ep_ad505df37d": 2,
         "/series/series_e8c17ad5da/ep_7a390bade9": 2,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 2,
@@ -3639,7 +3639,7 @@
         "/camps/camp_e220a217fd": 1,
         "/items/item_75f77862cd": 1,
         "/series/series_ba7cc89468/ep_860867be0e": 9,
-        "/series/series_ba7cc89468/ep_b953456d73": 1,
+        "/series/series_ba7cc89468/ep_b953456d73": 2,
         "/series/series_873cdcaf61/ep_116826a88d": 1,
         "/series/series_e8c17ad5da/ep_7a004a6412": 1,
         "/series/series_873cdcaf61/ep_eb18e20c30": 1,
@@ -3673,11 +3673,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 181,
+        "mobile": 187,
         "desktop": 1
       },
       "referrers": {
-        "인스타그램": 126,
+        "인스타그램": 132,
         "direct": 6
       },
       "hourly": [
@@ -3700,7 +3700,7 @@
         10,
         0,
         0,
-        0,
+        6,
         0,
         0,
         0,
@@ -3708,5 +3708,5 @@
       ]
     }
   },
-  "updated_at": "2026-06-29T17:00:12.233Z"
+  "updated_at": "2026-06-29T20:00:07.137Z"
 }
