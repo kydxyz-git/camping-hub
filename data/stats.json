@@ -1,13 +1,13 @@
 {
   "total": {
-    "pv": 4314,
-    "click": 1668,
+    "pv": 4316,
+    "click": 1669,
     "search": 0
   },
   "pages": {
-    "/": 925,
+    "/": 926,
     "/series/series_ba7cc89468/ep_ad505df37d": 252,
-    "/series/series_304565fb77/ep_c2e684a351": 168,
+    "/series/series_304565fb77/ep_c2e684a351": 169,
     "/series/series_873cdcaf61/ep_7dd208fe26": 71,
     "/series/series_e8c17ad5da/ep_e46450a717": 65,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 66,
@@ -135,7 +135,7 @@
     "/series/series_304565fb77/ep_a8b40077ca::인스타DM": 10,
     "/series/series_304565fb77/ep_d7955f38a0::인스타DM": 40,
     "/foods/food_6b6f5c2711::쿠팡": 8,
-    "__external__::그래가파트너스": 7,
+    "__external__::그래가파트너스": 8,
     "/items/item_960c2ff01c::네이버예약": 20,
     "/items/item_48f6974ac5::쿠팡": 5,
     "/camps/camp_82599ba9bf::땡큐캠핑": 1,
@@ -198,13 +198,13 @@
   "searches": {},
   "devices": {
     "desktop": 241,
-    "mobile": 5738,
+    "mobile": 5741,
     "tablet": 3
   },
   "referrers": {
     "direct": 523,
     "인스타그램": 3507,
-    "페이스북": 175,
+    "페이스북": 177,
     "구글": 20,
     "네이버": 12,
     "link.inpock.co.kr": 4
@@ -3715,16 +3715,16 @@
       ]
     },
     "2026-06-30": {
-      "pv": 49,
-      "click": 26,
+      "pv": 51,
+      "click": 27,
       "search": 0,
       "pages": {
-        "/": 9,
+        "/": 10,
         "/series/series_ba7cc89468/ep_860867be0e": 4,
         "/series/series_ba7cc89468/ep_00a18099de": 2,
         "/series/series_304565fb77/ep_d7955f38a0": 1,
         "/series/series_873cdcaf61/ep_14cbfb6b11": 1,
-        "/series/series_304565fb77/ep_c2e684a351": 2,
+        "/series/series_304565fb77/ep_c2e684a351": 3,
         "/series/series_304565fb77/ep_a8b40077ca": 1,
         "/series/series_304565fb77/ep_17f905660e": 1,
         "/camps/camp_b8d29b3f00": 1,
@@ -3770,15 +3770,16 @@
         "/series/series_ba7cc89468/ep_27438d1204::인스타DM": 1,
         "/series/series_ba7cc89468/ep_b953456d73::인스타DM": 1,
         "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 1,
-        "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 1
+        "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 1,
+        "__external__::그래가파트너스": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 75
+        "mobile": 78
       },
       "referrers": {
         "인스타그램": 13,
-        "페이스북": 12
+        "페이스북": 14
       },
       "hourly": [
         0,
@@ -3802,11 +3803,11 @@
         0,
         0,
         0,
-        0,
+        2,
         0,
         0
       ]
     }
   },
-  "updated_at": "2026-06-30T14:00:12.731Z"
+  "updated_at": "2026-06-30T22:00:06.030Z"
 }
