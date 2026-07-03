@@ -121,6 +121,48 @@
     "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
+    "id": "series_4f27a6d489",
+    "name": "여름에 물놀이 하기 좋은 계곡",
+    "emoji": "💦",
+    "color": "#4A90E2",
+    "published": true,
+    "sort": "random",
+    "eps": [
+      {
+        "id": "ep_eb8b1702fa",
+        "ep": 0,
+        "title": "덕동 계곡 물놀이 포인",
+        "url": "https://kydz.kr",
+        "thumb": "./images/series/series-mr49lt4n.jpg",
+        "published": true,
+        "created_at": "2026-07-03T01:38:51.959Z",
+        "updated_at": "2026-07-03T01:38:51.959Z"
+      },
+      {
+        "id": "ep_c8dbf171b7",
+        "ep": 0,
+        "title": "빨간 다리 아래 지나치면 후회할 계곡",
+        "url": "https://kydz.kr",
+        "thumb": "./images/series/series-mr49m2e7.jpg",
+        "published": true,
+        "created_at": "2026-07-03T01:36:49.775Z",
+        "updated_at": "2026-07-03T01:39:03.967Z"
+      },
+      {
+        "id": "ep_9873ededda",
+        "ep": 0,
+        "title": "지금 가면 아쉬울 수 있어요",
+        "url": "https://kydz.kr",
+        "thumb": "./images/series/series-mr49nfyb.jpg",
+        "published": true,
+        "created_at": "2026-07-03T01:39:56.472Z",
+        "updated_at": "2026-07-03T01:40:08.195Z"
+      }
+    ],
+    "created_at": "2026-07-03T01:35:37.978Z",
+    "updated_at": "2026-07-03T01:35:37.978Z"
+  },
+  {
     "name": "또 해먹고 싶은 캠핑 음식",
     "emoji": "🍖",
     "color": "#C94A4A",
@@ -356,47 +398,5 @@
     "id": "series_c0b82ea145",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
     "updated_at": "2026-05-21T02:53:18.159759+00:00"
-  },
-  {
-    "id": "series_4f27a6d489",
-    "name": "여름에 물놀이 하기 좋은 계곡",
-    "emoji": "💦",
-    "color": "#4A90E2",
-    "published": true,
-    "sort": "random",
-    "eps": [
-      {
-        "id": "ep_eb8b1702fa",
-        "ep": 0,
-        "title": "덕동 계곡 물놀이 포인",
-        "url": "https://kydz.kr",
-        "thumb": "./images/series/series-mr49lt4n.jpg",
-        "published": true,
-        "created_at": "2026-07-03T01:38:51.959Z",
-        "updated_at": "2026-07-03T01:38:51.959Z"
-      },
-      {
-        "id": "ep_c8dbf171b7",
-        "ep": 0,
-        "title": "빨간 다리 아래 지나치면 후회할 계곡",
-        "url": "https://kydz.kr",
-        "thumb": "./images/series/series-mr49m2e7.jpg",
-        "published": true,
-        "created_at": "2026-07-03T01:36:49.775Z",
-        "updated_at": "2026-07-03T01:39:03.967Z"
-      },
-      {
-        "id": "ep_9873ededda",
-        "ep": 0,
-        "title": "지금 가면 아쉬울 수 있어요",
-        "url": "https://kydz.kr",
-        "thumb": "./images/series/series-mr49nfyb.jpg",
-        "published": true,
-        "created_at": "2026-07-03T01:39:56.472Z",
-        "updated_at": "2026-07-03T01:40:08.195Z"
-      }
-    ],
-    "created_at": "2026-07-03T01:35:37.978Z",
-    "updated_at": "2026-07-03T01:35:37.978Z"
   }
 ]
