@@ -364,7 +364,18 @@
     "color": "#4A90E2",
     "published": true,
     "sort": "random",
-    "eps": [],
+    "eps": [
+      {
+        "id": "ep_c8dbf171b7",
+        "ep": 1,
+        "title": "빨간 다리 아래 지나치면 후회할 계곡",
+        "url": "https://kydz.kr",
+        "thumb": "./images/series/series-ep01.jpg",
+        "published": true,
+        "created_at": "2026-07-03T01:36:49.775Z",
+        "updated_at": "2026-07-03T01:36:49.775Z"
+      }
+    ],
     "created_at": "2026-07-03T01:35:37.978Z",
     "updated_at": "2026-07-03T01:35:37.978Z"
   }
