@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 4697,
-    "click": 1761,
+    "pv": 4699,
+    "click": 1762,
     "search": 0
   },
   "pages": {
-    "/": 995,
+    "/": 996,
     "/series/series_ba7cc89468/ep_ad505df37d": 258,
     "/series/series_304565fb77/ep_c2e684a351": 187,
     "/series/series_873cdcaf61/ep_7dd208fe26": 80,
@@ -115,7 +115,7 @@
     "/series/series_873cdcaf61/ep_eb18e20c30": 16,
     "/camps/camp_bcd074ef33": 3,
     "/camps/camp_0760ee65ba": 1,
-    "/series/series_ba7cc89468/ep_860867be0e": 36,
+    "/series/series_ba7cc89468/ep_860867be0e": 37,
     "/series/series_873cdcaf61/ep_3def2c1289": 17,
     "/items/item_32e1cc5f58": 3,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 5,
@@ -197,7 +197,7 @@
     "/series/series_873cdcaf61/ep_4f183af0df::인스타DM": 1,
     "/series/series_873cdcaf61/ep_14cbfb6b11::인스타DM": 2,
     "/series/series_873cdcaf61/ep_eb18e20c30::인스타DM": 2,
-    "/series/series_ba7cc89468/ep_860867be0e::인스타DM": 35,
+    "/series/series_ba7cc89468/ep_860867be0e::인스타DM": 36,
     "/camps/camp_bb40ee2105::www.gmuc.or.kr": 1,
     "/camps/camp_e5a202316d::네이버": 1,
     "/items/item_32e1cc5f58::네이버예약": 2,
@@ -210,12 +210,12 @@
   "searches": {},
   "devices": {
     "desktop": 256,
-    "mobile": 6199,
+    "mobile": 6202,
     "tablet": 3
   },
   "referrers": {
     "direct": 561,
-    "인스타그램": 3803,
+    "인스타그램": 3805,
     "페이스북": 199,
     "구글": 20,
     "네이버": 12,
@@ -4123,29 +4123,29 @@
       ]
     },
     "2026-07-04": {
-      "pv": 12,
-      "click": 6,
+      "pv": 14,
+      "click": 7,
       "search": 0,
       "pages": {
-        "/": 4,
-        "/series/series_ba7cc89468/ep_860867be0e": 2,
+        "/": 5,
+        "/series/series_ba7cc89468/ep_860867be0e": 3,
         "/series/series_4f27a6d489/ep_9873ededda": 2,
         "/series/series_4f27a6d489/ep_eb8b1702fa": 2,
         "/series/series_4f27a6d489/ep_c8dbf171b7": 1,
         "/series/series_ba7cc89468/ep_00a18099de": 1
       },
       "clicks": {
-        "/series/series_ba7cc89468/ep_860867be0e::인스타DM": 2,
+        "/series/series_ba7cc89468/ep_860867be0e::인스타DM": 3,
         "/series/series_4f27a6d489/ep_9873ededda::인스타DM": 4
       },
       "searches": {},
       "devices": {
-        "mobile": 18
+        "mobile": 21
       },
       "referrers": {
         "페이스북": 4,
         "direct": 2,
-        "인스타그램": 6
+        "인스타그램": 8
       },
       "hourly": [
         0,
@@ -4156,7 +4156,7 @@
         6,
         0,
         0,
-        0,
+        2,
         0,
         0,
         0,
@@ -4175,5 +4175,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-04T06:00:41.956Z"
+  "updated_at": "2026-07-04T09:00:44.473Z"
 }
