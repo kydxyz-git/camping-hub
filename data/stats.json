@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 4705,
-    "click": 1765,
+    "pv": 4707,
+    "click": 1766,
     "search": 0
   },
   "pages": {
-    "/": 996,
+    "/": 997,
     "/series/series_ba7cc89468/ep_ad505df37d": 258,
     "/series/series_304565fb77/ep_c2e684a351": 187,
     "/series/series_873cdcaf61/ep_7dd208fe26": 80,
@@ -110,7 +110,7 @@
     "/foods/food_673fc958f6": 7,
     "/items/item_75f77862cd": 16,
     "/series/series_873cdcaf61/ep_08c284c148": 30,
-    "/series/series_ba7cc89468/ep_97e39a4499": 77,
+    "/series/series_ba7cc89468/ep_97e39a4499": 78,
     "/series/series_873cdcaf61/ep_14cbfb6b11": 19,
     "/series/series_873cdcaf61/ep_eb18e20c30": 16,
     "/camps/camp_bcd074ef33": 3,
@@ -192,7 +192,7 @@
     "/series/series_873cdcaf61/ep_08c284c148::인스타DM": 3,
     "/camps/camp_357cccb118::www.xn--9g3b27q0ne.kr": 2,
     "/camps/camp_133dd5b2c6::www.camfit.co.kr": 1,
-    "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 96,
+    "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 97,
     "/series/series_e8c17ad5da/ep_7a004a6412::인스타DM": 1,
     "/series/series_873cdcaf61/ep_4f183af0df::인스타DM": 1,
     "/series/series_873cdcaf61/ep_14cbfb6b11::인스타DM": 2,
@@ -210,12 +210,12 @@
   "searches": {},
   "devices": {
     "desktop": 256,
-    "mobile": 6211,
+    "mobile": 6214,
     "tablet": 3
   },
   "referrers": {
     "direct": 561,
-    "인스타그램": 3811,
+    "인스타그램": 3813,
     "페이스북": 199,
     "구글": 20,
     "네이버": 12,
@@ -4123,11 +4123,11 @@
       ]
     },
     "2026-07-04": {
-      "pv": 20,
-      "click": 10,
+      "pv": 22,
+      "click": 11,
       "search": 0,
       "pages": {
-        "/": 5,
+        "/": 6,
         "/series/series_ba7cc89468/ep_860867be0e": 3,
         "/series/series_4f27a6d489/ep_9873ededda": 2,
         "/series/series_4f27a6d489/ep_eb8b1702fa": 2,
@@ -4137,22 +4137,24 @@
         "/foods/food_592752e317": 2,
         "/foods/food_8924631470": 1,
         "/foods/food_673fc958f6": 1,
-        "/foods/food_790525d8a8": 1
+        "/foods/food_790525d8a8": 1,
+        "/series/series_ba7cc89468/ep_97e39a4499": 1
       },
       "clicks": {
         "/series/series_ba7cc89468/ep_860867be0e::인스타DM": 3,
         "/series/series_4f27a6d489/ep_9873ededda::인스타DM": 4,
         "/foods/food_673fc958f6::컬리": 2,
-        "/foods/food_8924631470::컬리": 1
+        "/foods/food_8924631470::컬리": 1,
+        "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 30
+        "mobile": 33
       },
       "referrers": {
         "페이스북": 4,
         "direct": 2,
-        "인스타그램": 14
+        "인스타그램": 16
       },
       "hourly": [
         0,
@@ -4168,7 +4170,7 @@
         0,
         4,
         2,
-        0,
+        2,
         0,
         0,
         0,
@@ -4182,5 +4184,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-04T12:00:44.983Z"
+  "updated_at": "2026-07-04T14:00:41.916Z"
 }
