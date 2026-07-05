@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 4721,
+    "pv": 4724,
     "click": 1766,
     "search": 0
   },
   "pages": {
-    "/": 1000,
+    "/": 1001,
     "/series/series_ba7cc89468/ep_ad505df37d": 258,
     "/series/series_304565fb77/ep_c2e684a351": 187,
     "/series/series_873cdcaf61/ep_7dd208fe26": 81,
@@ -20,7 +20,7 @@
     "/series/series_e8c17ad5da/ep_7a390bade9": 64,
     "/#camps": 10,
     "/#foods": 14,
-    "/series/series_304565fb77/ep_d7955f38a0": 155,
+    "/series/series_304565fb77/ep_d7955f38a0": 156,
     "/foods/food_592752e317": 20,
     "/foods/food_790525d8a8": 15,
     "/series/series_e8c17ad5da/ep_e383972ec6": 45,
@@ -120,7 +120,7 @@
     "/items/item_32e1cc5f58": 3,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 5,
     "/series/series_4f27a6d489/ep_9873ededda": 6,
-    "/series/series_4f27a6d489/ep_eb8b1702fa": 6,
+    "/series/series_4f27a6d489/ep_eb8b1702fa": 7,
     "/camps/camp_2d2adbe3fd": 1
   },
   "clicks": {
@@ -210,12 +210,12 @@
   "searches": {},
   "devices": {
     "desktop": 256,
-    "mobile": 6228,
+    "mobile": 6231,
     "tablet": 3
   },
   "referrers": {
     "direct": 562,
-    "인스타그램": 3826,
+    "인스타그램": 3829,
     "페이스북": 199,
     "구글": 20,
     "네이버": 12,
@@ -4123,14 +4123,14 @@
       ]
     },
     "2026-07-04": {
-      "pv": 36,
+      "pv": 39,
       "click": 11,
       "search": 0,
       "pages": {
-        "/": 9,
+        "/": 10,
         "/series/series_ba7cc89468/ep_860867be0e": 3,
         "/series/series_4f27a6d489/ep_9873ededda": 3,
-        "/series/series_4f27a6d489/ep_eb8b1702fa": 3,
+        "/series/series_4f27a6d489/ep_eb8b1702fa": 4,
         "/series/series_4f27a6d489/ep_c8dbf171b7": 1,
         "/series/series_ba7cc89468/ep_00a18099de": 2,
         "/#foods": 1,
@@ -4139,7 +4139,7 @@
         "/foods/food_673fc958f6": 1,
         "/foods/food_790525d8a8": 1,
         "/series/series_ba7cc89468/ep_97e39a4499": 1,
-        "/series/series_304565fb77/ep_d7955f38a0": 2,
+        "/series/series_304565fb77/ep_d7955f38a0": 3,
         "/series/series_ba7cc89468/ep_4da176323e": 1,
         "/series/series_ba7cc89468/ep_73bdfba72e": 1,
         "/foods/food_9945533a15": 1,
@@ -4156,12 +4156,12 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 47
+        "mobile": 50
       },
       "referrers": {
         "페이스북": 4,
         "direct": 3,
-        "인스타그램": 29
+        "인스타그램": 32
       },
       "hourly": [
         0,
@@ -4187,9 +4187,9 @@
         0,
         0,
         0,
-        0
+        3
       ]
     }
   },
-  "updated_at": "2026-07-04T17:00:41.506Z"
+  "updated_at": "2026-07-05T00:00:43.174Z"
 }
