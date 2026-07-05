@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 4779,
-    "click": 1789,
+    "pv": 4781,
+    "click": 1790,
     "search": 0
   },
   "pages": {
-    "/": 1006,
+    "/": 1007,
     "/series/series_ba7cc89468/ep_ad505df37d": 259,
     "/series/series_304565fb77/ep_c2e684a351": 189,
     "/series/series_873cdcaf61/ep_7dd208fe26": 81,
@@ -60,7 +60,7 @@
     "/camps/camp_82599ba9bf": 9,
     "/camps/camp_b2804ced5e": 9,
     "/camps/camp_133dd5b2c6": 16,
-    "/camps/camp_d9699234d4": 20,
+    "/camps/camp_d9699234d4": 21,
     "/camps/camp_2dee32afa2": 15,
     "/camps/camp_e7783e56dc": 9,
     "/camps/camp_922e05eeae": 8,
@@ -202,20 +202,20 @@
     "/camps/camp_e5a202316d::네이버": 1,
     "/items/item_32e1cc5f58::네이버예약": 2,
     "/series/series_873cdcaf61/ep_3def2c1289::인스타DM": 22,
-    "/camps/camp_d9699234d4::그래가": 1,
+    "/camps/camp_d9699234d4::그래가": 2,
     "/series/series_4f27a6d489/ep_c8dbf171b7::인스타DM": 1,
     "/series/series_4f27a6d489/ep_9873ededda::인스타DM": 8,
     "/series/series_4f27a6d489/ep_eb8b1702fa::인스타DM": 2
   },
   "searches": {},
   "devices": {
-    "desktop": 256,
+    "desktop": 259,
     "mobile": 6309,
     "tablet": 3
   },
   "referrers": {
     "direct": 575,
-    "인스타그램": 3871,
+    "인스타그램": 3873,
     "페이스북": 199,
     "구글": 20,
     "네이버": 12,
@@ -4191,11 +4191,11 @@
       ]
     },
     "2026-07-05": {
-      "pv": 55,
-      "click": 23,
+      "pv": 57,
+      "click": 24,
       "search": 0,
       "pages": {
-        "/": 5,
+        "/": 6,
         "/series/series_ba7cc89468/ep_860867be0e": 4,
         "/series/series_4f27a6d489/ep_9873ededda": 3,
         "/series/series_304565fb77/ep_c2e684a351": 2,
@@ -4219,7 +4219,7 @@
         "/series/series_e8c17ad5da/ep_e46450a717": 1,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 1,
         "/camps/camp_e220a217fd": 2,
-        "/camps/camp_d9699234d4": 1,
+        "/camps/camp_d9699234d4": 2,
         "/camps/camp_8e1adf57aa": 1,
         "/series/series_4f27a6d489/ep_eb8b1702fa": 1,
         "/camps/camp_e06cb829df": 1,
@@ -4240,14 +4240,16 @@
         "/camps/camp_e220a217fd::그래가": 1,
         "/camps/camp_e1e0dde7b3::땡큐캠핑": 1,
         "/camps/camp_8625b4018d::땡큐캠핑": 1,
-        "/camps/camp_a9bbd60ec3::그래가": 1
+        "/camps/camp_a9bbd60ec3::그래가": 1,
+        "/camps/camp_d9699234d4::그래가": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 78
+        "mobile": 78,
+        "desktop": 3
       },
       "referrers": {
-        "인스타그램": 42,
+        "인스타그램": 44,
         "direct": 13
       },
       "hourly": [
@@ -4265,7 +4267,7 @@
         12,
         0,
         0,
-        0,
+        2,
         0,
         0,
         0,
@@ -4278,5 +4280,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-05T12:00:48.285Z"
+  "updated_at": "2026-07-05T15:00:44.010Z"
 }
