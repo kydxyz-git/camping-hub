@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 4799,
-    "click": 1792,
+    "pv": 4801,
+    "click": 1793,
     "search": 0
   },
   "pages": {
-    "/": 1014,
+    "/": 1015,
     "/series/series_ba7cc89468/ep_ad505df37d": 260,
     "/series/series_304565fb77/ep_c2e684a351": 189,
     "/series/series_873cdcaf61/ep_7dd208fe26": 82,
@@ -28,7 +28,7 @@
     "/camps/camp_8e1adf57aa": 31,
     "/camps/camp_e06cb829df": 21,
     "/foods/food_48d51f3296": 17,
-    "/foods/food_b7f447dd02": 17,
+    "/foods/food_b7f447dd02": 18,
     "/series/series_e8c17ad5da/ep_ff868ac30c": 56,
     "/foods/food_464525ea11": 12,
     "/foods/food_6b6f5c2711": 21,
@@ -187,7 +187,7 @@
     "/items/item_75f77862cd::s.click.aliexpress.com": 17,
     "/camps/camp_3f541ff6e3::www.camfit.co.kr": 1,
     "/foods/food_48d51f3296::컬리": 2,
-    "/foods/food_b7f447dd02::쿠팡": 6,
+    "/foods/food_b7f447dd02::쿠팡": 7,
     "/foods/food_9966103a5b::컬리": 4,
     "/series/series_873cdcaf61/ep_08c284c148::인스타DM": 3,
     "/camps/camp_357cccb118::www.xn--9g3b27q0ne.kr": 2,
@@ -210,12 +210,12 @@
   "searches": {},
   "devices": {
     "desktop": 260,
-    "mobile": 6328,
+    "mobile": 6331,
     "tablet": 3
   },
   "referrers": {
     "direct": 580,
-    "인스타그램": 3886,
+    "인스타그램": 3888,
     "페이스북": 199,
     "구글": 20,
     "네이버": 12,
@@ -4283,29 +4283,31 @@
       ]
     },
     "2026-07-06": {
-      "pv": 11,
-      "click": 2,
+      "pv": 13,
+      "click": 3,
       "search": 0,
       "pages": {
-        "/": 4,
+        "/": 5,
         "/series/series_4f27a6d489/ep_9873ededda": 1,
         "/series/series_ba7cc89468/ep_00a18099de": 2,
         "/series/series_ba7cc89468/ep_ad505df37d": 1,
         "/camps/camp_c284aeffe4": 1,
         "/camps/camp_82599ba9bf": 1,
-        "/series/series_4f27a6d489/ep_eb8b1702fa": 1
+        "/series/series_4f27a6d489/ep_eb8b1702fa": 1,
+        "/foods/food_b7f447dd02": 1
       },
       "clicks": {
         "/camps/camp_82599ba9bf::땡큐캠핑": 1,
-        "/series/series_4f27a6d489/ep_eb8b1702fa::인스타DM": 1
+        "/series/series_4f27a6d489/ep_eb8b1702fa::인스타DM": 1,
+        "/foods/food_b7f447dd02::쿠팡": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 13
+        "mobile": 16
       },
       "referrers": {
         "direct": 4,
-        "인스타그램": 7
+        "인스타그램": 9
       },
       "hourly": [
         0,
@@ -4321,7 +4323,7 @@
         0,
         0,
         0,
-        0,
+        2,
         0,
         0,
         0,
@@ -4335,5 +4337,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-06T08:00:30.331Z"
+  "updated_at": "2026-07-06T14:00:30.537Z"
 }
