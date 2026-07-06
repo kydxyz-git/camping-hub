@@ -1,12 +1,12 @@
 {
   "total": {
-    "pv": 4788,
-    "click": 1790,
+    "pv": 4795,
+    "click": 1791,
     "search": 0
   },
   "pages": {
-    "/": 1010,
-    "/series/series_ba7cc89468/ep_ad505df37d": 259,
+    "/": 1012,
+    "/series/series_ba7cc89468/ep_ad505df37d": 260,
     "/series/series_304565fb77/ep_c2e684a351": 189,
     "/series/series_873cdcaf61/ep_7dd208fe26": 82,
     "/series/series_e8c17ad5da/ep_e46450a717": 70,
@@ -46,7 +46,7 @@
     "/camps/camp_ec631c9ffe": 4,
     "/camps/camp_fd26ab4286": 7,
     "/camps/camp_0741c2c7b7": 17,
-    "/camps/camp_c284aeffe4": 26,
+    "/camps/camp_c284aeffe4": 27,
     "/camps/camp_9ada4f994a": 17,
     "/camps/camp_6cc478b0b1": 6,
     "/camps/camp_ed97486488": 7,
@@ -57,7 +57,7 @@
     "/camps/camp_8f72106bcf": 10,
     "/camps/camp_e220a217fd": 31,
     "/camps/camp_c47fbddb56": 7,
-    "/camps/camp_82599ba9bf": 9,
+    "/camps/camp_82599ba9bf": 10,
     "/camps/camp_b2804ced5e": 9,
     "/camps/camp_133dd5b2c6": 16,
     "/camps/camp_d9699234d4": 21,
@@ -103,7 +103,7 @@
     "/series/series_873cdcaf61/ep_116826a88d": 42,
     "/series/series_e8c17ad5da/ep_7a004a6412": 34,
     "/series/series_873cdcaf61/ep_4f183af0df": 45,
-    "/series/series_ba7cc89468/ep_00a18099de": 170,
+    "/series/series_ba7cc89468/ep_00a18099de": 171,
     "/camps/camp_43b6759cd3": 4,
     "/series/series_304565fb77/ep_17f905660e": 73,
     "/foods/food_8924631470": 14,
@@ -119,7 +119,7 @@
     "/series/series_873cdcaf61/ep_3def2c1289": 18,
     "/items/item_32e1cc5f58": 3,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 8,
-    "/series/series_4f27a6d489/ep_9873ededda": 9,
+    "/series/series_4f27a6d489/ep_9873ededda": 10,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 8,
     "/camps/camp_2d2adbe3fd": 1
   },
@@ -144,7 +144,7 @@
     "__external__::그래가파트너스": 8,
     "/items/item_960c2ff01c::네이버예약": 21,
     "/items/item_48f6974ac5::쿠팡": 5,
-    "/camps/camp_82599ba9bf::땡큐캠핑": 1,
+    "/camps/camp_82599ba9bf::땡큐캠핑": 2,
     "/camps/camp_c47fbddb56::땡큐캠핑": 2,
     "/series/series_ba7cc89468/ep_b953456d73::인스타DM": 82,
     "/camps/camp_e1e0dde7b3::땡큐캠핑": 6,
@@ -210,12 +210,12 @@
   "searches": {},
   "devices": {
     "desktop": 260,
-    "mobile": 6315,
+    "mobile": 6323,
     "tablet": 3
   },
   "referrers": {
-    "direct": 576,
-    "인스타그램": 3879,
+    "direct": 580,
+    "인스타그램": 3882,
     "페이스북": 199,
     "구글": 20,
     "네이버": 12,
@@ -4281,7 +4281,57 @@
         5,
         1
       ]
+    },
+    "2026-07-06": {
+      "pv": 7,
+      "click": 1,
+      "search": 0,
+      "pages": {
+        "/": 2,
+        "/series/series_4f27a6d489/ep_9873ededda": 1,
+        "/series/series_ba7cc89468/ep_00a18099de": 1,
+        "/series/series_ba7cc89468/ep_ad505df37d": 1,
+        "/camps/camp_c284aeffe4": 1,
+        "/camps/camp_82599ba9bf": 1
+      },
+      "clicks": {
+        "/camps/camp_82599ba9bf::땡큐캠핑": 1
+      },
+      "searches": {},
+      "devices": {
+        "mobile": 8
+      },
+      "referrers": {
+        "direct": 4,
+        "인스타그램": 3
+      },
+      "hourly": [
+        0,
+        0,
+        0,
+        7,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   },
-  "updated_at": "2026-07-06T00:00:42.184Z"
+  "updated_at": "2026-07-06T04:00:41.157Z"
 }
