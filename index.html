@@ -1109,6 +1109,13 @@ function renderSeries() {
     } else if (mode === 'random') {
       // 랜덤: 매 로드마다 셔플 + 최근 7일 신규 EP 가산 (created_at 기준)
       sortedEps = sortRecentFirst(s.eps, 7);
+    } else if (mode === 'created_desc') {
+      // 등록 최신순: created_at 내림차순 (없으면 맨 뒤)
+      sortedEps = [...s.eps].sort((a, b) => {
+        const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return tb - ta;
+      });
     } else if (mode === 'ep_asc') {
       // 오름차순: EP.01, EP.02, ... (ep=0은 맨 뒤 랜덤)
       sortedEps = [...s.eps].sort((a, b) => {

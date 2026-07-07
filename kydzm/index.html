@@ -5824,6 +5824,7 @@ let _seriesForm = {
 const SORT_MODES = [
   { value: 'ep_desc', label: '최신순 (EP↓)',  desc: 'EP.05, EP.04, ..., EP.01' },
   { value: 'ep_asc',  label: '순서대로 (EP↑)', desc: 'EP.01, EP.02, ..., EP.05' },
+  { value: 'created_desc', label: '등록 최신순', desc: '나중에 등록한 EP가 맨 위 (created_at 기준)' },
   { value: 'random',  label: '랜덤',           desc: '매 페이지 로드마다 셔플' },
   { value: 'manual',  label: '수동',           desc: '저장된 순서 그대로' },
 ];
@@ -5856,6 +5857,14 @@ function getSortedEpsForAdmin(series) {
   const indexed = series.eps.map((ep, ei) => ({ ep, ei }));
   if (mode === 'manual' || mode === 'random') {
     return indexed;
+  }
+  if (mode === 'created_desc') {
+    // 등록 최신순: created_at 내림차순 (없으면 맨 뒤)
+    return [...indexed].sort((a, b) => {
+      const ta = a.ep.created_at ? new Date(a.ep.created_at).getTime() : 0;
+      const tb = b.ep.created_at ? new Date(b.ep.created_at).getTime() : 0;
+      return tb - ta;
+    });
   }
   return [...indexed].sort((a, b) => {
     const aHas = (a.ep.ep || 0) > 0, bHas = (b.ep.ep || 0) > 0;
