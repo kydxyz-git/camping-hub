@@ -1012,12 +1012,21 @@
     "extras": [],
     "graega": false,
     "url": "https://camfit.co.kr/camp/65546172cd3e77001f33656e",
-    "imgs": [],
+    "imgs": [
+      "./images/camps/6689392c4770.jpg",
+      "./images/camps/6689392c4770-2.jpg",
+      "./images/camps/6689392c4770-3.jpg",
+      "./images/camps/6689392c4770-4.jpg",
+      "./images/camps/6689392c4770-5.jpg",
+      "./images/camps/6689392c4770-6.jpg",
+      "./images/camps/6689392c4770-7.jpg",
+      "./images/camps/6689392c4770-8.jpg"
+    ],
     "rating": 5,
     "visits": 3,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-07-07T00:15:23.606Z",
+    "updated_at": "2026-07-07T00:23:55.488Z",
     "lat": 35.2452434,
     "lng": 127.7898059
   },
