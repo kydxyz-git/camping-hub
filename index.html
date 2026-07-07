@@ -1113,7 +1113,10 @@ function renderSeries() {
       // 오름차순: EP.01, EP.02, ... (ep=0은 맨 뒤 랜덤)
       sortedEps = [...s.eps].sort((a, b) => {
         const aHas = (a.ep || 0) > 0, bHas = (b.ep || 0) > 0;
-        if (aHas && bHas) return a.ep - b.ep;
+        if (aHas && bHas) {
+          if (a.ep !== b.ep) return a.ep - b.ep;
+          return (a.ep_sub || 0) - (b.ep_sub || 0);  // EP.02 → EP.02-1
+        }
         if (aHas) return -1;
         if (bHas) return 1;
         return Math.random() - 0.5;
@@ -1122,7 +1125,10 @@ function renderSeries() {
       // 기본: 내림차순 (최신 우선)
       sortedEps = [...s.eps].sort((a, b) => {
         const aHas = (a.ep || 0) > 0, bHas = (b.ep || 0) > 0;
-        if (aHas && bHas) return b.ep - a.ep;
+        if (aHas && bHas) {
+          if (a.ep !== b.ep) return b.ep - a.ep;
+          return (b.ep_sub || 0) - (a.ep_sub || 0);  // EP.02-1 → EP.02 (번외가 최신)
+        }
         if (aHas) return -1;
         if (bHas) return 1;
         return Math.random() - 0.5;
@@ -1149,7 +1155,7 @@ function renderSeries() {
               const tag = empty ? 'div' : 'a';
               const attr = empty ? '' : `href="${ep.url}" target="_blank" rel="noopener"`;
               // EP 배지: url 유무와 무관하게 ep번호가 있으면 표시
-              const epBadge = (ep.ep && ep.ep > 0) ? `<span class="ep-badge" style="background:${s.color}">EP.${String(ep.ep).padStart(2,'0')}</span>` : '';
+              const epBadge = (ep.ep && ep.ep > 0) ? `<span class="ep-badge" style="background:${s.color}">EP.${String(ep.ep).padStart(2,'0')}${ep.ep_sub > 0 ? '-' + ep.ep_sub : ''}</span>` : '';
               // 인스타 아이콘: 실제 인스타 주소가 입력된 경우에만
               const isInsta = ep.url && /instagram\.com/i.test(ep.url);
               // 통계 추적용 ID 기반 path
@@ -1816,7 +1822,7 @@ function _renderCampMap(camps) {
         for (const ep of (s.eps || [])) {
           if (ep.published === false) continue;
           if (ep.camp_id === c.id && ep.url) {
-            const epLabel = ep.ep > 0 ? `${s.name} EP.${String(ep.ep).padStart(2, '0')}` : s.name;
+            const epLabel = ep.ep > 0 ? `${s.name} EP.${String(ep.ep).padStart(2, '0')}${ep.ep_sub > 0 ? '-' + ep.ep_sub : ''}` : s.name;
             videoList.push({ url: ep.url, label: `${epLabel} - ${ep.title || ''}`.trim() });
           }
         }

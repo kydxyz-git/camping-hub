@@ -2300,6 +2300,14 @@ function getSeriesSlug(seriesName, ep) {
   return `${prefix}-ep${String(ep).padStart(2, '0')}`;
 }
 
+// EP 라벨 생성 (번외 지원): EP.02 / EP.02-1 / 단편
+function epLabelOf(ep) {
+  if (!ep || !(ep.ep > 0)) return '단편';
+  let label = 'EP.' + String(ep.ep).padStart(2, '0');
+  if (ep.ep_sub > 0) label += '-' + ep.ep_sub;
+  return label;
+}
+
 // ════════════════════════════════════════════════════════════════════
 // 라우터 (해시 기반)
 // 경로:
@@ -3884,7 +3892,7 @@ function renderCampDetail(idx) {
           });
           if (linkedEps.length === 0) return '<span style="color:var(--muted);">— 연결된 EP 없음</span>';
           return linkedEps.map(({ s, si, ep, ei }) => {
-            const epLabel = ep.ep > 0 ? `EP.${String(ep.ep).padStart(2, '0')}` : '단편';
+            const epLabel = epLabelOf(ep);
             return `<div style="margin:2px 0;"><a href="#series/${si}/${ei}">${escapeHtml(s.emoji || '🎬')} ${escapeHtml(s.name)} · ${epLabel} - ${escapeHtml(ep.title)}</a></div>`;
           }).join('');
         })()}</div></div>
@@ -4861,7 +4869,7 @@ function renderSeriesList() {
                 <div class="series-ep-item ${epPub ? '' : 'is-unpublished'}" data-ei="${ei}">
                   ${isManual ? `<span class="drag-handle drag-handle--ep" title="드래그해서 순서 변경">⋮⋮</span>` : ''}
                   <a class="series-ep-link" href="#series/${si}/${ei}">
-                    <span class="series-ep-num">${ep.ep > 0 ? 'EP.' + String(ep.ep).padStart(2, '0') : '단편'}</span>
+                    <span class="series-ep-num">${epLabelOf(ep)}</span>
                     <span class="series-ep-title">${escapeHtml(ep.title)}</span>
                   </a>
                   ${toggleHtml(epPub, `data-ep-toggle="${si}-${ei}"`)}
@@ -5245,11 +5253,11 @@ function renderEpDetail(si, ei) {
       ${thumbPath ? `<div class="thumb-large"><img src="${escapeHtml(thumbPath)}" alt=""></div>` : ''}
       <h2 style="font-size:17px;font-weight:800;text-align:center;margin-bottom:4px;">${escapeHtml(ep.title)}</h2>
       <div style="text-align:center;color:var(--muted);font-size:12px;margin-bottom:18px;">
-        ${escapeHtml(series.name)} ${ep.ep > 0 ? '· EP.' + String(ep.ep).padStart(2, '0') : ''}
+        ${escapeHtml(series.name)} ${ep.ep > 0 ? '· ' + epLabelOf(ep) : ''}
       </div>
       <div class="detail-meta">
         <div class="detail-row"><div class="detail-key">시리즈</div><div class="detail-val">${escapeHtml(series.emoji || '')} ${escapeHtml(series.name)}</div></div>
-        <div class="detail-row"><div class="detail-key">EP 번호</div><div class="detail-val">${ep.ep > 0 ? 'EP.' + String(ep.ep).padStart(2, '0') : '단편 (ep=0)'}</div></div>
+        <div class="detail-row"><div class="detail-key">EP 번호</div><div class="detail-val">${ep.ep > 0 ? epLabelOf(ep) + (ep.ep_sub > 0 ? ' (번외)' : '') : '단편 (ep=0)'}</div></div>
         <div class="detail-row"><div class="detail-key">제목</div><div class="detail-val">${escapeHtml(ep.title)}</div></div>
         <div class="detail-row"><div class="detail-key">릴스 URL</div><div class="detail-val">${ep.url ? `<a href="${escapeHtml(ep.url)}" target="_blank" rel="noopener">${escapeHtml(ep.url)}</a>` : '-'}</div></div>
         <div class="detail-row"><div class="detail-key">썸네일</div><div class="detail-val">${escapeHtml(ep.thumb || '-')}</div></div>
@@ -5283,6 +5291,7 @@ let _epForm = {
   editEi: null,
   seriesIdx: 0,
   ep: '',
+  epSub: '',         // 번외 번호 (선택, 비우면 정규 EP) → EP.02-1
   title: '',
   url: '',
   camp_id: '',       // 연결된 캠핑장 id (선택, '' = 미연결)
@@ -5307,6 +5316,7 @@ function renderEpAddForm() {
       editSi: null, editEi: null,
       seriesIdx: 0,
       ep: suggestNextEp(0),
+      epSub: '',
       title: '', url: '',
       camp_id: '',
       imageBase64: null, imagePreviewUrl: null, imageSize: 0,
@@ -5329,6 +5339,7 @@ function renderEpEditForm(si, ei) {
     editSi: si, editEi: ei,
     seriesIdx: si,
     ep: ep.ep || 0,
+    epSub: (ep.ep_sub > 0) ? String(ep.ep_sub) : '',
     title: ep.title || '',
     url: ep.url || '',
     camp_id: ep.camp_id || '',
@@ -5372,8 +5383,11 @@ function _renderEpFormUI() {
 
         <div class="form-field">
           <label class="label" for="f-ep">EP 번호 *</label>
-          <input type="number" id="f-ep" class="input" min="0" placeholder="0 = 단편" value="${_epForm.ep}">
-          <div class="help">0이면 단편 (캠핑꿀팁/장비소개 같은 시리즈)</div>
+          <div class="row" style="gap:6px;">
+            <input type="number" id="f-ep" class="input" min="0" placeholder="0 = 단편" value="${_epForm.ep}" style="flex:1;min-width:0;">
+            <input type="number" id="f-ep-sub" class="input" min="1" placeholder="번외 (선택)" value="${_epForm.epSub}" style="flex:1;min-width:0;">
+          </div>
+          <div class="help">0이면 단편. 번외 번호 입력 시 EP.02-1 형식으로 표시 (정규편은 비워두세요)</div>
         </div>
 
         <div class="form-field">
@@ -5442,6 +5456,7 @@ function _renderEpFormUI() {
     }
   };
   $('f-ep').oninput = (e) => { _epForm.ep = e.target.value; };
+  $('f-ep-sub').oninput = (e) => { _epForm.epSub = e.target.value; };
   $('f-title').oninput = (e) => { _epForm.title = e.target.value; };
   $('f-url').oninput = (e) => { _epForm.url = e.target.value; };
   $('f-camp').onchange = (e) => { _epForm.camp_id = e.target.value || ''; };
@@ -5522,7 +5537,7 @@ function _renderEpFormUI() {
 function resetEpForm() {
   _epForm = {
     mode: 'add', editSi: null, editEi: null,
-    seriesIdx: 0, ep: '', title: '', url: '',
+    seriesIdx: 0, ep: '', epSub: '', title: '', url: '',
     camp_id: '',
     imageBase64: null, imagePreviewUrl: null, imageSize: 0,
     imageChanged: false,
@@ -5546,6 +5561,10 @@ async function submitEpForm() {
   }
 
   const ep = +_epForm.ep;
+  // 번외 번호 (선택): 1 이상이면 EP.02-1 형식 번외편
+  const epSub = (_epForm.epSub !== '' && +_epForm.epSub > 0) ? Math.floor(+_epForm.epSub) : 0;
+  // slug: 번외는 뒤에 -N 붙여서 이미지 파일명 충돌 방지 (summer-ep02-1.jpg)
+  const _slugOf = (name, epNum) => getSeriesSlug(name, epNum) + (epNum > 0 && epSub > 0 ? `-${epSub}` : '');
 
   // 진행 오버레이
   const progress = document.getElementById('submit-progress');
@@ -5567,7 +5586,7 @@ async function submitEpForm() {
       const oldThumb = oldEp.thumb;
 
       // 새 슬러그 (시리즈/EP번호 바뀌었을 수 있음)
-      const newSlug = getSeriesSlug(series.name, ep);
+      const newSlug = _slugOf(series.name, ep);
       const newImagePath = `images/series/${newSlug}.jpg`;
       const newThumbField = `./${newImagePath}`;
 
@@ -5578,7 +5597,7 @@ async function submitEpForm() {
       // 새 EP 객체
       const _nowIsoEp = new Date().toISOString();
       const updatedEp = {
-        id: oldEp.id || makeContentId('ep', `${newSeries[_epForm.seriesIdx].name}_${_epForm.title.trim()}_${ep}`),
+        id: oldEp.id || makeContentId('ep', `${newSeries[_epForm.seriesIdx].name}_${_epForm.title.trim()}_${ep}${epSub > 0 ? '-' + epSub : ''}`),
         ep: ep,
         title: _epForm.title.trim(),
         url: _epForm.url.trim(),
@@ -5587,6 +5606,7 @@ async function submitEpForm() {
         created_at: oldEp.created_at || _nowIsoEp,
         updated_at: _nowIsoEp,
       };
+      if (epSub > 0) updatedEp.ep_sub = epSub;
       // 캠핑장 연결 (값 있을 때만 필드 포함)
       if (_epForm.camp_id) updatedEp.camp_id = _epForm.camp_id;
 
@@ -5636,7 +5656,7 @@ async function submitEpForm() {
 
       files.push({ path: 'data/series.json', content: JSON.stringify(newSeries, null, 2) + '\n', encoding: 'utf-8' });
 
-      const message = `update(admin): ${series.name} ${ep > 0 ? 'EP.' + String(ep).padStart(2, '0') : '단편'} '${updatedEp.title}' 수정`;
+      const message = `update(admin): ${series.name} ${ep > 0 ? epLabelOf(updatedEp) : '단편'} '${updatedEp.title}' 수정`;
       ptext.textContent = 'GitHub 업로드 중...';
       await ghCommitMultipleFiles(files, message);
 
@@ -5654,11 +5674,11 @@ async function submitEpForm() {
 
     } else {
       // === 추가 모드 (기존 로직) ===
-      const slug = getSeriesSlug(series.name, ep);
+      const slug = _slugOf(series.name, ep);
       const imagePath = `images/series/${slug}.jpg`;
       const _nowIsoEpNew = new Date().toISOString();
       const newEp = {
-        id: makeContentId('ep', `${series.name}_${_epForm.title.trim()}_${ep}`),
+        id: makeContentId('ep', `${series.name}_${_epForm.title.trim()}_${ep}${epSub > 0 ? '-' + epSub : ''}`),
         ep: ep,
         title: _epForm.title.trim(),
         url: _epForm.url.trim(),
@@ -5667,6 +5687,7 @@ async function submitEpForm() {
         created_at: _nowIsoEpNew,
         updated_at: _nowIsoEpNew,
       };
+      if (epSub > 0) newEp.ep_sub = epSub;
       if (_epForm.camp_id) newEp.camp_id = _epForm.camp_id;
 
       const targetSeries = newSeries[_epForm.seriesIdx];
@@ -5690,7 +5711,7 @@ async function submitEpForm() {
       ptext.textContent = 'GitHub 업로드 중...';
       psub.textContent = '이미지 + 데이터';
 
-      const message = `sync(admin): ${series.name} ${ep > 0 ? 'EP.' + String(ep).padStart(2, '0') : '단편'} '${newEp.title}' 추가`;
+      const message = `sync(admin): ${series.name} ${ep > 0 ? epLabelOf(newEp) : '단편'} '${newEp.title}' 추가`;
       await ghCommitMultipleFiles([
         { path: imagePath, content: _epForm.imageBase64, encoding: 'base64' },
         { path: 'data/series.json', content: JSON.stringify(newSeries, null, 2) + '\n', encoding: 'utf-8' },
@@ -5727,7 +5748,7 @@ async function deleteEp(si, ei) {
   if (!ep) return;
 
   // 2단계 확인
-  const label = ep.ep > 0 ? `EP.${String(ep.ep).padStart(2,'0')}` : '단편';
+  const label = epLabelOf(ep);
   if (!confirm(`'${series.name}'의 ${label} "${ep.title}"을(를) 삭제할까요?\n\n이 작업은 되돌릴 수 없어요 (이미지 파일도 함께 삭제됩니다).`)) return;
   if (!confirm(`정말로 삭제할까요? 마지막 확인입니다.`)) return;
 
@@ -5839,9 +5860,15 @@ function getSortedEpsForAdmin(series) {
   return [...indexed].sort((a, b) => {
     const aHas = (a.ep.ep || 0) > 0, bHas = (b.ep.ep || 0) > 0;
     if (mode === 'ep_asc') {
-      if (aHas && bHas) return a.ep.ep - b.ep.ep;
+      if (aHas && bHas) {
+        if (a.ep.ep !== b.ep.ep) return a.ep.ep - b.ep.ep;
+        return (a.ep.ep_sub || 0) - (b.ep.ep_sub || 0);  // EP.02 → EP.02-1
+      }
     } else {
-      if (aHas && bHas) return b.ep.ep - a.ep.ep;
+      if (aHas && bHas) {
+        if (a.ep.ep !== b.ep.ep) return b.ep.ep - a.ep.ep;
+        return (b.ep.ep_sub || 0) - (a.ep.ep_sub || 0);  // EP.02-1 → EP.02 (번외가 최신)
+      }
     }
     if (aHas) return -1;
     if (bHas) return 1;
