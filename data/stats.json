@@ -1,17 +1,17 @@
 {
   "total": {
-    "pv": 4811,
+    "pv": 4816,
     "click": 1793,
     "search": 0
   },
   "pages": {
-    "/": 1020,
+    "/": 1022,
     "/series/series_ba7cc89468/ep_ad505df37d": 260,
     "/series/series_304565fb77/ep_c2e684a351": 190,
     "/series/series_873cdcaf61/ep_7dd208fe26": 83,
     "/series/series_e8c17ad5da/ep_e46450a717": 70,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 70,
-    "/#stories": 7,
+    "/#stories": 8,
     "/series/series_ba7cc89468/ep_73bdfba72e": 201,
     "/series/series_ba7cc89468/ep_3acff3998f": 241,
     "/series/series_ba7cc89468/ep_27438d1204": 169,
@@ -110,7 +110,7 @@
     "/foods/food_673fc958f6": 7,
     "/items/item_75f77862cd": 16,
     "/series/series_873cdcaf61/ep_08c284c148": 30,
-    "/series/series_ba7cc89468/ep_97e39a4499": 82,
+    "/series/series_ba7cc89468/ep_97e39a4499": 83,
     "/series/series_873cdcaf61/ep_14cbfb6b11": 20,
     "/series/series_873cdcaf61/ep_eb18e20c30": 17,
     "/camps/camp_bcd074ef33": 3,
@@ -121,7 +121,8 @@
     "/series/series_4f27a6d489/ep_c8dbf171b7": 9,
     "/series/series_4f27a6d489/ep_9873ededda": 10,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 9,
-    "/camps/camp_2d2adbe3fd": 1
+    "/camps/camp_2d2adbe3fd": 1,
+    "/series/series_ba7cc89468/ep_aa0e809292": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 238,
@@ -209,12 +210,12 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 261,
+    "desktop": 266,
     "mobile": 6340,
     "tablet": 3
   },
   "referrers": {
-    "direct": 587,
+    "direct": 589,
     "인스타그램": 3891,
     "페이스북": 199,
     "구글": 20,
@@ -4341,7 +4342,52 @@
         1,
         1
       ]
+    },
+    "2026-07-07": {
+      "pv": 5,
+      "click": 0,
+      "search": 0,
+      "pages": {
+        "/": 2,
+        "/series/series_ba7cc89468/ep_aa0e809292": 1,
+        "/#stories": 1,
+        "/series/series_ba7cc89468/ep_97e39a4499": 1
+      },
+      "clicks": {},
+      "searches": {},
+      "devices": {
+        "desktop": 5
+      },
+      "referrers": {
+        "direct": 2
+      },
+      "hourly": [
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   },
-  "updated_at": "2026-07-07T00:00:30.352Z"
+  "updated_at": "2026-07-07T01:00:30.592Z"
 }
