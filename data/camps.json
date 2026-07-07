@@ -1000,22 +1000,26 @@
     "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
-    "name": "산청반달캠핑장",
+    "id": "camp_9ada4f994a",
+    "name": "산청 지리산반달캠핑장",
     "region": "경남",
-    "seasons": [],
+    "seasons": [
+      "여름"
+    ],
     "landscape": [
       "계곡"
     ],
     "extras": [],
     "graega": false,
-    "url": "",
+    "url": "https://camfit.co.kr/camp/65546172cd3e77001f33656e",
     "imgs": [],
-    "rating": 0,
-    "visits": 2,
+    "rating": 5,
+    "visits": 3,
     "published": true,
-    "id": "camp_9ada4f994a",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T02:53:18.159759+00:00"
+    "updated_at": "2026-07-07T00:15:23.606Z",
+    "lat": 35.2452434,
+    "lng": 127.7898059
   },
   {
     "name": "경남밀양솔바람캠핑장",
