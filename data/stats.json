@@ -1,13 +1,13 @@
 {
   "total": {
-    "pv": 4829,
+    "pv": 4832,
     "click": 1795,
     "search": 0
   },
   "pages": {
-    "/": 1024,
+    "/": 1025,
     "/series/series_ba7cc89468/ep_ad505df37d": 260,
-    "/series/series_304565fb77/ep_c2e684a351": 191,
+    "/series/series_304565fb77/ep_c2e684a351": 192,
     "/series/series_873cdcaf61/ep_7dd208fe26": 83,
     "/series/series_e8c17ad5da/ep_e46450a717": 70,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 70,
@@ -120,7 +120,7 @@
     "/items/item_32e1cc5f58": 3,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 11,
     "/series/series_4f27a6d489/ep_9873ededda": 11,
-    "/series/series_4f27a6d489/ep_eb8b1702fa": 10,
+    "/series/series_4f27a6d489/ep_eb8b1702fa": 11,
     "/camps/camp_2d2adbe3fd": 1,
     "/series/series_ba7cc89468/ep_aa0e809292": 2
   },
@@ -212,12 +212,12 @@
   "searches": {},
   "devices": {
     "desktop": 266,
-    "mobile": 6355,
+    "mobile": 6358,
     "tablet": 3
   },
   "referrers": {
     "direct": 589,
-    "인스타그램": 3904,
+    "인스타그램": 3907,
     "페이스북": 199,
     "구글": 20,
     "네이버": 12,
@@ -4345,20 +4345,20 @@
       ]
     },
     "2026-07-07": {
-      "pv": 18,
+      "pv": 21,
       "click": 2,
       "search": 0,
       "pages": {
-        "/": 4,
+        "/": 5,
         "/series/series_ba7cc89468/ep_aa0e809292": 2,
         "/#stories": 1,
         "/series/series_ba7cc89468/ep_97e39a4499": 2,
-        "/series/series_4f27a6d489/ep_eb8b1702fa": 1,
+        "/series/series_4f27a6d489/ep_eb8b1702fa": 2,
         "/series/series_4f27a6d489/ep_c8dbf171b7": 2,
         "/series/series_304565fb77/ep_17f905660e": 1,
         "/series/series_304565fb77/ep_a8b40077ca": 1,
         "/series/series_4f27a6d489/ep_9873ededda": 1,
-        "/series/series_304565fb77/ep_c2e684a351": 1,
+        "/series/series_304565fb77/ep_c2e684a351": 2,
         "/series/series_873cdcaf61/ep_4f183af0df": 1,
         "/series/series_e8c17ad5da/ep_e383972ec6": 1
       },
@@ -4369,16 +4369,16 @@
       "searches": {},
       "devices": {
         "desktop": 5,
-        "mobile": 15
+        "mobile": 18
       },
       "referrers": {
         "direct": 2,
-        "인스타그램": 13
+        "인스타그램": 16
       },
       "hourly": [
         5,
         13,
-        0,
+        3,
         0,
         0,
         0,
@@ -4403,5 +4403,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-07T02:00:31.832Z"
+  "updated_at": "2026-07-07T03:00:30.487Z"
 }
