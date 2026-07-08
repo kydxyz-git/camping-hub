@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 5195,
+    "pv": 5197,
     "click": 1935,
     "search": 0
   },
   "pages": {
-    "/": 1083,
+    "/": 1084,
     "/series/series_ba7cc89468/ep_ad505df37d": 266,
     "/series/series_304565fb77/ep_c2e684a351": 200,
     "/series/series_873cdcaf61/ep_7dd208fe26": 88,
@@ -120,7 +120,7 @@
     "/items/item_32e1cc5f58": 5,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 30,
     "/series/series_4f27a6d489/ep_9873ededda": 32,
-    "/series/series_4f27a6d489/ep_eb8b1702fa": 28,
+    "/series/series_4f27a6d489/ep_eb8b1702fa": 29,
     "/camps/camp_2d2adbe3fd": 1,
     "/series/series_ba7cc89468/ep_aa0e809292": 25,
     "/camps/camp_75ee389015": 1,
@@ -218,12 +218,12 @@
   "searches": {},
   "devices": {
     "desktop": 272,
-    "mobile": 6849,
+    "mobile": 6851,
     "tablet": 9
   },
   "referrers": {
     "direct": 607,
-    "인스타그램": 4195,
+    "인스타그램": 4197,
     "페이스북": 247,
     "구글": 20,
     "네이버": 12,
@@ -4454,11 +4454,11 @@
       ]
     },
     "2026-07-08": {
-      "pv": 154,
+      "pv": 156,
       "click": 56,
       "search": 0,
       "pages": {
-        "/": 18,
+        "/": 19,
         "/series/series_4f27a6d489/ep_9873ededda": 5,
         "/series/series_304565fb77/ep_c2e684a351": 2,
         "/series/series_873cdcaf61/ep_116826a88d": 1,
@@ -4469,7 +4469,7 @@
         "/series/series_ba7cc89468/ep_27438d1204": 4,
         "/series/series_ba7cc89468/ep_3acff3998f": 2,
         "/series/series_ba7cc89468/ep_860867be0e": 4,
-        "/series/series_4f27a6d489/ep_eb8b1702fa": 6,
+        "/series/series_4f27a6d489/ep_eb8b1702fa": 7,
         "/series/series_304565fb77/ep_17f905660e": 4,
         "/series/series_873cdcaf61/ep_3def2c1289": 3,
         "/series/series_304565fb77/ep_d7955f38a0": 5,
@@ -4567,11 +4567,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 208,
+        "mobile": 210,
         "desktop": 2
       },
       "referrers": {
-        "인스타그램": 150,
+        "인스타그램": 152,
         "direct": 2,
         "페이스북": 2
       },
@@ -4598,10 +4598,10 @@
         0,
         11,
         4,
-        0,
+        2,
         0
       ]
     }
   },
-  "updated_at": "2026-07-08T22:00:58.684Z"
+  "updated_at": "2026-07-08T23:00:58.216Z"
 }
