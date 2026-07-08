@@ -1,13 +1,13 @@
 {
   "total": {
-    "pv": 5038,
+    "pv": 5041,
     "click": 1879,
     "search": 0
   },
   "pages": {
-    "/": 1064,
+    "/": 1065,
     "/series/series_ba7cc89468/ep_ad505df37d": 264,
-    "/series/series_304565fb77/ep_c2e684a351": 197,
+    "/series/series_304565fb77/ep_c2e684a351": 198,
     "/series/series_873cdcaf61/ep_7dd208fe26": 85,
     "/series/series_e8c17ad5da/ep_e46450a717": 72,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 71,
@@ -118,7 +118,7 @@
     "/series/series_ba7cc89468/ep_860867be0e": 55,
     "/series/series_873cdcaf61/ep_3def2c1289": 23,
     "/items/item_32e1cc5f58": 4,
-    "/series/series_4f27a6d489/ep_c8dbf171b7": 21,
+    "/series/series_4f27a6d489/ep_c8dbf171b7": 22,
     "/series/series_4f27a6d489/ep_9873ededda": 27,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 22,
     "/camps/camp_2d2adbe3fd": 1,
@@ -212,12 +212,12 @@
   "searches": {},
   "devices": {
     "desktop": 270,
-    "mobile": 6638,
+    "mobile": 6641,
     "tablet": 9
   },
   "referrers": {
     "direct": 605,
-    "인스타그램": 4042,
+    "인스타그램": 4045,
     "페이스북": 245,
     "구글": 20,
     "네이버": 12,
@@ -4345,20 +4345,20 @@
       ]
     },
     "2026-07-07": {
-      "pv": 227,
+      "pv": 230,
       "click": 86,
       "search": 0,
       "pages": {
-        "/": 44,
+        "/": 45,
         "/series/series_ba7cc89468/ep_aa0e809292": 14,
         "/#stories": 1,
         "/series/series_ba7cc89468/ep_97e39a4499": 18,
         "/series/series_4f27a6d489/ep_eb8b1702fa": 13,
-        "/series/series_4f27a6d489/ep_c8dbf171b7": 12,
+        "/series/series_4f27a6d489/ep_c8dbf171b7": 13,
         "/series/series_304565fb77/ep_17f905660e": 3,
         "/series/series_304565fb77/ep_a8b40077ca": 4,
         "/series/series_4f27a6d489/ep_9873ededda": 17,
-        "/series/series_304565fb77/ep_c2e684a351": 7,
+        "/series/series_304565fb77/ep_c2e684a351": 8,
         "/series/series_873cdcaf61/ep_4f183af0df": 3,
         "/series/series_e8c17ad5da/ep_e383972ec6": 3,
         "/foods/food_592752e317": 1,
@@ -4412,12 +4412,12 @@
       "searches": {},
       "devices": {
         "desktop": 9,
-        "mobile": 298,
+        "mobile": 301,
         "tablet": 6
       },
       "referrers": {
         "direct": 18,
-        "인스타그램": 151,
+        "인스타그램": 154,
         "페이스북": 46
       },
       "hourly": [
@@ -4444,9 +4444,9 @@
         0,
         0,
         2,
-        0
+        3
       ]
     }
   },
-  "updated_at": "2026-07-07T23:00:58.429Z"
+  "updated_at": "2026-07-08T00:00:58.411Z"
 }
