@@ -182,6 +182,16 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_9032e63bcd",
+        "ep": 5,
+        "title": "불닭냉면, 오징어감자전, 염통꼬치 등",
+        "url": "https://kydz.kr",
+        "thumb": "./images/series/foods-ep05.jpg",
+        "published": true,
+        "created_at": "2026-07-08T07:07:07.574Z",
+        "updated_at": "2026-07-08T07:07:07.574Z"
+      },
+      {
         "id": "ep_17f905660e",
         "ep": 4,
         "title": "토마토콩피 샌드위치, 아롱사태 수육 등",
