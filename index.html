@@ -765,6 +765,14 @@
       font-weight: 600;
       line-height: 1.4;
     }
+    /* 시리즈 콘텐츠: 윗줄에 시리즈명+EP 번호 (작게) */
+    .video-chooser-item-sub {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-sub);
+      margin-bottom: 2px;
+    }
     .video-chooser-item-arrow {
       color: var(--text-sub);
       font-size: 14px;
@@ -1694,7 +1702,8 @@ function _getCampVideoList(c) {
       if (ep.published === false) continue;
       if (ep.camp_id === c.id && ep.url) {
         const epLabel = ep.ep > 0 ? `${s.name} EP.${String(ep.ep).padStart(2, '0')}${ep.ep_sub > 0 ? '-' + ep.ep_sub : ''}` : s.name;
-        videoList.push({ url: ep.url, label: `${epLabel} - ${ep.title || ''}`.trim() });
+        // sub: 시리즈명+EP번호 (윗줄 작게) / label: 제목 (아랫줄)
+        videoList.push({ url: ep.url, label: (ep.title || '').trim() || epLabel, sub: epLabel });
       }
     }
   }
@@ -1722,7 +1731,10 @@ function _openCampChooser(campId) {
   const itemsHtml = videoList.map((v, i) => `
     <a class="video-chooser-item" href="${_mapEscHtml(v.url)}" target="_blank" rel="noopener">
       <span class="video-chooser-item-icon">📱</span>
-      <span class="video-chooser-item-label">${_mapEscHtml(v.label || ('콘텐츠 ' + (i+1)))}</span>
+      <span class="video-chooser-item-label">
+        ${v.sub ? `<span class="video-chooser-item-sub">${_mapEscHtml(v.sub)}</span>` : ''}
+        ${_mapEscHtml(v.label || ('콘텐츠 ' + (i+1)))}
+      </span>
       <span class="video-chooser-item-arrow">→</span>
     </a>
   `).join('');
@@ -1756,7 +1768,10 @@ function _openVideoChooser(listId) {
   const itemsHtml = data.videos.map((v, i) => `
     <a class="video-chooser-item" href="${_mapEscHtml(v.url)}" target="_blank" rel="noopener">
       <span class="video-chooser-item-icon">📱</span>
-      <span class="video-chooser-item-label">${_mapEscHtml(v.label || ('콘텐츠 ' + (i+1)))}</span>
+      <span class="video-chooser-item-label">
+        ${v.sub ? `<span class="video-chooser-item-sub">${_mapEscHtml(v.sub)}</span>` : ''}
+        ${_mapEscHtml(v.label || ('콘텐츠 ' + (i+1)))}
+      </span>
       <span class="video-chooser-item-arrow">→</span>
     </a>
   `).join('');
@@ -1952,28 +1967,8 @@ function _renderCampMap(camps) {
     if (isGraega) metaParts.push('그래가');
     const meta = metaParts.join(' · ');
 
-    // 영상 목록 수집: EP 연결 영상(전부) + 개별 videos
-    const videoList = [];  // { url, label }
-    if (hasEp) {
-      for (const s of seriesArr) {
-        if (s.published === false) continue;
-        for (const ep of (s.eps || [])) {
-          if (ep.published === false) continue;
-          if (ep.camp_id === c.id && ep.url) {
-            const epLabel = ep.ep > 0 ? `${s.name} EP.${String(ep.ep).padStart(2, '0')}${ep.ep_sub > 0 ? '-' + ep.ep_sub : ''}` : s.name;
-            videoList.push({ url: ep.url, label: `${epLabel} - ${ep.title || ''}`.trim() });
-          }
-        }
-      }
-    }
-    // 개별 영상
-    for (let vi = 0; vi < (c.videos || []).length; vi++) {
-      const v = c.videos[vi];
-      const vUrl = (typeof v === 'string') ? v : (v.url || '');
-      const vTitle = (typeof v === 'string') ? '' : (v.title || '');
-      if (!vUrl) continue;
-      videoList.push({ url: vUrl, label: vTitle || `콘텐츠 ${videoList.length + 1}` });
-    }
+    // 영상 목록 수집: EP 연결 영상(전부) + 개별 videos (공용 헬퍼)
+    const videoList = _getCampVideoList(c);
 
     // 버튼 영역: 영상 있으면 [영상보기 | 예약하기] 분할, 없으면 예약만
     const bookAttrs = c.url
