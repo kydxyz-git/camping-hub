@@ -770,6 +770,23 @@
       font-size: 14px;
       flex-shrink: 0;
     }
+    /* 캠핑장 카드 레이어: 하단 예약사이트 버튼 */
+    .camp-chooser-book-wrap {
+      padding: 8px 12px 14px;
+      border-top: 1px solid var(--line);
+    }
+    .camp-chooser-book {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      border-radius: 8px;
+      color: #fff !important;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+    .camp-chooser-book:hover { opacity: 0.9; }
     /* 예약 버튼 (배경색은 인라인 style로 플랫폼별 지정, 글자는 흰색 통일) */
     .camp-popup-link {
       display: block;
@@ -1430,15 +1447,31 @@ function renderGrid() {
   }
   grid.innerHTML = filtered.map((c,i) => {
     const hasUrl = !!c.url;
-    const tag = hasUrl ? 'a' : 'div';
-    const attrs = hasUrl ? `href="${c.url}" target="_blank" rel="noopener"` : '';
-    const nocursor = hasUrl ? '' : 'style="cursor:default;animation-delay:'+(i*0.03)+'s" ';
-    const style = hasUrl ? `style="animation-delay:${i*0.03}s"` : nocursor.slice(0,-1);
+    const hasContent = _getCampVideoList(c).length > 0;
     // 통계 추적용: ID 기반 path (이름 바뀌어도 동일 ID로 누적)
     const trackId = c.id || encodeURIComponent(c.name);
     const trackAttrs = `data-track-path="/camps/${trackId}" data-track-title="${(c.name || '').replace(/"/g, '&quot;')}"`;
+    let tag, attrs, style, cardTrackAttrs;
+    if (hasContent) {
+      // 콘텐츠 연결됨: 클릭 시 레이어 팝업 (콘텐츠 보기 / 예약 선택)
+      tag = 'div';
+      attrs = `onclick="_openCampChooser('${(c.id || c.name).replace(/'/g, "\\'")}')"`;
+      style = `style="animation-delay:${i*0.03}s;cursor:pointer;"`;
+      cardTrackAttrs = '';  // 예약 추적은 레이어 안 버튼에서
+    } else if (hasUrl) {
+      // 콘텐츠 없음: 기존처럼 바로 예약 페이지
+      tag = 'a';
+      attrs = `href="${c.url}" target="_blank" rel="noopener"`;
+      style = `style="animation-delay:${i*0.03}s"`;
+      cardTrackAttrs = trackAttrs;
+    } else {
+      tag = 'div';
+      attrs = '';
+      style = `style="cursor:default;animation-delay:${i*0.03}s"`;
+      cardTrackAttrs = '';
+    }
     return `
-    <${tag} ${attrs} ${trackAttrs} class="camp-card${hasUrl?'':' no-link'}" ${style}>
+    <${tag} ${attrs} ${cardTrackAttrs} class="camp-card${(hasUrl||hasContent)?'':' no-link'}" ${style}>
       <div class="camp-img">
         ${campThumb(c)}
         ${campPlatformBadge(c)}
@@ -1637,6 +1670,79 @@ function _mapEscHtml(s) {
     .replace(/'/g, '&#39;');
 }
 
+// 플랫폼 판별 헬퍼 (마커/버튼 색상 통일) — 지도 + 캠핑장 카드 공용
+// borderColor: 마커 테두리용 어두운 톤 (대비 강화)
+function _getPlatform(c) {
+  if (c.graega) return { key: 'graega', color: '#1a1a1a', borderColor: '#000', btnLabel: '예약사이트 →' };
+  if (!c.url) return { key: 'etc', color: '#5E6C4F', borderColor: '#3a4530', btnLabel: '캠핑장 목록 보기 →' };
+  const u = c.url.toLowerCase();
+  if (u.includes('naver.com'))      return { key: 'naver',  color: '#03C75A', borderColor: '#017a37', btnLabel: '예약사이트 →' };
+  if (u.includes('camfit.co.kr'))   return { key: 'camfit', color: '#2D8F4C', borderColor: '#1c5f31', btnLabel: '예약사이트 →' };
+  if (u.includes('thankqcamping.com') || u.includes('camperstory.com')) {
+    return { key: 'thankq', color: '#FF6B2C', borderColor: '#c44a14', btnLabel: '예약사이트 →' };
+  }
+  return { key: 'etc', color: '#5E6C4F', borderColor: '#3a4530', btnLabel: '예약사이트 →' };
+}
+
+// 캠핑장의 콘텐츠 목록 수집 (EP 연결 + 개별 videos) — 지도 팝업/카드 레이어 공용
+function _getCampVideoList(c) {
+  const videoList = [];  // { url, label }
+  const seriesArr = (typeof series !== 'undefined' && Array.isArray(series)) ? series : [];
+  for (const s of seriesArr) {
+    if (s.published === false) continue;
+    for (const ep of (s.eps || [])) {
+      if (ep.published === false) continue;
+      if (ep.camp_id === c.id && ep.url) {
+        const epLabel = ep.ep > 0 ? `${s.name} EP.${String(ep.ep).padStart(2, '0')}${ep.ep_sub > 0 ? '-' + ep.ep_sub : ''}` : s.name;
+        videoList.push({ url: ep.url, label: `${epLabel} - ${ep.title || ''}`.trim() });
+      }
+    }
+  }
+  for (let vi = 0; vi < (c.videos || []).length; vi++) {
+    const v = c.videos[vi];
+    const vUrl = (typeof v === 'string') ? v : (v.url || '');
+    const vTitle = (typeof v === 'string') ? '' : (v.title || '');
+    if (!vUrl) continue;
+    videoList.push({ url: vUrl, label: vTitle || `콘텐츠 ${videoList.length + 1}` });
+  }
+  return videoList;
+}
+
+// 캠핑장 카드 클릭 레이어: 콘텐츠 목록 + 예약사이트 선택 (다녀온 캠핑장 탭)
+function _openCampChooser(campId) {
+  const c = (typeof camps !== 'undefined' ? camps : []).find(x => (x.id || x.name) === campId);
+  if (!c) return;
+  const videoList = _getCampVideoList(c);
+  const platform = _getPlatform(c);
+  _closeVideoChooser();
+  const overlay = document.createElement('div');
+  overlay.id = 'video-chooser-overlay';
+  overlay.className = 'video-chooser-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) _closeVideoChooser(); };
+  const itemsHtml = videoList.map((v, i) => `
+    <a class="video-chooser-item" href="${_mapEscHtml(v.url)}" target="_blank" rel="noopener">
+      <span class="video-chooser-item-icon">📱</span>
+      <span class="video-chooser-item-label">${_mapEscHtml(v.label || ('콘텐츠 ' + (i+1)))}</span>
+      <span class="video-chooser-item-arrow">→</span>
+    </a>
+  `).join('');
+  const trackId = c.id || encodeURIComponent(c.name);
+  const bookBtn = c.url
+    ? `<a class="camp-chooser-book" style="background:${platform.color};" href="${_mapEscHtml(c.url)}" target="_blank" rel="noopener" data-track-path="/camps/${_mapEscHtml(trackId)}" data-track-title="${_mapEscHtml(c.name)}">${platform.btnLabel}</a>`
+    : '';
+  overlay.innerHTML = `
+    <div class="video-chooser-box">
+      <div class="video-chooser-header">
+        <span class="video-chooser-title">🏕 ${_mapEscHtml(c.name)}</span>
+        <button class="video-chooser-close" onclick="_closeVideoChooser()">✕</button>
+      </div>
+      <div class="video-chooser-list">${itemsHtml}</div>
+      ${bookBtn ? `<div class="camp-chooser-book-wrap">${bookBtn}</div>` : ''}
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
 // 영상 선택 레이어 팝업 (영상 2개 이상일 때)
 function _openVideoChooser(listId) {
   const data = (window._campVideoLists || {})[listId];
@@ -1767,20 +1873,6 @@ function _renderCampMap(camps) {
   // 개별 영상 있는 캠핑장도 추가
   for (const c of camps) {
     if (Array.isArray(c.videos) && c.videos.length > 0) epCampIds.add(c.id);
-  }
-
-  // 플랫폼 판별 헬퍼 (마커 색상 + 버튼 색상 통일)
-  // borderColor: 마커 테두리용 어두운 톤 (대비 강화)
-  function _getPlatform(c) {
-    if (c.graega) return { key: 'graega', color: '#1a1a1a', borderColor: '#000', btnLabel: '예약사이트 →' };
-    if (!c.url) return { key: 'etc', color: '#5E6C4F', borderColor: '#3a4530', btnLabel: '캠핑장 목록 보기 →' };
-    const u = c.url.toLowerCase();
-    if (u.includes('naver.com'))      return { key: 'naver',  color: '#03C75A', borderColor: '#017a37', btnLabel: '예약사이트 →' };
-    if (u.includes('camfit.co.kr'))   return { key: 'camfit', color: '#2D8F4C', borderColor: '#1c5f31', btnLabel: '예약사이트 →' };
-    if (u.includes('thankqcamping.com') || u.includes('camperstory.com')) {
-      return { key: 'thankq', color: '#FF6B2C', borderColor: '#c44a14', btnLabel: '예약사이트 →' };
-    }
-    return { key: 'etc', color: '#5E6C4F', borderColor: '#3a4530', btnLabel: '예약사이트 →' };
   }
 
   // 마커 그룹 + 클러스터링
