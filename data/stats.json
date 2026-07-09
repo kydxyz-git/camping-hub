@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 5234,
+    "pv": 5238,
     "click": 1937,
     "search": 0
   },
   "pages": {
-    "/": 1090,
+    "/": 1093,
     "/series/series_ba7cc89468/ep_ad505df37d": 266,
     "/series/series_304565fb77/ep_c2e684a351": 200,
     "/series/series_873cdcaf61/ep_7dd208fe26": 90,
@@ -115,7 +115,7 @@
     "/series/series_873cdcaf61/ep_eb18e20c30": 21,
     "/camps/camp_bcd074ef33": 4,
     "/camps/camp_0760ee65ba": 2,
-    "/series/series_ba7cc89468/ep_860867be0e": 59,
+    "/series/series_ba7cc89468/ep_860867be0e": 60,
     "/series/series_873cdcaf61/ep_3def2c1289": 26,
     "/items/item_32e1cc5f58": 5,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 34,
@@ -217,14 +217,14 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 273,
-    "mobile": 6889,
+    "desktop": 274,
+    "mobile": 6892,
     "tablet": 9
   },
   "referrers": {
-    "direct": 607,
-    "인스타그램": 4233,
-    "페이스북": 247,
+    "direct": 608,
+    "인스타그램": 4235,
+    "페이스북": 248,
     "구글": 20,
     "네이버": 12,
     "link.inpock.co.kr": 4
@@ -4603,11 +4603,11 @@
       ]
     },
     "2026-07-09": {
-      "pv": 35,
+      "pv": 39,
       "click": 2,
       "search": 0,
       "pages": {
-        "/": 5,
+        "/": 8,
         "/series/series_4f27a6d489/ep_c8dbf171b7": 3,
         "/series/series_4f27a6d489/ep_9873ededda": 3,
         "/series/series_304565fb77/ep_d7955f38a0": 3,
@@ -4628,7 +4628,8 @@
         "/series/series_4f27a6d489/ep_eb8b1702fa": 1,
         "/series/series_ba7cc89468/ep_4da176323e": 1,
         "/series/series_ba7cc89468/ep_b953456d73": 1,
-        "/series/series_ba7cc89468/ep_27438d1204": 1
+        "/series/series_ba7cc89468/ep_27438d1204": 1,
+        "/series/series_ba7cc89468/ep_860867be0e": 1
       },
       "clicks": {
         "/series/series_304565fb77/ep_d7955f38a0::인스타DM": 1,
@@ -4636,11 +4637,13 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 36,
-        "desktop": 1
+        "mobile": 39,
+        "desktop": 2
       },
       "referrers": {
-        "인스타그램": 34
+        "인스타그램": 36,
+        "direct": 1,
+        "페이스북": 1
       },
       "hourly": [
         0,
@@ -4653,7 +4656,7 @@
         1,
         13,
         0,
-        0,
+        4,
         0,
         0,
         0,
@@ -4670,5 +4673,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-09T09:00:35.242Z"
+  "updated_at": "2026-07-09T11:00:32.952Z"
 }
