@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>성과 분석 · kydz.kr</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --muted: #6e6e6e;
+    --line: #e5e5e5;
+    --accent-soft: #f5f5f3;
+    --danger: #e63946;
+    --success: #03c75a;
+    --warning: #f59e0b;
+    --info: #4a7ba6;
+    --brand: #FFE873;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', sans-serif;
+    background: var(--accent-soft);
+    color: var(--text);
+    line-height: 1.55;
+    min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
+  }
+  a, a:visited { color: inherit; text-decoration: none; }
+
+  .card {
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 18px;
+    background: var(--text); color: var(--bg);
+    border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+  }
+  .input {
+    width: 100%; padding: 12px 14px;
+    border: 1px solid var(--line); border-radius: 8px;
+    font-size: 14px; background: var(--bg); font-family: inherit;
+  }
+  .input:focus { outline: 2px solid var(--text); outline-offset: -1px; }
+
+  /* ── 로그인 ── */
+  .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .login-card { max-width: 380px; width: 100%; padding: 32px 24px; }
+  .login-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.02em; }
+  .login-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+  .login-error { font-size: 13px; color: var(--danger); margin-top: 10px; display: none; }
+  .row { display: flex; gap: 8px; }
+
+  /* ── 앱 ── */
+  .app { display: none; }
+  .app.is-active { display: block; }
+  .topbar {
+    background: var(--text); color: var(--bg);
+    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .topbar-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .topbar-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+  .topbar-link { font-size: 13px; opacity: .75; }
+  .topbar-link:hover { opacity: 1; color: var(--bg); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 80px; }
+
+  /* ── 리포트 목록 ── */
+  .page-head { margin: 8px 0 20px; }
+  .page-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+  .page-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .report-card {
+    display: block; margin-bottom: 14px; cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+    border-left: 4px solid var(--brand);
+  }
+  .report-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+  .report-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 800; letter-spacing: .02em;
+  }
+  .badge-quarter { background: var(--text); color: var(--brand); }
+  .badge-monthly { background: var(--brand); color: var(--text); }
+  .report-date { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .report-title { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 6px; }
+  .report-period { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .report-oneliner { font-size: 13.5px; color: #3a3a3a; line-height: 1.6; }
+
+  /* ── 상세 ── */
+  .back-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 16px; cursor: pointer; }
+  .back-btn:hover { color: var(--text); }
+  .detail-head { margin-bottom: 18px; }
+  .detail-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin: 8px 0 4px; }
+  .detail-analyzed {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 10px; padding: 6px 12px; border-radius: 8px;
+    background: var(--bg); border: 1px solid var(--line);
+    font-size: 12px; font-weight: 700; color: var(--muted);
+  }
+  .oneliner-card {
+    background: var(--text); color: var(--bg);
+    border-radius: 14px; padding: 20px 22px;
+    font-size: 14.5px; line-height: 1.7; font-weight: 500;
+    margin-bottom: 18px;
+  }
+  .oneliner-card b { color: var(--brand); }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 18px; }
+  .kpi { padding: 16px 18px; }
+  .kpi-label { font-size: 12px; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+  .kpi-value { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+  .kpi-sub { font-size: 11.5px; color: var(--info); font-weight: 600; margin-top: 3px; }
+
+  /* 바 차트 */
+  .trend-card { margin-bottom: 18px; padding: 20px 22px; }
+  .trend-caption { font-size: 13px; font-weight: 800; margin-bottom: 16px; }
+  .trend-bars { display: flex; align-items: flex-end; gap: 14px; height: 120px; }
+  .trend-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px; }
+  .trend-val { font-size: 11px; font-weight: 800; color: var(--text); }
+  .trend-bar { width: 100%; max-width: 56px; border-radius: 6px 6px 0 0; background: var(--brand); min-height: 4px; }
+  .trend-bar.est { background: repeating-linear-gradient(45deg, var(--brand), var(--brand) 5px, #f7dd4f 5px, #f7dd4f 10px); opacity: .8; }
+  .trend-label { font-size: 11.5px; color: var(--muted); font-weight: 700; }
+  .trend-note { font-size: 11px; color: var(--muted); margin-top: 12px; }
+
+  /* 인사이트 섹션 */
+  .sec-title { font-size: 16px; font-weight: 800; margin: 26px 0 12px; letter-spacing: -0.01em; }
+  .insight { padding: 18px 20px; margin-bottom: 12px; border-left: 4px solid var(--line); }
+  .insight.tone-info { border-left-color: var(--info); }
+  .insight.tone-warn { border-left-color: var(--warning); }
+  .insight.tone-success { border-left-color: var(--success); }
+  .insight.tone-highlight { border-left-color: var(--brand); }
+  .insight-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+  .insight-no {
+    flex: none; width: 24px; height: 24px; border-radius: 8px;
+    background: var(--accent-soft); border: 1px solid var(--line);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; transform: translateY(3px);
+  }
+  .insight-title { font-size: 15px; font-weight: 800; line-height: 1.4; }
+  .insight-body p { font-size: 13.5px; color: #3a3a3a; margin-bottom: 8px; }
+  .insight-body p:last-child { margin-bottom: 0; }
+  .insight-action {
+    margin-top: 12px; padding: 10px 14px; border-radius: 10px;
+    background: var(--accent-soft);
+    font-size: 12.5px; font-weight: 600; line-height: 1.6;
+  }
+  .insight-action::before { content: '→ '; font-weight: 800; }
+
+  /* 표 */
+  .tbl-wrap { overflow-x: auto; margin-top: 12px; -webkit-overflow-scrolling: touch; }
+  table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; white-space: nowrap; }
+  .tbl th {
+    text-align: left; padding: 8px 10px; font-weight: 800; font-size: 11.5px;
+    color: var(--muted); border-bottom: 2px solid var(--line);
+  }
+  .tbl td { padding: 9px 10px; border-bottom: 1px solid var(--accent-soft); }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl td:first-child { color: var(--muted); font-weight: 600; }
+
+  .sources { font-size: 11px; color: var(--muted); margin-top: 22px; line-height: 1.7; text-align: center; }
+
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 18px 12px 60px; }
+    .kpi-value { font-size: 19px; }
+    .card { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div class="login-screen" id="login-screen" style="display:none;">
+  <div class="card login-card">
+    <div class="login-title">성과 분석</div>
+    <div class="login-sub">kydz.kr 관리자 전용</div>
+    <div class="row">
+      <input type="password" id="login-password" class="input" placeholder="비밀번호">
+      <button class="btn" id="login-submit">입장</button>
+    </div>
+    <div class="login-error" id="login-error">비밀번호가 올바르지 않습니다</div>
+  </div>
+</div>
+
+<!-- 앱 -->
+<div class="app" id="app">
+  <div class="topbar">
+    <div class="topbar-title"><span class="dot"></span>성과 분석</div>
+    <a class="topbar-link" href="./">← 관리자 홈</a>
+  </div>
+  <div class="wrap" id="main"></div>
+</div>
+
+<script>
+const PASSWORD_HASH = 'fc0d164e3259b5a28b9b7ac489e95e1638ba1bc37a27c2bb07ac7bdb624f1347';
+const AUTH_KEY = 'kydz_admin_authed';
+
+let DATA = null;
+
+async function sha256(text) {
+  const buf = new TextEncoder().encode(text);
+  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtDate(iso) {
+  const [y, m, d] = iso.split('-');
+  return `${y}. ${Number(m)}. ${Number(d)}.`;
+}
+function dday(iso) {
+  const diff = Math.floor((Date.now() - new Date(iso + 'T00:00:00+09:00')) / 86400000);
+  if (diff <= 0) return '오늘';
+  if (diff < 30) return `${diff}일 전`;
+  if (diff < 365) return `${Math.floor(diff / 30)}개월 전`;
+  return `${Math.floor(diff / 365)}년 전`;
+}
+
+async function loadData() {
+  if (DATA) return DATA;
+  const r = await fetch(`../data/insights.json?v=${Date.now()}`);
+  if (!r.ok) throw new Error('insights.json 로드 실패: ' + r.status);
+  DATA = await r.json();
+  return DATA;
+}
+
+// ── 목록 ──
+function renderList() {
+  const main = document.getElementById('main');
+  const reports = [...(DATA.reports || [])].sort((a, b) => b.analyzedAt.localeCompare(a.analyzedAt));
+  if (!reports.length) {
+    main.innerHTML = '<div class="empty">아직 등록된 분석 리포트가 없습니다</div>';
+    return;
+  }
+  main.innerHTML = `
+    <div class="page-head">
+      <div class="page-title">📈 성과 분석 리포트</div>
+      <div class="page-sub">총 ${reports.length}건 · 최신순</div>
+    </div>
+    ${reports.map(r => `
+      <a class="card report-card" href="#${escapeHtml(r.id)}">
+        <div class="report-meta">
+          <span class="badge ${r.badgeType === 'quarter' ? 'badge-quarter' : 'badge-monthly'}">${escapeHtml(r.badge)}</span>
+          <span class="report-date">분석일 ${fmtDate(r.analyzedAt)} · ${dday(r.analyzedAt)}</span>
+        </div>
+        <div class="report-title">${escapeHtml(r.title)}</div>
+        <div class="report-period">대상 기간 ${escapeHtml(r.period)}</div>
+        <div class="report-oneliner">${escapeHtml(r.oneLiner)}</div>
+      </a>
+    `).join('')}
+  `;
+}
+
+// ── 상세 ──
+function renderDetail(report) {
+  const main = document.getElementById('main');
+  const maxBar = Math.max(...(report.trend?.bars || [{value:1}]).map(b => b.value), 1);
+
+  const kpiHtml = (report.kpis || []).map(k => `
+    <div class="card kpi">
+      <div class="kpi-label">${escapeHtml(k.label)}</div>
+      <div class="kpi-value">${escapeHtml(k.value)}</div>
+      ${k.sub ? `<div class="kpi-sub">${escapeHtml(k.sub)}</div>` : ''}
+    </div>
+  `).join('');
+
+  const trendHtml = report.trend ? `
+    <div class="card trend-card">
+      <div class="trend-caption">${escapeHtml(report.trend.caption)}</div>
+      <div class="trend-bars">
+        ${report.trend.bars.map(b => `
+          <div class="trend-col">
+            <div class="trend-val">${escapeHtml(b.display)}</div>
+            <div class="trend-bar ${b.label.includes('*') ? 'est' : ''}" style="height:${Math.max(4, Math.round(b.value / maxBar * 100))}%"></div>
+            <div class="trend-label">${escapeHtml(b.label)}</div>
+          </div>
+        `).join('')}
+      </div>
+      ${report.trend.note ? `<div class="trend-note">${escapeHtml(report.trend.note)}</div>` : ''}
+    </div>
+  ` : '';
+
+  const tblHtml = t => `
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr>${t.headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr></thead>
+      <tbody>${t.rows.map(row => `<tr>${row.map(c => `<td>${escapeHtml(c)}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table></div>
+  `;
+
+  const sectionsHtml = (report.sections || []).map(s => `
+    <div class="card insight tone-${escapeHtml(s.tone || 'info')}">
+      <div class="insight-head">
+        <span class="insight-no">${s.no}</span>
+        <span class="insight-title">${escapeHtml(s.title)}</span>
+      </div>
+      <div class="insight-body">${s.body.map(p => `<p>${escapeHtml(p)}</p>`).join('')}</div>
+      ${s.table ? tblHtml(s.table) : ''}
+      ${s.action ? `<div class="insight-action">${escapeHtml(s.action)}</div>` : ''}
+    </div>
+  `).join('');
+
+  const topHtml = report.topContents ? `
+    <div class="sec-title">🏆 ${escapeHtml(report.topContents.caption)}</div>
+    <div class="card" style="padding:14px 18px;">${tblHtml(report.topContents)}</div>
+  ` : '';
+
+  main.innerHTML = `
+    <a class="back-btn" href="#">← 리포트 목록</a>
+    <div class="detail-head">
+      <span class="badge ${report.badgeType === 'quarter' ? 'badge-quarter' : 'badge-monthly'}">${escapeHtml(report.badge)}</span>
+      <div class="detail-title">${escapeHtml(report.title)}</div>
+      <div class="page-sub">대상 기간 ${escapeHtml(report.period)}</div>
+      <div class="detail-analyzed">🕐 분석일 ${fmtDate(report.analyzedAt)} (${dday(report.analyzedAt)})</div>
+    </div>
+    <div class="oneliner-card">${escapeHtml(report.oneLiner)}</div>
+    <div class="kpi-grid">${kpiHtml}</div>
+    ${trendHtml}
+    <div class="sec-title">🔍 핵심 인사이트</div>
+    ${sectionsHtml}
+    ${topHtml}
+    <div class="sources">데이터 출처 — ${escapeHtml(report.sources || '')}</div>
+  `;
+  window.scrollTo(0, 0);
+}
+
+// ── 라우터 ──
+function router() {
+  const id = decodeURIComponent(location.hash.replace(/^#/, ''));
+  if (!DATA) return;
+  if (id) {
+    const report = (DATA.reports || []).find(r => r.id === id);
+    if (report) { renderDetail(report); return; }
+  }
+  renderList();
+}
+window.addEventListener('hashchange', router);
+
+// ── 인증 ──
+function isAuthed() { return sessionStorage.getItem(AUTH_KEY) === '1'; }
+async function boot() {
+  const login = document.getElementById('login-screen');
+  const app = document.getElementById('app');
+  if (isAuthed()) {
+    app.classList.add('is-active');
+    try { await loadData(); router(); }
+    catch (e) { document.getElementById('main').innerHTML = `<div class="empty">${escapeHtml(e.message)}</div>`; }
+  } else {
+    login.style.display = 'flex';
+    const pw = document.getElementById('login-password');
+    const submit = async () => {
+      const v = pw.value;
+      if (!v) return;
+      if (await sha256(v) === PASSWORD_HASH) {
+        sessionStorage.setItem(AUTH_KEY, '1');
+        login.style.display = 'none';
+        boot();
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+        pw.value = ''; pw.focus();
+      }
+    };
+    document.getElementById('login-submit').onclick = submit;
+    pw.addEventListener('keypress', e => { if (e.key === 'Enter') submit(); });
+    setTimeout(() => pw.focus(), 100);
+  }
+}
+boot();
+</script>
+</body>
+</html>
