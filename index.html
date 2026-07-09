@@ -207,6 +207,15 @@
       text-align: center;
       word-break: keep-all;
     }
+    /* 추천 음식/템 최종 업데이트 일자 (배너 아래 작은 텍스트) */
+    .update-date {
+      margin: 8px 20px 0;
+      font-size: 11px;
+      color: var(--text-sub);
+      text-align: right;
+      letter-spacing: -0.02em;
+    }
+    .update-date:empty { display: none; }
 
     /* ── 상품 카드 그리드 ── */
     .product-section { padding: 14px 16px 32px; }
@@ -883,6 +892,7 @@ async function loadData() {
       <span id="partners-line1"></span>
       <span id="partners-line2"></span>
     </div>
+    <div class="update-date" id="update-date-food"></div>
     <section class="product-section">
       <div class="product-grid" id="food-grid"></div>
     </section>
@@ -895,6 +905,7 @@ async function loadData() {
       <span id="partners-line1b"></span>
       <span id="partners-line2b"></span>
     </div>
+    <div class="update-date" id="update-date-item"></div>
     <section class="product-section">
       <div class="product-grid" id="item-grid"></div>
     </section>
@@ -1015,6 +1026,22 @@ function renderConfig() {
   const priceNotice = siteConfig.priceNotice || '';
   document.getElementById('price-notice-food').textContent = priceNotice;
   document.getElementById('price-notice-item').textContent = priceNotice;
+  // 추천 음식/템 최종 업데이트 일자 (published 항목의 updated_at 중 최신)
+  const _latestUpdate = (arr) => {
+    let max = 0;
+    for (const it of (arr || [])) {
+      if (it.published === false) continue;
+      const t = new Date(it.updated_at || it.created_at || 0).getTime();
+      if (t > max) max = t;
+    }
+    if (!max) return '';
+    const d = new Date(max);
+    return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+  };
+  const foodDate = _latestUpdate(foods);
+  const itemDate = _latestUpdate(items);
+  document.getElementById('update-date-food').textContent = foodDate ? `가격·정보 최종 업데이트 ${foodDate}` : '';
+  document.getElementById('update-date-item').textContent = itemDate ? `가격·정보 최종 업데이트 ${itemDate}` : '';
   // 푸터 ─ DM/메일 CTA + 인스타 프로필 보조 링크
   const dmBtn = document.getElementById('footer-dm-btn');
   dmBtn.href = siteConfig.footerDmUrl;
