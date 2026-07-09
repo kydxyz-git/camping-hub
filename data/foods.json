@@ -20,12 +20,13 @@
     "url": "https://lounge.kurly.com/link/FrKx-kUIT",
     "source": "컬리",
     "thumb": "./images/products/food-02.jpg",
+    "currency": "KRW",
     "price_original": 12900,
-    "price_sale": 10960,
-    "discount_rate": 15,
+    "price_sale": null,
+    "discount_rate": null,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-06-10T07:22:53.101Z"
+    "updated_at": "2026-07-09T23:49:42.893Z"
   },
   {
     "id": "food_48d51f3296",
