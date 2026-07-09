@@ -93,6 +93,8 @@
   }
   .badge-quarter { background: var(--text); color: var(--brand); }
   .badge-monthly { background: var(--brand); color: var(--text); }
+  .badge-strategy { background: var(--info); color: #fff; }
+  .report-card.is-pinned { border-left-color: var(--info); }
   .report-date { font-size: 12px; color: var(--muted); font-weight: 600; }
   .report-title { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 6px; }
   .report-period { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
@@ -218,6 +220,9 @@ async function sha256(text) {
 function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+function badgeClass(t) {
+  return t === 'quarter' ? 'badge-quarter' : t === 'strategy' ? 'badge-strategy' : 'badge-monthly';
+}
 function fmtDate(iso) {
   const [y, m, d] = iso.split('-');
   return `${y}. ${Number(m)}. ${Number(d)}.`;
@@ -241,7 +246,7 @@ async function loadData() {
 // ── 목록 ──
 function renderList() {
   const main = document.getElementById('main');
-  const reports = [...(DATA.reports || [])].sort((a, b) => b.analyzedAt.localeCompare(a.analyzedAt));
+  const reports = [...(DATA.reports || [])].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || b.analyzedAt.localeCompare(a.analyzedAt));
   if (!reports.length) {
     main.innerHTML = '<div class="empty">아직 등록된 분석 리포트가 없습니다</div>';
     return;
@@ -252,10 +257,10 @@ function renderList() {
       <div class="page-sub">총 ${reports.length}건 · 최신순</div>
     </div>
     ${reports.map(r => `
-      <a class="card report-card" href="#${escapeHtml(r.id)}">
+      <a class="card report-card ${r.pinned ? 'is-pinned' : ''}" href="#${escapeHtml(r.id)}">
         <div class="report-meta">
-          <span class="badge ${r.badgeType === 'quarter' ? 'badge-quarter' : 'badge-monthly'}">${escapeHtml(r.badge)}</span>
-          <span class="report-date">분석일 ${fmtDate(r.analyzedAt)} · ${dday(r.analyzedAt)}</span>
+          <span class="badge ${badgeClass(r.badgeType)}">${escapeHtml(r.badge)}</span>
+          <span class="report-date">${r.badgeType === 'strategy' ? '수립일' : '분석일'} ${fmtDate(r.analyzedAt)} · ${dday(r.analyzedAt)}</span>
         </div>
         <div class="report-title">${escapeHtml(r.title)}</div>
         <div class="report-period">대상 기간 ${escapeHtml(r.period)}</div>
@@ -321,10 +326,10 @@ function renderDetail(report) {
   main.innerHTML = `
     <a class="back-btn" href="#">← 리포트 목록</a>
     <div class="detail-head">
-      <span class="badge ${report.badgeType === 'quarter' ? 'badge-quarter' : 'badge-monthly'}">${escapeHtml(report.badge)}</span>
+      <span class="badge ${badgeClass(report.badgeType)}">${escapeHtml(report.badge)}</span>
       <div class="detail-title">${escapeHtml(report.title)}</div>
       <div class="page-sub">대상 기간 ${escapeHtml(report.period)}</div>
-      <div class="detail-analyzed">🕐 분석일 ${fmtDate(report.analyzedAt)} (${dday(report.analyzedAt)})</div>
+      <div class="detail-analyzed">🕐 ${report.badgeType === 'strategy' ? '수립일' : '분석일'} ${fmtDate(report.analyzedAt)} (${dday(report.analyzedAt)})</div>
     </div>
     <div class="oneliner-card">${escapeHtml(report.oneLiner)}</div>
     <div class="kpi-grid">${kpiHtml}</div>
