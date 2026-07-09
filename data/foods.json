@@ -92,12 +92,13 @@
     "url": "https://link.coupang.com/a/dUsNdt7JxQ",
     "source": "쿠팡",
     "thumb": "./images/products/6e41acce3d12.jpg",
-    "price_original": 9360,
-    "price_sale": null,
-    "discount_rate": null,
+    "currency": "KRW",
+    "price_original": 8400,
+    "price_sale": 7700,
+    "discount_rate": 8,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-06-10T07:25:42.959Z"
+    "updated_at": "2026-07-09T23:51:00.122Z"
   },
   {
     "id": "food_9966103a5b",
