@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 5197,
+    "pv": 5199,
     "click": 1935,
     "search": 0
   },
   "pages": {
-    "/": 1084,
+    "/": 1085,
     "/series/series_ba7cc89468/ep_ad505df37d": 266,
     "/series/series_304565fb77/ep_c2e684a351": 200,
     "/series/series_873cdcaf61/ep_7dd208fe26": 88,
@@ -118,7 +118,7 @@
     "/series/series_ba7cc89468/ep_860867be0e": 59,
     "/series/series_873cdcaf61/ep_3def2c1289": 26,
     "/items/item_32e1cc5f58": 5,
-    "/series/series_4f27a6d489/ep_c8dbf171b7": 30,
+    "/series/series_4f27a6d489/ep_c8dbf171b7": 31,
     "/series/series_4f27a6d489/ep_9873ededda": 32,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 29,
     "/camps/camp_2d2adbe3fd": 1,
@@ -218,12 +218,12 @@
   "searches": {},
   "devices": {
     "desktop": 272,
-    "mobile": 6851,
+    "mobile": 6853,
     "tablet": 9
   },
   "referrers": {
     "direct": 607,
-    "인스타그램": 4197,
+    "인스타그램": 4199,
     "페이스북": 247,
     "구글": 20,
     "네이버": 12,
@@ -4454,11 +4454,11 @@
       ]
     },
     "2026-07-08": {
-      "pv": 156,
+      "pv": 158,
       "click": 56,
       "search": 0,
       "pages": {
-        "/": 19,
+        "/": 20,
         "/series/series_4f27a6d489/ep_9873ededda": 5,
         "/series/series_304565fb77/ep_c2e684a351": 2,
         "/series/series_873cdcaf61/ep_116826a88d": 1,
@@ -4485,7 +4485,7 @@
         "/camps/camp_133dd5b2c6": 1,
         "/camps/camp_e7783e56dc": 2,
         "/camps/camp_17e022c947": 2,
-        "/series/series_4f27a6d489/ep_c8dbf171b7": 8,
+        "/series/series_4f27a6d489/ep_c8dbf171b7": 9,
         "/items/item_32e1cc5f58": 1,
         "/series/series_ba7cc89468/ep_c56ed16c13": 2,
         "/series/series_ba7cc89468/ep_4da176323e": 4,
@@ -4567,11 +4567,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 210,
+        "mobile": 212,
         "desktop": 2
       },
       "referrers": {
-        "인스타그램": 152,
+        "인스타그램": 154,
         "direct": 2,
         "페이스북": 2
       },
@@ -4599,9 +4599,9 @@
         11,
         4,
         2,
-        0
+        2
       ]
     }
   },
-  "updated_at": "2026-07-08T23:00:58.216Z"
+  "updated_at": "2026-07-09T00:00:35.612Z"
 }
