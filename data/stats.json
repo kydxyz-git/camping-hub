@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 5384,
+    "pv": 5388,
     "click": 2036,
     "search": 0
   },
   "pages": {
-    "/": 1115,
+    "/": 1116,
     "/series/series_ba7cc89468/ep_ad505df37d": 268,
     "/series/series_304565fb77/ep_c2e684a351": 201,
     "/series/series_873cdcaf61/ep_7dd208fe26": 93,
@@ -27,10 +27,10 @@
     "/camps/camp_e5a202316d": 28,
     "/camps/camp_8e1adf57aa": 34,
     "/camps/camp_e06cb829df": 22,
-    "/foods/food_48d51f3296": 18,
-    "/foods/food_b7f447dd02": 21,
+    "/foods/food_48d51f3296": 19,
+    "/foods/food_b7f447dd02": 22,
     "/series/series_e8c17ad5da/ep_ff868ac30c": 63,
-    "/foods/food_464525ea11": 14,
+    "/foods/food_464525ea11": 15,
     "/foods/food_6b6f5c2711": 24,
     "/#items": 18,
     "/foods/food_9945533a15": 8,
@@ -220,12 +220,12 @@
   "searches": {},
   "devices": {
     "desktop": 309,
-    "mobile": 7102,
+    "mobile": 7106,
     "tablet": 9
   },
   "referrers": {
     "direct": 633,
-    "인스타그램": 4345,
+    "인스타그램": 4349,
     "페이스북": 248,
     "구글": 20,
     "네이버": 12,
@@ -4724,7 +4724,7 @@
       ]
     },
     "2026-07-10": {
-      "pv": 76,
+      "pv": 80,
       "click": 34,
       "search": 0,
       "pages": {
@@ -4732,7 +4732,7 @@
         "/series/series_e8c17ad5da/ep_e46450a717": 1,
         "/camps/camp_b8d29b3f00": 1,
         "/camps/camp_8e1adf57aa": 1,
-        "/": 13,
+        "/": 14,
         "/series/series_ba7cc89468/ep_aa0e809292": 5,
         "/series/series_4f27a6d489/ep_9873ededda": 3,
         "/series/series_4f27a6d489/ep_c8dbf171b7": 3,
@@ -4763,9 +4763,11 @@
         "/foods/food_9966103a5b": 1,
         "/foods/food_592752e317": 1,
         "/foods/food_790525d8a8": 1,
-        "/foods/food_b7f447dd02": 1,
+        "/foods/food_b7f447dd02": 2,
         "/foods/food_6b6f5c2711": 1,
-        "/items/item_960c2ff01c": 1
+        "/items/item_960c2ff01c": 1,
+        "/foods/food_464525ea11": 1,
+        "/foods/food_48d51f3296": 1
       },
       "clicks": {
         "/camps/camp_b8d29b3f00::그래가": 1,
@@ -4790,10 +4792,10 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 110
+        "mobile": 114
       },
       "referrers": {
-        "인스타그램": 65,
+        "인스타그램": 69,
         "direct": 10
       },
       "hourly": [
@@ -4813,7 +4815,7 @@
         0,
         13,
         11,
-        0,
+        4,
         0,
         0,
         0,
@@ -4824,5 +4826,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-10T16:00:06.400Z"
+  "updated_at": "2026-07-10T17:00:05.309Z"
 }
