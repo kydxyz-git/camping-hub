@@ -27,11 +27,14 @@
     "visits": 15,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-29T11:48:19.712Z",
+    "updated_at": "2026-07-10T00:01:12.302Z",
     "lat": 35.5258436,
     "lng": 128.0382407,
     "videos": [
-      "https://www.instagram.com/p/DSBgkkHkx8C/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
+      {
+        "url": "https://www.instagram.com/p/DSBgkkHkx8C/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+        "title": "캠핑장 드론뷰"
+      }
     ]
   },
   {
