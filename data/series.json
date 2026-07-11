@@ -141,6 +141,16 @@
     "sort": "random",
     "eps": [
       {
+        "id": "ep_3fbc9a3223",
+        "ep": 0,
+        "title": "여기는 가는곳마다 인생 계곡입니다",
+        "url": "https://www.instagram.com/reel/DaoUpRfT8tF/?igsh=MW91NTB0MXA2b3h5Mw==",
+        "thumb": "./images/series/series-mrfmkzge.jpg",
+        "published": true,
+        "created_at": "2026-07-11T00:27:36.446Z",
+        "updated_at": "2026-07-11T00:27:36.446Z"
+      },
+      {
         "id": "ep_eb8b1702fa",
         "ep": 0,
         "title": "덕동 계곡 물놀이 포인트",
