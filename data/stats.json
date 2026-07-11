@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 5495,
-    "click": 2055,
+    "pv": 5501,
+    "click": 2057,
     "search": 0
   },
   "pages": {
-    "/": 1135,
+    "/": 1137,
     "/series/series_ba7cc89468/ep_ad505df37d": 270,
     "/series/series_304565fb77/ep_c2e684a351": 201,
     "/series/series_873cdcaf61/ep_7dd208fe26": 95,
@@ -110,7 +110,7 @@
     "/foods/food_673fc958f6": 9,
     "/items/item_75f77862cd": 18,
     "/series/series_873cdcaf61/ep_08c284c148": 36,
-    "/series/series_ba7cc89468/ep_97e39a4499": 120,
+    "/series/series_ba7cc89468/ep_97e39a4499": 121,
     "/series/series_873cdcaf61/ep_14cbfb6b11": 25,
     "/series/series_873cdcaf61/ep_eb18e20c30": 23,
     "/camps/camp_bcd074ef33": 4,
@@ -118,9 +118,9 @@
     "/series/series_ba7cc89468/ep_860867be0e": 70,
     "/series/series_873cdcaf61/ep_3def2c1289": 31,
     "/items/item_32e1cc5f58": 7,
-    "/series/series_4f27a6d489/ep_c8dbf171b7": 45,
-    "/series/series_4f27a6d489/ep_9873ededda": 43,
-    "/series/series_4f27a6d489/ep_eb8b1702fa": 43,
+    "/series/series_4f27a6d489/ep_c8dbf171b7": 46,
+    "/series/series_4f27a6d489/ep_9873ededda": 44,
+    "/series/series_4f27a6d489/ep_eb8b1702fa": 44,
     "/camps/camp_2d2adbe3fd": 1,
     "/series/series_ba7cc89468/ep_aa0e809292": 39,
     "/camps/camp_75ee389015": 1,
@@ -207,9 +207,9 @@
     "/items/item_32e1cc5f58::네이버예약": 4,
     "/series/series_873cdcaf61/ep_3def2c1289::인스타DM": 22,
     "/camps/camp_d9699234d4::그래가": 3,
-    "/series/series_4f27a6d489/ep_c8dbf171b7::인스타DM": 24,
+    "/series/series_4f27a6d489/ep_c8dbf171b7::인스타DM": 25,
     "/series/series_4f27a6d489/ep_9873ededda::인스타DM": 27,
-    "/series/series_4f27a6d489/ep_eb8b1702fa::인스타DM": 13,
+    "/series/series_4f27a6d489/ep_eb8b1702fa::인스타DM": 14,
     "/series/series_ba7cc89468/ep_aa0e809292::인스타DM": 25,
     "/camps/camp_9ada4f994a::camfit.co.kr": 1,
     "/camps/camp_b2804ced5e::r.camperstory.com": 1,
@@ -222,13 +222,13 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 311,
-    "mobile": 7230,
+    "desktop": 312,
+    "mobile": 7237,
     "tablet": 9
   },
   "referrers": {
-    "direct": 637,
-    "인스타그램": 4439,
+    "direct": 638,
+    "인스타그램": 4444,
     "페이스북": 248,
     "구글": 20,
     "네이버": 12,
@@ -4829,16 +4829,16 @@
       ]
     },
     "2026-07-11": {
-      "pv": 100,
-      "click": 18,
+      "pv": 106,
+      "click": 20,
       "search": 0,
       "pages": {
-        "/": 17,
-        "/series/series_4f27a6d489/ep_c8dbf171b7": 5,
-        "/series/series_4f27a6d489/ep_9873ededda": 2,
-        "/series/series_4f27a6d489/ep_eb8b1702fa": 4,
+        "/": 19,
+        "/series/series_4f27a6d489/ep_c8dbf171b7": 6,
+        "/series/series_4f27a6d489/ep_9873ededda": 3,
+        "/series/series_4f27a6d489/ep_eb8b1702fa": 5,
         "/series/series_4f27a6d489/ep_3fbc9a3223": 5,
-        "/series/series_ba7cc89468/ep_97e39a4499": 6,
+        "/series/series_ba7cc89468/ep_97e39a4499": 7,
         "/series/series_ba7cc89468/ep_00a18099de": 3,
         "/series/series_ba7cc89468/ep_c56ed16c13": 4,
         "/series/series_ba7cc89468/ep_4da176323e": 3,
@@ -4879,16 +4879,18 @@
         "/series/series_304565fb77/ep_9032e63bcd::인스타DM": 1,
         "/series/series_304565fb77/ep_17f905660e::인스타DM": 1,
         "/series/series_ba7cc89468/ep_aa0e809292::인스타DM": 5,
-        "/series/series_ba7cc89468/ep_860867be0e::인스타DM": 2
+        "/series/series_ba7cc89468/ep_860867be0e::인스타DM": 2,
+        "/series/series_4f27a6d489/ep_eb8b1702fa::인스타DM": 1,
+        "/series/series_4f27a6d489/ep_c8dbf171b7::인스타DM": 1
       },
       "searches": {},
       "devices": {
-        "desktop": 2,
-        "mobile": 116
+        "desktop": 3,
+        "mobile": 123
       },
       "referrers": {
-        "direct": 4,
-        "인스타그램": 83
+        "direct": 5,
+        "인스타그램": 88
       },
       "hourly": [
         1,
@@ -4911,12 +4913,12 @@
         0,
         0,
         0,
-        0,
+        6,
         0,
         0,
         0
       ]
     }
   },
-  "updated_at": "2026-07-11T16:00:27.318Z"
+  "updated_at": "2026-07-11T21:00:27.062Z"
 }
