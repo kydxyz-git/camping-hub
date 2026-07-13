@@ -138,7 +138,7 @@
     "emoji": "💦",
     "color": "#4A90E2",
     "published": true,
-    "sort": "random",
+    "sort": "created_desc",
     "eps": [
       {
         "id": "ep_426dd9712f",
