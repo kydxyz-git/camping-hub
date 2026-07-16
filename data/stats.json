@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 6023,
-    "click": 2300,
+    "pv": 6025,
+    "click": 2301,
     "search": 0
   },
   "pages": {
-    "/": 1219,
+    "/": 1220,
     "/series/series_ba7cc89468/ep_ad505df37d": 279,
     "/series/series_304565fb77/ep_c2e684a351": 205,
     "/series/series_873cdcaf61/ep_7dd208fe26": 101,
@@ -110,7 +110,7 @@
     "/foods/food_673fc958f6": 9,
     "/items/item_75f77862cd": 18,
     "/series/series_873cdcaf61/ep_08c284c148": 39,
-    "/series/series_ba7cc89468/ep_97e39a4499": 149,
+    "/series/series_ba7cc89468/ep_97e39a4499": 150,
     "/series/series_873cdcaf61/ep_14cbfb6b11": 27,
     "/series/series_873cdcaf61/ep_eb18e20c30": 30,
     "/camps/camp_bcd074ef33": 4,
@@ -197,7 +197,7 @@
     "/series/series_873cdcaf61/ep_08c284c148::인스타DM": 11,
     "/camps/camp_357cccb118::www.xn--9g3b27q0ne.kr": 5,
     "/camps/camp_133dd5b2c6::www.camfit.co.kr": 1,
-    "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 143,
+    "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 144,
     "/series/series_e8c17ad5da/ep_7a004a6412::인스타DM": 2,
     "/series/series_873cdcaf61/ep_4f183af0df::인스타DM": 1,
     "/series/series_873cdcaf61/ep_14cbfb6b11::인스타DM": 2,
@@ -227,12 +227,12 @@
   "searches": {},
   "devices": {
     "desktop": 322,
-    "mobile": 7992,
+    "mobile": 7995,
     "tablet": 9
   },
   "referrers": {
     "direct": 737,
-    "인스타그램": 4841,
+    "인스타그램": 4843,
     "페이스북": 261,
     "구글": 20,
     "네이버": 12,
@@ -5329,28 +5329,30 @@
       ]
     },
     "2026-07-16": {
-      "pv": 6,
-      "click": 3,
+      "pv": 8,
+      "click": 4,
       "search": 0,
       "pages": {
-        "/": 2,
+        "/": 3,
         "/series/series_304565fb77/ep_d7955f38a0": 1,
         "/series/series_304565fb77/ep_c2e684a351": 1,
         "/items/item_960c2ff01c": 1,
-        "/items/item_32e1cc5f58": 1
+        "/items/item_32e1cc5f58": 1,
+        "/series/series_ba7cc89468/ep_97e39a4499": 1
       },
       "clicks": {
         "/series/series_304565fb77/ep_c2e684a351::인스타DM": 1,
         "/items/item_960c2ff01c::네이버예약": 1,
-        "/items/item_32e1cc5f58::네이버예약": 1
+        "/items/item_32e1cc5f58::네이버예약": 1,
+        "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 4,
+        "mobile": 7,
         "desktop": 5
       },
       "referrers": {
-        "인스타그램": 6
+        "인스타그램": 8
       },
       "hourly": [
         3,
@@ -5359,7 +5361,7 @@
         0,
         0,
         0,
-        0,
+        2,
         0,
         0,
         0,
@@ -5380,5 +5382,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-16T03:00:09.852Z"
+  "updated_at": "2026-07-16T07:00:09.788Z"
 }
