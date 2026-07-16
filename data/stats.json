@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 6028,
-    "click": 2302,
+    "pv": 6034,
+    "click": 2305,
     "search": 0
   },
   "pages": {
-    "/": 1220,
+    "/": 1221,
     "/series/series_ba7cc89468/ep_ad505df37d": 279,
     "/series/series_304565fb77/ep_c2e684a351": 205,
     "/series/series_873cdcaf61/ep_7dd208fe26": 101,
@@ -27,14 +27,14 @@
     "/camps/camp_e5a202316d": 28,
     "/camps/camp_8e1adf57aa": 39,
     "/camps/camp_e06cb829df": 23,
-    "/foods/food_48d51f3296": 19,
+    "/foods/food_48d51f3296": 20,
     "/foods/food_b7f447dd02": 24,
     "/series/series_e8c17ad5da/ep_ff868ac30c": 66,
-    "/foods/food_464525ea11": 16,
+    "/foods/food_464525ea11": 17,
     "/foods/food_6b6f5c2711": 25,
     "/#items": 19,
     "/foods/food_9945533a15": 11,
-    "/foods/food_9966103a5b": 20,
+    "/foods/food_9966103a5b": 21,
     "/series/series_ba7cc89468/ep_b953456d73": 140,
     "/camps/camp_e1e0dde7b3": 23,
     "/camps/camp_357cccb118": 15,
@@ -106,8 +106,8 @@
     "/series/series_ba7cc89468/ep_00a18099de": 202,
     "/camps/camp_43b6759cd3": 4,
     "/series/series_304565fb77/ep_17f905660e": 100,
-    "/foods/food_8924631470": 19,
-    "/foods/food_673fc958f6": 9,
+    "/foods/food_8924631470": 20,
+    "/foods/food_673fc958f6": 10,
     "/items/item_75f77862cd": 18,
     "/series/series_873cdcaf61/ep_08c284c148": 39,
     "/series/series_ba7cc89468/ep_97e39a4499": 150,
@@ -185,15 +185,15 @@
     "/camps/camp_c6d9da8748::www.camfit.co.kr": 2,
     "/camps/camp_17e022c947::www.sanddune.co.kr": 2,
     "/camps/camp_7fafd07d0a::camp.xticket.kr": 3,
-    "/foods/food_8924631470::컬리": 11,
+    "/foods/food_8924631470::컬리": 12,
     "/series/series_304565fb77/ep_17f905660e::인스타DM": 58,
     "/foods/food_592752e317::네이버예약": 7,
-    "/foods/food_673fc958f6::컬리": 7,
+    "/foods/food_673fc958f6::컬리": 8,
     "/items/item_75f77862cd::s.click.aliexpress.com": 19,
     "/camps/camp_3f541ff6e3::www.camfit.co.kr": 1,
     "/foods/food_48d51f3296::컬리": 3,
     "/foods/food_b7f447dd02::쿠팡": 10,
-    "/foods/food_9966103a5b::컬리": 6,
+    "/foods/food_9966103a5b::컬리": 7,
     "/series/series_873cdcaf61/ep_08c284c148::인스타DM": 11,
     "/camps/camp_357cccb118::www.xn--9g3b27q0ne.kr": 5,
     "/camps/camp_133dd5b2c6::www.camfit.co.kr": 1,
@@ -227,12 +227,12 @@
   "searches": {},
   "devices": {
     "desktop": 322,
-    "mobile": 7999,
+    "mobile": 8008,
     "tablet": 9
   },
   "referrers": {
     "direct": 737,
-    "인스타그램": 4846,
+    "인스타그램": 4852,
     "페이스북": 261,
     "구글": 20,
     "네이버": 12,
@@ -5329,11 +5329,11 @@
       ]
     },
     "2026-07-16": {
-      "pv": 11,
-      "click": 5,
+      "pv": 17,
+      "click": 8,
       "search": 0,
       "pages": {
-        "/": 3,
+        "/": 4,
         "/series/series_304565fb77/ep_d7955f38a0": 1,
         "/series/series_304565fb77/ep_c2e684a351": 1,
         "/items/item_960c2ff01c": 1,
@@ -5341,22 +5341,30 @@
         "/series/series_ba7cc89468/ep_97e39a4499": 1,
         "/series/series_ba7cc89468/ep_aa0e809292": 1,
         "/foods/food_9945533a15": 1,
-        "/foods/food_b7f447dd02": 1
+        "/foods/food_b7f447dd02": 1,
+        "/foods/food_9966103a5b": 1,
+        "/foods/food_8924631470": 1,
+        "/foods/food_673fc958f6": 1,
+        "/foods/food_464525ea11": 1,
+        "/foods/food_48d51f3296": 1
       },
       "clicks": {
         "/series/series_304565fb77/ep_c2e684a351::인스타DM": 1,
         "/items/item_960c2ff01c::네이버예약": 1,
         "/items/item_32e1cc5f58::네이버예약": 1,
         "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 1,
-        "/foods/food_b7f447dd02::쿠팡": 1
+        "/foods/food_b7f447dd02::쿠팡": 1,
+        "/foods/food_8924631470::컬리": 1,
+        "/foods/food_673fc958f6::컬리": 1,
+        "/foods/food_9966103a5b::컬리": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 11,
+        "mobile": 20,
         "desktop": 5
       },
       "referrers": {
-        "인스타그램": 11
+        "인스타그램": 17
       },
       "hourly": [
         3,
@@ -5368,7 +5376,7 @@
         2,
         0,
         3,
-        0,
+        6,
         0,
         0,
         0,
@@ -5386,5 +5394,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-16T09:00:09.885Z"
+  "updated_at": "2026-07-16T10:00:10.084Z"
 }
