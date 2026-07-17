@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 6104,
-    "click": 2322,
+    "pv": 6106,
+    "click": 2323,
     "search": 0
   },
   "pages": {
-    "/": 1228,
+    "/": 1229,
     "/series/series_ba7cc89468/ep_ad505df37d": 281,
     "/series/series_304565fb77/ep_c2e684a351": 206,
     "/series/series_873cdcaf61/ep_7dd208fe26": 101,
@@ -108,7 +108,7 @@
     "/series/series_304565fb77/ep_17f905660e": 102,
     "/foods/food_8924631470": 20,
     "/foods/food_673fc958f6": 10,
-    "/items/item_75f77862cd": 18,
+    "/items/item_75f77862cd": 19,
     "/series/series_873cdcaf61/ep_08c284c148": 39,
     "/series/series_ba7cc89468/ep_97e39a4499": 155,
     "/series/series_873cdcaf61/ep_14cbfb6b11": 28,
@@ -189,7 +189,7 @@
     "/series/series_304565fb77/ep_17f905660e::인스타DM": 58,
     "/foods/food_592752e317::네이버예약": 7,
     "/foods/food_673fc958f6::컬리": 8,
-    "/items/item_75f77862cd::s.click.aliexpress.com": 19,
+    "/items/item_75f77862cd::s.click.aliexpress.com": 20,
     "/camps/camp_3f541ff6e3::www.camfit.co.kr": 1,
     "/foods/food_48d51f3296::컬리": 3,
     "/foods/food_b7f447dd02::쿠팡": 10,
@@ -227,12 +227,12 @@
   "searches": {},
   "devices": {
     "desktop": 323,
-    "mobile": 8094,
+    "mobile": 8097,
     "tablet": 9
   },
   "referrers": {
     "direct": 739,
-    "인스타그램": 4920,
+    "인스타그램": 4922,
     "페이스북": 261,
     "구글": 20,
     "네이버": 12,
@@ -5434,27 +5434,29 @@
       ]
     },
     "2026-07-17": {
-      "pv": 9,
-      "click": 1,
+      "pv": 11,
+      "click": 2,
       "search": 0,
       "pages": {
-        "/": 3,
+        "/": 4,
         "/series/series_4f27a6d489/ep_c8dbf171b7": 1,
         "/series/series_ba7cc89468/ep_97e39a4499": 1,
         "/series/series_ba7cc89468/ep_c56ed16c13": 1,
         "/series/series_4f27a6d489/ep_9873ededda": 1,
         "/series/series_ba7cc89468/ep_860867be0e": 1,
-        "/series/series_4f27a6d489/ep_426dd9712f": 1
+        "/series/series_4f27a6d489/ep_426dd9712f": 1,
+        "/items/item_75f77862cd": 1
       },
       "clicks": {
-        "/series/series_4f27a6d489/ep_426dd9712f::인스타DM": 1
+        "/series/series_4f27a6d489/ep_426dd9712f::인스타DM": 1,
+        "/items/item_75f77862cd::s.click.aliexpress.com": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 10
+        "mobile": 13
       },
       "referrers": {
-        "인스타그램": 8,
+        "인스타그램": 10,
         "direct": 1
       },
       "hourly": [
@@ -5470,7 +5472,7 @@
         0,
         7,
         2,
-        0,
+        2,
         0,
         0,
         0,
@@ -5485,5 +5487,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-17T12:00:09.785Z"
+  "updated_at": "2026-07-17T13:00:09.955Z"
 }
