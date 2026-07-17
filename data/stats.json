@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 6102,
-    "click": 2321,
+    "pv": 6104,
+    "click": 2322,
     "search": 0
   },
   "pages": {
-    "/": 1227,
+    "/": 1228,
     "/series/series_ba7cc89468/ep_ad505df37d": 281,
     "/series/series_304565fb77/ep_c2e684a351": 206,
     "/series/series_873cdcaf61/ep_7dd208fe26": 101,
@@ -126,7 +126,7 @@
     "/camps/camp_75ee389015": 1,
     "/series/series_304565fb77/ep_9032e63bcd": 25,
     "/series/series_4f27a6d489/ep_3fbc9a3223": 30,
-    "/series/series_4f27a6d489/ep_426dd9712f": 11
+    "/series/series_4f27a6d489/ep_426dd9712f": 12
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 246,
@@ -220,19 +220,19 @@
     "/#camps::인스타DM": 1,
     "/series/series_4f27a6d489/ep_3fbc9a3223::인스타DM": 24,
     "/series/series_304565fb77/ep_9032e63bcd::인스타DM": 5,
-    "/series/series_4f27a6d489/ep_426dd9712f::인스타DM": 10,
+    "/series/series_4f27a6d489/ep_426dd9712f::인스타DM": 11,
     "/camps/camp_0380055336::www.sjacamping.com": 1,
     "/camps/camp_d69cf442b4::sj-camping.com": 2
   },
   "searches": {},
   "devices": {
     "desktop": 323,
-    "mobile": 8091,
+    "mobile": 8094,
     "tablet": 9
   },
   "referrers": {
     "direct": 739,
-    "인스타그램": 4918,
+    "인스타그램": 4920,
     "페이스북": 261,
     "구글": 20,
     "네이버": 12,
@@ -5434,24 +5434,27 @@
       ]
     },
     "2026-07-17": {
-      "pv": 7,
-      "click": 0,
+      "pv": 9,
+      "click": 1,
       "search": 0,
       "pages": {
-        "/": 2,
+        "/": 3,
         "/series/series_4f27a6d489/ep_c8dbf171b7": 1,
         "/series/series_ba7cc89468/ep_97e39a4499": 1,
         "/series/series_ba7cc89468/ep_c56ed16c13": 1,
         "/series/series_4f27a6d489/ep_9873ededda": 1,
-        "/series/series_ba7cc89468/ep_860867be0e": 1
+        "/series/series_ba7cc89468/ep_860867be0e": 1,
+        "/series/series_4f27a6d489/ep_426dd9712f": 1
       },
-      "clicks": {},
+      "clicks": {
+        "/series/series_4f27a6d489/ep_426dd9712f::인스타DM": 1
+      },
       "searches": {},
       "devices": {
-        "mobile": 7
+        "mobile": 10
       },
       "referrers": {
-        "인스타그램": 6,
+        "인스타그램": 8,
         "direct": 1
       },
       "hourly": [
@@ -5466,7 +5469,7 @@
         0,
         0,
         7,
-        0,
+        2,
         0,
         0,
         0,
@@ -5482,5 +5485,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-17T11:00:10.084Z"
+  "updated_at": "2026-07-17T12:00:09.785Z"
 }
