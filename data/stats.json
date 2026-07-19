@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 6204,
-    "click": 2338,
+    "pv": 6209,
+    "click": 2339,
     "search": 0
   },
   "pages": {
@@ -19,15 +19,15 @@
     "/series/series_873cdcaf61/ep_cf2282cf4e": 90,
     "/series/series_e8c17ad5da/ep_7a390bade9": 76,
     "/#camps": 11,
-    "/#foods": 17,
+    "/#foods": 18,
     "/series/series_304565fb77/ep_d7955f38a0": 196,
-    "/foods/food_592752e317": 25,
+    "/foods/food_592752e317": 26,
     "/foods/food_790525d8a8": 19,
     "/series/series_e8c17ad5da/ep_e383972ec6": 60,
     "/camps/camp_e5a202316d": 28,
     "/camps/camp_8e1adf57aa": 40,
     "/camps/camp_e06cb829df": 23,
-    "/foods/food_48d51f3296": 21,
+    "/foods/food_48d51f3296": 22,
     "/foods/food_b7f447dd02": 25,
     "/series/series_e8c17ad5da/ep_ff868ac30c": 71,
     "/foods/food_464525ea11": 17,
@@ -106,8 +106,8 @@
     "/series/series_ba7cc89468/ep_00a18099de": 208,
     "/camps/camp_43b6759cd3": 4,
     "/series/series_304565fb77/ep_17f905660e": 105,
-    "/foods/food_8924631470": 20,
-    "/foods/food_673fc958f6": 10,
+    "/foods/food_8924631470": 21,
+    "/foods/food_673fc958f6": 11,
     "/items/item_75f77862cd": 19,
     "/series/series_873cdcaf61/ep_08c284c148": 39,
     "/series/series_ba7cc89468/ep_97e39a4499": 162,
@@ -185,7 +185,7 @@
     "/camps/camp_c6d9da8748::www.camfit.co.kr": 2,
     "/camps/camp_17e022c947::www.sanddune.co.kr": 2,
     "/camps/camp_7fafd07d0a::camp.xticket.kr": 3,
-    "/foods/food_8924631470::컬리": 12,
+    "/foods/food_8924631470::컬리": 13,
     "/series/series_304565fb77/ep_17f905660e::인스타DM": 63,
     "/foods/food_592752e317::네이버예약": 7,
     "/foods/food_673fc958f6::컬리": 8,
@@ -227,12 +227,12 @@
   "searches": {},
   "devices": {
     "desktop": 323,
-    "mobile": 8210,
+    "mobile": 8216,
     "tablet": 9
   },
   "referrers": {
     "direct": 751,
-    "인스타그램": 5008,
+    "인스타그램": 5013,
     "페이스북": 261,
     "구글": 20,
     "네이버": 12,
@@ -5560,8 +5560,8 @@
       ]
     },
     "2026-07-19": {
-      "pv": 49,
-      "click": 9,
+      "pv": 54,
+      "click": 10,
       "search": 0,
       "pages": {
         "/": 5,
@@ -5590,13 +5590,17 @@
         "/series/series_4f27a6d489/ep_426dd9712f": 2,
         "/items/item_960c2ff01c": 1,
         "/foods/food_b7f447dd02": 1,
-        "/foods/food_48d51f3296": 1,
+        "/foods/food_48d51f3296": 2,
         "/series/series_873cdcaf61/ep_116826a88d": 1,
         "/camps/camp_133dd5b2c6": 1,
         "/camps/camp_e7783e56dc": 1,
         "/camps/camp_c47fbddb56": 1,
         "/camps/camp_b8d29b3f00": 1,
-        "/camps/camp_02c72e06a3": 1
+        "/camps/camp_02c72e06a3": 1,
+        "/#foods": 1,
+        "/foods/food_592752e317": 1,
+        "/foods/food_8924631470": 1,
+        "/foods/food_673fc958f6": 1
       },
       "clicks": {
         "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 1,
@@ -5606,14 +5610,15 @@
         "/foods/food_48d51f3296::컬리": 1,
         "/series/series_ba7cc89468/ep_00a18099de::인스타DM": 2,
         "/series/series_4f27a6d489/ep_3fbc9a3223::인스타DM": 1,
-        "/camps/camp_02c72e06a3::네이버예약": 1
+        "/camps/camp_02c72e06a3::네이버예약": 1,
+        "/foods/food_8924631470::컬리": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 58
+        "mobile": 64
       },
       "referrers": {
-        "인스타그램": 49
+        "인스타그램": 54
       },
       "hourly": [
         22,
@@ -5626,7 +5631,7 @@
         10,
         0,
         0,
-        0,
+        5,
         0,
         0,
         0,
@@ -5643,5 +5648,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-19T08:00:52.578Z"
+  "updated_at": "2026-07-19T11:00:52.507Z"
 }
