@@ -85,5 +85,20 @@
     "published": true,
     "created_at": "2026-07-20T05:56:52.847Z",
     "updated_at": "2026-07-20T05:56:52.847Z"
+  },
+  {
+    "id": "item_6489394674",
+    "name": "신지모루 방수 크로스백",
+    "desc": "아웃도어 활동에 최적화된 타이트한 밀착 핏 제공",
+    "url": "https://sinjimorulab.com/product/%EB%B0%A9%EC%88%98-%ED%81%AC%EB%A1%9C%EC%8A%A4%EB%B0%B1/219/category/688/display/1/",
+    "source": "기타",
+    "thumb": "./images/products/a221b0a35208.jpg",
+    "currency": "KRW",
+    "price_original": 13400,
+    "price_sale": 9360,
+    "discount_rate": 30,
+    "published": true,
+    "created_at": "2026-07-20T07:59:54.439Z",
+    "updated_at": "2026-07-20T07:59:54.439Z"
   }
 ]
