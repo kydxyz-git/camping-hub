@@ -115,5 +115,20 @@
     "published": true,
     "created_at": "2026-07-20T08:01:27.930Z",
     "updated_at": "2026-07-20T08:01:27.930Z"
+  },
+  {
+    "id": "item_e01fb7d262",
+    "name": "신지태그 워터락",
+    "desc": "6.3g의 가볍게 스며드는 위치추적기",
+    "url": "https://sinjimorulab.com/product/%EC%8B%A0%EC%A7%80%ED%83%9C%EA%B7%B8-%EC%9B%8C%ED%84%B0%EB%9D%BD/254/category/688/display/1/",
+    "source": "기타",
+    "thumb": "./images/products/08d8b8e7eb0b.jpg",
+    "currency": "KRW",
+    "price_original": 14900,
+    "price_sale": 11900,
+    "discount_rate": 20,
+    "published": true,
+    "created_at": "2026-07-20T08:04:49.725Z",
+    "updated_at": "2026-07-20T08:04:49.725Z"
   }
 ]
