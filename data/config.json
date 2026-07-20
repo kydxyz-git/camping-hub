@@ -29,6 +29,6 @@
   "headerBadgeFacebookIcon": "./images/refs/facebook-icon.svg",
   "headerBadgeFacebookUrl": "https://www.facebook.com/profile.php?id=61588881720150",
   "foodsSort": "random",
-  "itemsSort": "random",
+  "itemsSort": "latest",
   "tab5": "캠핑여지도"
 }
