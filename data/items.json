@@ -79,12 +79,12 @@
     "source": "기타",
     "thumb": "./images/products/30ab4dbb11eb.jpg",
     "currency": "KRW",
-    "price_original": 29900,
-    "price_sale": 9900,
-    "discount_rate": 67,
+    "price_original": 10400,
+    "price_sale": 6660,
+    "discount_rate": 36,
     "published": true,
     "created_at": "2026-07-20T05:56:52.847Z",
-    "updated_at": "2026-07-20T14:20:14.199Z"
+    "updated_at": "2026-07-20T14:21:38.863Z"
   },
   {
     "id": "item_6489394674",
