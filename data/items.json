@@ -100,5 +100,20 @@
     "published": true,
     "created_at": "2026-07-20T07:59:54.439Z",
     "updated_at": "2026-07-20T07:59:54.439Z"
+  },
+  {
+    "id": "item_096f88cf80",
+    "name": "신지모루 방수 멀티백",
+    "desc": "다채로운 물품을 담는 대용량(15L) 멀티 수납 구조",
+    "url": "https://sinjimorulab.com/product/%EB%B0%A9%EC%88%98-%EB%A9%80%ED%8B%B0%EB%B0%B1/220/category/688/display/1/",
+    "source": "기타",
+    "thumb": "./images/products/552a36a60dba.jpg",
+    "currency": "KRW",
+    "price_original": 15400,
+    "price_sale": 11160,
+    "discount_rate": 28,
+    "published": true,
+    "created_at": "2026-07-20T08:01:27.930Z",
+    "updated_at": "2026-07-20T08:01:27.930Z"
   }
 ]
