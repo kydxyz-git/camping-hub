@@ -70,5 +70,20 @@
     "published": true,
     "created_at": "2026-06-30T22:53:24.688Z",
     "updated_at": "2026-06-30T22:53:39.987Z"
+  },
+  {
+    "id": "item_1e78eeb29a",
+    "name": "신지모루 스마트폰 방수팩",
+    "desc": "IPX8 암밴드 넥스트랩 부력 4중 잠금 방수케이스",
+    "url": "https://link.coupang.com/a/fw8RVkdx6W",
+    "source": "쿠팡",
+    "thumb": "./images/products/30ab4dbb11eb.jpg",
+    "currency": "KRW",
+    "price_original": 29900,
+    "price_sale": 9900,
+    "discount_rate": 67,
+    "published": true,
+    "created_at": "2026-07-20T05:56:52.847Z",
+    "updated_at": "2026-07-20T05:56:52.847Z"
   }
 ]
