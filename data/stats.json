@@ -1,6 +1,6 @@
 {
   "total": {
-    "pv": 6302,
+    "pv": 6305,
     "click": 2384,
     "search": 0
   },
@@ -32,7 +32,7 @@
     "/series/series_e8c17ad5da/ep_ff868ac30c": 71,
     "/foods/food_464525ea11": 17,
     "/foods/food_6b6f5c2711": 26,
-    "/#items": 20,
+    "/#items": 21,
     "/foods/food_9945533a15": 12,
     "/foods/food_9966103a5b": 21,
     "/series/series_ba7cc89468/ep_b953456d73": 143,
@@ -128,8 +128,8 @@
     "/series/series_4f27a6d489/ep_3fbc9a3223": 40,
     "/series/series_4f27a6d489/ep_426dd9712f": 17,
     "/items/item_096f88cf80": 2,
-    "/items/item_1e78eeb29a": 4,
-    "/items/item_e01fb7d262": 2,
+    "/items/item_1e78eeb29a": 5,
+    "/items/item_e01fb7d262": 3,
     "/items/item_6489394674": 3,
     "/series/series_873cdcaf61/ep_9b833c820b": 1
   },
@@ -236,12 +236,12 @@
   "searches": {},
   "devices": {
     "desktop": 325,
-    "mobile": 8352,
+    "mobile": 8355,
     "tablet": 9
   },
   "referrers": {
     "direct": 756,
-    "인스타그램": 5086,
+    "인스타그램": 5089,
     "페이스북": 266,
     "구글": 20,
     "네이버": 12,
@@ -5782,7 +5782,7 @@
       ]
     },
     "2026-07-22": {
-      "pv": 13,
+      "pv": 16,
       "click": 4,
       "search": 0,
       "pages": {
@@ -5793,7 +5793,10 @@
         "/items/item_6489394674": 2,
         "/foods/food_b7f447dd02": 1,
         "/foods/food_6b6f5c2711": 1,
-        "/items/item_960c2ff01c": 1
+        "/items/item_960c2ff01c": 1,
+        "/#items": 1,
+        "/items/item_e01fb7d262": 1,
+        "/items/item_1e78eeb29a": 1
       },
       "clicks": {
         "__external__::Clip Creators": 1,
@@ -5803,10 +5806,10 @@
       "searches": {},
       "devices": {
         "desktop": 2,
-        "mobile": 15
+        "mobile": 18
       },
       "referrers": {
-        "인스타그램": 13
+        "인스타그램": 16
       },
       "hourly": [
         0,
@@ -5820,7 +5823,7 @@
         5,
         0,
         0,
-        0,
+        3,
         0,
         0,
         0,
@@ -5836,5 +5839,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-22T09:00:58.640Z"
+  "updated_at": "2026-07-22T12:00:59.931Z"
 }
