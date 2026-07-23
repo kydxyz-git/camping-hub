@@ -1265,9 +1265,15 @@
     "visits": 2,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-07-23T23:32:46.406Z",
+    "updated_at": "2026-07-23T23:45:57.383Z",
     "lat": 37.1007828,
-    "lng": 129.1508961
+    "lng": 129.1508961,
+    "videos": [
+      {
+        "url": "https://www.instagram.com/reel/DM8uTylTVgx/?igsh=OTZqajB4bndiMmY0",
+        "title": "에메랄드 빛! 역대급 계곡 스팟!"
+      }
+    ]
   },
   {
     "id": "camp_02c72e06a3",
