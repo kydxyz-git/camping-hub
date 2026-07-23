@@ -1239,22 +1239,35 @@
     "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
+    "id": "camp_ed97486488",
     "name": "덕풍계곡별빛야영장",
     "region": "경북",
-    "seasons": [],
+    "seasons": [
+      "여름"
+    ],
     "landscape": [
       "계곡"
     ],
     "extras": [],
     "graega": false,
-    "url": "",
-    "imgs": [],
-    "rating": 0,
-    "visits": 1,
+    "url": "https://map.naver.com/p/entry/place/38491516?lng=129.1793007&lat=37.1020523&placePath=%2Fhome&entry=plt&searchType=place&c=15.00,0,0,2,dh",
+    "imgs": [
+      "./images/camps/1e18d2c1a752.jpg",
+      "./images/camps/1e18d2c1a752-2.jpg",
+      "./images/camps/1e18d2c1a752-3.jpg",
+      "./images/camps/1e18d2c1a752-4.jpg",
+      "./images/camps/1e18d2c1a752-5.jpg",
+      "./images/camps/1e18d2c1a752-6.jpg",
+      "./images/camps/1e18d2c1a752-7.jpg",
+      "./images/camps/1e18d2c1a752-8.jpg"
+    ],
+    "rating": 5,
+    "visits": 2,
     "published": true,
-    "id": "camp_ed97486488",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T02:53:18.159759+00:00"
+    "updated_at": "2026-07-23T23:32:46.406Z",
+    "lat": 37.1007828,
+    "lng": 129.1508961
   },
   {
     "id": "camp_02c72e06a3",
