@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 6380,
-    "click": 2441,
+    "pv": 6381,
+    "click": 2442,
     "search": 0
   },
   "pages": {
@@ -132,7 +132,7 @@
     "/items/item_e01fb7d262": 4,
     "/items/item_6489394674": 3,
     "/series/series_873cdcaf61/ep_9b833c820b": 1,
-    "/series/series_ba7cc89468/ep_868813ad26": 2
+    "/series/series_ba7cc89468/ep_868813ad26": 3
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 247,
@@ -233,18 +233,18 @@
     "/items/item_6489394674::sinjimorulab.com": 3,
     "/items/item_e01fb7d262::sinjimorulab.com": 1,
     "/series/series_873cdcaf61/ep_9b833c820b::인스타DM": 1,
-    "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 1
+    "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 2
   },
   "searches": {},
   "devices": {
     "desktop": 325,
-    "mobile": 8487,
+    "mobile": 8489,
     "tablet": 9
   },
   "referrers": {
     "direct": 756,
     "인스타그램": 5140,
-    "페이스북": 274,
+    "페이스북": 275,
     "구글": 20,
     "네이버": 12,
     "link.inpock.co.kr": 4,
@@ -5864,11 +5864,11 @@
       ]
     },
     "2026-07-23": {
-      "pv": 31,
-      "click": 41,
+      "pv": 32,
+      "click": 42,
       "search": 0,
       "pages": {
-        "/series/series_ba7cc89468/ep_868813ad26": 2,
+        "/series/series_ba7cc89468/ep_868813ad26": 3,
         "/series/series_ba7cc89468/ep_aa0e809292": 2,
         "/series/series_4f27a6d489/ep_426dd9712f": 1,
         "/series/series_ba7cc89468/ep_860867be0e": 2,
@@ -5893,15 +5893,15 @@
         "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 4,
         "/series/series_ba7cc89468/ep_b953456d73::인스타DM": 7,
         "/series/series_4f27a6d489/ep_c8dbf171b7::인스타DM": 2,
-        "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 1
+        "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 2
       },
       "searches": {},
       "devices": {
-        "mobile": 72
+        "mobile": 74
       },
       "referrers": {
         "인스타그램": 18,
-        "페이스북": 8
+        "페이스북": 9
       },
       "hourly": [
         8,
@@ -5909,7 +5909,7 @@
         10,
         1,
         12,
-        0,
+        1,
         0,
         0,
         0,
@@ -5931,5 +5931,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-23T05:00:59.503Z"
+  "updated_at": "2026-07-23T06:00:59.867Z"
 }
