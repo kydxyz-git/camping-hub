@@ -1,6 +1,6 @@
 {
   "total": {
-    "pv": 6458,
+    "pv": 6459,
     "click": 2447,
     "search": 0
   },
@@ -11,7 +11,7 @@
     "/series/series_873cdcaf61/ep_7dd208fe26": 105,
     "/series/series_e8c17ad5da/ep_e46450a717": 89,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 88,
-    "/#stories": 8,
+    "/#stories": 9,
     "/series/series_ba7cc89468/ep_73bdfba72e": 229,
     "/series/series_ba7cc89468/ep_3acff3998f": 275,
     "/series/series_ba7cc89468/ep_27438d1204": 201,
@@ -238,12 +238,12 @@
   "searches": {},
   "devices": {
     "desktop": 326,
-    "mobile": 8570,
+    "mobile": 8571,
     "tablet": 9
   },
   "referrers": {
     "direct": 757,
-    "인스타그램": 5191,
+    "인스타그램": 5192,
     "페이스북": 283,
     "구글": 20,
     "네이버": 12,
@@ -5942,7 +5942,7 @@
       ]
     },
     "2026-07-24": {
-      "pv": 48,
+      "pv": 49,
       "click": 2,
       "search": 0,
       "pages": {
@@ -5979,7 +5979,8 @@
         "/foods/food_b7f447dd02": 1,
         "/foods/food_592752e317": 1,
         "/items/item_1e78eeb29a": 1,
-        "/items/item_200bd59067": 1
+        "/items/item_200bd59067": 1,
+        "/#stories": 1
       },
       "clicks": {
         "/camps/camp_8625b4018d::땡큐캠핑": 1,
@@ -5988,12 +5989,12 @@
       "searches": {},
       "devices": {
         "desktop": 1,
-        "mobile": 49
+        "mobile": 50
       },
       "referrers": {
         "direct": 1,
         "페이스북": 8,
-        "인스타그램": 39
+        "인스타그램": 40
       },
       "hourly": [
         1,
@@ -6018,10 +6019,10 @@
         7,
         0,
         26,
-        0,
+        1,
         0
       ]
     }
   },
-  "updated_at": "2026-07-24T22:00:59.148Z"
+  "updated_at": "2026-07-24T23:00:59.497Z"
 }
