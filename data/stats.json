@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 6459,
-    "click": 2447,
+    "pv": 6462,
+    "click": 2448,
     "search": 0
   },
   "pages": {
-    "/": 1283,
+    "/": 1284,
     "/series/series_ba7cc89468/ep_ad505df37d": 291,
     "/series/series_304565fb77/ep_c2e684a351": 207,
     "/series/series_873cdcaf61/ep_7dd208fe26": 105,
@@ -119,7 +119,7 @@
     "/series/series_873cdcaf61/ep_3def2c1289": 40,
     "/items/item_32e1cc5f58": 8,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 81,
-    "/series/series_4f27a6d489/ep_9873ededda": 78,
+    "/series/series_4f27a6d489/ep_9873ededda": 79,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 80,
     "/camps/camp_2d2adbe3fd": 1,
     "/series/series_ba7cc89468/ep_aa0e809292": 80,
@@ -132,7 +132,7 @@
     "/items/item_e01fb7d262": 5,
     "/items/item_6489394674": 4,
     "/series/series_873cdcaf61/ep_9b833c820b": 2,
-    "/series/series_ba7cc89468/ep_868813ad26": 7
+    "/series/series_ba7cc89468/ep_868813ad26": 8
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 247,
@@ -233,18 +233,18 @@
     "/items/item_6489394674::sinjimorulab.com": 4,
     "/items/item_e01fb7d262::sinjimorulab.com": 1,
     "/series/series_873cdcaf61/ep_9b833c820b::인스타DM": 1,
-    "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 2
+    "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 3
   },
   "searches": {},
   "devices": {
     "desktop": 326,
-    "mobile": 8571,
+    "mobile": 8575,
     "tablet": 9
   },
   "referrers": {
     "direct": 757,
     "인스타그램": 5192,
-    "페이스북": 283,
+    "페이스북": 286,
     "구글": 20,
     "네이버": 12,
     "link.inpock.co.kr": 4,
@@ -6022,7 +6022,53 @@
         1,
         0
       ]
+    },
+    "2026-07-25": {
+      "pv": 3,
+      "click": 1,
+      "search": 0,
+      "pages": {
+        "/": 1,
+        "/series/series_4f27a6d489/ep_9873ededda": 1,
+        "/series/series_ba7cc89468/ep_868813ad26": 1
+      },
+      "clicks": {
+        "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 1
+      },
+      "searches": {},
+      "devices": {
+        "mobile": 4
+      },
+      "referrers": {
+        "페이스북": 3
+      },
+      "hourly": [
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   },
-  "updated_at": "2026-07-24T23:00:59.497Z"
+  "updated_at": "2026-07-25T04:01:00.854Z"
 }
