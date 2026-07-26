@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 6495,
-    "click": 2455,
+    "pv": 6500,
+    "click": 2465,
     "search": 0
   },
   "pages": {
-    "/": 1291,
+    "/": 1292,
     "/series/series_ba7cc89468/ep_ad505df37d": 291,
     "/series/series_304565fb77/ep_c2e684a351": 207,
     "/series/series_873cdcaf61/ep_7dd208fe26": 106,
@@ -20,7 +20,7 @@
     "/series/series_e8c17ad5da/ep_7a390bade9": 76,
     "/#camps": 11,
     "/#foods": 18,
-    "/series/series_304565fb77/ep_d7955f38a0": 202,
+    "/series/series_304565fb77/ep_d7955f38a0": 203,
     "/foods/food_592752e317": 27,
     "/foods/food_790525d8a8": 19,
     "/series/series_e8c17ad5da/ep_e383972ec6": 62,
@@ -116,7 +116,7 @@
     "/camps/camp_bcd074ef33": 4,
     "/camps/camp_0760ee65ba": 2,
     "/series/series_ba7cc89468/ep_860867be0e": 120,
-    "/series/series_873cdcaf61/ep_3def2c1289": 40,
+    "/series/series_873cdcaf61/ep_3def2c1289": 41,
     "/items/item_32e1cc5f58": 8,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 81,
     "/series/series_4f27a6d489/ep_9873ededda": 81,
@@ -130,8 +130,8 @@
     "/items/item_096f88cf80": 2,
     "/items/item_1e78eeb29a": 7,
     "/items/item_e01fb7d262": 5,
-    "/items/item_6489394674": 5,
-    "/series/series_873cdcaf61/ep_9b833c820b": 3,
+    "/items/item_6489394674": 6,
+    "/series/series_873cdcaf61/ep_9b833c820b": 4,
     "/series/series_ba7cc89468/ep_868813ad26": 10
   },
   "clicks": {
@@ -230,20 +230,20 @@
     "/camps/camp_0380055336::www.sjacamping.com": 1,
     "/camps/camp_d69cf442b4::sj-camping.com": 2,
     "/items/item_1e78eeb29a::sinjimorulab.com": 6,
-    "/items/item_6489394674::sinjimorulab.com": 5,
+    "/items/item_6489394674::sinjimorulab.com": 6,
     "/items/item_e01fb7d262::sinjimorulab.com": 1,
-    "/series/series_873cdcaf61/ep_9b833c820b::인스타DM": 1,
+    "/series/series_873cdcaf61/ep_9b833c820b::인스타DM": 10,
     "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 4
   },
   "searches": {},
   "devices": {
     "desktop": 326,
-    "mobile": 8615,
+    "mobile": 8630,
     "tablet": 9
   },
   "referrers": {
     "direct": 758,
-    "인스타그램": 5208,
+    "인스타그램": 5213,
     "페이스북": 297,
     "구글": 20,
     "네이버": 12,
@@ -6091,28 +6091,35 @@
       ]
     },
     "2026-07-26": {
-      "pv": 4,
-      "click": 0,
+      "pv": 9,
+      "click": 10,
       "search": 0,
       "pages": {
-        "/": 1,
+        "/": 2,
         "/series/series_4f27a6d489/ep_9873ededda": 1,
         "/series/series_304565fb77/ep_17f905660e": 1,
-        "/series/series_873cdcaf61/ep_14cbfb6b11": 1
+        "/series/series_873cdcaf61/ep_14cbfb6b11": 1,
+        "/series/series_873cdcaf61/ep_9b833c820b": 1,
+        "/series/series_304565fb77/ep_d7955f38a0": 1,
+        "/series/series_873cdcaf61/ep_3def2c1289": 1,
+        "/items/item_6489394674": 1
       },
-      "clicks": {},
+      "clicks": {
+        "/series/series_873cdcaf61/ep_9b833c820b::인스타DM": 9,
+        "/items/item_6489394674::sinjimorulab.com": 1
+      },
       "searches": {},
       "devices": {
-        "mobile": 4
+        "mobile": 19
       },
       "referrers": {
-        "인스타그램": 4
+        "인스타그램": 9
       },
       "hourly": [
         0,
         4,
         0,
-        0,
+        5,
         0,
         0,
         0,
@@ -6136,5 +6143,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-26T02:00:49.801Z"
+  "updated_at": "2026-07-26T04:00:51.876Z"
 }
