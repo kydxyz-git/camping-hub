@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 6643,
+    "pv": 6645,
     "click": 2529,
     "search": 0
   },
   "pages": {
-    "/": 1318,
+    "/": 1319,
     "/series/series_ba7cc89468/ep_ad505df37d": 294,
     "/series/series_304565fb77/ep_c2e684a351": 209,
     "/series/series_873cdcaf61/ep_7dd208fe26": 106,
@@ -17,7 +17,7 @@
     "/series/series_ba7cc89468/ep_27438d1204": 203,
     "/series/series_304565fb77/ep_a8b40077ca": 128,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 93,
-    "/series/series_e8c17ad5da/ep_7a390bade9": 77,
+    "/series/series_e8c17ad5da/ep_7a390bade9": 78,
     "/#camps": 11,
     "/#foods": 18,
     "/series/series_304565fb77/ep_d7955f38a0": 207,
@@ -238,12 +238,12 @@
   "searches": {},
   "devices": {
     "desktop": 330,
-    "mobile": 8833,
+    "mobile": 8835,
     "tablet": 9
   },
   "referrers": {
     "direct": 774,
-    "인스타그램": 5340,
+    "인스타그램": 5342,
     "페이스북": 297,
     "구글": 20,
     "네이버": 12,
@@ -6196,11 +6196,11 @@
       ]
     },
     "2026-07-27": {
-      "pv": 38,
+      "pv": 40,
       "click": 8,
       "search": 0,
       "pages": {
-        "/": 8,
+        "/": 9,
         "/series/series_4f27a6d489/ep_eb8b1702fa": 3,
         "/series/series_304565fb77/ep_d7955f38a0": 1,
         "/series/series_873cdcaf61/ep_9b833c820b": 1,
@@ -6218,7 +6218,8 @@
         "/series/series_ba7cc89468/ep_73bdfba72e": 1,
         "/series/series_ba7cc89468/ep_3acff3998f": 1,
         "/series/series_ba7cc89468/ep_27438d1204": 1,
-        "/series/series_ba7cc89468/ep_b953456d73": 1
+        "/series/series_ba7cc89468/ep_b953456d73": 1,
+        "/series/series_e8c17ad5da/ep_7a390bade9": 1
       },
       "clicks": {
         "/series/series_4f27a6d489/ep_3fbc9a3223::인스타DM": 4,
@@ -6229,11 +6230,11 @@
       "searches": {},
       "devices": {
         "desktop": 3,
-        "mobile": 43
+        "mobile": 45
       },
       "referrers": {
         "direct": 11,
-        "인스타그램": 27
+        "인스타그램": 29
       },
       "hourly": [
         0,
@@ -6242,7 +6243,7 @@
         0,
         12,
         0,
-        0,
+        2,
         0,
         0,
         0,
@@ -6263,5 +6264,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-27T05:00:51.765Z"
+  "updated_at": "2026-07-27T07:00:49.536Z"
 }
