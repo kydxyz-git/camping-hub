@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 6757,
+    "pv": 6758,
     "click": 2551,
     "search": 0
   },
   "pages": {
-    "/": 1337,
+    "/": 1338,
     "/series/series_ba7cc89468/ep_ad505df37d": 297,
     "/series/series_304565fb77/ep_c2e684a351": 209,
     "/series/series_873cdcaf61/ep_7dd208fe26": 106,
@@ -239,12 +239,12 @@
   "searches": {},
   "devices": {
     "desktop": 335,
-    "mobile": 8964,
+    "mobile": 8965,
     "tablet": 9
   },
   "referrers": {
     "direct": 777,
-    "인스타그램": 5423,
+    "인스타그램": 5424,
     "페이스북": 297,
     "구글": 20,
     "네이버": 12,
@@ -6288,11 +6288,11 @@
       ]
     },
     "2026-07-28": {
-      "pv": 45,
+      "pv": 46,
       "click": 12,
       "search": 0,
       "pages": {
-        "/": 8,
+        "/": 9,
         "/series/series_ba7cc89468/ep_860867be0e": 3,
         "/series/series_ba7cc89468/ep_c56ed16c13": 2,
         "/series/series_ba7cc89468/ep_ad505df37d": 2,
@@ -6331,11 +6331,11 @@
       "searches": {},
       "devices": {
         "desktop": 5,
-        "mobile": 52
+        "mobile": 53
       },
       "referrers": {
         "direct": 3,
-        "인스타그램": 29,
+        "인스타그램": 30,
         "socialbiz-c.nhndata.com": 13
       },
       "hourly": [
@@ -6350,7 +6350,7 @@
         10,
         3,
         19,
-        0,
+        1,
         0,
         0,
         0,
@@ -6366,5 +6366,5 @@
       ]
     }
   },
-  "updated_at": "2026-07-28T11:01:00.932Z"
+  "updated_at": "2026-07-28T12:00:59.105Z"
 }
