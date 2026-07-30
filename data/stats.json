@@ -1,6 +1,6 @@
 {
   "total": {
-    "pv": 6854,
+    "pv": 6856,
     "click": 2626,
     "search": 0
   },
@@ -115,11 +115,11 @@
     "/series/series_873cdcaf61/ep_eb18e20c30": 35,
     "/camps/camp_bcd074ef33": 4,
     "/camps/camp_0760ee65ba": 3,
-    "/series/series_ba7cc89468/ep_860867be0e": 138,
+    "/series/series_ba7cc89468/ep_860867be0e": 139,
     "/series/series_873cdcaf61/ep_3def2c1289": 43,
     "/items/item_32e1cc5f58": 9,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 96,
-    "/series/series_4f27a6d489/ep_9873ededda": 99,
+    "/series/series_4f27a6d489/ep_9873ededda": 100,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 94,
     "/camps/camp_2d2adbe3fd": 1,
     "/series/series_ba7cc89468/ep_aa0e809292": 90,
@@ -239,12 +239,12 @@
   "searches": {},
   "devices": {
     "desktop": 336,
-    "mobile": 9135,
+    "mobile": 9137,
     "tablet": 9
   },
   "referrers": {
     "direct": 779,
-    "인스타그램": 5516,
+    "인스타그램": 5518,
     "페이스북": 298,
     "구글": 20,
     "네이버": 12,
@@ -6382,7 +6382,7 @@
       ]
     },
     "2026-07-29": {
-      "pv": 43,
+      "pv": 45,
       "click": 58,
       "search": 0,
       "pages": {
@@ -6396,7 +6396,7 @@
         "/series/series_304565fb77/ep_17f905660e": 1,
         "/series/series_ba7cc89468/ep_b953456d73": 1,
         "/series/series_e8c17ad5da/ep_7a004a6412": 1,
-        "/series/series_4f27a6d489/ep_9873ededda": 2,
+        "/series/series_4f27a6d489/ep_9873ededda": 3,
         "/series/series_ba7cc89468/ep_27438d1204": 1,
         "/camps/camp_e1e0dde7b3": 2,
         "/camps/camp_357cccb118": 1,
@@ -6405,7 +6405,8 @@
         "/camps/camp_253105161b": 2,
         "/camps/camp_d69cf442b4": 1,
         "/series/series_873cdcaf61/ep_eb18e20c30": 1,
-        "/#stories": 1
+        "/#stories": 1,
+        "/series/series_ba7cc89468/ep_860867be0e": 1
       },
       "clicks": {
         "/series/series_4f27a6d489/ep_c8dbf171b7::인스타DM": 2,
@@ -6420,11 +6421,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 100,
+        "mobile": 102,
         "desktop": 1
       },
       "referrers": {
-        "인스타그램": 39,
+        "인스타그램": 41,
         "direct": 2,
         "페이스북": 1
       },
@@ -6452,9 +6453,9 @@
         0,
         0,
         0,
-        0
+        2
       ]
     }
   },
-  "updated_at": "2026-07-29T14:01:00.099Z"
+  "updated_at": "2026-07-30T00:00:50.737Z"
 }
