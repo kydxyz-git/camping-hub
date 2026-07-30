@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 6970,
+    "pv": 6975,
     "click": 2666,
     "search": 0
   },
   "pages": {
-    "/": 1366,
+    "/": 1367,
     "/series/series_ba7cc89468/ep_ad505df37d": 303,
     "/series/series_304565fb77/ep_c2e684a351": 211,
     "/series/series_873cdcaf61/ep_7dd208fe26": 106,
@@ -92,7 +92,7 @@
     "/camps/camp_0380055336": 8,
     "/camps/camp_7fafd07d0a": 6,
     "/camps/camp_02c72e06a3": 30,
-    "/series/series_ba7cc89468/ep_4da176323e": 295,
+    "/series/series_ba7cc89468/ep_4da176323e": 296,
     "/camps/camp_f756d38620": 1,
     "/#map": 14,
     "/camps/camp_b8d29b3f00": 16,
@@ -118,15 +118,15 @@
     "/series/series_ba7cc89468/ep_860867be0e": 146,
     "/series/series_873cdcaf61/ep_3def2c1289": 44,
     "/items/item_32e1cc5f58": 9,
-    "/series/series_4f27a6d489/ep_c8dbf171b7": 99,
-    "/series/series_4f27a6d489/ep_9873ededda": 103,
+    "/series/series_4f27a6d489/ep_c8dbf171b7": 100,
+    "/series/series_4f27a6d489/ep_9873ededda": 104,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 98,
     "/camps/camp_2d2adbe3fd": 1,
     "/series/series_ba7cc89468/ep_aa0e809292": 94,
     "/camps/camp_75ee389015": 1,
     "/series/series_304565fb77/ep_9032e63bcd": 41,
     "/series/series_4f27a6d489/ep_3fbc9a3223": 64,
-    "/series/series_4f27a6d489/ep_426dd9712f": 47,
+    "/series/series_4f27a6d489/ep_426dd9712f": 48,
     "/items/item_096f88cf80": 3,
     "/items/item_1e78eeb29a": 9,
     "/items/item_e01fb7d262": 5,
@@ -242,12 +242,12 @@
   "searches": {},
   "devices": {
     "desktop": 336,
-    "mobile": 9291,
+    "mobile": 9296,
     "tablet": 9
   },
   "referrers": {
     "direct": 796,
-    "인스타그램": 5601,
+    "인스타그램": 5606,
     "페이스북": 298,
     "구글": 20,
     "네이버": 12,
@@ -6460,24 +6460,24 @@
       ]
     },
     "2026-07-30": {
-      "pv": 114,
+      "pv": 119,
       "click": 40,
       "search": 0,
       "pages": {
-        "/": 14,
+        "/": 15,
         "/series/series_ba7cc89468/ep_868813ad26": 10,
         "/series/series_4f27a6d489/ep_3fbc9a3223": 3,
         "/series/series_ba7cc89468/ep_860867be0e": 7,
-        "/series/series_4f27a6d489/ep_c8dbf171b7": 3,
+        "/series/series_4f27a6d489/ep_c8dbf171b7": 4,
         "/series/series_304565fb77/ep_17f905660e": 2,
         "/series/series_873cdcaf61/ep_08c284c148": 2,
         "/series/series_304565fb77/ep_9032e63bcd": 3,
         "/series/series_e8c17ad5da/ep_ff868ac30c": 1,
-        "/series/series_4f27a6d489/ep_426dd9712f": 8,
+        "/series/series_4f27a6d489/ep_426dd9712f": 9,
         "/series/series_ba7cc89468/ep_aa0e809292": 4,
         "/series/series_ba7cc89468/ep_97e39a4499": 5,
         "/series/series_ba7cc89468/ep_00a18099de": 4,
-        "/series/series_ba7cc89468/ep_4da176323e": 6,
+        "/series/series_ba7cc89468/ep_4da176323e": 7,
         "/series/series_ba7cc89468/ep_c56ed16c13": 5,
         "/series/series_ba7cc89468/ep_ad505df37d": 5,
         "/series/series_ba7cc89468/ep_3acff3998f": 4,
@@ -6485,7 +6485,7 @@
         "/series/series_ba7cc89468/ep_27438d1204": 3,
         "/series/series_ba7cc89468/ep_b953456d73": 1,
         "/series/series_4f27a6d489/ep_eb8b1702fa": 4,
-        "/series/series_4f27a6d489/ep_9873ededda": 3,
+        "/series/series_4f27a6d489/ep_9873ededda": 4,
         "/series/series_873cdcaf61/ep_3def2c1289": 1,
         "/series/series_ba7cc89468/ep_7727344bb5": 1,
         "/series/series_873cdcaf61/ep_cf2282cf4e": 1,
@@ -6519,10 +6519,10 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 154
+        "mobile": 159
       },
       "referrers": {
-        "인스타그램": 83,
+        "인스타그램": 88,
         "direct": 17
       },
       "hourly": [
@@ -6548,10 +6548,10 @@
         0,
         4,
         6,
-        0,
+        5,
         0
       ]
     }
   },
-  "updated_at": "2026-07-30T22:00:51.771Z"
+  "updated_at": "2026-07-30T23:00:51.295Z"
 }
