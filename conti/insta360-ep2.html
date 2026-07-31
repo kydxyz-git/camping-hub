@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>촬영 콘티 · 공대남자</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Pretendard','Segoe UI',sans-serif; background:#f5f5f3; color:#1a1a1a; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .card { background:#fff; border-radius:16px; padding:36px 32px; box-shadow:0 2px 14px rgba(0,0,0,0.06); max-width:420px; width:100%; text-align:center; }
+  .icon { font-size:34px; margin-bottom:10px; }
+  h1 { font-size:17px; font-weight:800; margin-bottom:4px; }
+  .sub { font-size:13px; color:#888; margin-bottom:24px; }
+  .pw-row { display:flex; gap:8px; }
+  .input { flex:1; padding:12px 14px; border:1px solid #e2e2e2; border-radius:9px; font-size:15px; font-family:inherit; }
+  .input:focus { outline:2px solid #1a1a1a; outline-offset:-1px; }
+  .btn { padding:12px 20px; background:#1a1a1a; color:#fff; border:none; border-radius:9px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .btn:hover { opacity:0.85; }
+  .btn:disabled { opacity:0.4; cursor:wait; }
+  .err { color:#e63946; font-size:12.5px; font-weight:700; margin-top:10px; display:none; }
+  .foot { margin-top:22px; font-size:11px; color:#bbb; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">🎬</div>
+  <h1>Insta360 2편 「하루를 손에 남기다」</h1>
+  <div class="sub">릴스 30초 촬영 콘티 · @kyd_zm 공대남자</div>
+  <div class="pw-row">
+    <input class="input" type="password" id="pw" placeholder="비밀번호" autocomplete="off">
+    <button class="btn" id="btn">열기</button>
+  </div>
+  <div class="err" id="err">비밀번호가 맞지 않습니다</div>
+  <div class="foot">본 문서는 협의 관계자 열람용입니다</div>
+</div>
+<script>
+const FILE = 'data/insta360-ep2.enc.json';
+const b64 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0));
+const pw = document.getElementById('pw'), btn = document.getElementById('btn'), err = document.getElementById('err');
+async function openConti() {
+  const password = pw.value.trim();
+  if (!password) { pw.focus(); return; }
+  err.style.display = 'none';
+  btn.disabled = true; btn.textContent = '여는 중…';
+  try {
+    const res = await fetch(FILE + '?t=' + Date.now());
+    if (!res.ok) throw new Error('load fail');
+    const enc = await res.json();
+    const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+    const key = await crypto.subtle.deriveKey({ name:'PBKDF2', salt:b64(enc.salt), iterations:enc.iter, hash:'SHA-256' }, km, { name:'AES-GCM', length:256 }, false, ['decrypt']);
+    const plain = await crypto.subtle.decrypt({ name:'AES-GCM', iv:b64(enc.iv) }, key, b64(enc.data));
+    const html = new TextDecoder().decode(plain);
+    document.open(); document.write(html); document.close();
+  } catch (e) {
+    err.style.display = 'block';
+    btn.disabled = false; btn.textContent = '열기';
+  }
+}
+btn.addEventListener('click', openConti);
+pw.addEventListener('keydown', e => { if (e.key === 'Enter') openConti(); });
+</script>
+</body>
+</html>
