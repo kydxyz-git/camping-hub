@@ -93,13 +93,16 @@
       "./images/camps/f272648a6938-4.jpg",
       "./images/camps/f272648a6938-5.jpg",
       "./images/camps/f272648a6938-6.jpg",
-      "./images/camps/f272648a6938-7.jpg"
+      "./images/camps/f272648a6938-7.jpg",
+      "./images/camps/f272648a6938-8.jpg",
+      "./images/camps/f272648a6938-9.jpg",
+      "./images/camps/f272648a6938-10.jpg"
     ],
     "rating": 4,
-    "visits": 3,
+    "visits": 4,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-07-06T00:49:38.484Z",
+    "updated_at": "2026-08-03T00:46:09.315Z",
     "lat": 35.2831142,
     "lng": 127.7288518
   },
