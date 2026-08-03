@@ -7,6 +7,17 @@
     "sort": "random",
     "eps": [
       {
+        "id": "ep_996b471cb5",
+        "ep": 0,
+        "title": "한 달만에 또 온 이유",
+        "url": "https://www.instagram.com/reel/DbjWFOlTmXn/?igsh=NGFvMml3ZTVkdHk5",
+        "thumb": "./images/series/summer-msci58co.jpg",
+        "published": true,
+        "created_at": "2026-08-03T00:39:46.824Z",
+        "updated_at": "2026-08-03T00:39:46.824Z",
+        "camp_id": "camp_d9699234d4"
+      },
+      {
         "id": "ep_7727344bb5",
         "ep": 0,
         "title": "산속에 수영장이 있는 캠핑장",
