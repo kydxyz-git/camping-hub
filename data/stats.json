@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 7232,
-    "click": 2808,
+    "pv": 7242,
+    "click": 2811,
     "search": 0
   },
   "pages": {
-    "/": 1413,
+    "/": 1417,
     "/series/series_ba7cc89468/ep_ad505df37d": 311,
     "/series/series_304565fb77/ep_c2e684a351": 214,
     "/series/series_873cdcaf61/ep_7dd208fe26": 107,
@@ -111,31 +111,31 @@
     "/items/item_75f77862cd": 25,
     "/series/series_873cdcaf61/ep_08c284c148": 45,
     "/series/series_ba7cc89468/ep_97e39a4499": 200,
-    "/series/series_873cdcaf61/ep_14cbfb6b11": 34,
+    "/series/series_873cdcaf61/ep_14cbfb6b11": 35,
     "/series/series_873cdcaf61/ep_eb18e20c30": 35,
     "/camps/camp_bcd074ef33": 4,
     "/camps/camp_0760ee65ba": 3,
     "/series/series_ba7cc89468/ep_860867be0e": 153,
     "/series/series_873cdcaf61/ep_3def2c1289": 46,
     "/items/item_32e1cc5f58": 10,
-    "/series/series_4f27a6d489/ep_c8dbf171b7": 106,
+    "/series/series_4f27a6d489/ep_c8dbf171b7": 107,
     "/series/series_4f27a6d489/ep_9873ededda": 113,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 107,
     "/camps/camp_2d2adbe3fd": 1,
     "/series/series_ba7cc89468/ep_aa0e809292": 102,
     "/camps/camp_75ee389015": 1,
-    "/series/series_304565fb77/ep_9032e63bcd": 42,
+    "/series/series_304565fb77/ep_9032e63bcd": 43,
     "/series/series_4f27a6d489/ep_3fbc9a3223": 76,
     "/series/series_4f27a6d489/ep_426dd9712f": 58,
     "/items/item_096f88cf80": 4,
     "/items/item_1e78eeb29a": 9,
-    "/items/item_e01fb7d262": 5,
+    "/items/item_e01fb7d262": 6,
     "/items/item_6489394674": 9,
     "/series/series_873cdcaf61/ep_9b833c820b": 14,
     "/series/series_ba7cc89468/ep_868813ad26": 46,
     "/series/series_ba7cc89468/ep_7727344bb5": 14,
     "/series/series_304565fb77/ep_67c3e626c9": 7,
-    "/series/series_ba7cc89468/ep_996b471cb5": 10
+    "/series/series_ba7cc89468/ep_996b471cb5": 12
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 255,
@@ -234,30 +234,30 @@
     "/camps/camp_d69cf442b4::sj-camping.com": 2,
     "/items/item_1e78eeb29a::sinjimorulab.com": 9,
     "/items/item_6489394674::sinjimorulab.com": 7,
-    "/items/item_e01fb7d262::sinjimorulab.com": 1,
+    "/items/item_e01fb7d262::sinjimorulab.com": 2,
     "/series/series_873cdcaf61/ep_9b833c820b::인스타DM": 20,
     "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 38,
     "/camps/camp_873dcfe92d::땡큐캠핑": 1,
     "__external__::Facebook": 1,
     "/series/series_ba7cc89468/ep_7727344bb5::인스타DM": 7,
     "/items/item_096f88cf80::sinjimorulab.com": 1,
-    "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 6
+    "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 8
   },
   "searches": {},
   "devices": {
-    "desktop": 336,
-    "mobile": 9695,
+    "desktop": 343,
+    "mobile": 9701,
     "tablet": 9
   },
   "referrers": {
-    "direct": 816,
+    "direct": 819,
     "인스타그램": 5825,
-    "페이스북": 298,
+    "페이스북": 300,
     "구글": 20,
     "네이버": 12,
     "link.inpock.co.kr": 4,
     "l.threads.com": 1,
-    "socialbiz-c.nhndata.com": 13
+    "socialbiz-c.nhndata.com": 18
   },
   "daily": {
     "2026-05-21": {
@@ -6881,24 +6881,35 @@
       ]
     },
     "2026-08-04": {
-      "pv": 4,
-      "click": 1,
+      "pv": 14,
+      "click": 4,
       "search": 0,
       "pages": {
-        "/": 1,
+        "/": 5,
         "/series/series_304565fb77/ep_a8b40077ca": 1,
         "/camps/camp_e1e0dde7b3": 1,
-        "/camps/camp_9ada4f994a": 1
+        "/camps/camp_9ada4f994a": 1,
+        "/series/series_ba7cc89468/ep_996b471cb5": 2,
+        "/series/series_4f27a6d489/ep_c8dbf171b7": 1,
+        "/series/series_304565fb77/ep_9032e63bcd": 1,
+        "/series/series_873cdcaf61/ep_14cbfb6b11": 1,
+        "/items/item_e01fb7d262": 1
       },
       "clicks": {
-        "/camps/camp_9ada4f994a::camfit.co.kr": 1
+        "/camps/camp_9ada4f994a::camfit.co.kr": 1,
+        "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 2,
+        "/items/item_e01fb7d262::sinjimorulab.com": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 5
+        "mobile": 11,
+        "desktop": 7
       },
       "referrers": {
-        "인스타그램": 4
+        "인스타그램": 4,
+        "페이스북": 2,
+        "socialbiz-c.nhndata.com": 5,
+        "direct": 3
       },
       "hourly": [
         4,
@@ -6907,8 +6918,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        9,
+        1,
         0,
         0,
         0,
@@ -6928,5 +6939,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-04T01:00:54.210Z"
+  "updated_at": "2026-08-04T07:00:54.633Z"
 }
