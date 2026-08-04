@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 7350,
-    "click": 2822,
+    "pv": 7352,
+    "click": 2823,
     "search": 0
   },
   "pages": {
-    "/": 1427,
+    "/": 1428,
     "/series/series_ba7cc89468/ep_ad505df37d": 315,
     "/series/series_304565fb77/ep_c2e684a351": 214,
     "/series/series_873cdcaf61/ep_7dd208fe26": 107,
@@ -135,7 +135,7 @@
     "/series/series_ba7cc89468/ep_868813ad26": 49,
     "/series/series_ba7cc89468/ep_7727344bb5": 17,
     "/series/series_304565fb77/ep_67c3e626c9": 11,
-    "/series/series_ba7cc89468/ep_996b471cb5": 15,
+    "/series/series_ba7cc89468/ep_996b471cb5": 16,
     "/items/item_edd94b4899": 1
   },
   "clicks": {
@@ -242,19 +242,19 @@
     "__external__::Facebook": 1,
     "/series/series_ba7cc89468/ep_7727344bb5::인스타DM": 7,
     "/items/item_096f88cf80::sinjimorulab.com": 1,
-    "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 8,
+    "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 9,
     "/items/item_edd94b4899::www.insta360.com": 1,
     "/series/series_304565fb77/ep_67c3e626c9::인스타DM": 1
   },
   "searches": {},
   "devices": {
     "desktop": 354,
-    "mobile": 9809,
+    "mobile": 9812,
     "tablet": 9
   },
   "referrers": {
     "direct": 825,
-    "인스타그램": 5912,
+    "인스타그램": 5914,
     "페이스북": 300,
     "구글": 20,
     "네이버": 12,
@@ -6884,15 +6884,15 @@
       ]
     },
     "2026-08-04": {
-      "pv": 122,
-      "click": 15,
+      "pv": 124,
+      "click": 16,
       "search": 0,
       "pages": {
-        "/": 15,
+        "/": 16,
         "/series/series_304565fb77/ep_a8b40077ca": 1,
         "/camps/camp_e1e0dde7b3": 1,
         "/camps/camp_9ada4f994a": 1,
-        "/series/series_ba7cc89468/ep_996b471cb5": 5,
+        "/series/series_ba7cc89468/ep_996b471cb5": 6,
         "/series/series_4f27a6d489/ep_c8dbf171b7": 5,
         "/series/series_304565fb77/ep_9032e63bcd": 2,
         "/series/series_873cdcaf61/ep_14cbfb6b11": 3,
@@ -6931,7 +6931,7 @@
       },
       "clicks": {
         "/camps/camp_9ada4f994a::camfit.co.kr": 1,
-        "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 2,
+        "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 3,
         "/items/item_e01fb7d262::sinjimorulab.com": 1,
         "/items/item_960c2ff01c::네이버예약": 1,
         "/foods/food_592752e317::네이버예약": 2,
@@ -6945,11 +6945,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 119,
+        "mobile": 122,
         "desktop": 18
       },
       "referrers": {
-        "인스타그램": 91,
+        "인스타그램": 93,
         "페이스북": 2,
         "socialbiz-c.nhndata.com": 5,
         "direct": 9
@@ -6976,11 +6976,11 @@
         0,
         0,
         0,
-        0,
+        2,
         0,
         0
       ]
     }
   },
-  "updated_at": "2026-08-04T16:00:54.238Z"
+  "updated_at": "2026-08-04T22:00:54.117Z"
 }
