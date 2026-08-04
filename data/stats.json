@@ -1,15 +1,15 @@
 {
   "total": {
-    "pv": 7244,
-    "click": 2814,
+    "pv": 7255,
+    "click": 2815,
     "search": 0
   },
   "pages": {
-    "/": 1417,
+    "/": 1422,
     "/series/series_ba7cc89468/ep_ad505df37d": 311,
     "/series/series_304565fb77/ep_c2e684a351": 214,
     "/series/series_873cdcaf61/ep_7dd208fe26": 107,
-    "/series/series_e8c17ad5da/ep_e46450a717": 94,
+    "/series/series_e8c17ad5da/ep_e46450a717": 95,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 93,
     "/#stories": 10,
     "/series/series_ba7cc89468/ep_73bdfba72e": 250,
@@ -32,7 +32,7 @@
     "/series/series_e8c17ad5da/ep_ff868ac30c": 77,
     "/foods/food_464525ea11": 19,
     "/foods/food_6b6f5c2711": 27,
-    "/#items": 24,
+    "/#items": 25,
     "/foods/food_9945533a15": 13,
     "/foods/food_9966103a5b": 21,
     "/series/series_ba7cc89468/ep_b953456d73": 158,
@@ -111,7 +111,7 @@
     "/items/item_75f77862cd": 25,
     "/series/series_873cdcaf61/ep_08c284c148": 45,
     "/series/series_ba7cc89468/ep_97e39a4499": 200,
-    "/series/series_873cdcaf61/ep_14cbfb6b11": 35,
+    "/series/series_873cdcaf61/ep_14cbfb6b11": 36,
     "/series/series_873cdcaf61/ep_eb18e20c30": 35,
     "/camps/camp_bcd074ef33": 4,
     "/camps/camp_0760ee65ba": 3,
@@ -120,7 +120,7 @@
     "/items/item_32e1cc5f58": 10,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 107,
     "/series/series_4f27a6d489/ep_9873ededda": 113,
-    "/series/series_4f27a6d489/ep_eb8b1702fa": 107,
+    "/series/series_4f27a6d489/ep_eb8b1702fa": 108,
     "/camps/camp_2d2adbe3fd": 1,
     "/series/series_ba7cc89468/ep_aa0e809292": 102,
     "/camps/camp_75ee389015": 1,
@@ -134,8 +134,9 @@
     "/series/series_873cdcaf61/ep_9b833c820b": 14,
     "/series/series_ba7cc89468/ep_868813ad26": 46,
     "/series/series_ba7cc89468/ep_7727344bb5": 14,
-    "/series/series_304565fb77/ep_67c3e626c9": 7,
-    "/series/series_ba7cc89468/ep_996b471cb5": 12
+    "/series/series_304565fb77/ep_67c3e626c9": 8,
+    "/series/series_ba7cc89468/ep_996b471cb5": 12,
+    "/items/item_edd94b4899": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 255,
@@ -241,17 +242,18 @@
     "__external__::Facebook": 1,
     "/series/series_ba7cc89468/ep_7727344bb5::인스타DM": 7,
     "/items/item_096f88cf80::sinjimorulab.com": 1,
-    "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 8
+    "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 8,
+    "/items/item_edd94b4899::www.insta360.com": 1
   },
   "searches": {},
   "devices": {
-    "desktop": 348,
-    "mobile": 9701,
+    "desktop": 354,
+    "mobile": 9707,
     "tablet": 9
   },
   "referrers": {
-    "direct": 821,
-    "인스타그램": 5825,
+    "direct": 825,
+    "인스타그램": 5832,
     "페이스북": 300,
     "구글": 20,
     "네이버": 12,
@@ -6881,39 +6883,45 @@
       ]
     },
     "2026-08-04": {
-      "pv": 16,
-      "click": 7,
+      "pv": 27,
+      "click": 8,
       "search": 0,
       "pages": {
-        "/": 5,
+        "/": 10,
         "/series/series_304565fb77/ep_a8b40077ca": 1,
         "/camps/camp_e1e0dde7b3": 1,
         "/camps/camp_9ada4f994a": 1,
         "/series/series_ba7cc89468/ep_996b471cb5": 2,
         "/series/series_4f27a6d489/ep_c8dbf171b7": 1,
         "/series/series_304565fb77/ep_9032e63bcd": 1,
-        "/series/series_873cdcaf61/ep_14cbfb6b11": 1,
+        "/series/series_873cdcaf61/ep_14cbfb6b11": 2,
         "/items/item_e01fb7d262": 1,
         "/items/item_960c2ff01c": 1,
-        "/foods/food_592752e317": 1
+        "/foods/food_592752e317": 1,
+        "/series/series_4f27a6d489/ep_eb8b1702fa": 1,
+        "/series/series_304565fb77/ep_67c3e626c9": 1,
+        "/series/series_e8c17ad5da/ep_e46450a717": 1,
+        "/#items": 1,
+        "/items/item_edd94b4899": 1
       },
       "clicks": {
         "/camps/camp_9ada4f994a::camfit.co.kr": 1,
         "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 2,
         "/items/item_e01fb7d262::sinjimorulab.com": 1,
         "/items/item_960c2ff01c::네이버예약": 1,
-        "/foods/food_592752e317::네이버예약": 2
+        "/foods/food_592752e317::네이버예약": 2,
+        "/items/item_edd94b4899::www.insta360.com": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 11,
-        "desktop": 12
+        "mobile": 17,
+        "desktop": 18
       },
       "referrers": {
-        "인스타그램": 4,
+        "인스타그램": 11,
         "페이스북": 2,
         "socialbiz-c.nhndata.com": 5,
-        "direct": 5
+        "direct": 9
       },
       "hourly": [
         4,
@@ -6924,7 +6932,7 @@
         0,
         9,
         3,
-        0,
+        11,
         0,
         0,
         0,
@@ -6943,5 +6951,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-04T08:00:54.744Z"
+  "updated_at": "2026-08-04T08:57:40.623Z"
 }
