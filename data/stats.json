@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 7346,
+    "pv": 7350,
     "click": 2822,
     "search": 0
   },
   "pages": {
-    "/": 1426,
+    "/": 1427,
     "/series/series_ba7cc89468/ep_ad505df37d": 315,
     "/series/series_304565fb77/ep_c2e684a351": 214,
     "/series/series_873cdcaf61/ep_7dd208fe26": 107,
@@ -97,12 +97,12 @@
     "/#map": 14,
     "/camps/camp_b8d29b3f00": 17,
     "/camps/camp_e2b57e4e5d": 5,
-    "/series/series_ba7cc89468/ep_c56ed16c13": 248,
+    "/series/series_ba7cc89468/ep_c56ed16c13": 249,
     "/camps/camp_a9bbd60ec3": 23,
     "/items/item_200bd59067": 7,
     "/series/series_873cdcaf61/ep_116826a88d": 59,
     "/series/series_e8c17ad5da/ep_7a004a6412": 53,
-    "/series/series_873cdcaf61/ep_4f183af0df": 60,
+    "/series/series_873cdcaf61/ep_4f183af0df": 61,
     "/series/series_ba7cc89468/ep_00a18099de": 247,
     "/camps/camp_43b6759cd3": 4,
     "/series/series_304565fb77/ep_17f905660e": 120,
@@ -120,7 +120,7 @@
     "/items/item_32e1cc5f58": 10,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 111,
     "/series/series_4f27a6d489/ep_9873ededda": 118,
-    "/series/series_4f27a6d489/ep_eb8b1702fa": 110,
+    "/series/series_4f27a6d489/ep_eb8b1702fa": 111,
     "/camps/camp_2d2adbe3fd": 1,
     "/series/series_ba7cc89468/ep_aa0e809292": 106,
     "/camps/camp_75ee389015": 1,
@@ -249,12 +249,12 @@
   "searches": {},
   "devices": {
     "desktop": 354,
-    "mobile": 9805,
+    "mobile": 9809,
     "tablet": 9
   },
   "referrers": {
     "direct": 825,
-    "인스타그램": 5908,
+    "인스타그램": 5912,
     "페이스북": 300,
     "구글": 20,
     "네이버": 12,
@@ -6884,11 +6884,11 @@
       ]
     },
     "2026-08-04": {
-      "pv": 118,
+      "pv": 122,
       "click": 15,
       "search": 0,
       "pages": {
-        "/": 14,
+        "/": 15,
         "/series/series_304565fb77/ep_a8b40077ca": 1,
         "/camps/camp_e1e0dde7b3": 1,
         "/camps/camp_9ada4f994a": 1,
@@ -6899,7 +6899,7 @@
         "/items/item_e01fb7d262": 1,
         "/items/item_960c2ff01c": 2,
         "/foods/food_592752e317": 1,
-        "/series/series_4f27a6d489/ep_eb8b1702fa": 3,
+        "/series/series_4f27a6d489/ep_eb8b1702fa": 4,
         "/series/series_304565fb77/ep_67c3e626c9": 4,
         "/series/series_e8c17ad5da/ep_e46450a717": 1,
         "/#items": 1,
@@ -6907,11 +6907,11 @@
         "/series/series_4f27a6d489/ep_426dd9712f": 4,
         "/series/series_ba7cc89468/ep_7727344bb5": 3,
         "/series/series_ba7cc89468/ep_97e39a4499": 4,
-        "/series/series_ba7cc89468/ep_c56ed16c13": 5,
+        "/series/series_ba7cc89468/ep_c56ed16c13": 6,
         "/series/series_ba7cc89468/ep_ad505df37d": 4,
         "/series/series_ba7cc89468/ep_27438d1204": 4,
         "/series/series_ba7cc89468/ep_73bdfba72e": 5,
-        "/series/series_873cdcaf61/ep_4f183af0df": 1,
+        "/series/series_873cdcaf61/ep_4f183af0df": 2,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 1,
         "/series/series_4f27a6d489/ep_3fbc9a3223": 4,
         "/series/series_4f27a6d489/ep_9873ededda": 5,
@@ -6945,11 +6945,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 115,
+        "mobile": 119,
         "desktop": 18
       },
       "referrers": {
-        "인스타그램": 87,
+        "인스타그램": 91,
         "페이스북": 2,
         "socialbiz-c.nhndata.com": 5,
         "direct": 9
@@ -6970,7 +6970,7 @@
         0,
         17,
         15,
-        0,
+        4,
         0,
         0,
         0,
@@ -6982,5 +6982,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-04T15:00:54.715Z"
+  "updated_at": "2026-08-04T16:00:54.238Z"
 }
