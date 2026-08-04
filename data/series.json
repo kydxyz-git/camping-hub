@@ -175,6 +175,17 @@
     "sort": "random",
     "eps": [
       {
+        "id": "ep_e8865faeb9",
+        "ep": 0,
+        "title": "덕풍계곡 유건바위 포인트",
+        "url": "https://www.instagram.com/reel/Da6fmmuzbGx/?igsh=eHM1a2t6b2NwOHNl",
+        "thumb": "./images/series/series-mseol3db.jpg",
+        "published": true,
+        "created_at": "2026-08-04T13:15:36.911Z",
+        "updated_at": "2026-08-04T13:15:36.911Z",
+        "camp_id": "camp_ed97486488"
+      },
+      {
         "id": "ep_426dd9712f",
         "ep": 0,
         "title": "여기 올려도 되나 고민하다가 올리는 곳",
