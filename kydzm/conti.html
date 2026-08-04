@@ -24,7 +24,10 @@
   .conti-icon { font-size:26px; }
   .conti-title { font-size:15px; font-weight:800; }
   .conti-sub { font-size:12px; color:var(--muted); }
-  .lock-tag { margin-left:auto; font-size:11px; font-weight:700; color:var(--muted); background:var(--accent-soft); border:1px solid var(--line); padding:3px 9px; border-radius:999px; }
+  .lock-tag { margin-left:auto; font-size:11px; font-weight:700; color:var(--point); background:var(--accent-soft); border:1px solid var(--line); padding:3px 9px; border-radius:999px; }
+  .card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.08); }
+  .conti-head { transition:opacity 0.15s; }
+  .conti-head:hover { opacity:0.7; }
   .pw-row { display:flex; gap:8px; margin-top:14px; }
   .input { flex:1; padding:11px 14px; border:1px solid var(--line); border-radius:8px; font-size:14px; font-family:inherit; }
   .input:focus { outline:2px solid var(--text); outline-offset:-1px; }
@@ -53,14 +56,14 @@ const CONTIS = [
     icon: '📷',
     title: 'Insta360 1편 「여름 계곡의 하루」',
     sub: '릴스 30초 · 21컷 · 8/1–2 산청 우니메이카',
-    file: '../conti/data/insta360-ep1.enc.json'
+    file: '../conti/insta360-ep1.html'
   },
   {
     id: 'insta360-ep2',
     icon: '🖨️',
     title: 'Insta360 2편 「하루를 손에 남기다」 (DRAFT)',
     sub: '릴스 30초 · 16컷 · 이미지 예정 · 낮 소스 8/1–2 + 익주 인화',
-    file: '../conti/data/insta360-ep2.enc.json'
+    file: '../conti/insta360-ep2.html'
   },
 ];
 
@@ -69,53 +72,16 @@ CONTIS.forEach(c => {
   const el = document.createElement('div');
   el.className = 'card';
   el.innerHTML = `
-    <div class="conti-head">
+    <a class="conti-head" href="${c.file}" target="_blank" rel="noopener" style="cursor:pointer;">
       <span class="conti-icon">${c.icon}</span>
       <div>
         <div class="conti-title">${c.title}</div>
         <div class="conti-sub">${c.sub}</div>
       </div>
-      <span class="lock-tag">🔒 비밀번호</span>
-    </div>
-    <div class="pw-row">
-      <input class="input" type="password" placeholder="비밀번호" id="pw-${c.id}" autocomplete="off">
-      <button class="btn" id="btn-${c.id}">열기</button>
-    </div>
-    <div class="err" id="err-${c.id}">비밀번호가 맞지 않습니다</div>`;
+      <span class="lock-tag">열기 →</span>
+    </a>`;
   list.appendChild(el);
-  const btn = el.querySelector(`#btn-${c.id}`);
-  const pw = el.querySelector(`#pw-${c.id}`);
-  btn.addEventListener('click', () => openConti(c, pw, btn, el.querySelector(`#err-${c.id}`)));
-  pw.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
 });
-
-const b64 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0));
-
-async function openConti(c, pwEl, btn, errEl) {
-  const password = pwEl.value.trim();
-  if (!password) { pwEl.focus(); return; }
-  errEl.style.display = 'none';
-  btn.disabled = true; btn.textContent = '복호화 중…';
-  try {
-    const res = await fetch(c.file + '?t=' + Date.now());
-    if (!res.ok) throw new Error('파일 로드 실패');
-    const enc = await res.json();
-    const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
-    const key = await crypto.subtle.deriveKey(
-      { name:'PBKDF2', salt:b64(enc.salt), iterations:enc.iter, hash:'SHA-256' },
-      keyMaterial, { name:'AES-GCM', length:256 }, false, ['decrypt']);
-    const plain = await crypto.subtle.decrypt({ name:'AES-GCM', iv:b64(enc.iv) }, key, b64(enc.data));
-    const html = new TextDecoder().decode(plain);
-    // 새 탭 없이 현재 창을 콘티로 전환 (뒤로가기로 복귀)
-    const w = window.open('', '_blank');
-    if (w) { w.document.open(); w.document.write(html); w.document.close(); }
-    else { document.open(); document.write(html); document.close(); }
-  } catch (e) {
-    errEl.style.display = 'block';
-  } finally {
-    btn.disabled = false; btn.textContent = '열기';
-  }
-}
 </script>
 </body>
 </html>
