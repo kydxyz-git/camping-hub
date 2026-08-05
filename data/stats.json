@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 7401,
+    "pv": 7402,
     "click": 2832,
     "search": 0
   },
   "pages": {
-    "/": 1439,
+    "/": 1440,
     "/series/series_ba7cc89468/ep_ad505df37d": 316,
     "/series/series_304565fb77/ep_c2e684a351": 214,
     "/series/series_873cdcaf61/ep_7dd208fe26": 108,
@@ -251,13 +251,13 @@
   "searches": {},
   "devices": {
     "desktop": 358,
-    "mobile": 9866,
+    "mobile": 9867,
     "tablet": 9
   },
   "referrers": {
     "direct": 827,
     "인스타그램": 5952,
-    "페이스북": 309,
+    "페이스북": 310,
     "구글": 20,
     "네이버": 12,
     "link.inpock.co.kr": 4,
@@ -6993,11 +6993,11 @@
       ]
     },
     "2026-08-05": {
-      "pv": 22,
+      "pv": 23,
       "click": 6,
       "search": 0,
       "pages": {
-        "/": 5,
+        "/": 6,
         "/series/series_ba7cc89468/ep_7727344bb5": 2,
         "/series/series_4f27a6d489/ep_e8865faeb9": 1,
         "/series/series_4f27a6d489/ep_9873ededda": 1,
@@ -7023,12 +7023,13 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 24,
+        "mobile": 25,
         "desktop": 4
       },
       "referrers": {
         "인스타그램": 20,
-        "direct": 2
+        "direct": 2,
+        "페이스북": 1
       },
       "hourly": [
         10,
@@ -7038,7 +7039,7 @@
         0,
         1,
         5,
-        0,
+        1,
         0,
         0,
         0,
@@ -7058,5 +7059,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-05T07:00:54.265Z"
+  "updated_at": "2026-08-05T08:00:54.102Z"
 }
