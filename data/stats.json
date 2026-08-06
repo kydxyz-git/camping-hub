@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 7543,
+    "pv": 7545,
     "click": 2886,
     "search": 0
   },
   "pages": {
-    "/": 1457,
+    "/": 1459,
     "/series/series_ba7cc89468/ep_ad505df37d": 320,
     "/series/series_304565fb77/ep_c2e684a351": 214,
     "/series/series_873cdcaf61/ep_7dd208fe26": 110,
@@ -251,19 +251,20 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 359,
-    "mobile": 10061,
+    "desktop": 360,
+    "mobile": 10062,
     "tablet": 9
   },
   "referrers": {
     "direct": 857,
-    "인스타그램": 6048,
+    "인스타그램": 6049,
     "페이스북": 310,
     "구글": 20,
     "네이버": 12,
     "link.inpock.co.kr": 4,
     "l.threads.com": 1,
-    "socialbiz-c.nhndata.com": 18
+    "socialbiz-c.nhndata.com": 18,
+    "www.terra.com": 1
   },
   "daily": {
     "2026-05-21": {
@@ -7102,11 +7103,11 @@
       ]
     },
     "2026-08-06": {
-      "pv": 50,
+      "pv": 52,
       "click": 24,
       "search": 0,
       "pages": {
-        "/": 7,
+        "/": 9,
         "/series/series_4f27a6d489/ep_426dd9712f": 2,
         "/series/series_4f27a6d489/ep_e8865faeb9": 3,
         "/series/series_4f27a6d489/ep_eb8b1702fa": 3,
@@ -7147,12 +7148,13 @@
       },
       "searches": {},
       "devices": {
-        "desktop": 1,
-        "mobile": 73
+        "desktop": 2,
+        "mobile": 74
       },
       "referrers": {
         "direct": 30,
-        "인스타그램": 20
+        "인스타그램": 21,
+        "www.terra.com": 1
       },
       "hourly": [
         0,
@@ -7166,7 +7168,7 @@
         0,
         9,
         6,
-        0,
+        2,
         0,
         0,
         0,
@@ -7182,5 +7184,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-06T11:00:24.293Z"
+  "updated_at": "2026-08-06T12:00:22.859Z"
 }
