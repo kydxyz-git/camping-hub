@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 7655,
-    "click": 2936,
+    "pv": 7659,
+    "click": 2937,
     "search": 0
   },
   "pages": {
-    "/": 1473,
+    "/": 1474,
     "/series/series_ba7cc89468/ep_ad505df37d": 323,
     "/series/series_304565fb77/ep_c2e684a351": 214,
     "/series/series_873cdcaf61/ep_7dd208fe26": 110,
@@ -111,7 +111,7 @@
     "/items/item_75f77862cd": 26,
     "/series/series_873cdcaf61/ep_08c284c148": 48,
     "/series/series_ba7cc89468/ep_97e39a4499": 211,
-    "/series/series_873cdcaf61/ep_14cbfb6b11": 40,
+    "/series/series_873cdcaf61/ep_14cbfb6b11": 41,
     "/series/series_873cdcaf61/ep_eb18e20c30": 38,
     "/camps/camp_bcd074ef33": 4,
     "/camps/camp_0760ee65ba": 3,
@@ -119,13 +119,13 @@
     "/series/series_873cdcaf61/ep_3def2c1289": 49,
     "/items/item_32e1cc5f58": 14,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 122,
-    "/series/series_4f27a6d489/ep_9873ededda": 124,
+    "/series/series_4f27a6d489/ep_9873ededda": 125,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 123,
     "/camps/camp_2d2adbe3fd": 1,
     "/series/series_ba7cc89468/ep_aa0e809292": 119,
     "/camps/camp_75ee389015": 1,
     "/series/series_304565fb77/ep_9032e63bcd": 47,
-    "/series/series_4f27a6d489/ep_3fbc9a3223": 91,
+    "/series/series_4f27a6d489/ep_3fbc9a3223": 92,
     "/series/series_4f27a6d489/ep_426dd9712f": 72,
     "/items/item_096f88cf80": 4,
     "/items/item_1e78eeb29a": 10,
@@ -230,7 +230,7 @@
     "/camps/camp_75ee389015::네이버예약": 1,
     "/foods/food_9945533a15::컬리": 1,
     "/#camps::인스타DM": 1,
-    "/series/series_4f27a6d489/ep_3fbc9a3223::인스타DM": 65,
+    "/series/series_4f27a6d489/ep_3fbc9a3223::인스타DM": 66,
     "/series/series_304565fb77/ep_9032e63bcd::인스타DM": 8,
     "/series/series_4f27a6d489/ep_426dd9712f::인스타DM": 42,
     "/camps/camp_0380055336::www.sjacamping.com": 1,
@@ -252,7 +252,7 @@
   "searches": {},
   "devices": {
     "desktop": 360,
-    "mobile": 10222,
+    "mobile": 10227,
     "tablet": 9
   },
   "referrers": {
@@ -263,7 +263,7 @@
     "네이버": 26,
     "link.inpock.co.kr": 4,
     "l.threads.com": 1,
-    "socialbiz-c.nhndata.com": 18,
+    "socialbiz-c.nhndata.com": 22,
     "www.terra.com": 1
   },
   "daily": {
@@ -7281,21 +7281,28 @@
       ]
     },
     "2026-08-08": {
-      "pv": 4,
-      "click": 0,
+      "pv": 8,
+      "click": 1,
       "search": 0,
       "pages": {
         "/#items": 2,
         "/items/item_32e1cc5f58": 1,
-        "/items/item_48f6974ac5": 1
+        "/items/item_48f6974ac5": 1,
+        "/": 1,
+        "/series/series_4f27a6d489/ep_9873ededda": 1,
+        "/series/series_4f27a6d489/ep_3fbc9a3223": 1,
+        "/series/series_873cdcaf61/ep_14cbfb6b11": 1
       },
-      "clicks": {},
+      "clicks": {
+        "/series/series_4f27a6d489/ep_3fbc9a3223::인스타DM": 1
+      },
       "searches": {},
       "devices": {
-        "mobile": 4
+        "mobile": 9
       },
       "referrers": {
-        "direct": 3
+        "direct": 3,
+        "socialbiz-c.nhndata.com": 4
       },
       "hourly": [
         0,
@@ -7304,7 +7311,7 @@
         0,
         0,
         0,
-        0,
+        4,
         0,
         0,
         0,
@@ -7325,5 +7332,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-08T02:00:33.740Z"
+  "updated_at": "2026-08-08T07:00:09.460Z"
 }
