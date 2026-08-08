@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 7659,
-    "click": 2937,
+    "pv": 7664,
+    "click": 2938,
     "search": 0
   },
   "pages": {
-    "/": 1474,
+    "/": 1475,
     "/series/series_ba7cc89468/ep_ad505df37d": 323,
     "/series/series_304565fb77/ep_c2e684a351": 214,
     "/series/series_873cdcaf61/ep_7dd208fe26": 110,
@@ -103,7 +103,7 @@
     "/series/series_873cdcaf61/ep_116826a88d": 60,
     "/series/series_e8c17ad5da/ep_7a004a6412": 55,
     "/series/series_873cdcaf61/ep_4f183af0df": 63,
-    "/series/series_ba7cc89468/ep_00a18099de": 252,
+    "/series/series_ba7cc89468/ep_00a18099de": 253,
     "/camps/camp_43b6759cd3": 4,
     "/series/series_304565fb77/ep_17f905660e": 125,
     "/foods/food_8924631470": 22,
@@ -115,7 +115,7 @@
     "/series/series_873cdcaf61/ep_eb18e20c30": 38,
     "/camps/camp_bcd074ef33": 4,
     "/camps/camp_0760ee65ba": 3,
-    "/series/series_ba7cc89468/ep_860867be0e": 164,
+    "/series/series_ba7cc89468/ep_860867be0e": 165,
     "/series/series_873cdcaf61/ep_3def2c1289": 49,
     "/items/item_32e1cc5f58": 14,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 122,
@@ -126,7 +126,7 @@
     "/camps/camp_75ee389015": 1,
     "/series/series_304565fb77/ep_9032e63bcd": 47,
     "/series/series_4f27a6d489/ep_3fbc9a3223": 92,
-    "/series/series_4f27a6d489/ep_426dd9712f": 72,
+    "/series/series_4f27a6d489/ep_426dd9712f": 73,
     "/items/item_096f88cf80": 4,
     "/items/item_1e78eeb29a": 10,
     "/items/item_e01fb7d262": 6,
@@ -135,7 +135,7 @@
     "/series/series_ba7cc89468/ep_868813ad26": 57,
     "/series/series_ba7cc89468/ep_7727344bb5": 26,
     "/series/series_304565fb77/ep_67c3e626c9": 15,
-    "/series/series_ba7cc89468/ep_996b471cb5": 30,
+    "/series/series_ba7cc89468/ep_996b471cb5": 31,
     "/items/item_edd94b4899": 2,
     "/series/series_4f27a6d489/ep_e8865faeb9": 11,
     "/series/series_873cdcaf61/ep_eff807ca45": 4
@@ -244,7 +244,7 @@
     "__external__::Facebook": 1,
     "/series/series_ba7cc89468/ep_7727344bb5::인스타DM": 7,
     "/items/item_096f88cf80::sinjimorulab.com": 1,
-    "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 37,
+    "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 38,
     "/items/item_edd94b4899::www.insta360.com": 2,
     "/series/series_304565fb77/ep_67c3e626c9::인스타DM": 1,
     "/series/series_4f27a6d489/ep_e8865faeb9::인스타DM": 10
@@ -252,12 +252,12 @@
   "searches": {},
   "devices": {
     "desktop": 360,
-    "mobile": 10227,
+    "mobile": 10233,
     "tablet": 9
   },
   "referrers": {
     "direct": 865,
-    "인스타그램": 6136,
+    "인스타그램": 6141,
     "페이스북": 310,
     "구글": 20,
     "네이버": 26,
@@ -7281,28 +7281,34 @@
       ]
     },
     "2026-08-08": {
-      "pv": 8,
-      "click": 1,
+      "pv": 13,
+      "click": 2,
       "search": 0,
       "pages": {
         "/#items": 2,
         "/items/item_32e1cc5f58": 1,
         "/items/item_48f6974ac5": 1,
-        "/": 1,
+        "/": 2,
         "/series/series_4f27a6d489/ep_9873ededda": 1,
         "/series/series_4f27a6d489/ep_3fbc9a3223": 1,
-        "/series/series_873cdcaf61/ep_14cbfb6b11": 1
+        "/series/series_873cdcaf61/ep_14cbfb6b11": 1,
+        "/series/series_ba7cc89468/ep_00a18099de": 1,
+        "/series/series_ba7cc89468/ep_860867be0e": 1,
+        "/series/series_4f27a6d489/ep_426dd9712f": 1,
+        "/series/series_ba7cc89468/ep_996b471cb5": 1
       },
       "clicks": {
-        "/series/series_4f27a6d489/ep_3fbc9a3223::인스타DM": 1
+        "/series/series_4f27a6d489/ep_3fbc9a3223::인스타DM": 1,
+        "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 9
+        "mobile": 15
       },
       "referrers": {
         "direct": 3,
-        "socialbiz-c.nhndata.com": 4
+        "socialbiz-c.nhndata.com": 4,
+        "인스타그램": 5
       },
       "hourly": [
         0,
@@ -7312,7 +7318,7 @@
         0,
         0,
         4,
-        0,
+        5,
         0,
         0,
         0,
@@ -7332,5 +7338,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-08T07:00:09.460Z"
+  "updated_at": "2026-08-08T08:00:09.607Z"
 }
