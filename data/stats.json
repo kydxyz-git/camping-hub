@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 7732,
-    "click": 2953,
+    "pv": 7733,
+    "click": 2954,
     "search": 0
   },
   "pages": {
@@ -110,7 +110,7 @@
     "/foods/food_673fc958f6": 11,
     "/items/item_75f77862cd": 26,
     "/series/series_873cdcaf61/ep_08c284c148": 49,
-    "/series/series_ba7cc89468/ep_97e39a4499": 212,
+    "/series/series_ba7cc89468/ep_97e39a4499": 213,
     "/series/series_873cdcaf61/ep_14cbfb6b11": 41,
     "/series/series_873cdcaf61/ep_eb18e20c30": 38,
     "/camps/camp_bcd074ef33": 4,
@@ -210,7 +210,7 @@
     "/series/series_873cdcaf61/ep_08c284c148::인스타DM": 11,
     "/camps/camp_357cccb118::www.xn--9g3b27q0ne.kr": 5,
     "/camps/camp_133dd5b2c6::www.camfit.co.kr": 1,
-    "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 166,
+    "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 167,
     "/series/series_e8c17ad5da/ep_7a004a6412::인스타DM": 3,
     "/series/series_873cdcaf61/ep_4f183af0df::인스타DM": 1,
     "/series/series_873cdcaf61/ep_14cbfb6b11::인스타DM": 2,
@@ -254,7 +254,7 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 363,
+    "desktop": 365,
     "mobile": 10313,
     "tablet": 9
   },
@@ -7365,8 +7365,8 @@
       ]
     },
     "2026-08-09": {
-      "pv": 18,
-      "click": 10,
+      "pv": 19,
+      "click": 11,
       "search": 0,
       "pages": {
         "/": 4,
@@ -7383,18 +7383,20 @@
         "/series/series_873cdcaf61/ep_cf2282cf4e": 1,
         "/series/series_873cdcaf61/ep_116826a88d": 1,
         "/series/series_873cdcaf61/ep_9b833c820b": 1,
-        "/items/item_b85f78de84": 1
+        "/items/item_b85f78de84": 1,
+        "/series/series_ba7cc89468/ep_97e39a4499": 1
       },
       "clicks": {
         "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 2,
         "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 1,
         "/series/series_873cdcaf61/ep_9b833c820b::인스타DM": 6,
-        "/items/item_b85f78de84::네이버예약": 1
+        "/items/item_b85f78de84::네이버예약": 1,
+        "/series/series_ba7cc89468/ep_97e39a4499::인스타DM": 1
       },
       "searches": {},
       "devices": {
         "mobile": 25,
-        "desktop": 3
+        "desktop": 5
       },
       "referrers": {
         "인스타그램": 16
@@ -7413,7 +7415,7 @@
         0,
         0,
         2,
-        0,
+        1,
         0,
         0,
         0,
@@ -7427,5 +7429,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-09T13:00:09.246Z"
+  "updated_at": "2026-08-09T14:00:09.132Z"
 }
