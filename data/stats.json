@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 7730,
-    "click": 2952,
+    "pv": 7732,
+    "click": 2953,
     "search": 0
   },
   "pages": {
-    "/": 1483,
+    "/": 1484,
     "/series/series_ba7cc89468/ep_ad505df37d": 324,
     "/series/series_304565fb77/ep_c2e684a351": 214,
     "/series/series_873cdcaf61/ep_7dd208fe26": 110,
@@ -138,7 +138,8 @@
     "/series/series_ba7cc89468/ep_996b471cb5": 36,
     "/items/item_edd94b4899": 2,
     "/series/series_4f27a6d489/ep_e8865faeb9": 13,
-    "/series/series_873cdcaf61/ep_eff807ca45": 7
+    "/series/series_873cdcaf61/ep_eff807ca45": 7,
+    "/items/item_b85f78de84": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 265,
@@ -248,11 +249,12 @@
     "/items/item_edd94b4899::www.insta360.com": 2,
     "/series/series_304565fb77/ep_67c3e626c9::인스타DM": 1,
     "/series/series_4f27a6d489/ep_e8865faeb9::인스타DM": 10,
-    "/series/series_873cdcaf61/ep_eff807ca45::인스타DM": 1
+    "/series/series_873cdcaf61/ep_eff807ca45::인스타DM": 1,
+    "/items/item_b85f78de84::네이버예약": 1
   },
   "searches": {},
   "devices": {
-    "desktop": 360,
+    "desktop": 363,
     "mobile": 10313,
     "tablet": 9
   },
@@ -7363,11 +7365,11 @@
       ]
     },
     "2026-08-09": {
-      "pv": 16,
-      "click": 9,
+      "pv": 18,
+      "click": 10,
       "search": 0,
       "pages": {
-        "/": 3,
+        "/": 4,
         "/series/series_ba7cc89468/ep_996b471cb5": 1,
         "/series/series_ba7cc89468/ep_3acff3998f": 1,
         "/series/series_4f27a6d489/ep_eb8b1702fa": 1,
@@ -7380,16 +7382,19 @@
         "/series/series_873cdcaf61/ep_08c284c148": 1,
         "/series/series_873cdcaf61/ep_cf2282cf4e": 1,
         "/series/series_873cdcaf61/ep_116826a88d": 1,
-        "/series/series_873cdcaf61/ep_9b833c820b": 1
+        "/series/series_873cdcaf61/ep_9b833c820b": 1,
+        "/items/item_b85f78de84": 1
       },
       "clicks": {
         "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 2,
         "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 1,
-        "/series/series_873cdcaf61/ep_9b833c820b::인스타DM": 6
+        "/series/series_873cdcaf61/ep_9b833c820b::인스타DM": 6,
+        "/items/item_b85f78de84::네이버예약": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 25
+        "mobile": 25,
+        "desktop": 3
       },
       "referrers": {
         "인스타그램": 16
@@ -7407,7 +7412,7 @@
         0,
         0,
         0,
-        0,
+        2,
         0,
         0,
         0,
@@ -7422,5 +7427,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-09T05:00:10.732Z"
+  "updated_at": "2026-08-09T13:00:09.246Z"
 }
