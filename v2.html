@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>공대남자 · 캠핑 기록</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBFBF8;
+  --ink:#15181A;
+  --moss:#3F5346;
+  --stone:#8B9089;
+  --line:#E4E4DE;
+  --stamp:#FFE873;
+  --sans:'SUIT Variable','Pretendard Variable',system-ui,sans-serif;
+  --display:'Pretendard Variable','SUIT Variable',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --pad:clamp(20px,5vw,64px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-weight:400;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.6;
+}
+a{color:inherit;text-decoration:none}
+img{display:block;width:100%;height:100%;object-fit:cover}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+/* ── nav ── */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(251,251,248,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.nav-in{
+  max-width:1240px;margin:0 auto;padding:0 var(--pad);
+  height:60px;display:flex;align-items:center;gap:28px;
+}
+.mark{
+  font-family:var(--mono);font-weight:600;font-size:13px;
+  letter-spacing:.14em;white-space:nowrap;
+}
+.mark span{color:var(--stone)}
+.tabs{
+  display:flex;gap:4px;margin-left:auto;
+  overflow-x:auto;scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  font-size:14px;font-weight:500;color:var(--stone);
+  padding:8px 12px;border-radius:999px;white-space:nowrap;
+  transition:color .15s,background .15s;
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-current="page"]{color:var(--ink);font-weight:700;background:#EFEFE9}
+
+/* ── shell ── */
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
+.view{display:none;padding-bottom:96px}
+.view.on{display:block;animation:fade .35s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── hero ── */
+.hero{padding:clamp(48px,9vw,104px) 0 clamp(32px,5vw,56px)}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+  color:var(--stone);margin-bottom:22px;
+}
+.hero h1{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(30px,5.6vw,60px);line-height:1.14;
+  letter-spacing:-.035em;max-width:16ch;
+}
+.hero h1 em{
+  font-style:normal;position:relative;white-space:nowrap;
+}
+.hero h1 em::after{
+  content:"";position:absolute;left:-.06em;right:-.06em;bottom:.06em;
+  height:.34em;background:var(--stamp);z-index:-1;
+}
+.hero p{
+  margin-top:20px;max-width:44ch;color:#4C524D;
+  font-size:clamp(14px,1.6vw,16px);
+}
+.figures{
+  display:flex;flex-wrap:wrap;gap:clamp(28px,6vw,64px);
+  margin-top:clamp(32px,5vw,52px);
+  padding-top:26px;border-top:1px solid var(--line);
+}
+.fig b{
+  display:block;font-family:var(--mono);font-weight:600;
+  font-size:clamp(24px,3.6vw,38px);letter-spacing:-.03em;line-height:1;
+}
+.fig span{
+  display:block;margin-top:8px;font-size:12px;color:var(--stone);
+  letter-spacing:.02em;
+}
+
+/* ── section head ── */
+.head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;
+  padding:clamp(40px,6vw,72px) 0 18px;
+}
+.head h2{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(21px,2.7vw,30px);letter-spacing:-.03em;
+}
+.head p{font-size:13.5px;color:var(--stone);max-width:52ch}
+.count{font-family:var(--mono);font-size:12px;color:var(--stone)}
+
+/* ── controls ── */
+.controls{
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  padding-bottom:22px;
+}
+.search{
+  flex:1 1 200px;max-width:280px;
+  border:1px solid var(--line);background:#fff;border-radius:999px;
+  padding:9px 15px;font:inherit;font-size:13.5px;color:var(--ink);
+}
+.search::placeholder{color:#B0B4AE}
+.search:focus{outline:none;border-color:var(--ink)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  border:1px solid var(--line);background:transparent;
+  border-radius:999px;padding:7px 14px;cursor:pointer;
+  font:inherit;font-size:13px;color:#5D635C;white-space:nowrap;
+  transition:.15s;
+}
+.chip:hover{border-color:#C7CAC3}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+
+/* ── grids ── */
+.grid{
+  display:grid;gap:clamp(16px,2.2vw,26px) clamp(12px,1.8vw,20px);
+  grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+}
+.grid.tight{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+
+.card{display:block;position:relative}
+.shot{
+  position:relative;aspect-ratio:4/5;overflow:hidden;
+  border-radius:3px;background:#EDEDE7;
+}
+.shot img{transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+.card:hover .shot img{transform:scale(1.045)}
+
+/* signature: 방문 스탬프 */
+.stamp{
+  position:absolute;left:10px;bottom:10px;z-index:2;
+  font-family:var(--mono);font-weight:600;font-size:10.5px;
+  letter-spacing:.04em;color:var(--ink);
+  background:var(--stamp);padding:4px 8px;border-radius:2px;
+}
+.flag{
+  position:absolute;right:10px;top:10px;z-index:2;
+  font-size:10.5px;font-weight:700;letter-spacing:.02em;
+  background:rgba(21,24,26,.82);color:#fff;
+  padding:4px 8px;border-radius:2px;backdrop-filter:blur(4px);
+}
+.meta{padding:11px 2px 0}
+.name{
+  font-weight:700;font-size:14.5px;letter-spacing:-.015em;
+  line-height:1.35;
+}
+.sub{
+  margin-top:5px;font-size:12px;color:var(--stone);
+  display:flex;gap:7px;flex-wrap:wrap;align-items:center;
+}
+.sub .dot{width:2px;height:2px;border-radius:50%;background:#C4C7C1}
+.region{font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+.desc{margin-top:5px;font-size:12.5px;color:#5D635C;line-height:1.5}
+.price{
+  margin-top:7px;font-family:var(--mono);font-size:13px;font-weight:600;
+  display:flex;align-items:center;gap:7px;
+}
+.was{font-weight:400;font-size:11.5px;color:#B0B4AE;text-decoration:line-through}
+.off{
+  font-size:11px;font-weight:600;color:#B23A2F;
+  font-family:var(--sans);
+}
+
+/* series */
+.series-block{margin-bottom:clamp(34px,5vw,54px)}
+.series-top{
+  display:flex;align-items:center;gap:9px;
+  padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:18px;
+}
+.series-top h3{font-size:15.5px;font-weight:700;letter-spacing:-.02em}
+.series-top .count{margin-left:auto}
+.ep .shot{aspect-ratio:9/16}
+.epno{
+  font-family:var(--mono);font-size:11px;color:var(--stone);
+  letter-spacing:.06em;
+}
+
+/* about */
+.about{
+  padding:clamp(40px,6vw,72px) 0;
+  display:grid;gap:clamp(28px,4vw,56px);
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+}
+.about h2{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(22px,3vw,34px);letter-spacing:-.03em;line-height:1.2;
+}
+.about h2 + p{margin-top:16px;color:#4C524D;font-size:14.5px;max-width:40ch}
+.rows{border-top:1px solid var(--line)}
+.row{
+  display:flex;gap:16px;align-items:baseline;
+  padding:15px 0;border-bottom:1px solid var(--line);
+}
+.row dt{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  color:var(--stone);width:78px;flex:none;
+}
+.row dd{font-size:14px;font-weight:500}
+.row dd small{display:block;font-weight:400;font-size:12.5px;color:var(--stone);margin-top:3px}
+.cta{
+  display:inline-block;margin-top:24px;
+  background:var(--ink);color:#fff;font-weight:600;font-size:14px;
+  padding:13px 24px;border-radius:999px;transition:.18s;
+}
+.cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(21,24,26,.16)}
+
+/* states */
+.empty{
+  padding:56px 0;text-align:center;color:var(--stone);font-size:13.5px;
+}
+.notice{
+  margin-top:clamp(36px,5vw,56px);padding-top:20px;
+  border-top:1px solid var(--line);
+  font-size:11.5px;color:#9A9E98;line-height:1.65;
+}
+footer{
+  border-top:1px solid var(--line);padding:34px 0 56px;margin-top:20px;
+}
+.foot{
+  display:flex;gap:18px;flex-wrap:wrap;align-items:center;
+  font-size:12.5px;color:var(--stone);
+}
+.foot a{font-weight:600;color:var(--ink)}
+.foot .sp{margin-left:auto;font-family:var(--mono);font-size:11px}
+
+@media (max-width:600px){
+  .nav-in{height:54px;gap:14px}
+  .tabs{gap:2px}
+  .tab{padding:7px 9px;font-size:13px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="mark" href="#camps">KYDZ<span> / 공대남자</span></a>
+    <div class="tabs" id="tabs">
+      <a class="tab" href="#camps">다녀온 캠핑장</a>
+      <a class="tab" href="#stories">캠핑이야기</a>
+      <a class="tab" href="#food">추천 음식</a>
+      <a class="tab" href="#gear">추천 템</a>
+      <a class="tab" href="#camera">카메라 장비</a>
+      <a class="tab" href="#about">소개 · 협업</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 캠핑장 -->
+  <section id="v-camps" class="view">
+    <div class="hero">
+      <p class="eyebrow">AUTO CAMPING RECORD · 2026</p>
+      <h1>가본 곳만 씁니다.<br><em>몇 번 갔는지</em>까지.</h1>
+      <p>5년차 부부캠퍼가 실제로 다녀온 캠핑장 기록입니다. 한 번 가보고 좋다고 하는 곳과, 몇 년째 다시 가는 곳은 다릅니다.</p>
+      <div class="figures" id="figures"></div>
+    </div>
+
+    <div class="head">
+      <div>
+        <h2>다녀온 캠핑장</h2>
+        <p>사진을 누르면 예약 페이지 또는 상세 정보로 이동합니다.</p>
+      </div>
+      <span class="count" id="camp-count"></span>
+    </div>
+
+    <div class="controls">
+      <input class="search" id="camp-q" type="search" placeholder="캠핑장 이름 검색" aria-label="캠핑장 이름 검색">
+      <div class="chips" id="camp-chips"></div>
+    </div>
+
+    <div class="grid" id="camp-grid"></div>
+  </section>
+
+  <!-- 캠핑이야기 -->
+  <section id="v-stories" class="view">
+    <div class="head">
+      <div>
+        <h2>캠핑이야기</h2>
+        <p>주제별로 이어서 만든 영상 기록입니다. 회차를 누르면 인스타그램에서 재생됩니다.</p>
+      </div>
+      <span class="count" id="series-count"></span>
+    </div>
+    <div id="series-list"></div>
+  </section>
+
+  <!-- 음식 -->
+  <section id="v-food" class="view">
+    <div class="head">
+      <div>
+        <h2>추천 음식</h2>
+        <p>캠핑장에서 직접 해먹고 다시 살 만했던 것만 올립니다.</p>
+      </div>
+      <span class="count" id="food-count"></span>
+    </div>
+    <div class="grid tight" id="food-grid"></div>
+    <p class="notice" id="food-notice"></p>
+  </section>
+
+  <!-- 장비 -->
+  <section id="v-gear" class="view">
+    <div class="head">
+      <div>
+        <h2>추천 템</h2>
+        <p>실제로 챙겨 다니는 장비입니다. 사진을 누르면 제품 정보를 확인할 수 있습니다.</p>
+      </div>
+      <span class="count" id="gear-count"></span>
+    </div>
+    <div class="grid tight" id="gear-grid"></div>
+    <p class="notice" id="gear-notice"></p>
+  </section>
+
+  <!-- 카메라 장비 -->
+  <section id="v-camera" class="view">
+    <div class="head">
+      <div>
+        <h2>카메라 장비</h2>
+        <p>캠핑 영상과 사진을 찍는 장비입니다. 캠핑장에서 실제로 들고 다니며 쓰는 것만 올립니다.</p>
+      </div>
+      <span class="count" id="camera-count"></span>
+    </div>
+    <div class="grid tight" id="camera-grid"></div>
+    <p class="notice" id="camera-notice"></p>
+  </section>
+
+  <!-- 소개 -->
+  <section id="v-about" class="view">
+    <div class="about">
+      <div>
+        <h2>캠핑장·장비·음식<br>협업을 환영합니다.</h2>
+        <p>오토캠핑 한 분야만 기록합니다. 직접 써보고 다녀온 것만 다루기 때문에, 협업 전에 실제 사용 기간을 확보하는 편입니다.</p>
+        <a class="cta" id="dm-link" href="#">인스타그램 DM 보내기</a>
+      </div>
+      <dl class="rows" id="about-rows"></dl>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot">
+      <a id="ig-link" href="#">@kyd_zm</a>
+      <span id="collab"></span>
+      <span class="sp" id="credits"></span>
+    </div>
+  </footer>
+</main>
+
+<script>
+const BASE = 'https://kydz.kr/';
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const abs = p => !p ? '' : /^https?:/.test(p) ? p : BASE + String(p).replace(/^\.?\//,'');
+const won = n => n==null ? '' : n.toLocaleString('ko-KR')+'원';
+
+const VIEWS = ['camps','stories','food','gear','camera','about'];
+let DATA = {};
+
+/* ── 라우팅 ── */
+function route(){
+  let id = location.hash.replace('#','');
+  if(!VIEWS.includes(id)) id = 'camps';
+  $$('.view').forEach(v=>v.classList.toggle('on', v.id === 'v'+'-'+id));
+  $$('.tab').forEach(t=>{
+    const on = t.getAttribute('href') === '#'+id;
+    on ? t.setAttribute('aria-current','page') : t.removeAttribute('aria-current');
+  });
+  window.scrollTo({top:0,behavior:'auto'});
+}
+addEventListener('hashchange', route);
+
+/* ── 로드 ── */
+(async function init(){
+  const names = ['config','camps','series','foods','items','camera'];
+  try{
+    const res = await Promise.all(names.map(n =>
+      fetch(BASE+'data/'+n+'.json?v='+Date.now()).then(r=>{
+        if(!r.ok) throw new Error(n+' '+r.status);
+        return r.json();
+      })
+    ));
+    names.forEach((n,i)=>DATA[n]=res[i]);
+  }catch(e){
+    $('#camp-grid').innerHTML = '<p class="empty">데이터를 불러오지 못했습니다. 새로고침해 주세요.</p>';
+    return;
+  }
+  renderCamps();
+  renderSeries();
+  renderProducts('#food-grid', DATA.foods, '#food-count');
+  renderProducts('#gear-grid', DATA.items, '#gear-count');
+  renderProducts('#camera-grid', DATA.camera, '#camera-count',
+    '카메라 장비를 등록하면 여기에 표시됩니다.');
+  renderChrome();
+  route();
+})();
+
+/* ── 캠핑장 ── */
+let region = '전체';
+function camps(){ return (DATA.camps||[]).filter(c=>c.published!==false); }
+
+function renderCamps(){
+  const list = camps();
+  const visits = list.reduce((a,c)=>a+(+c.visits||0),0);
+  const regions = [...new Set(list.map(c=>c.region).filter(Boolean))];
+  const graega = list.filter(c=>c.graega).length;
+
+  $('#figures').innerHTML = [
+    [list.length,'다녀온 캠핑장'],
+    [visits,'누적 방문'],
+    [regions.length,'지역'],
+    [graega,'그래가 예약 가능']
+  ].map(([n,l])=>`<div class="fig"><b>${n}</b><span>${esc(l)}</span></div>`).join('');
+
+  $('#camp-chips').innerHTML = ['전체',...regions]
+    .map(r=>`<button class="chip${r===region?' on':''}" data-r="${esc(r)}">${esc(r)}</button>`).join('');
+
+  $('#camp-chips').onclick = e =>{
+    const b = e.target.closest('.chip'); if(!b) return;
+    region = b.dataset.r;
+    $$('#camp-chips .chip').forEach(c=>c.classList.toggle('on', c.dataset.r===region));
+    paintCamps();
+  };
+  $('#camp-q').oninput = paintCamps;
+  paintCamps();
+}
+
+function paintCamps(){
+  const q = $('#camp-q').value.trim().toLowerCase();
+  const rows = camps().filter(c=>{
+    const okR = region==='전체' || c.region===region;
+    const okQ = !q || (c.name||'').toLowerCase().includes(q);
+    return okR && okQ;
+  });
+
+  $('#camp-count').textContent = rows.length + ' / ' + camps().length;
+  $('#camp-grid').innerHTML = rows.length ? rows.map(c=>{
+    const img  = abs((c.imgs||[])[0]);
+    const tags = [...(c.seasons||[]),...(c.landscape||[])].slice(0,3);
+    const v    = +c.visits||0;
+    return `<a class="card" href="${esc(c.url||'#')}" target="_blank" rel="noopener">
+      <div class="shot">
+        ${img?`<img src="${esc(img)}" alt="${esc(c.name)}" loading="lazy">`:''}
+        ${v?`<span class="stamp">${v}번 방문</span>`:''}
+        ${c.graega?`<span class="flag">그래가 예약</span>`:''}
+      </div>
+      <div class="meta">
+        <p class="name">${esc(c.name)}</p>
+        <p class="sub"><span class="region">${esc(c.region||'')}</span>
+          ${tags.map(t=>`<span class="dot"></span><span>${esc(t)}</span>`).join('')}
+        </p>
+      </div>
+    </a>`;
+  }).join('') : '<p class="empty">조건에 맞는 캠핑장이 없습니다. 검색어나 지역을 바꿔보세요.</p>';
+}
+
+/* ── 시리즈 ── */
+function renderSeries(){
+  const list = (DATA.series||[]).filter(s=>s.published!==false);
+  const total = list.reduce((a,s)=>a+(s.eps||[]).filter(e=>e.published!==false).length,0);
+  $('#series-count').textContent = list.length + '개 시리즈 · ' + total + '편';
+
+  $('#series-list').innerHTML = list.map(s=>{
+    const eps = (s.eps||[]).filter(e=>e.published!==false)
+      .sort((a,b)=>(+b.ep||0)-(+a.ep||0));
+    if(!eps.length) return '';
+    return `<section class="series-block">
+      <div class="series-top">
+        <span aria-hidden="true">${esc(s.emoji||'')}</span>
+        <h3>${esc(s.name)}</h3>
+        <span class="count">${eps.length}편</span>
+      </div>
+      <div class="grid tight">
+        ${eps.map(e=>`<a class="card ep" href="${esc(e.url||'#')}" target="_blank" rel="noopener">
+          <div class="shot">${e.thumb?`<img src="${esc(abs(e.thumb))}" alt="${esc(e.title)}" loading="lazy">`:''}</div>
+          <div class="meta">
+            ${+e.ep?`<p class="epno">EP.${String(e.ep).padStart(2,'0')}</p>`:''}
+            <p class="name">${esc(e.title)}</p>
+          </div>
+        </a>`).join('')}
+      </div>
+    </section>`;
+  }).join('');
+}
+
+/* ── 음식 · 장비 ── */
+function renderProducts(sel, rows, countSel, emptyMsg){
+  const list = (rows||[]).filter(r=>r.published!==false);
+  $(countSel).textContent = list.length + '개';
+  $(sel).innerHTML = list.length ? list.map(p=>{
+    const sale = p.price_sale ?? null;
+    const org  = p.price_original ?? null;
+    const now  = sale ?? org;
+    return `<a class="card" href="${esc(p.url||'#')}" target="_blank" rel="noopener">
+      <div class="shot">
+        ${p.thumb?`<img src="${esc(abs(p.thumb))}" alt="${esc(p.name)}" loading="lazy">`:''}
+        ${p.source?`<span class="flag">${esc(p.source)}</span>`:''}
+      </div>
+      <div class="meta">
+        <p class="name">${esc(p.name)}</p>
+        ${p.desc?`<p class="desc">${esc(p.desc)}</p>`:''}
+        ${now!=null?`<p class="price">${won(now)}
+          ${sale&&org&&org>sale?`<span class="was">${won(org)}</span>`:''}
+          ${p.discount_rate?`<span class="off">${p.discount_rate}%</span>`:''}
+        </p>`:''}
+      </div>
+    </a>`;
+  }).join('') : `<p class="empty">${esc(emptyMsg || '아직 등록된 항목이 없습니다.')}</p>`;
+}
+
+/* ── 공통 문구 ── */
+function renderChrome(){
+  const c = DATA.config||{};
+  $('#food-notice').innerHTML =
+    esc(c.foodPartnersLine1||'') + esc(c.foodPartnersLine2||'') +
+    (c.priceNotice?'<br>'+esc(c.priceNotice):'');
+  $('#gear-notice').innerHTML =
+    esc(c.itemPartnersLine1||'') + esc(c.itemPartnersLine2||'') +
+    (c.priceNotice?'<br>'+esc(c.priceNotice):'');
+  $('#camera-notice').innerHTML = (DATA.camera||[]).length
+    ? esc(c.itemPartnersLine1||'') + esc(c.itemPartnersLine2||'') +
+      (c.priceNotice?'<br>'+esc(c.priceNotice):'')
+    : '';
+
+  $('#ig-link').href = c.footerInstaUrl || '#';
+  $('#collab').textContent = c.footerCollab || '';
+  $('#credits').textContent = c.footerCredits || '';
+  $('#dm-link').href = c.footerDmUrl || '#';
+
+  const camp = camps();
+  $('#about-rows').innerHTML = [
+    ['기록','오토캠핑 · 캠핑장 리뷰 · 캠핑 음식',`캠핑장 ${camp.length}곳 · 누적 방문 ${camp.reduce((a,x)=>a+(+x.visits||0),0)}회`],
+    ['인스타',c.footerInstaLink||'@kyd_zm','릴스 중심으로 주 단위 기록'],
+    ['제휴',c.headerBadge||'그래가 파트너스','캠핑장 예약 연동 · 레퍼럴 코드 공대남자'],
+    ['메일',c.footerEmail||'','협업 제안은 메일 또는 DM']
+  ].map(([k,v,s])=>`<div class="row"><dt>${esc(k)}</dt><dd>${esc(v)}${s?`<small>${esc(s)}</small>`:''}</dd></div>`).join('');
+}
+</script>
+</body>
+</html>
