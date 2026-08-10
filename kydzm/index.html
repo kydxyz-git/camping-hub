@@ -3925,7 +3925,7 @@ function renderCampDetail(idx) {
         <div class="detail-images">
           ${camp.imgs.map((src, i) => `
             <div class="detail-image-tile">
-              <span class="detail-image-tile-idx">${i+1}</span>
+              <span class="detail-image-tile-idx">${(camp.main_img ? src === camp.main_img : i === 0) ? '대표' : i+1}</span>
               <img src="../${src.replace(/^\.\//, '')}" alt="" loading="lazy">
             </div>
           `).join('')}
@@ -3968,6 +3968,7 @@ let _campForm = {
   //   { type: 'existing', src: './images/camps/xxx.jpg' }  ← 기존 이미지
   //   { type: 'new', base64: '...', previewUrl: 'data:...', size: 123 }  ← 새로 업로드
   images: [],
+  mainIdx: 0,           // 대표 이미지 인덱스 (카드 썸네일에 쓰임)
 };
 
 function _campImgIdBase() {
@@ -3992,6 +3993,7 @@ function renderCampAddForm() {
     lat: null, lng: null,
     videos: [],
     images: [],
+    mainIdx: 0,
   };
   _renderCampFormUI();
 }
@@ -4014,6 +4016,7 @@ function renderCampEditForm(idx) {
     lng: (typeof c.lng === 'number') ? c.lng : null,
     videos: [...(c.videos || [])],
     images: (c.imgs || []).map(src => ({ type: 'existing', src })),
+    mainIdx: Math.max(0, (c.imgs || []).indexOf(c.main_img)),
   };
   _renderCampFormUI();
 }
@@ -4558,22 +4561,32 @@ function _renderCampFormUI() {
       const src = img.type === 'existing' ? '../' + img.src.replace(/^\.\//, '') : img.previewUrl;
       const label = img.type === 'existing' ? '기존' : '새';
       const labelColor = img.type === 'existing' ? '#666' : '#2dab5e';
+      const isMain = i === _campForm.mainIdx;
       return `
         <div class="camp-image-item" data-i="${i}" draggable="false">
           <span class="camp-image-drag" title="드래그해서 순서 변경">⋮⋮</span>
           <span class="camp-image-idx">${i+1}</span>
           <img src="${src}" alt="">
+          <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:${isMain?700:500};color:${isMain?'#1a1a1a':'#888'};cursor:pointer;white-space:nowrap;">
+            <input type="radio" name="camp-main-img" data-main="${i}" ${isMain?'checked':''} style="margin:0;cursor:pointer;">대표
+          </label>
           <span class="camp-image-label" style="color:${labelColor};">${label}</span>
           <button class="camp-image-remove" data-rm="${i}">×</button>
         </div>
       `;
     }).join('');
+    // 대표 이미지 선택
+    listEl.querySelectorAll('[data-main]').forEach(r => {
+      r.onchange = () => { _campForm.mainIdx = +r.dataset.main; renderImageList(); };
+    });
     // 제거 버튼
     listEl.querySelectorAll('[data-rm]').forEach(btn => {
       btn.onclick = (e) => {
         e.preventDefault();
         const idx = +btn.dataset.rm;
         _campForm.images.splice(idx, 1);
+        if (_campForm.mainIdx === idx) _campForm.mainIdx = 0;
+        else if (_campForm.mainIdx > idx) _campForm.mainIdx--;
         renderImageList();
       };
     });
@@ -4590,7 +4603,10 @@ function _renderCampFormUI() {
           // DOM 순서대로 _campForm.images 재정렬
           const newOrder = Array.from(listEl.querySelectorAll('.camp-image-item[data-i]'))
             .map(el => +el.dataset.i);
+          const mainRef = _campForm.images[_campForm.mainIdx];
           _campForm.images = newOrder.map(oi => _campForm.images[oi]);
+          const moved = _campForm.images.indexOf(mainRef);
+          _campForm.mainIdx = moved >= 0 ? moved : 0;
           renderImageList(); // 인덱스 재표시
         }
       });
@@ -4733,8 +4749,12 @@ async function submitCampForm() {
       created_at: isEdit ? (_oldCamp.created_at || _nowIso) : _nowIso,
       updated_at: _nowIso,
     };
-    // 좌표 (값 있을 때만 포함 — null/undefined는 JSON에서 깔끔하게 생략)
-    if (typeof _campForm.lat === 'number' && !isNaN(_campForm.lat)) campObj.lat = _campForm.lat;
+    // 대표 이미지 (카드 썸네일). 2장 이상이고 첫 장이 아닐 때만 저장
+    const _mi = _campForm.mainIdx;
+    if (finalImgs.length > 1 && _mi > 0 && _mi < finalImgs.length) {
+      campObj.main_img = finalImgs[_mi];
+    }
+    // 좌표 (값 있을 때만 포함 — null/undefined는 JSON에서 깔끔하게 생략)    if (typeof _campForm.lat === 'number' && !isNaN(_campForm.lat)) campObj.lat = _campForm.lat;
     if (typeof _campForm.lng === 'number' && !isNaN(_campForm.lng)) campObj.lng = _campForm.lng;
     // 개별 영상 URL (비어있지 않을 때만 포함)
     if (Array.isArray(_campForm.videos) && _campForm.videos.length > 0) {

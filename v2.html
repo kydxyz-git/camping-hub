@@ -361,13 +361,37 @@ footer{
 
   <!-- 소개 -->
   <section id="v-about" class="view">
+    <div class="hero">
+      <p class="eyebrow">ABOUT · 2026.08 기준</p>
+      <h1>오토캠핑 하나만<br><em>5년째</em> 기록합니다.</h1>
+      <p>5년차 부부캠퍼가 직접 다녀온 캠핑장과 장비만 다룹니다. 협업 제품도 실제로 캠핑장에 들고 나가 써본 뒤에 올립니다. 그래서 한 건에 시간이 걸리고, 대신 받은 그대로 읽어주는 리뷰는 나오지 않습니다.</p>
+      <div class="figures" id="kit-figures"></div>
+    </div>
+
     <div class="about">
       <div>
-        <h2>캠핑장·장비·음식<br>협업을 환영합니다.</h2>
-        <p>오토캠핑 한 분야만 기록합니다. 직접 써보고 다녀온 것만 다루기 때문에, 협업 전에 실제 사용 기간을 확보하는 편입니다.</p>
+        <h2>협업을<br>환영합니다.</h2>
+        <p>캠핑장, 캠핑 장비, 캠핑 음식, 촬영 장비. 오토캠핑과 이어지는 제품이면 어떤 형태든 편하게 제안해 주세요. 릴스와 스토리, 이 사이트까지 묶어서 진행합니다.</p>
         <a class="cta" id="dm-link" href="#">인스타그램 DM 보내기</a>
       </div>
       <dl class="rows" id="about-rows"></dl>
+    </div>
+
+    <div class="about" style="padding-top:0">
+      <div>
+        <h2 style="font-size:clamp(18px,2.2vw,24px)">지난 5개월</h2>
+        <p>2026년 3월 중순에 계정을 다시 시작해, 약 4개월 반 만에 팔로워가 다섯 배가 됐습니다. 조회수 10만을 넘긴 릴스가 6개 나왔고, 월 합산 도달 70만 이상을 세 달 연속 유지했습니다.</p>
+        <p style="margin-top:14px">도달의 대부분은 아직 저를 모르는 사람에게서 나옵니다. 팔로워에게만 닿는 계정이 아니라, 캠핑장을 찾고 있는 사람에게 계속 새로 도달하는 계정입니다.</p>
+      </div>
+      <div>
+        <h2 style="font-size:clamp(18px,2.2vw,24px)">협업 방식</h2>
+        <dl class="rows">
+          <div class="row"><dt>01</dt><dd>제품 사용<small>캠핑장에 실제로 들고 나가 사용한 뒤 촬영합니다</small></dd></div>
+          <div class="row"><dt>02</dt><dd>릴스 제작<small>정보형 구성으로 저장과 공유가 나오게 만듭니다</small></dd></div>
+          <div class="row"><dt>03</dt><dd>확산<small>인스타그램과 페이스북에 함께 게시해 도달을 넓힙니다</small></dd></div>
+          <div class="row"><dt>04</dt><dd>기록<small>이 사이트에 남겨 캠페인이 끝난 뒤에도 계속 노출됩니다</small></dd></div>
+        </dl>
+      </div>
     </div>
   </section>
 
@@ -437,13 +461,11 @@ function renderCamps(){
   const list = camps();
   const visits = list.reduce((a,c)=>a+(+c.visits||0),0);
   const regions = [...new Set(list.map(c=>c.region).filter(Boolean))];
-  const graega = list.filter(c=>c.graega).length;
 
   $('#figures').innerHTML = [
     [list.length,'다녀온 캠핑장'],
     [visits,'누적 방문'],
-    [regions.length,'지역'],
-    [graega,'그래가 예약 가능']
+    [regions.length,'지역']
   ].map(([n,l])=>`<div class="fig"><b>${n}</b><span>${esc(l)}</span></div>`).join('');
 
   $('#camp-chips').innerHTML = ['전체',...regions]
@@ -469,10 +491,11 @@ function paintCamps(){
 
   $('#camp-count').textContent = rows.length + ' / ' + camps().length;
   $('#camp-grid').innerHTML = rows.length ? rows.map(c=>{
-    const img  = abs((c.imgs||[])[0]);
+    const pool = (c.imgs||[]).filter(Boolean);
+    const img  = abs(c.main_img && pool.includes(c.main_img) ? c.main_img : pool[0]);
     const tags = [...(c.seasons||[]),...(c.landscape||[])].slice(0,3);
     const v    = +c.visits||0;
-    return `<a class="card" href="${esc(c.url||'#')}" target="_blank" rel="noopener">
+    return `<a class="card" href="./camp.html?id=${encodeURIComponent(c.id)}">
       <div class="shot">
         ${img?`<img src="${esc(img)}" alt="${esc(c.name)}" loading="lazy">`:''}
         ${v?`<span class="stamp">${v}번 방문</span>`:''}
@@ -562,11 +585,20 @@ function renderChrome(){
   $('#dm-link').href = c.footerDmUrl || '#';
 
   const camp = camps();
+  const visits = camp.reduce((a,x)=>a+(+x.visits||0),0);
+
+  $('#kit-figures').innerHTML = [
+    ['1.07만','팔로워'],
+    ['287만','5개월 합산 도달'],
+    ['6개','조회수 10만+ 릴스'],
+    [camp.length+'곳','직접 다녀온 캠핑장']
+  ].map(([n,l])=>`<div class="fig"><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('');
+
   $('#about-rows').innerHTML = [
-    ['기록','오토캠핑 · 캠핑장 리뷰 · 캠핑 음식',`캠핑장 ${camp.length}곳 · 누적 방문 ${camp.reduce((a,x)=>a+(+x.visits||0),0)}회`],
-    ['인스타',c.footerInstaLink||'@kyd_zm','릴스 중심으로 주 단위 기록'],
+    ['분야','오토캠핑 · 캠핑장 · 캠핑 음식 · 장비',`캠핑장 ${camp.length}곳 · 누적 방문 ${visits}회`],
+    ['채널',c.footerInstaLink||'@kyd_zm','릴스 중심 · 페이스북 교차 게시'],
     ['제휴',c.headerBadge||'그래가 파트너스','캠핑장 예약 연동 · 레퍼럴 코드 공대남자'],
-    ['메일',c.footerEmail||'','협업 제안은 메일 또는 DM']
+    ['문의',c.footerEmail||'','메일 또는 인스타그램 DM']
   ].map(([k,v,s])=>`<div class="row"><dt>${esc(k)}</dt><dd>${esc(v)}${s?`<small>${esc(s)}</small>`:''}</dd></div>`).join('');
 }
 </script>
