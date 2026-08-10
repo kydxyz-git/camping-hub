@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 7744,
-    "click": 2961,
+    "pv": 7746,
+    "click": 2962,
     "search": 0
   },
   "pages": {
-    "/": 1488,
+    "/": 1489,
     "/series/series_ba7cc89468/ep_ad505df37d": 324,
     "/series/series_304565fb77/ep_c2e684a351": 214,
     "/series/series_873cdcaf61/ep_7dd208fe26": 110,
@@ -97,7 +97,7 @@
     "/#map": 14,
     "/camps/camp_b8d29b3f00": 18,
     "/camps/camp_e2b57e4e5d": 5,
-    "/series/series_ba7cc89468/ep_c56ed16c13": 256,
+    "/series/series_ba7cc89468/ep_c56ed16c13": 257,
     "/camps/camp_a9bbd60ec3": 23,
     "/items/item_200bd59067": 8,
     "/series/series_873cdcaf61/ep_116826a88d": 61,
@@ -185,7 +185,7 @@
     "/#map::땡큐캠핑": 1,
     "/camps/camp_8e1adf57aa::그래가": 5,
     "/camps/camp_02c72e06a3::네이버예약": 16,
-    "/series/series_ba7cc89468/ep_c56ed16c13::인스타DM": 152,
+    "/series/series_ba7cc89468/ep_c56ed16c13::인스타DM": 153,
     "/camps/camp_a9bbd60ec3::그래가": 12,
     "/camps/camp_d9699234d4::네이버": 1,
     "/items/item_200bd59067::네이버예약": 4,
@@ -255,13 +255,13 @@
   "searches": {},
   "devices": {
     "desktop": 369,
-    "mobile": 10327,
+    "mobile": 10330,
     "tablet": 9
   },
   "referrers": {
     "direct": 868,
     "인스타그램": 6215,
-    "페이스북": 310,
+    "페이스북": 312,
     "구글": 20,
     "네이버": 26,
     "link.inpock.co.kr": 4,
@@ -7431,32 +7431,35 @@
       ]
     },
     "2026-08-10": {
-      "pv": 7,
-      "click": 1,
+      "pv": 9,
+      "click": 2,
       "search": 0,
       "pages": {
-        "/": 3,
+        "/": 4,
         "/series/series_4f27a6d489/ep_426dd9712f": 1,
         "/items/item_1e78eeb29a": 1,
-        "/series/series_ba7cc89468/ep_868813ad26": 2
+        "/series/series_ba7cc89468/ep_868813ad26": 2,
+        "/series/series_ba7cc89468/ep_c56ed16c13": 1
       },
       "clicks": {
-        "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 1
+        "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 1,
+        "/series/series_ba7cc89468/ep_c56ed16c13::인스타DM": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 4,
+        "mobile": 7,
         "desktop": 4
       },
       "referrers": {
         "인스타그램": 4,
-        "direct": 3
+        "direct": 3,
+        "페이스북": 2
       },
       "hourly": [
         3,
         3,
         1,
-        0,
+        2,
         0,
         0,
         0,
@@ -7480,5 +7483,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-10T03:00:09.048Z"
+  "updated_at": "2026-08-10T04:00:09.245Z"
 }
