@@ -32,14 +32,14 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .mark{font-family:var(--display);font-weight:800;
   font-size:clamp(22px,3.2vw,34px);letter-spacing:.02em;white-space:nowrap;line-height:1.1}
 .mark span{display:none}
-.tabs{display:flex;gap:2px;align-items:center;justify-content:center;
+.tabs{display:flex;gap:clamp(10px,2.4vw,34px);align-items:center;justify-content:center;
   width:100%;border-top:1px solid var(--line);padding:6px 0}
 .nav.bare .tabs{display:none}
 .nav.bare .nav-in{padding-bottom:14px}
 .tab{font-size:14px;font-weight:500;color:var(--stone);padding:8px 11px;border-radius:999px;white-space:nowrap;transition:.15s}
 .tab:hover{color:var(--ink)}
 .tab[aria-current="page"]{color:var(--ink);font-weight:700;background:#EFEFE9}
-.tab.alt{margin-left:8px;padding-left:14px;border-left:1px solid var(--line);border-radius:0;font-size:13px}
+.tab.alt{padding-left:clamp(10px,2.4vw,34px);border-left:1px solid var(--line);border-radius:0;font-size:13px}
 
 .wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
 .view{display:none;padding-bottom:clamp(28px,4vw,56px)}
@@ -304,8 +304,8 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
 @media (max-width:620px){
   .nav-in{gap:8px;padding:11px 12px 0}
   .mark{font-size:20px}
-  .tabs{gap:0;overflow:visible;padding:5px 0}
-  .tab{padding:6px 5px;font-size:11.5px}
+  .tabs{gap:10px;overflow:visible;padding:5px 0}
+  .tab{padding:6px 2px;font-size:11.5px}
   .tab.alt{display:none}          /* 모바일은 메인 배너·푸터로 진입 */
   .menu{grid-template-columns:repeat(6,1fr)}
   .mcard.lg{grid-column:span 6;aspect-ratio:16/10}
