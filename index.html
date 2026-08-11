@@ -323,6 +323,9 @@
     .env-section { padding:16px 16px 12px; }
     .section-label { font-size:10px; letter-spacing:0.2em; color:var(--text-sub); font-weight:700; margin:0 4px 10px; text-transform:uppercase; display:block; }
     .env-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; }
+    .region-grid { grid-template-columns:repeat(6,1fr); gap:5px; }
+    .region-btn { padding:11px 4px; border-radius:10px; }
+    .region-name { font-size:13px; font-weight:700; letter-spacing:-.02em; }
     .env-btn { display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 2px 7px; border-radius:10px; transition:all 0.18s; }
     .env-btn.active { background:var(--accent-soft); }
     .env-btn.active .env-icon-wrap { outline:2px solid var(--text); outline-offset:2px; }
@@ -884,7 +887,7 @@ async function loadData() {
     <button class="tab-btn" data-tab="t2" id="tab-btn-2"></button>
     <button class="tab-btn" data-tab="t3" id="tab-btn-3"></button>
     <button class="tab-btn" data-tab="t4" id="tab-btn-4"></button>
-    <button class="tab-btn" data-tab="t5" id="tab-btn-5"></button>
+    <button class="tab-btn" data-tab="t5" id="tab-btn-5" style="display:none"></button>
   </nav>
 
   <!-- 탭 1: 캠핑이야기 -->
@@ -895,8 +898,8 @@ async function loadData() {
   <!-- 탭 2: 다녀온 캠핑장 -->
   <div id="t2" class="tab-content">
     <section class="env-section">
-      <span class="section-label">Landscape</span>
-      <div class="env-grid" id="env-grid"></div>
+      <span class="section-label">Region</span>
+      <div class="env-grid region-grid" id="env-grid"></div>
     </section>
     <section class="filter-section">
       <details class="filter-box">
@@ -905,8 +908,6 @@ async function loadData() {
           <span class="fsum-r"><span class="ftotal z" id="ftotal">0</span><svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </summary>
         <div class="filter-body">
-          <div class="filter-row"><div class="filter-row-head"><span class="filter-row-name">지역</span><span class="row-cnt z" id="rcnt">0</span></div><div class="chips" id="region-chips"></div></div>
-          <div class="filter-row"><div class="filter-row-head"><span class="filter-row-name">시즌</span><span class="row-cnt z" id="scnt">0</span></div><div class="chips" id="season-chips"></div></div>
           <div class="filter-row"><div class="filter-row-head"><span class="filter-row-name">기타</span><span class="row-cnt z" id="ecnt">0</span></div><div class="chips" id="extra-chips"></div></div>
         </div>
       </details>
@@ -1380,13 +1381,12 @@ function renderProducts(containerId, dataArr) {
 
 /* ─── Landscape + 캠핑장 ─── */
 function renderEnv() {
-  document.getElementById('env-grid').innerHTML = landscapeOpts.map(o =>
-    `<button class="env-btn${state.landscape.has(o.key)?' active':''}" data-key="${o.key}">
-      <div class="env-icon-wrap" data-t="${o.t}">${o.svg}</div>
-      <span class="env-name">${o.label}</span>
+  document.getElementById('env-grid').innerHTML = usedRegions.map(r =>
+    `<button class="env-btn region-btn${state.region.has(r)?' active':''}" data-key="${r}">
+      <span class="region-name">${r}</span>
     </button>`).join('');
   document.querySelectorAll('.env-btn').forEach(b =>
-    b.addEventListener('click', ()=>{ toggle(state.landscape,b.dataset.key); renderEnv(); renderGrid(); }));
+    b.addEventListener('click', ()=>{ toggle(state.region,b.dataset.key); renderEnv(); updTotal(); renderGrid(); }));
 }
 function renderChips(id, opts, set, cntId) {
   const el = document.getElementById(id);
@@ -1396,7 +1396,7 @@ function renderChips(id, opts, set, cntId) {
   updCnt(cntId, set.size);
 }
 function updCnt(id, n) { const e=document.getElementById(id); e.textContent=n; e.classList.toggle('z',n===0); }
-function updTotal() { const n=state.region.size+state.season.size+state.extras.size; const e=document.getElementById('ftotal'); e.textContent=n; e.classList.toggle('z',n===0); }
+function updTotal() { const n=state.extras.size; const e=document.getElementById('ftotal'); e.textContent=n; e.classList.toggle('z',n===0); }
 function toggle(set, k) { set.has(k)?set.delete(k):set.add(k); }
 function match(c) {
   if(state.landscape.size && !c.landscape.some(l=>state.landscape.has(l))) return false;
@@ -2102,8 +2102,7 @@ window.addEventListener('hashchange', applyHashTab);
 document.getElementById('reset-btn').addEventListener('click', () => {
   state.landscape.clear(); state.region.clear(); state.season.clear(); state.extras.clear();
   renderEnv();
-  renderChips('region-chips',usedRegions,state.region,'rcnt');
-  renderChips('season-chips',usedSeasons,state.season,'scnt');
+  renderEnv();
   renderChips('extra-chips',autoExtras,state.extras,'ecnt');
   updTotal(); renderGrid();
 });
@@ -2127,8 +2126,6 @@ async function init() {
     // 이미지 로드 완료 후에도 한 번 더
     window.addEventListener('load', saInit, { once: true });
     renderEnv();
-    renderChips('region-chips', usedRegions, state.region, 'rcnt');
-    renderChips('season-chips', usedSeasons, state.season, 'scnt');
     renderChips('extra-chips',  autoExtras,  state.extras, 'ecnt');
     renderGrid();
     renderProducts('food-grid', foods);
