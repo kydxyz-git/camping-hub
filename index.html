@@ -324,6 +324,11 @@
     .section-label { font-size:10px; letter-spacing:0.2em; color:var(--text-sub); font-weight:700; margin:0 4px 10px; text-transform:uppercase; display:block; }
     .env-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; }
     .region-grid { grid-template-columns:repeat(7,1fr); gap:4px; }
+    .item-group { margin-bottom:22px; }
+    .item-group-head { display:flex; align-items:baseline; gap:8px; padding:0 0 10px;
+      border-bottom:1px solid var(--line); margin-bottom:12px; }
+    .item-group-name { font-size:15px; font-weight:700; letter-spacing:-.02em; }
+    .item-group-cnt { margin-left:auto; font-size:12px; color:var(--text-sub); }
     .env-btn { display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 2px 7px; border-radius:10px; transition:all 0.18s; }
     .env-btn.active { background:var(--accent-soft); }
     .env-btn.active .env-icon-wrap { outline:2px solid var(--text); outline-offset:2px; }
@@ -943,7 +948,7 @@ async function loadData() {
     </div>
     <div class="update-date" id="update-date-item"></div>
     <section class="product-section">
-      <div class="product-grid" id="item-grid"></div>
+      <div id="item-grid"></div>
     </section>
     <div class="price-notice" id="price-notice-item"></div>
   </div>
@@ -1334,10 +1339,44 @@ function sortProductsByMode(arr, mode) {
 }
 
 /* ─── 상품 카드 렌더 ─── */
+/* 장비 분류 목록 (config.itemCats) */
+function getItemCats() {
+  const c = siteConfig.itemCats;
+  return (Array.isArray(c) && c.length) ? c : [{key:'camp',label:'캠핑용품'}];
+}
+/* 캠핑용품 — 분류별 섹션으로 렌더 */
+function renderItemGroups(containerId, dataArr) {
+  const wrap = document.getElementById(containerId);
+  const cats = getItemCats();
+  const keys = cats.map(c => c.key);
+  const all = (dataArr || []).filter(x => x.published !== false);
+  const html = cats.map((c, i) => {
+    const rows = all.filter(x => {
+      const k = x.cat || keys[0];
+      return k === c.key || (i === 0 && !keys.includes(k));
+    });
+    if (!rows.length) return '';
+    return `<div class="item-group">
+      <div class="item-group-head"><span class="item-group-name">${c.label}</span><span class="item-group-cnt">${rows.length}개</span></div>
+      <div class="product-grid" id="${containerId}-g${i}"></div>
+    </div>`;
+  }).join('');
+  wrap.innerHTML = html || `<div style="padding:40px 0;text-align:center;color:var(--text-sub);font-size:13px;">아직 등록된 항목이 없어요</div>`;
+  cats.forEach((c, i) => {
+    const el = document.getElementById(`${containerId}-g${i}`);
+    if (!el) return;
+    const rows = all.filter(x => {
+      const k = x.cat || keys[0];
+      return k === c.key || (i === 0 && !keys.includes(k));
+    });
+    renderProducts(`${containerId}-g${i}`, rows);
+  });
+}
+
 function renderProducts(containerId, dataArr) {
   const grid = document.getElementById(containerId);
   // 통계 추적 카테고리 (food-grid → foods, item-grid → items)
-  const trackCategory = containerId === 'food-grid' ? 'foods' : containerId === 'item-grid' ? 'items' : 'product';
+  const trackCategory = containerId.startsWith('food') ? 'foods' : containerId.startsWith('item') ? 'items' : 'product';
   // 정렬 모드: config.json의 foodsSort / itemsSort (기본 'random')
   const sortMode = trackCategory === 'foods'
     ? (siteConfig.foodsSort || 'random')
@@ -1369,16 +1408,6 @@ function renderProducts(containerId, dataArr) {
       </div>
       <div class="product-info">
         <div class="product-name">${item.name}</div>
-        ${item.desc ? `<div class="product-desc">${item.desc}</div>` : ''}
-        ${(item.price_sale || item.price_original) ? `
-        <div class="price-wrap">
-          ${(item.price_original && item.price_sale) ? `<span class="price-original">${_fmtPrice(item.price_original)}</span>` : ''}
-          <div class="price-row">
-            ${item.discount_rate ? `<span class="price-discount-rate">${item.discount_rate}%</span>` : ''}
-            ${item.price_sale ? `<span class="price-sale">${_fmtPrice(item.price_sale)}</span>` : item.price_original ? `<span class="price-only">${_fmtPrice(item.price_original)}</span>` : ''}
-          </div>
-        </div>` : ''}
-        ${!empty ? `<span class="product-link">구매하기 ${ARROW_SVG}</span>` : ''}
       </div>
     </a>`;
   }).join('');
@@ -2152,7 +2181,7 @@ async function init() {
     renderChips('extra-chips',  autoExtras,  state.extras, 'ecnt');
     renderGrid();
     renderProducts('food-grid', foods);
-    renderProducts('item-grid', items);
+    renderItemGroups('item-grid', items);
   } catch (e) {
     console.error('초기화 실패:', e);
     document.body.innerHTML = `<div style="padding:40px;text-align:center;font-family:system-ui;">
