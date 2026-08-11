@@ -86,6 +86,20 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   font-weight:400;color:var(--stone);letter-spacing:.04em;margin-top:3px}
 .vid span{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--stone)}
 #map{height:280px;border-radius:4px;border:1px solid var(--line);background:#EDEDE7}
+.notes{list-style:none;display:grid;gap:9px}
+.notes li{position:relative;padding-left:14px;font-size:13.5px;color:#3F4540;line-height:1.6}
+.notes li::before{content:"";position:absolute;left:0;top:9px;width:4px;height:4px;
+  border-radius:50%;background:var(--stamp)}
+.rows{border-top:1px solid var(--line)}
+.row{display:flex;gap:14px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
+.row dt{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--stone);width:56px;flex:none}
+.row dd{font-size:13.5px;font-weight:500;line-height:1.6}
+.dmbox{display:block;border:1px solid var(--line);background:#fff;border-radius:5px;
+  padding:16px 18px;transition:.16s}
+.dmbox:hover{border-color:#C7CAC3;transform:translateY(-1px)}
+.dmbox b{font-size:14.5px;font-weight:700}
+.dmbox p{margin-top:6px;font-size:12.5px;color:var(--stone);line-height:1.55}
+.dmbox span{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:11.5px;color:#3F5346}
 .cta{display:block;text-align:center;background:var(--ink);color:#fff;font-weight:700;font-size:15px;padding:16px;border-radius:999px;transition:.18s}
 .cta:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(21,24,26,.18)}
 .cta.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);margin-top:10px;font-weight:600;font-size:14px}
@@ -112,6 +126,16 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:20px;font-size
 const BASE='https://kydz.kr/';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const abs=p=>!p?'':/^https?:/.test(p)?p:BASE+String(p).replace(/^\.?\//,'');
+
+/* INFO 표 — 값이 있는 항목만 */
+function infoRows(c){
+  const r=[];
+  if(c.checkin||c.checkout) r.push(['입·퇴실', `${c.checkin||'-'} ~ ${c.checkout||'-'}`]);
+  if(c.sites)   r.push(['사이트', c.sites]);
+  if(c.price)   r.push(['요금', c.price]);
+  if(c.address) r.push(['주소', c.address]);
+  return r;
+}
 
 /* 대표 이미지: main_img 우선, 없으면 첫 장 */
 function orderedImgs(c){
@@ -144,7 +168,9 @@ function orderedImgs(c){
   document.title=c.name+' · 공대남자 캠핑 기록';
   const imgs=orderedImgs(c);
   const v=+c.visits||0;
-  const tags=[...(c.seasons||[]),...(c.landscape||[]),...(c.extras||[])];
+  const FEATURES=['계곡','벚꽃','수영장','애견동반','개별샤워실','펜션','노키즈'];
+  const all=[...(c.landscape||[]),...(c.extras||[])];
+  const tags=FEATURES.filter(f=>all.includes(f));
 
   // 연결된 릴스: camp_id로 시리즈에서 수집 + 자체 videos 필드 병합
   let series=[];
@@ -185,14 +211,18 @@ function orderedImgs(c){
 
     <div class="cols">
       <div>
-        <div class="block">
-          <h2>RECORD</h2>
-          <div class="facts">
-            <div class="fact"><b>${v}</b><span>다녀온 횟수</span></div>
-            <div class="fact"><b>${imgs.length}</b><span>기록한 사진</span></div>
-            <div class="fact"><b>${vids.length}</b><span>영상 기록</span></div>
-          </div>
-        </div>
+        ${infoRows(c).length?`<div class="block">
+          <h2>INFO</h2>
+          <dl class="rows">
+            ${infoRows(c).map(([k,val])=>`<div class="row"><dt>${esc(k)}</dt><dd>${esc(val)}</dd></div>`).join('')}
+          </dl>
+        </div>`:''}
+
+        ${c.notes?`<div class="block">
+          <h2>NOTE</h2>
+          <ul class="notes">${String(c.notes).split('\n').filter(x=>x.trim())
+            .map(x=>`<li>${esc(x.trim())}</li>`).join('')}</ul>
+        </div>`:''}
 
         ${vids.length?`<div class="block">
           <h2>VIDEO</h2>
@@ -205,6 +235,15 @@ function orderedImgs(c){
 
       <aside>
         ${(c.lat&&c.lng)?`<div class="block"><h2>LOCATION</h2><div id="map"></div></div>`:''}
+        ${c.dm?`<div class="block">
+          <h2>추천 자리</h2>
+          <a class="dmbox" href="https://ig.me/m/kyd_zm" target="_blank" rel="noopener">
+            <b>명당 자리 안내</b>
+            <p>사이트별 추천 자리와 한장정리 이미지는 인스타그램 DM으로 보내드려요.</p>
+            <span>DM 보내기 →</span>
+          </a>
+        </div>`:''}
+
         <div class="block">
           <h2>RESERVATION</h2>
           ${c.url?`<a class="cta" href="${esc(c.url)}" target="_blank" rel="noopener">예약 페이지 열기</a>`:

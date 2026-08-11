@@ -156,6 +156,10 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   font:inherit;font-size:13px;color:#5D635C;transition:.15s}
 .chip:hover{border-color:#C7CAC3}
 .chip.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.chips.feats{padding-bottom:20px;margin-top:-8px}
+.chip.feat{font-size:12.5px;padding:6px 12px;color:#3F5346;border-color:#DDE0DA;background:#F4F6F2}
+.chip.feat:hover{border-color:#BFC7BC}
+.chip.feat.on{background:#3F5346;border-color:#3F5346;color:#fff}
 
 /* ── grids ── */
 .grid{display:grid;gap:clamp(16px,2.2vw,26px) clamp(10px,1.6vw,18px);grid-template-columns:repeat(4,1fr)}
@@ -407,6 +411,7 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
       <input class="search" id="camp-q" type="search" placeholder="캠핑장 이름 검색" aria-label="캠핑장 이름 검색">
       <div class="chips" id="camp-chips"></div>
     </div>
+    <div class="chips feats" id="camp-feats"></div>
     <div class="grid five" id="camp-grid"></div>
   </section>
 
@@ -704,11 +709,29 @@ function renderMenu(){
 
 /* ── 캠핑장 ── */
 let region='전체';
+/* 노출·필터에 쓸 특징 태그 (landscape/extras 통합) */
+const FEATURES=['계곡','벚꽃','수영장','애견동반','개별샤워실','펜션','노키즈'];
+let feat=new Set();
+function featOf(c){
+  const all=[...(c.landscape||[]),...(c.extras||[])];
+  return FEATURES.filter(f=>all.includes(f));
+}
 function renderCamps(){
   const list=camps();
   const regions=[...new Set(list.map(c=>c.region).filter(Boolean))];
+  const featCount={};
+  list.forEach(c=>featOf(c).forEach(f=>featCount[f]=(featCount[f]||0)+1));
   $('#camp-chips').innerHTML=['전체',...regions]
     .map(r=>`<button class="chip${r===region?' on':''}" data-r="${esc(r)}">${esc(r)}</button>`).join('');
+  $('#camp-feats').innerHTML=FEATURES.filter(f=>featCount[f])
+    .map(f=>`<button class="chip feat${feat.has(f)?' on':''}" data-f="${esc(f)}">${esc(f)}</button>`).join('');
+  $('#camp-feats').onclick=e=>{
+    const b=e.target.closest('.chip'); if(!b) return;
+    const f=b.dataset.f;
+    feat.has(f)?feat.delete(f):feat.add(f);
+    $$('#camp-feats .chip').forEach(x=>x.classList.toggle('on',feat.has(x.dataset.f)));
+    paintCamps();
+  };
   $('#camp-chips').onclick=e=>{
     const b=e.target.closest('.chip'); if(!b) return;
     region=b.dataset.r;
@@ -772,7 +795,12 @@ function sortCamps(arr){
 }
 function paintCamps(){
   const q=$('#camp-q').value.trim().toLowerCase();
-  const rows=sortCamps(camps().filter(c=>(region==='전체'||c.region===region)&&(!q||(c.name||'').toLowerCase().includes(q))));
+  const rows=sortCamps(camps().filter(c=>{
+    if(region!=='전체' && c.region!==region) return false;
+    if(q && !(c.name||'').toLowerCase().includes(q)) return false;
+    if(feat.size){ const f=featOf(c); for(const x of feat) if(!f.includes(x)) return false; }
+    return true;
+  }));
   $('#camp-count').textContent=rows.length+' / '+camps().length;
   $('#camp-grid').innerHTML=rows.length?rows.map(c=>{
     const pool=(c.imgs||[]).filter(Boolean);
