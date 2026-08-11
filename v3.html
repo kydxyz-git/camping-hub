@@ -47,12 +47,16 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   display:flex;align-items:flex-start;gap:clamp(24px,4vw,56px)}
 .hero .htxt{flex:1 1 auto;min-width:0}
 .hero .prof{flex:0 0 auto;width:clamp(110px,15vw,196px);text-align:center}
+.hero .prof .pic{position:relative;aspect-ratio:1/1;border-radius:10px;overflow:hidden}
+.hero .prof .pic img{position:absolute;inset:0;transition:opacity .28s ease}
+.hero .prof .pic .on{opacity:0}
+.hero .prof:hover .pic .on{opacity:1}
+.hero .prof:hover .pic .off{opacity:0}
 .hero .prof .nm{display:block;margin-top:6px;font-family:var(--display);font-weight:800;
   font-size:clamp(13px,1.4vw,16px);letter-spacing:-.02em;line-height:1.3}
 .hero .prof .id{display:block;margin-top:2px;font-family:var(--mono);font-size:clamp(10px,1vw,12px);
   letter-spacing:.04em;color:var(--stone);transition:color .15s}
 .hero .prof:hover .id{color:var(--ink)}
-.hero .prof img{aspect-ratio:1/1;height:auto}
 @media (max-width:620px){
   .hero{gap:16px;align-items:center}
   .hero .prof{width:92px}
@@ -80,12 +84,12 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .mcard .n{display:inline-block;margin-top:7px;font-family:var(--mono);font-size:11.5px;font-weight:500;
   letter-spacing:.06em;color:#15181A;background:var(--stamp);padding:3px 8px;border-radius:2px}
 .mcard.sm h2{font-size:clamp(15px,1.9vw,19px)}
-.mcard.intro{background:var(--ink);border-color:var(--ink)}
+.mcard.intro{background:#E9EAE4;border-color:#DCDED6}
 .mcard.intro::after{background:none}
-.mcard.intro .txt{color:#fff;top:0;display:flex;flex-direction:column;justify-content:flex-end}
-.mcard.intro p{font-size:12.5px;color:rgba(255,255,255,.62);margin-top:6px;line-height:1.5}
-.mcard.intro .ico{position:absolute;left:clamp(14px,2vw,24px);top:clamp(14px,2vw,24px);
-  width:clamp(30px,3.4vw,40px);height:auto;opacity:.9;z-index:1}
+.mcard.intro .txt{color:var(--ink);text-align:center}
+.mcard.intro p{font-size:12.5px;color:#6A706A;margin-top:6px;line-height:1.5}
+.mcard.intro .ico{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
+  width:clamp(48px,6vw,74px);height:auto;z-index:1}
 
 /* 소개협업 배너 */
 .banner{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:clamp(10px,1.4vw,16px);
@@ -224,7 +228,10 @@ footer{border-top:1px solid var(--line);padding:32px 0 52px;margin-top:18px}
         <p>5년차 부부캠퍼가 실제로 다녀온 캠핑장 기록입니다. 한 번 가보고 좋다고 하는 곳과, 몇 년째 다시 가는 곳은 다릅니다.</p>
       </div>
       <a class="prof" id="prof-link" href="#" target="_blank" rel="noopener" aria-label="인스타그램 @kyd_zm">
-        <img src="https://kydz.kr/images/menu/profile.jpg" alt="공대남자 프로필">
+        <span class="pic">
+          <img class="off" src="https://kydz.kr/images/menu/profile.jpg" alt="공대남자 프로필">
+          <img class="on" src="https://kydz.kr/images/menu/profile-color.jpg" alt="">
+        </span>
         <span class="nm">공대남자</span>
         <span class="id">@kyd_zm</span>
       </a>
@@ -428,12 +435,12 @@ function renderMenu(){
      img:'', desc:'캠핑장, 장비, 음식, 촬영 장비 협업을 받고 있습니다.'}
   ];
 
-  const ICON=`<svg class="ico" viewBox="0 0 48 48" fill="none" stroke="#F2F2EC" stroke-width="2"
+  const ICON=`<svg class="ico" viewBox="0 0 48 48" fill="none" stroke="#1D2420" stroke-width="1.9"
     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M4 18 L12 14 L20 18 L26 16 L34 20"/>
     <path d="M44 18 L36 14 L28 18"/>
     <path d="M20 18 L15 25 a3 3 0 0 0 4 4 l4 -4"/>
-    <path d="M23 25 l5 5 M27 24 l5 5 M31 23 l4 4" stroke="#FFE873"/>
+    <path d="M23 25 l5 5 M27 24 l5 5 M31 23 l4 4"/>
     <path d="M34 20 L38 30" />
     <path d="M12 14 L8 30" />
   </svg>`;
