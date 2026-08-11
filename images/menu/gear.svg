@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450" role="img" aria-label="캠핑장비">
+  <rect width="600" height="450" fill="#2B3238"/>
+
+  <!-- 랜턴 걸이 -->
+  <path d="M300 40 V 84" stroke="#8B9089" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- 랜턴 상단 -->
+  <path d="M256 84 H344 L330 118 H270 Z" fill="#F2F2EC"/>
+  <!-- 랜턴 유리 -->
+  <rect x="262" y="118" width="76" height="108" rx="10" fill="#FFE873"/>
+  <rect x="262" y="118" width="76" height="108" rx="10" fill="none" stroke="#F2F2EC" stroke-width="7"/>
+  <path d="M300 146 V 198" stroke="#3A3A28" stroke-width="8" stroke-linecap="round" opacity=".55"/>
+  <!-- 랜턴 하단 -->
+  <path d="M268 226 H332 L342 258 H258 Z" fill="#F2F2EC"/>
+
+  <!-- 빛 -->
+  <g stroke="#FFE873" stroke-width="7" stroke-linecap="round" opacity=".45">
+    <path d="M196 140 H 158"/>
+    <path d="M404 140 H 442"/>
+    <path d="M196 210 H 158"/>
+    <path d="M404 210 H 442"/>
+  </g>
+
+  <!-- 팩 -->
+  <g fill="#8B9089">
+    <path d="M120 306 h26 v96 l-13 16 l-13 -16 Z"/>
+    <path d="M108 306 h50 v16 h-50 Z" fill="#F2F2EC"/>
+  </g>
+  <g fill="#8B9089">
+    <path d="M454 306 h26 v96 l-13 16 l-13 -16 Z"/>
+    <path d="M442 306 h50 v16 h-50 Z" fill="#F2F2EC"/>
+  </g>
+
+  <!-- 로프 -->
+  <path d="M146 322 C 220 372 380 372 454 322" stroke="#FFE873" stroke-width="7" fill="none" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" role="img" aria-label="캠핑이야기">
+  <rect width="800" height="500" fill="#26343B"/>
+
+  <!-- 계곡 능선 -->
+  <path d="M0 250 L172 128 L318 250 Z" fill="#2F4049"/>
+  <path d="M250 250 L440 106 L630 250 Z" fill="#374B55"/>
+  <path d="M560 250 L720 140 L800 214 L800 250 Z" fill="#2F4049"/>
+
+  <!-- 물 -->
+  <rect x="0" y="250" width="800" height="250" fill="#1D282E"/>
+  <path d="M60 300 H236" stroke="#3C525D" stroke-width="8" stroke-linecap="round"/>
+  <path d="M300 300 H452" stroke="#3C525D" stroke-width="8" stroke-linecap="round"/>
+  <path d="M520 300 H700" stroke="#3C525D" stroke-width="8" stroke-linecap="round"/>
+  <path d="M120 348 H300" stroke="#324650" stroke-width="8" stroke-linecap="round"/>
+  <path d="M368 348 H540" stroke="#324650" stroke-width="8" stroke-linecap="round"/>
+  <path d="M600 348 H760" stroke="#324650" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- 재생 버튼 -->
+  <circle cx="400" cy="296" r="86" fill="#FFE873"/>
+  <path d="M378 258 L444 296 L378 334 Z" fill="#15181A"/>
+
+  <!-- 필름 구멍 -->
+  <g fill="#FBFBF8" opacity=".24">
+    <rect x="40" y="40" width="30" height="22" rx="4"/>
+    <rect x="40" y="86" width="30" height="22" rx="4"/>
+    <rect x="40" y="132" width="30" height="22" rx="4"/>
+    <rect x="730" y="40" width="30" height="22" rx="4"/>
+    <rect x="730" y="86" width="30" height="22" rx="4"/>
+    <rect x="730" y="132" width="30" height="22" rx="4"/>
+  </g>
+</svg>

@@ -59,7 +59,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .mcard .bg img{transition:transform .6s cubic-bezier(.2,.7,.3,1)}
 .mcard:hover .bg img{transform:scale(1.05)}
 .mcard::after{content:"";position:absolute;inset:0;z-index:-1;
-  background:linear-gradient(to top,rgba(12,14,15,.78) 0%,rgba(12,14,15,.34) 45%,rgba(12,14,15,.08) 100%)}
+  background:linear-gradient(to top,rgba(12,14,15,.62) 0%,rgba(12,14,15,.18) 46%,rgba(12,14,15,0) 100%)}
 .mcard .txt{position:absolute;left:0;right:0;bottom:0;padding:clamp(14px,2vw,24px);color:#fff}
 .mcard h2{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.2;
   font-size:clamp(16px,2.3vw,27px);text-shadow:0 1px 12px rgba(0,0,0,.3)}
@@ -394,13 +394,13 @@ function renderMenu(){
 
   const cards=[
     {cls:'lg',href:'#camps',  title:'다녀온 캠핑장', n:c.length+'곳',
-     img:mainImg(c[0]||{})},
+     img:BASE+'images/menu/camps.svg'},
     {cls:'lg',href:'#stories',title:'캠핑이야기',   n:epTotal+'편',
-     img:cover(s.map(x=>(epsOf(x)[0]||{}).thumb))},
+     img:BASE+'images/menu/stories.svg'},
     {cls:'sm',href:'#food',   title:'먹은음식',     n:pub(DATA.foods).length+'개',
-     img:cover(pub(DATA.foods).map(x=>x.thumb))},
+     img:BASE+'images/menu/food.svg'},
     {cls:'sm',href:'#gear',   title:'캠핑장비',     n:(pub(DATA.items).length+pub(DATA.camera).length)+'개',
-     img:cover(pub(DATA.items).map(x=>x.thumb))},
+     img:BASE+'images/menu/gear.svg'},
     {cls:'sm intro',href:'#about',title:'소개 · 협업', n:'',
      img:'', desc:'캠핑장, 장비, 음식, 촬영 장비 협업을 받고 있습니다.'}
   ];

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450" role="img" aria-label="먹은음식">
+  <rect width="600" height="450" fill="#3A2E2A"/>
+
+  <!-- 김 -->
+  <g stroke="#FBFBF8" stroke-width="8" stroke-linecap="round" opacity=".55" fill="none">
+    <path d="M242 128 C 222 106 262 92 242 68"/>
+    <path d="M300 118 C 280 96 320 82 300 58"/>
+    <path d="M358 128 C 338 106 378 92 358 68"/>
+  </g>
+
+  <!-- 팬 본체 -->
+  <ellipse cx="300" cy="252" rx="150" ry="40" fill="#FFE873"/>
+  <path d="M150 252 C 150 330 196 366 300 366 C 404 366 450 330 450 252 Z" fill="#F2F2EC"/>
+  <ellipse cx="300" cy="252" rx="150" ry="40" fill="#15181A" opacity=".08"/>
+
+  <!-- 팬 손잡이 -->
+  <path d="M450 250 H548" stroke="#F2F2EC" stroke-width="22" stroke-linecap="round"/>
+
+  <!-- 재료 -->
+  <circle cx="252" cy="248" r="26" fill="#3A2E2A"/>
+  <circle cx="330" cy="238" r="20" fill="#3A2E2A"/>
+  <circle cx="300" cy="278" r="16" fill="#3A2E2A"/>
+
+  <!-- 불 -->
+  <g fill="#FFE873" opacity=".9">
+    <path d="M228 404 C 244 386 240 372 228 362 C 216 372 212 386 228 404 Z"/>
+    <path d="M300 414 C 320 392 314 374 300 362 C 286 374 280 392 300 414 Z"/>
+    <path d="M372 404 C 388 386 384 372 372 362 C 360 372 356 386 372 404 Z"/>
+  </g>
+</svg>
