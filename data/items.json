@@ -78,7 +78,7 @@
     "price_original": 14900,
     "price_sale": 11900,
     "discount_rate": 20,
-    "published": true,
+    "published": false,
     "created_at": "2026-07-20T08:04:49.725Z",
     "updated_at": "2026-08-11T08:31:14.123Z"
   },
