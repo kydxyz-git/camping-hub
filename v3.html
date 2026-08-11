@@ -169,11 +169,15 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 
 /* 시리즈 카드 */
 .scard{position:relative;overflow:hidden;border-radius:4px;aspect-ratio:1.5/1;background:#EDEDE7;isolation:isolate}
-.scard .bg{position:absolute;inset:0;z-index:-2}
-.scard .bg img{transition:transform .6s cubic-bezier(.2,.7,.3,1)}
-.scard:hover .bg img{transform:scale(1.05)}
+.scard .bg{position:absolute;inset:0;z-index:-2;
+  display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:1px;
+  filter:saturate(.55) brightness(.92)}
+.scard .bg img{width:100%;height:100%;object-fit:cover;
+  transition:transform .6s cubic-bezier(.2,.7,.3,1)}
+.scard:hover .bg{filter:saturate(.9) brightness(1)}
+.scard:hover .bg img{transform:scale(1.04)}
 .scard::after{content:"";position:absolute;inset:0;z-index:-1;
-  background:linear-gradient(to top,rgba(10,12,13,.9) 0%,rgba(10,12,13,.5) 45%,rgba(10,12,13,.12) 100%)}
+  background:linear-gradient(to top,rgba(10,12,13,.92) 0%,rgba(10,12,13,.62) 45%,rgba(10,12,13,.42) 100%)}
 .scard .txt{position:absolute;left:0;right:0;bottom:0;padding:clamp(14px,1.8vw,20px);color:#fff}
 .scard h3{font-family:var(--display);font-weight:800;font-size:clamp(16px,2.1vw,22px);
   letter-spacing:-.03em;line-height:1.25;text-shadow:0 1px 10px rgba(0,0,0,.5)}
@@ -617,15 +621,23 @@ function paintCamps(){
 }
 
 /* ── 시리즈 목록 ── */
+/* 시리즈 커버에 깔 썸네일 장수 (3의 배수 권장) */
+const COVER_N=6;
 function renderSeriesList(){
   const s=sers();
   const total=s.reduce((a,x)=>a+epsOf(x).length,0);
   $('#series-count').textContent=s.length+'개 시리즈 · '+total+'편';
   $('#series-grid').innerHTML=s.map((x,i)=>{
     const eps=epsOf(x); if(!eps.length) return '';
-    const cover=abs((eps[0]||{}).thumb);
+    const pool=eps.map(e=>e.thumb).filter(Boolean);
+    // 격자에 빈칸이 생기지 않도록 장수를 보정 (6=3x2, 4=2x2, 2=2x1, 1=단일)
+    const n = pool.length>=COVER_N ? COVER_N : pool.length>=4 ? 4 : pool.length>=2 ? 2 : 1;
+    const thumbs=pool.slice(0,n);
+    const cols = n>=6 ? 3 : n>=2 ? 2 : 1;
     return `<a class="scard" href="#series/${encodeURIComponent(x.id||i)}">
-      <div class="bg">${cover?`<img src="${esc(cover)}" alt="">`:''}</div>
+      <div class="bg" style="grid-template-columns:repeat(${cols},1fr)">
+        ${thumbs.map(t=>`<img src="${esc(abs(t))}" alt="" loading="lazy">`).join('')}
+      </div>
       <span class="n">${eps.length}편</span>
       <div class="txt">
         <h3>${esc(x.emoji||'')} ${esc(x.name)}</h3>
