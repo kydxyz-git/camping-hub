@@ -308,6 +308,9 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
   .hero .prof .pic .off{opacity:0}
   .hero .prof .fx{display:none}
   .grid,.grid.five{grid-template-columns:repeat(2,1fr)}
+  /* 캠핑용품·먹거리는 3열, 이름은 클릭 시 팝업에서 확인 */
+  .grid.five{grid-template-columns:repeat(3,1fr);gap:10px 6px}
+  .pcard .pn{display:none}
   .sgrid{grid-template-columns:1fr}
   .scard{aspect-ratio:2.3/1}
   .scard .bg{grid-template-rows:1fr}
@@ -728,10 +731,8 @@ function renderProducts(sel,rows,countSel,emptyMsg){
   if(countSel) $(countSel).textContent=list.length+'개';
   $(sel).innerHTML=list.length?list.map(p=>{
     const hasV=!!(p.video||'').trim();
-    const href=hasV?'#':(p.url||'#');
-    return `<a class="pcard" href="${esc(href)}"
-      ${hasV?`data-v="${esc(p.video)}" data-b="${esc(p.url||'')}" data-t="${esc(p.name)}"`
-            :'target="_blank" rel="noopener"'}>
+    return `<a class="pcard" href="${esc(p.url||'#')}"
+      data-t="${esc(p.name)}" data-v="${esc(p.video||'')}" data-b="${esc(p.url||'')}">
       ${p.thumb?`<img src="${esc(abs(p.thumb))}" alt="${esc(p.name)}" loading="lazy">`:''}
       ${hasV?`<span class="play"><svg viewBox="0 0 10 10" fill="#fff"><path d="M1 0 L10 5 L1 10 Z"/></svg></span>`:''}
       <span class="pn">${esc(p.name)}</span>
@@ -773,12 +774,12 @@ function openPick(t,v,b){
   const m=$('#pick');
   m.querySelector('.mt').textContent=t;
   const av=m.querySelector('.go-v'), ab=m.querySelector('.go-b');
-  av.href=v;
+  if(v){ av.href=v; av.style.display=''; } else { av.style.display='none'; }
   if(b){ ab.href=b; ab.style.display=''; } else { ab.style.display='none'; }
   m.classList.add('on');
 }
 document.addEventListener('click',e=>{
-  const c=e.target.closest('.pcard[data-v]');
+  const c=e.target.closest('.pcard[data-t]');
   if(c){ e.preventDefault(); openPick(c.dataset.t,c.dataset.v,c.dataset.b); return; }
   const m=$('#pick');
   if(m && m.classList.contains('on') && (e.target===m || e.target.closest('[data-close]')))
