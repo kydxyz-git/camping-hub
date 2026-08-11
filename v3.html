@@ -173,7 +173,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 /* 시리즈 카드 */
 .scard{position:relative;overflow:hidden;border-radius:4px;aspect-ratio:1.5/1;background:#EDEDE7;isolation:isolate}
 .scard .bg{position:absolute;inset:0;z-index:-2;
-  display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:1px;
+  display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr;gap:1px;
   filter:saturate(.5) brightness(.9);
   transition:filter .35s ease}
 .scard .bg img{width:100%;height:100%;object-fit:cover}
@@ -626,8 +626,8 @@ function paintCamps(){
 }
 
 /* ── 시리즈 목록 ── */
-/* 시리즈 커버에 깔 썸네일 장수 (3의 배수 권장) */
-const COVER_N=6;
+/* 시리즈 커버에 깔 썸네일 장수 */
+const COVER_N=4;
 function renderSeriesList(){
   const s=sers();
   const total=s.reduce((a,x)=>a+epsOf(x).length,0);
@@ -635,10 +635,10 @@ function renderSeriesList(){
   $('#series-grid').innerHTML=s.map((x,i)=>{
     const eps=epsOf(x); if(!eps.length) return '';
     const pool=eps.map(e=>e.thumb).filter(Boolean);
-    // 격자에 빈칸이 생기지 않도록 장수를 보정 (6=3x2, 4=2x2, 2=2x1, 1=단일)
-    const n = pool.length>=COVER_N ? COVER_N : pool.length>=4 ? 4 : pool.length>=2 ? 2 : 1;
+    // 1행 배치 — 보유 장수만큼만 열을 만들어 빈칸 없이 채움
+    const n=Math.min(COVER_N, pool.length);
     const thumbs=pool.slice(0,n);
-    const cols = n>=6 ? 3 : n>=2 ? 2 : 1;
+    const cols=n;
     return `<a class="scard" href="#series/${encodeURIComponent(x.id||i)}">
       <div class="bg" style="grid-template-columns:repeat(${cols},1fr)">
         ${thumbs.map(t=>`<img src="${esc(abs(t))}" alt="" loading="lazy">`).join('')}
