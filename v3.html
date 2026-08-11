@@ -133,6 +133,8 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:clamp(34px,5vw,60px) 0 16px}
 .head h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,2.7vw,30px);letter-spacing:-.03em}
 .head p{font-size:13.5px;color:var(--stone);max-width:52ch}
+.head h2 .sd{font-family:var(--sans);font-weight:400;font-size:13.5px;color:var(--stone);
+  letter-spacing:0;margin-left:10px;white-space:nowrap}
 .count{font-family:var(--mono);font-size:12px;color:var(--stone)}
 .crumb{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--stone);font-weight:600;padding-top:clamp(28px,4vw,44px)}
 .crumb:hover{color:var(--ink)}
@@ -316,6 +318,7 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
   .scard .bg img:nth-child(n+4){display:none}
   /* 모바일은 호버가 없어 편수를 호버 상태로 고정 */
   .scard .n{font-size:44px;color:#fff}
+  .head h2 .sd{display:block;margin:6px 0 0;white-space:normal;font-size:13px;line-height:1.5;max-width:34ch}
   .pcard .pn{opacity:1;transform:none;font-size:12.5px;padding:10px 9px}
   .banner .go{display:none}
 }
@@ -402,8 +405,7 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
   <section id="v-food" class="view">
     <div class="head">
       <div>
-        <h2>먹거리</h2>
-        <p>캠핑 가서 사 먹은 밀키트와 간편식입니다. 다시 살 만했던 것만 올립니다.</p>
+        <h2>먹거리 <span class="sd">캠핑 가서 사 먹은 밀키트와 간편식입니다. 다시 살 만했던 것만 올립니다.</span></h2>
       </div>
       <span class="count" id="food-count"></span>
     </div>
@@ -415,8 +417,7 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
   <section id="v-gear" class="view">
     <div class="head">
       <div>
-        <h2>캠핑용품</h2>
-        <p>공대남자가 지금 사용중인 캠핑용품입니다. 실제로 챙겨 다니는 것만 올립니다.</p>
+        <h2>캠핑용품 <span class="sd">공대남자가 지금 사용중인 캠핑용품입니다. 실제로 챙겨 다니는 것만 올립니다.</span></h2>
       </div>
       <span class="count" id="gear-count"></span>
     </div>
