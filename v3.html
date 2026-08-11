@@ -330,8 +330,8 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
   <div class="nav-in">
     <a class="mark" href="#home">공대남자<span> / @kyd_zm</span></a>
     <div class="tabs">
-      <a class="tab" href="#camps">다녀온 캠핑장</a>
       <a class="tab" href="#stories">영상모음</a>
+      <a class="tab" href="#camps">다녀온 캠핑장</a>
       <a class="tab" href="#food">먹거리</a>
       <a class="tab" href="#gear">캠핑용품</a>
       <a class="tab alt" href="#about">소개 · 협업</a>
@@ -459,8 +459,8 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
       <div class="foot-nav">
         <dl class="foot-col">
           <dt>RECORD</dt>
-          <a href="#camps">다녀온 캠핑장</a>
           <a href="#stories">영상모음</a>
+          <a href="#camps">다녀온 캠핑장</a>
         </dl>
         <dl class="foot-col">
           <dt>PICK</dt>
@@ -571,10 +571,10 @@ function renderMenu(){
   const visits=c.reduce((a,x)=>a+(+x.visits||0),0);
   const nFood=pub(DATA.foods).length, nGear=pub(DATA.items).length;
   const cards=[
-    {cls:'lg',href:'#camps',  title:'다녀온 캠핑장', n:c.length+'곳 / '+visits+'회',
-     img:M+'camps.jpg',   color:M+'camps-color.jpg'},
     {cls:'lg',href:'#stories',title:'영상모음',   n:epTotal?epTotal+'편':'',
      img:M+'stories.jpg', color:M+'stories-color.jpg'},
+    {cls:'lg',href:'#camps',  title:'다녀온 캠핑장', n:c.length+'곳 / '+visits+'회',
+     img:M+'camps.jpg',   color:M+'camps-color.jpg'},
     {cls:'sm',href:'#food',   title:'먹거리',     n:nFood?nFood+'개':'',
      img:M+'food.jpg',    color:M+'food-color.jpg'},
     {cls:'sm',href:'#gear',   title:'캠핑용품',     n:nGear?nGear+'개':'',

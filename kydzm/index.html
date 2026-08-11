@@ -7048,6 +7048,11 @@ function renderItemEditForm(idx) {
   _renderItemFormUI();
 }
 
+function _isKnownEpUrl(u) {
+  if (!u) return false;
+  return (cache.series || []).some(s => (s.eps || []).some(e => e.url === u));
+}
+
 function _renderItemFormUI() {
   const isEdit = _itemForm.mode === 'edit';
   document.getElementById('topbar-title').innerHTML = isEdit ? '🛠 장비 수정' : '🛠 장비 추가';
@@ -7094,9 +7099,24 @@ function _renderItemFormUI() {
         </div>
 
         <div class="form-field">
-          <label class="label" for="if-video">소개 영상 링크</label>
+          <label class="label" for="if-video-pick">소개 영상 선택</label>
+          <select id="if-video-pick" class="input">
+            <option value="">— 연결 안 함 —</option>
+            ${(cache.series || []).map(s => {
+              const eps = (s.eps || []).filter(e => e.url);
+              if (!eps.length) return '';
+              return `<optgroup label="${escapeHtml((s.emoji || '') + ' ' + s.name)}">` +
+                eps.map(e => `<option value="${escapeHtml(e.url)}"${_itemForm.video === e.url ? ' selected' : ''}>${e.ep ? 'EP.' + String(e.ep).padStart(2, '0') + ' · ' : ''}${escapeHtml(e.title || '')}</option>`).join('') +
+                `</optgroup>`;
+            }).join('')}
+            <option value="__etc__"${_itemForm.video && !_isKnownEpUrl(_itemForm.video) ? ' selected' : ''}>기타 (직접 입력)</option>
+          </select>
+        </div>
+
+        <div class="form-field" id="if-video-wrap" style="${_itemForm.video && !_isKnownEpUrl(_itemForm.video) ? '' : 'display:none;'}">
+          <label class="label" for="if-video">영상 링크 직접 입력</label>
           <input type="text" id="if-video" class="input" placeholder="https://www.instagram.com/reel/..." value="${escapeHtml(_itemForm.video)}">
-          <div class="help">입력하면 사이트 카드에 재생 표시가 붙고, 클릭 시 구매/영상 선택 팝업이 뜹니다</div>
+          <div class="help">목록에 없는 영상은 여기에 주소를 붙여넣으세요</div>
         </div>
 
         <div class="form-field">
@@ -7166,6 +7186,19 @@ function _renderItemFormUI() {
   $('if-name').oninput = (e) => { _itemForm.name = e.target.value; };
   $('if-cat').onchange = (e) => { _itemForm.cat = e.target.value; };
   $('if-video').oninput = (e) => { _itemForm.video = e.target.value; };
+  $('if-video-pick').onchange = (e) => {
+    const v = e.target.value;
+    const wrap = $('if-video-wrap');
+    if (v === '__etc__') {
+      wrap.style.display = '';
+      _itemForm.video = $('if-video').value || '';
+      $('if-video').focus();
+    } else {
+      wrap.style.display = 'none';
+      _itemForm.video = v;
+      $('if-video').value = v;
+    }
+  };
   $('if-desc').oninput = (e) => { _itemForm.desc = e.target.value; };
   $('if-source').onchange = (e) => { _itemForm.source = e.target.value; };
 
