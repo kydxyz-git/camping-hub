@@ -63,6 +63,8 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 /* 헤더 */
 .title{padding:clamp(26px,4vw,40px) 0 0;display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
 .title h1{font-family:var(--display);font-weight:800;font-size:clamp(24px,4vw,42px);letter-spacing:-.035em;line-height:1.15}
+.title .sub{width:100%;margin-top:8px;font-family:var(--mono);font-size:12.5px;
+  letter-spacing:.02em;color:var(--stone)}
 .badge{font-size:11.5px;font-weight:700;background:var(--ink);color:#fff;padding:5px 10px;border-radius:2px;margin-top:6px}
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
 .tag{font-size:12.5px;color:#4C524D;border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px}
@@ -167,7 +169,6 @@ function orderedImgs(c){
     <section class="gal">
       <div class="gal-main" id="gal-main">
         ${imgs.map((s,i)=>`<img src="${esc(abs(s))}" alt="${esc(c.name)}" style="opacity:${i===0?1:0}">`).join('')}
-        ${v?`<span class="stamp">${v}번 방문</span>`:''}
       </div>
       ${imgs.length>1?`<div class="thumbs">${imgs.map((s,i)=>
         `<button data-i="${i}" class="${i===0?'on':''}" aria-label="사진 ${i+1}"><img src="${esc(abs(s))}" alt=""></button>`).join('')}</div>`:''}
@@ -175,7 +176,7 @@ function orderedImgs(c){
 
     <header class="title">
       <h1>${esc(c.name)}</h1>
-      ${c.graega?'<span class="badge">그래가 예약</span>':''}
+      ${v?`<p class="sub">${v}번 다녀왔습니다</p>`:''}
     </header>
     <div class="tags">
       ${c.region?`<span class="tag region">${esc(c.region)}</span>`:''}
