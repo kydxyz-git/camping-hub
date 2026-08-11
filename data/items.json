@@ -116,7 +116,7 @@
   },
   {
     "id": "item_200bd59067",
-    "name": "텔레신 실리콘 넥마운트",
+    "name": "텔레신 실리콘 넥마운트(MNM-001)",
     "cat": "camera",
     "video": "",
     "desc": "1인칭 시점 촬영 필수 악세사리",
@@ -129,7 +129,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-06-04T23:55:23.406Z",
-    "updated_at": "2026-08-11T08:23:01.321Z"
+    "updated_at": "2026-08-11T08:23:14.103Z"
   },
   {
     "id": "item_75f77862cd",
