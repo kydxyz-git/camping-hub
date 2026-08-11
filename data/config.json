@@ -33,12 +33,12 @@
   "tab5": "캠핑여지도",
   "itemCats": [
     {
-      "key": "camp",
-      "label": "캠핑용품"
-    },
-    {
       "key": "camera",
       "label": "촬영장비"
+    },
+    {
+      "key": "camp",
+      "label": "캠핑용품"
     }
   ]
 }
