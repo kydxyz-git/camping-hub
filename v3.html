@@ -93,12 +93,13 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .mcard::after{content:none}
 .mcard .txt{position:absolute;left:0;right:0;bottom:0;padding:clamp(14px,2vw,24px);color:var(--ink);
   display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-.mcard h2{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.1;
-  font-size:clamp(19px,2.9vw,34px)}
-.mcard .n{font-family:var(--mono);font-weight:600;font-size:clamp(21px,3.4vw,40px);
-  letter-spacing:-.03em;color:#2F352F;white-space:nowrap;line-height:1}
-.mcard.sm h2{font-size:clamp(17px,2.3vw,25px)}
-.mcard.sm .n{font-size:clamp(18px,2.6vw,29px)}
+.mcard h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.2;
+  font-size:clamp(14px,1.5vw,17px)}
+.mcard .n{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.6vw,42px);
+  letter-spacing:-.045em;color:var(--ink);line-height:1.02;text-align:right;
+  display:flex;flex-direction:column;align-items:flex-end}
+.mcard.sm h2{font-size:clamp(13px,1.4vw,16px)}
+.mcard.sm .n{font-size:clamp(21px,2.8vw,32px)}
 .mcard.intro{background:#E9EAE4;border-color:#DCDED6;perspective:900px}
 .mcard.intro::after{background:none}
 .mcard.intro .flip{position:absolute;inset:0;transform-style:preserve-3d;
@@ -237,11 +238,11 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
   .mcard.lg{grid-column:span 6;aspect-ratio:16/10}
   .mcard.sm{grid-column:span 3;aspect-ratio:4/3}
   .mcard.sm .bg{bottom:36%}
-  .mcard h2{font-size:19px}
-  .mcard .n{font-size:20px}
-  .mcard.sm h2{font-size:16px}
-  .mcard.sm .n{font-size:17px}
-  .mcard.sm .txt{flex-direction:column;align-items:flex-start;gap:2px}
+  .mcard h2{font-size:14px}
+  .mcard .n{font-size:26px}
+  .mcard.sm h2{font-size:13px}
+  .mcard.sm .n{font-size:21px}
+  .mcard.sm .txt{align-items:flex-end}
   .mcard.intro{grid-column:span 6;aspect-ratio:2.6/1}
   /* 모바일은 호버가 없어 컬러를 기본 노출 */
   .mcard .bg .on{opacity:1}
@@ -502,14 +503,15 @@ function renderMenu(){
 
   const M=BASE+'images/menu/';
   const visits=c.reduce((a,x)=>a+(+x.visits||0),0);
+  const nFood=pub(DATA.foods).length, nGear=pub(DATA.items).length+pub(DATA.camera).length;
   const cards=[
-    {cls:'lg',href:'#camps',  title:'다녀온 캠핑장', n:c.length+'곳 / '+visits+'회',
+    {cls:'lg',href:'#camps',  title:'다녀온 캠핑장', n:c.length+'곳|'+visits+'회',
      img:M+'camps.jpg',   color:M+'camps-color.jpg'},
-    {cls:'lg',href:'#stories',title:'캠핑이야기',   n:epTotal+'편',
+    {cls:'lg',href:'#stories',title:'캠핑이야기',   n:epTotal?epTotal+'편':'',
      img:M+'stories.jpg', color:M+'stories-color.jpg'},
-    {cls:'sm',href:'#food',   title:'먹은음식',     n:pub(DATA.foods).length+'개',
+    {cls:'sm',href:'#food',   title:'먹은음식',     n:nFood?nFood+'개':'',
      img:M+'food.jpg',    color:M+'food-color.jpg'},
-    {cls:'sm',href:'#gear',   title:'캠핑장비',     n:(pub(DATA.items).length+pub(DATA.camera).length)+'개',
+    {cls:'sm',href:'#gear',   title:'캠핑장비',     n:nGear?nGear+'개':'',
      img:M+'gear.jpg',    color:M+'gear-color.jpg'},
     {cls:'sm intro',href:'#about',title:'소개 · 협업', n:'',
      img:'', desc:'캠핑장, 장비, 음식, 촬영 장비 협업을 받고 있습니다.'}
@@ -566,7 +568,7 @@ function renderMenu(){
       </div>
       <div class="txt">
         <h2>${esc(x.title)}</h2>
-        ${x.n&&!/^0/.test(x.n)?`<span class="n">${esc(x.n)}</span>`:''}
+        ${x.n?`<span class="n">${x.n.split('|').map(s=>`<span>${esc(s)}</span>`).join('')}</span>`:''}
       </div>
     </a>`;
   }).join('');
