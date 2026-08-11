@@ -108,7 +108,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .mcard.intro .back{transform:rotateY(180deg);background:#E9EAE4}
 .mcard.intro .ico{width:clamp(44px,5.4vw,66px);height:auto;margin-bottom:12px}
 .mcard.intro h2{font-size:clamp(15px,1.9vw,19px)}
-.mcard.intro p{font-size:12.5px;color:#6A706A;margin-top:5px;line-height:1.5}
+.mcard.intro p{font-size:clamp(13px,1.5vw,16px);font-weight:600;color:#5A605A;margin-top:6px;line-height:1.5}
 .mcard.intro .lines{display:inline-flex;flex-direction:column;align-items:flex-start}
 .mcard.intro .ct{margin-top:2px;font-family:var(--mono);font-size:clamp(11px,1.15vw,13px);
   letter-spacing:.02em;line-height:1.9;color:#3A403A;
@@ -200,10 +200,24 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 
 .empty{padding:52px 0;text-align:center;color:var(--stone);font-size:13.5px}
 .notice{margin-top:clamp(32px,4vw,52px);padding-top:20px;border-top:1px solid var(--line);font-size:11.5px;color:#9A9E98;line-height:1.65}
-footer{border-top:1px solid var(--line);padding:32px 0 52px;margin-top:18px}
-.foot{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--stone)}
-.foot a{font-weight:600;color:var(--ink)}
-.foot .sp{margin-left:auto;font-family:var(--mono);font-size:11px}
+footer{border-top:1px solid var(--line);padding:clamp(34px,5vw,54px) 0 clamp(30px,4vw,44px);margin-top:clamp(24px,4vw,48px)}
+.foot-top{display:flex;gap:clamp(24px,5vw,64px);flex-wrap:wrap;align-items:flex-start;
+  padding-bottom:clamp(24px,3vw,34px)}
+.foot-brand b{display:block;font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:-.03em}
+.foot-brand p{margin-top:7px;font-size:13px;color:var(--stone);max-width:34ch;line-height:1.6}
+.foot-nav{display:flex;gap:clamp(20px,3vw,44px);margin-left:auto;flex-wrap:wrap}
+.foot-col{display:flex;flex-direction:column;gap:9px}
+.foot-col dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:#B0B4AE;margin-bottom:2px}
+.foot-col a{font-size:13.5px;color:#4C524D;transition:color .15s}
+.foot-col a:hover{color:var(--ink)}
+.foot-bot{display:flex;gap:14px;flex-wrap:wrap;align-items:center;
+  padding-top:clamp(18px,2.4vw,26px);border-top:1px solid var(--line);
+  font-size:12px;color:var(--stone)}
+.foot-bot .sp{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.04em}
+@media (max-width:620px){
+  .foot-nav{margin-left:0;gap:28px}
+  .foot-bot .sp{margin-left:0;width:100%}
+}
 
 /* ── 태블릿 ── */
 @media (max-width:900px){
@@ -373,10 +387,32 @@ footer{border-top:1px solid var(--line);padding:32px 0 52px;margin-top:18px}
   </section>
 
   <footer>
-    <div class="foot">
-      <a id="ig-link" href="#">@kyd_zm</a>
-      <a href="#about">소개 · 협업</a>
-      <span class="sp" id="credits"></span>
+    <div class="foot-top">
+      <div class="foot-brand">
+        <b>공대남자</b>
+        <p>5년차 부부캠퍼가 직접 다녀온 오토캠핑 기록입니다. 가본 곳만, 몇 번 갔는지까지 남깁니다.</p>
+      </div>
+      <div class="foot-nav">
+        <dl class="foot-col">
+          <dt>RECORD</dt>
+          <a href="#camps">다녀온 캠핑장</a>
+          <a href="#stories">캠핑이야기</a>
+        </dl>
+        <dl class="foot-col">
+          <dt>PICK</dt>
+          <a href="#food">먹은음식</a>
+          <a href="#gear">캠핑장비</a>
+        </dl>
+        <dl class="foot-col">
+          <dt>CONTACT</dt>
+          <a href="#about">소개 · 협업</a>
+          <a id="ig-link" href="#" target="_blank" rel="noopener">인스타그램</a>
+        </dl>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 공대남자 · KYDZ</span>
+      <span id="credits" class="sp"></span>
     </div>
   </footer>
 </main>
