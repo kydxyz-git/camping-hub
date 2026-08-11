@@ -47,7 +47,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* ── hero ── */
-.hero{padding:clamp(44px,8vw,96px) 0 clamp(28px,4vw,44px);
+.hero{padding:clamp(20px,4.5vw,60px) 0 clamp(24px,3.4vw,40px);
   display:flex;align-items:flex-start;gap:clamp(24px,4vw,56px)}
 .hero .htxt{flex:1 1 auto;min-width:0}
 .hero .prof{flex:0 0 auto;width:clamp(110px,15vw,196px);text-align:center;position:relative}
@@ -70,10 +70,11 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   letter-spacing:.04em;color:var(--stone);transition:color .15s}
 .hero .prof:hover .id{color:var(--ink)}
 @media (max-width:620px){
-  .hero{gap:16px;align-items:center}
+  .hero{gap:14px;align-items:center}
+  .eyebrow{font-size:9.5px;letter-spacing:.12em;margin-bottom:12px}
   .hero .prof{width:92px}
 }
-.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--stone);margin-bottom:20px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--stone);margin-bottom:18px;white-space:nowrap}
 .hero h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,5.4vw,58px);line-height:1.14;letter-spacing:-.035em;max-width:16ch}
 .hero h1 em{font-style:normal;position:relative;white-space:nowrap}
 .hero h1 em::after{content:"";position:absolute;left:-.06em;right:-.06em;bottom:.06em;height:.34em;background:var(--stamp);z-index:-1}
