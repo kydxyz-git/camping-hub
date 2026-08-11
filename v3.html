@@ -572,7 +572,7 @@ addEventListener('hashchange',route);
   renderMenu();
   renderCamps();
   renderSeriesList();
-  renderProducts('#food-grid',DATA.foods,'#food-count');
+  renderProducts('#food-grid',DATA.foods,'#food-count',null,(DATA.config||{}).foodsSort||'random');
   renderGear();
   renderChrome();
   route();
@@ -581,9 +581,37 @@ addEventListener('hashchange',route);
 const pub=a=>(a||[]).filter(x=>x.published!==false);
 const camps=()=>pub(DATA.camps);
 const sers =()=>pub(DATA.series);
-/* 회차 정렬: 등록일 최신순 (ep 번호가 0인 회차가 많아 번호순은 부정확) */
-const epsOf=s=>pub(s.eps).sort((a,b)=>
-  String(b.created_at||'').localeCompare(String(a.created_at||'')));
+/* 최근 N일 신규 우선 + 셔플 (기존 사이트와 동일 규칙) */
+function sortRecentFirst(arr,days){
+  const cutoff=Date.now()-(days||7)*86400000;
+  const recent=[],older=[];
+  for(const it of arr){
+    const ts=it.created_at?new Date(it.created_at).getTime():0;
+    (ts&&ts>=cutoff?recent:older).push(it);
+  }
+  recent.sort(()=>Math.random()-.5);
+  older.sort(()=>Math.random()-.5);
+  return [...recent,...older];
+}
+/* 회차 정렬 — admin의 시리즈별 sort 설정을 그대로 따름 */
+function epsOf(s){
+  const eps=pub(s.eps), mode=s.sort||'ep_desc';
+  if(mode==='manual') return [...eps];
+  if(mode==='random') return sortRecentFirst(eps,7);
+  if(mode==='created_desc') return [...eps].sort((a,b)=>
+    (b.created_at?new Date(b.created_at).getTime():0)-(a.created_at?new Date(a.created_at).getTime():0));
+  const asc = mode==='ep_asc';
+  return [...eps].sort((a,b)=>{
+    const aH=(a.ep||0)>0, bH=(b.ep||0)>0;
+    if(aH&&bH){
+      if(a.ep!==b.ep) return asc ? a.ep-b.ep : b.ep-a.ep;
+      return asc ? (a.ep_sub||0)-(b.ep_sub||0) : (b.ep_sub||0)-(a.ep_sub||0);
+    }
+    if(aH) return -1;
+    if(bH) return 1;
+    return Math.random()-.5;
+  });
+}
 
 /* ── 메인 카드 ── */
 function renderMenu(){
@@ -749,8 +777,15 @@ function paintSeries(key){
 }
 
 /* ── 음식 · 장비 ── */
-function renderProducts(sel,rows,countSel,emptyMsg){
-  const list=pub(rows);
+/* 제품 정렬 — config의 foodsSort / itemsSort를 따름 */
+function sortProducts(list,mode){
+  if(mode==='manual') return [...list];
+  if(mode==='latest') return [...list].sort((a,b)=>
+    (b.created_at?new Date(b.created_at).getTime():0)-(a.created_at?new Date(a.created_at).getTime():0));
+  return sortRecentFirst(list,7);
+}
+function renderProducts(sel,rows,countSel,emptyMsg,mode){
+  const list=sortProducts(pub(rows), mode||'random');
   if(countSel) $(countSel).textContent=list.length+'개';
   $(sel).innerHTML=list.length?list.map(p=>{
     const hasV=!!(p.video||'').trim();
@@ -796,7 +831,8 @@ function renderGear(){
     </div>`;
   }).join('');
   $('#gear-sections').innerHTML = html || '<p class="empty">아직 등록된 용품이 없습니다.</p>';
-  cats.forEach((c,i)=>{ if($('#gsec-'+i)) renderProducts('#gsec-'+i, gearRows(all,cats,i)); });
+  const im=(DATA.config||{}).itemsSort||'random';
+  cats.forEach((c,i)=>{ if($('#gsec-'+i)) renderProducts('#gsec-'+i, gearRows(all,cats,i), null, null, im); });
 }
 
 /* 영상 있는 제품 클릭 시 선택 팝업 */
