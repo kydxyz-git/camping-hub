@@ -185,8 +185,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 /* 회차 카드 — 썸네일 위에 제목·EP 오버레이 */
 .ecard{display:block;position:relative;overflow:hidden;border-radius:3px;
   aspect-ratio:4/5;background:#EDEDE7;isolation:isolate}
-.ecard img{width:100%;height:100%;object-fit:cover;
-  filter:saturate(.35) brightness(.82)}
+.ecard img{width:100%;height:100%;object-fit:cover}
 .ecard::after{content:"";position:absolute;inset:0;z-index:1;
   background:linear-gradient(to bottom,rgba(10,12,13,.5) 0%,rgba(10,12,13,.44) 58%,rgba(10,12,13,.7) 100%);
   transition:opacity .3s ease}
