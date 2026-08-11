@@ -74,7 +74,11 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .mcard.lg{grid-column:span 3;aspect-ratio:16/10}
 .mcard.sm{grid-column:span 2;aspect-ratio:4/3}
 .mcard .bg{position:absolute;inset:0;z-index:-2}
-.mcard .bg img{transition:transform .6s cubic-bezier(.2,.7,.3,1)}
+.mcard .bg img{position:absolute;inset:0;width:100%;height:100%;
+  transition:transform .6s cubic-bezier(.2,.7,.3,1), opacity .3s ease}
+.mcard .bg .on{opacity:0}
+.mcard:hover .bg .on{opacity:1}
+.mcard:hover .bg .off{opacity:0}
 .mcard:hover .bg img{transform:scale(1.04)}
 .mcard::after{content:"";position:absolute;inset:0;z-index:-1;
   background:linear-gradient(to top,rgba(251,251,248,.96) 12%,rgba(251,251,248,.55) 30%,rgba(251,251,248,0) 52%)}
@@ -422,15 +426,16 @@ function renderMenu(){
   const epTotal=s.reduce((a,x)=>a+epsOf(x).length,0);
   const cover=arr=>{ const f=arr.find(x=>x); return f?abs(f):''; };
 
+  const M=BASE+'images/menu/';
   const cards=[
     {cls:'lg',href:'#camps',  title:'다녀온 캠핑장', n:c.length+'곳',
-     img:BASE+'images/menu/camps.jpg'},
+     img:M+'camps.jpg',   color:M+'camps-color.jpg'},
     {cls:'lg',href:'#stories',title:'캠핑이야기',   n:epTotal+'편',
-     img:BASE+'images/menu/stories.jpg'},
+     img:M+'stories.jpg', color:M+'stories-color.jpg'},
     {cls:'sm',href:'#food',   title:'먹은음식',     n:pub(DATA.foods).length+'개',
-     img:BASE+'images/menu/food.jpg'},
+     img:M+'food.jpg',    color:M+'food-color.jpg'},
     {cls:'sm',href:'#gear',   title:'캠핑장비',     n:(pub(DATA.items).length+pub(DATA.camera).length)+'개',
-     img:BASE+'images/menu/gear.jpg'},
+     img:M+'gear.jpg',    color:M+'gear-color.jpg'},
     {cls:'sm intro',href:'#about',title:'소개 · 협업', n:'',
      img:'', desc:'캠핑장, 장비, 음식, 촬영 장비 협업을 받고 있습니다.'}
   ];
@@ -448,7 +453,10 @@ function renderMenu(){
   $('#menu').innerHTML=cards.map(x=>`
     <a class="mcard ${x.cls}" href="${x.href}">
       ${x.cls.includes('intro')?ICON:''}
-      <div class="bg">${x.img?`<img src="${esc(x.img)}" alt="">`:''}</div>
+      <div class="bg">
+        ${x.img?`<img class="off" src="${esc(x.img)}" alt="">`:''}
+        ${x.color?`<img class="on" src="${esc(x.color)}" alt="" loading="lazy" onerror="this.remove()">`:''}
+      </div>
       <div class="txt">
         <h2>${esc(x.title)}</h2>
         ${x.n&&!/^0/.test(x.n)?`<span class="n">${esc(x.n)}</span>`:''}
