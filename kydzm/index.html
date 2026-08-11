@@ -4015,7 +4015,7 @@ function renderCampEditForm(idx) {
     lat: (typeof c.lat === 'number') ? c.lat : null,
     lng: (typeof c.lng === 'number') ? c.lng : null,
     videos: [...(c.videos || [])],
-    images: (c.imgs || []).map(src => ({ type: 'existing', src })),
+    images: (c.imgs || []).map(src => ({ type: 'existing', src, pos: (c.img_pos || {})[src] || 'center' })),
     mainIdx: Math.max(0, (c.imgs || []).indexOf(c.main_img)),
   };
   _renderCampFormUI();
@@ -4562,6 +4562,7 @@ function _renderCampFormUI() {
       const label = img.type === 'existing' ? '기존' : '새';
       const labelColor = img.type === 'existing' ? '#666' : '#2dab5e';
       const isMain = i === _campForm.mainIdx;
+      const pos = img.pos || 'center';
       return `
         <div class="camp-image-item" data-i="${i}" draggable="false">
           <span class="camp-image-drag" title="드래그해서 순서 변경">⋮⋮</span>
@@ -4570,6 +4571,11 @@ function _renderCampFormUI() {
           <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:${isMain?700:500};color:${isMain?'#1a1a1a':'#888'};cursor:pointer;white-space:nowrap;">
             <input type="radio" name="camp-main-img" data-main="${i}" ${isMain?'checked':''} style="margin:0;cursor:pointer;">대표
           </label>
+          <select data-pos="${i}" title="카드에서 보일 위치" style="font-size:11px;padding:2px 4px;border:1px solid #ddd;border-radius:4px;cursor:pointer;color:#555;">
+            <option value="center"${pos==='center'?' selected':''}>가운데</option>
+            <option value="top"${pos==='top'?' selected':''}>위쪽</option>
+            <option value="bottom"${pos==='bottom'?' selected':''}>아래쪽</option>
+          </select>
           <span class="camp-image-label" style="color:${labelColor};">${label}</span>
           <button class="camp-image-remove" data-rm="${i}">×</button>
         </div>
@@ -4578,6 +4584,10 @@ function _renderCampFormUI() {
     // 대표 이미지 선택
     listEl.querySelectorAll('[data-main]').forEach(r => {
       r.onchange = () => { _campForm.mainIdx = +r.dataset.main; renderImageList(); };
+    });
+    // 카드 노출 위치
+    listEl.querySelectorAll('[data-pos]').forEach(s => {
+      s.onchange = () => { _campForm.images[+s.dataset.pos].pos = s.value; };
     });
     // 제거 버튼
     listEl.querySelectorAll('[data-rm]').forEach(btn => {
@@ -4754,6 +4764,12 @@ async function submitCampForm() {
     if (finalImgs.length > 1 && _mi > 0 && _mi < finalImgs.length) {
       campObj.main_img = finalImgs[_mi];
     }
+    // 카드 노출 위치 (center가 아닌 것만 저장)
+    const _pos = {};
+    _campForm.images.forEach((im, i) => {
+      if (im.pos && im.pos !== 'center' && finalImgs[i]) _pos[finalImgs[i]] = im.pos;
+    });
+    if (Object.keys(_pos).length) campObj.img_pos = _pos;
     // 좌표 (값 있을 때만 포함 — null/undefined는 JSON에서 깔끔하게 생략)    if (typeof _campForm.lat === 'number' && !isNaN(_campForm.lat)) campObj.lat = _campForm.lat;
     if (typeof _campForm.lng === 'number' && !isNaN(_campForm.lng)) campObj.lng = _campForm.lng;
     // 개별 영상 URL (비어있지 않을 때만 포함)

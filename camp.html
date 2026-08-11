@@ -78,8 +78,8 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:20px;font-size
 
 <nav class="nav">
   <div class="nav-in">
-    <a class="mark" href="./v2.html#camps">KYDZ<span> / 공대남자</span></a>
-    <a class="back" href="./v2.html#camps">← 캠핑장 목록</a>
+    <a class="mark" href="./v3.html#camps">공대남자<span> / KYDZ</span></a>
+    <a class="back" href="./v3.html#camps">← 캠핑장 목록</a>
   </div>
 </nav>
 
@@ -118,7 +118,7 @@ function orderedImgs(c){
 
   const c=(camps||[]).find(x=>x.id===id);
   if(!c || c.published===false){
-    root.innerHTML='<p class="err">해당 캠핑장을 찾을 수 없습니다. <a href="./v2.html#camps" style="text-decoration:underline">목록으로 돌아가기</a></p>'; return;
+    root.innerHTML='<p class="err">해당 캠핑장을 찾을 수 없습니다. <a href="./v3.html#camps" style="text-decoration:underline">목록으로 돌아가기</a></p>'; return;
   }
 
   document.title=c.name+' · 공대남자 캠핑 기록';
@@ -176,7 +176,7 @@ function orderedImgs(c){
       </aside>
     </div>
 
-    <footer>© 2026 공대남자 · <a href="./v2.html#camps" style="text-decoration:underline">캠핑장 목록으로</a></footer>
+    <footer>© 2026 공대남자 · <a href="./v3.html#camps" style="text-decoration:underline">캠핑장 목록으로</a></footer>
   `;
 
   const thumbs=root.querySelector('.thumbs');

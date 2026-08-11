@@ -262,7 +262,7 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
 
 <nav class="nav bare" id="nav">
   <div class="nav-in">
-    <a class="mark" href="#home">KYDZ<span> / 공대남자</span></a>
+    <a class="mark" href="#home">공대남자<span> / KYDZ</span></a>
     <div class="tabs">
       <a class="tab" href="#camps">다녀온 캠핑장</a>
       <a class="tab" href="#stories">캠핑이야기</a>
@@ -598,10 +598,13 @@ function paintCamps(){
   const rows=camps().filter(c=>(region==='전체'||c.region===region)&&(!q||(c.name||'').toLowerCase().includes(q)));
   $('#camp-count').textContent=rows.length+' / '+camps().length;
   $('#camp-grid').innerHTML=rows.length?rows.map(c=>{
-    const img=mainImg(c), v=+c.visits||0, p=platform(c);
+    const pool=(c.imgs||[]).filter(Boolean);
+    const raw = c.main_img && pool.includes(c.main_img) ? c.main_img : pool[0];
+    const img=abs(raw), v=+c.visits||0, p=platform(c);
+    const pos=(c.img_pos||{})[raw]||'center';
     return `<a class="card" href="./camp.html?id=${encodeURIComponent(c.id)}">
       <div class="shot">
-        ${img?`<img src="${esc(img)}" alt="${esc(c.name)}" loading="lazy">`:''}
+        ${img?`<img src="${esc(img)}" alt="${esc(c.name)}" loading="lazy" style="object-position:center ${esc(pos)}">`:''}
         ${v?`<span class="stamp">${v}번 방문</span>`:''}
         ${p?`<span class="plat">${esc(p)}</span>`:''}
       </div>
