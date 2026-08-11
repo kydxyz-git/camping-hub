@@ -7099,7 +7099,7 @@ function _renderItemFormUI() {
         </div>
 
         <div class="form-field">
-          <label class="label" for="if-video-pick">소개 영상 선택</label>
+          <label class="label" for="if-video-pick">소개 게시물 선택</label>
           <select id="if-video-pick" class="input">
             <option value="">— 연결 안 함 —</option>
             ${(cache.series || []).map(s => {
@@ -7114,9 +7114,9 @@ function _renderItemFormUI() {
         </div>
 
         <div class="form-field" id="if-video-wrap" style="${_itemForm.video && !_isKnownEpUrl(_itemForm.video) ? '' : 'display:none;'}">
-          <label class="label" for="if-video">영상 링크 직접 입력</label>
+          <label class="label" for="if-video">게시물 링크 직접 입력</label>
           <input type="text" id="if-video" class="input" placeholder="https://www.instagram.com/reel/..." value="${escapeHtml(_itemForm.video)}">
-          <div class="help">목록에 없는 영상은 여기에 주소를 붙여넣으세요</div>
+          <div class="help">목록에 없는 게시물은 여기에 주소를 붙여넣으세요</div>
         </div>
 
         <div class="form-field">
