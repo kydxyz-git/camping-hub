@@ -154,13 +154,16 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .shot{position:relative;aspect-ratio:4/5;overflow:hidden;border-radius:3px;background:#EDEDE7}
 .shot img{transition:transform .5s cubic-bezier(.2,.7,.3,1)}
 .card:hover .shot img{transform:scale(1.045)}
-.stamp{position:absolute;left:9px;bottom:9px;z-index:2;font-family:var(--mono);font-weight:600;font-size:10.5px;
-  letter-spacing:.04em;background:var(--stamp);padding:4px 8px;border-radius:2px}
 .plat{position:absolute;right:9px;top:9px;z-index:2;font-size:10.5px;font-weight:700;
   background:rgba(21,24,26,.82);color:#fff;padding:4px 8px;border-radius:2px;backdrop-filter:blur(4px)}
 .meta{padding:10px 2px 0}
 .name{font-weight:700;font-size:14.5px;letter-spacing:-.015em;line-height:1.35}
-.region{display:block;margin-top:4px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--stone)}
+.region{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--stone)}
+.sub{display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap}
+.sub .visit{font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:#3F5346;
+  position:relative;padding-left:9px}
+.sub .visit::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:3px;border-radius:50%;background:var(--stamp)}
 .desc{margin-top:5px;font-size:12.5px;color:#5D635C;line-height:1.5}
 .price{margin-top:7px;font-family:var(--mono);font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px}
 .was{font-weight:400;font-size:11.5px;color:#B0B4AE;text-decoration:line-through}
@@ -609,12 +612,14 @@ function paintCamps(){
     return `<a class="card" href="./camp.html?id=${encodeURIComponent(c.id)}">
       <div class="shot">
         ${img?`<img src="${esc(img)}" alt="${esc(c.name)}" loading="lazy" style="object-position:center ${esc(pos)}">`:''}
-        ${v?`<span class="stamp">${v}번 방문</span>`:''}
         ${p?`<span class="plat">${esc(p)}</span>`:''}
       </div>
       <div class="meta">
         <p class="name">${esc(c.name)}</p>
-        <span class="region">${esc(c.region||'')}</span>
+        <p class="sub">
+          <span class="region">${esc(c.region||'')}</span>
+          ${v?`<span class="visit">${v}번 방문</span>`:''}
+        </p>
       </div>
     </a>`;
   }).join(''):'<p class="empty">조건에 맞는 캠핑장이 없습니다. 검색어나 지역을 바꿔보세요.</p>';
