@@ -33,28 +33,44 @@
   "tab5": "캠핑여지도",
   "itemCats": [
     {
-      "key": "cat6f2tw",
-      "label": "텐트&타프"
-    },
-    {
-      "key": "cato05ws",
-      "label": "테이블&의자"
-    },
-    {
-      "key": "cath6cua",
-      "label": "식기도구"
-    },
-    {
-      "key": "camp",
-      "label": "캠핑용품"
-    },
-    {
       "key": "cat8m8hc",
       "label": "물놀이용품"
     },
     {
       "key": "camera",
       "label": "촬영장비"
+    },
+    {
+      "key": "tent",
+      "label": "텐트·타프"
+    },
+    {
+      "key": "table",
+      "label": "테이블·체어"
+    },
+    {
+      "key": "sleep",
+      "label": "침구"
+    },
+    {
+      "key": "fire",
+      "label": "화로·난방"
+    },
+    {
+      "key": "kitchen",
+      "label": "주방용품"
+    },
+    {
+      "key": "light",
+      "label": "조명·전기"
+    },
+    {
+      "key": "camp",
+      "label": "수납·기타"
+    },
+    {
+      "key": "supply",
+      "label": "소모품"
     }
   ]
 }
