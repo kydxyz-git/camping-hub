@@ -168,7 +168,7 @@ function orderedImgs(c){
   document.title=c.name+' · 공대남자 캠핑 기록';
   const imgs=orderedImgs(c);
   const v=+c.visits||0;
-  const FEATURES=['계곡','벚꽃','수영장','애견동반','개별샤워실','펜션','노키즈'];
+  const FEATURES=['계곡','바다','벚꽃','수영장','애견동반','개별샤워실','펜션','노키즈'];
   const all=[...(c.landscape||[]),...(c.extras||[])];
   const tags=FEATURES.filter(f=>all.includes(f));
 
