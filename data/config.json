@@ -47,6 +47,10 @@
     {
       "key": "camera",
       "label": "촬영장비"
+    },
+    {
+      "key": "cath6cua",
+      "label": "식기도구"
     }
   ]
 }
