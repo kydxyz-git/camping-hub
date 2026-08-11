@@ -78,6 +78,8 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .vid{display:flex;gap:12px;align-items:center;border:1px solid var(--line);background:#fff;border-radius:4px;padding:12px 14px;transition:.16s}
 .vid:hover{border-color:#C7CAC3;transform:translateY(-1px)}
 .vid b{font-size:14px;font-weight:600}
+.vid b em{display:block;font-style:normal;font-family:var(--mono);font-size:11px;
+  font-weight:400;color:var(--stone);letter-spacing:.04em;margin-top:3px}
 .vid span{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--stone)}
 #map{height:280px;border-radius:4px;border:1px solid var(--line);background:#EDEDE7}
 .cta{display:block;text-align:center;background:var(--ink);color:#fff;font-weight:700;font-size:15px;padding:16px;border-radius:999px;transition:.18s}
@@ -139,7 +141,25 @@ function orderedImgs(c){
   const imgs=orderedImgs(c);
   const v=+c.visits||0;
   const tags=[...(c.seasons||[]),...(c.landscape||[]),...(c.extras||[])];
-  const vids=(c.videos||[]).filter(x=>x&&x.url);
+
+  // 연결된 릴스: camp_id로 시리즈에서 수집 + 자체 videos 필드 병합
+  let series=[];
+  try{
+    const r=await fetch(BASE+'data/series.json?v='+Date.now());
+    if(r.ok) series=await r.json();
+  }catch(e){}
+  const linked=[];
+  for(const s of (series||[])){
+    if(s.published===false) continue;
+    for(const ep of (s.eps||[])){
+      if(ep.published===false || ep.camp_id!==c.id || !ep.url) continue;
+      const num = ep.ep>0 ? `${s.name} EP.${String(ep.ep).padStart(2,'0')}${ep.ep_sub>0?'-'+ep.ep_sub:''}` : s.name;
+      linked.push({url:ep.url, title:(ep.title||'').trim()||num, sub:num});
+    }
+  }
+  const own=(c.videos||[]).filter(x=>x&&x.url).map(x=>({url:x.url,title:x.title||'영상 보기',sub:''}));
+  const seen=new Set(); const vids=[];
+  for(const x of [...linked,...own]){ if(!seen.has(x.url)){ seen.add(x.url); vids.push(x); } }
 
   root.innerHTML=`
     <section class="gal">
@@ -175,7 +195,7 @@ function orderedImgs(c){
           <h2>VIDEO</h2>
           <div class="vids">
             ${vids.map(x=>`<a class="vid" href="${esc(x.url)}" target="_blank" rel="noopener">
-              <b>${esc(x.title||'영상 보기')}</b><span>인스타그램 →</span></a>`).join('')}
+              <b>${esc(x.title)}${x.sub?`<em>${esc(x.sub)}</em>`:''}</b><span>인스타그램 →</span></a>`).join('')}
           </div>
         </div>`:''}
       </div>
