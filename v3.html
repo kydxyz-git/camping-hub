@@ -581,7 +581,9 @@ addEventListener('hashchange',route);
 const pub=a=>(a||[]).filter(x=>x.published!==false);
 const camps=()=>pub(DATA.camps);
 const sers =()=>pub(DATA.series);
-const epsOf=s=>pub(s.eps).sort((a,b)=>(+b.ep||0)-(+a.ep||0));
+/* 회차 정렬: 등록일 최신순 (ep 번호가 0인 회차가 많아 번호순은 부정확) */
+const epsOf=s=>pub(s.eps).sort((a,b)=>
+  String(b.created_at||'').localeCompare(String(a.created_at||'')));
 
 /* ── 메인 카드 ── */
 function renderMenu(){
