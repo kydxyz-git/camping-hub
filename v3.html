@@ -556,11 +556,7 @@ function renderChrome(){
   $('#food-notice').innerHTML=note(c.foodPartnersLine1,c.foodPartnersLine2);
   $('#gear-notice').innerHTML=note(c.itemPartnersLine1,c.itemPartnersLine2);
   $('#ig-link').href=c.footerInstaUrl||'#';
-  const pl=$('#prof-link'); if(pl){
-    pl.href=c.footerInstaUrl||'#';
-    const idEl=pl.querySelector('.id');
-    if(idEl && c.footerInstaLink) idEl.textContent=c.footerInstaLink;
-  }
+  const pl=$('#prof-link'); if(pl) pl.href=c.footerInstaUrl||'#';
   $('#credits').textContent=c.footerCredits||'';
   $('#dm-link').href=c.footerDmUrl||'#';
 
