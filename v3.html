@@ -53,9 +53,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 /* ── 메인 메뉴 카드 ── */
 .menu{display:grid;gap:clamp(10px,1.4vw,16px);grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(0,auto)}
 .mcard{position:relative;overflow:hidden;border-radius:5px;background:#EDEDE7;display:block;isolation:isolate}
-.mcard.lg{grid-column:span 4;aspect-ratio:2.1/1}
-.mcard.md{grid-column:span 2;aspect-ratio:1.55/1}
-.mcard.sm{grid-column:span 1;aspect-ratio:1/1}
+.mcard.lg,.mcard.md,.mcard.sm{grid-column:span 1;aspect-ratio:3/4}
 .mcard .bg{position:absolute;inset:0;z-index:-2}
 .mcard .bg img{transition:transform .6s cubic-bezier(.2,.7,.3,1)}
 .mcard:hover .bg img{transform:scale(1.05)}
@@ -168,9 +166,7 @@ footer{border-top:1px solid var(--line);padding:32px 0 52px;margin-top:18px}
   .tab{padding:7px 8px;font-size:13px}
   .tab.alt{display:none}          /* 모바일은 메인 배너·푸터로 진입 */
   .menu{grid-template-columns:repeat(2,1fr)}
-  .mcard.lg{grid-column:span 2;aspect-ratio:1.5/1}
-  .mcard.md{grid-column:span 2;aspect-ratio:1.9/1}
-  .mcard.sm{grid-column:span 1;aspect-ratio:1/1}
+  .mcard.lg,.mcard.md,.mcard.sm{grid-column:span 1;aspect-ratio:3/4}
   .grid,.grid.five{grid-template-columns:repeat(2,1fr)}
   .sgrid{grid-template-columns:1fr}
   .scard{aspect-ratio:1.9/1}
