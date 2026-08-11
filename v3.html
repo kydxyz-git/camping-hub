@@ -189,20 +189,10 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .ecard{display:block;position:relative;overflow:hidden;border-radius:3px;
   aspect-ratio:4/5;background:#EDEDE7;isolation:isolate}
 .ecard img{width:100%;height:100%;object-fit:cover}
-.ecard::after{content:"";position:absolute;left:0;right:0;bottom:0;height:62%;z-index:1;
-  background:linear-gradient(to top,rgba(8,10,11,.94) 0%,rgba(8,10,11,.72) 34%,rgba(8,10,11,0) 100%);
-  transition:opacity .3s ease}
-.ecard .etitle{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:12px 12px 13px;
-  color:#fff;font-weight:800;font-size:clamp(13.5px,1.45vw,16px);
-  letter-spacing:-.025em;line-height:1.35;
-  text-shadow:0 1px 8px rgba(0,0,0,.55);transition:opacity .3s ease}
 .ecard .eep{position:absolute;right:9px;top:8px;z-index:3;
   font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;
-  color:#fff;background:rgba(12,14,15,.55);backdrop-filter:blur(3px);
+  color:#fff;background:rgba(12,14,15,.5);backdrop-filter:blur(3px);
   padding:3px 7px;border-radius:2px}
-.ecard .ereg{display:block;font-family:var(--display);font-size:clamp(13.5px,1.45vw,16px);
-  font-weight:800;letter-spacing:-.02em;color:#fff}
-.ecard:hover::after,.ecard:hover .etitle{opacity:0}
 
 /* 제품 카드: 이미지 위 제품명 오버레이 */
 .pcard{display:block;position:relative;overflow:hidden;border-radius:3px;
@@ -746,15 +736,11 @@ function paintSeries(key){
   const x=s.find((y,i)=>String(y.id||i)===key)||s[0];
   if(!x){ location.hash='stories'; return; }
   const eps=epsOf(x);
-  const cmap={}; (DATA.camps||[]).forEach(c=>cmap[c.id]=c);
   $('#ser-title').textContent=(x.emoji?x.emoji+' ':'')+x.name;
   $('#ser-count').textContent=eps.length+'편';
   $('#ser-grid').innerHTML=eps.map(e=>{
-    const c=e.camp_id?cmap[e.camp_id]:null;
-    const label = (c && c.region) ? `<span class="ereg">${esc(c.region)}</span>` : esc(e.title);
     return `<a class="ecard" href="${esc(e.url||'#')}" target="_blank" rel="noopener">
       ${e.thumb?`<img src="${esc(abs(e.thumb))}" alt="${esc(e.title)}" loading="lazy">`:''}
-      <span class="etitle">${label}</span>
       ${+e.ep?`<span class="eep">EP.${String(e.ep).padStart(2,'0')}</span>`:''}
     </a>`;
   }).join('');
