@@ -30,5 +30,15 @@
   "headerBadgeFacebookUrl": "https://www.facebook.com/profile.php?id=61588881720150",
   "foodsSort": "random",
   "itemsSort": "latest",
-  "tab5": "캠핑여지도"
+  "tab5": "캠핑여지도",
+  "itemCats": [
+    {
+      "key": "camp",
+      "label": "캠핑용품"
+    },
+    {
+      "key": "camera",
+      "label": "촬영장비"
+    }
+  ]
 }

@@ -6863,6 +6863,122 @@ async function deleteFood(idx) {
 // 장비 (items)
 // ════════════════════════════════════════════════════════════════════
 let _itemSearch = '';
+// ─── 장비 세부 분류 (config.json > itemCats) ───────────────────────
+const DEFAULT_ITEM_CATS = [
+  { key: 'camp',   label: '캠핑용품' },
+  { key: 'camera', label: '촬영장비' },
+];
+function getItemCats() {
+  const c = (cache.config && cache.config.itemCats);
+  return (Array.isArray(c) && c.length) ? c : DEFAULT_ITEM_CATS;
+}
+function catLabel(key) {
+  const f = getItemCats().find(c => c.key === key);
+  return f ? f.label : (key || '미분류');
+}
+
+async function saveItemCats(nextCats, msg) {
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+    showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+    return false;
+  }
+  const progress = document.createElement('div');
+  progress.className = 'submit-progress is-active';
+  progress.innerHTML = `<div class="submit-progress-card">
+      <div class="submit-progress-spinner"></div>
+      <div class="submit-progress-text">분류 저장 중...</div>
+      <div class="submit-progress-sub">GitHub 업로드</div>
+    </div>`;
+  document.body.appendChild(progress);
+  try {
+    const newConfig = JSON.parse(JSON.stringify(cache.config || {}));
+    newConfig.itemCats = nextCats;
+    await ghCommitMultipleFiles(
+      [{ path: 'data/config.json', content: JSON.stringify(newConfig, null, 2) + '\n', encoding: 'utf-8' }],
+      msg || 'cats(admin): 장비 분류 수정'
+    );
+    cache.config = newConfig;
+    cache.loadedAt = Date.now();
+    progress.remove();
+    showToast('분류를 저장했어요', 'success');
+    renderItemList();
+    return true;
+  } catch (e) {
+    console.error(e);
+    progress.remove();
+    showToast('저장 실패: ' + (e.message || e), 'error');
+    return false;
+  }
+}
+
+function _slugKey(label, exist) {
+  let base = 'cat' + Math.random().toString(36).slice(2, 7);
+  while (exist.includes(base)) base = 'cat' + Math.random().toString(36).slice(2, 7);
+  return base;
+}
+
+function itemCatsBarHtml() {
+  const cats = getItemCats();
+  const counts = {};
+  (cache.items || []).forEach(x => { const k = x.cat || 'camp'; counts[k] = (counts[k] || 0) + 1; });
+  return `
+    <div class="series-sort-bar" style="margin:8px 0 4px;flex-wrap:wrap;gap:6px;">
+      <span class="series-sort-label">세부 분류:</span>
+      ${cats.map((c, i) => `
+        <span class="cat-chip" data-ci="${i}" style="display:inline-flex;align-items:center;gap:5px;
+          border:1px solid #ddd;border-radius:999px;padding:4px 8px 4px 11px;font-size:12px;background:#fff;">
+          <span>${escapeHtml(c.label)}</span>
+          <span style="color:#aaa;font-size:11px;">${counts[c.key] || 0}</span>
+          <button type="button" data-cat-up="${i}"   title="앞으로"  style="border:none;background:none;cursor:pointer;color:#999;padding:0 2px;">‹</button>
+          <button type="button" data-cat-down="${i}" title="뒤로"    style="border:none;background:none;cursor:pointer;color:#999;padding:0 2px;">›</button>
+          <button type="button" data-cat-ren="${i}"  title="이름 변경" style="border:none;background:none;cursor:pointer;color:#999;padding:0 2px;">✎</button>
+          <button type="button" data-cat-del="${i}"  title="삭제"     style="border:none;background:none;cursor:pointer;color:#c66;padding:0 2px;">×</button>
+        </span>`).join('')}
+      <button type="button" id="cat-add" class="btn btn-sm" style="font-size:12px;padding:4px 10px;">+ 분류 추가</button>
+    </div>
+    <div class="series-sort-note">분류를 추가하면 장비 등록 폼의 '구분' 목록과 사이트 섹션이 함께 바뀝니다.</div>
+  `;
+}
+
+function bindItemCatsBar() {
+  const cats = getItemCats();
+  const q = (s) => document.querySelectorAll(s);
+
+  q('[data-cat-up]').forEach(b => b.onclick = () => {
+    const i = +b.dataset.catUp; if (i === 0) return;
+    const n = cats.slice(); [n[i - 1], n[i]] = [n[i], n[i - 1]];
+    saveItemCats(n, 'cats(admin): 분류 순서 변경');
+  });
+  q('[data-cat-down]').forEach(b => b.onclick = () => {
+    const i = +b.dataset.catDown; if (i >= cats.length - 1) return;
+    const n = cats.slice(); [n[i], n[i + 1]] = [n[i + 1], n[i]];
+    saveItemCats(n, 'cats(admin): 분류 순서 변경');
+  });
+  q('[data-cat-ren]').forEach(b => b.onclick = () => {
+    const i = +b.dataset.catRen;
+    const v = prompt('분류 이름', cats[i].label);
+    if (!v || !v.trim() || v.trim() === cats[i].label) return;
+    const n = cats.slice(); n[i] = { ...n[i], label: v.trim() };
+    saveItemCats(n, `cats(admin): 분류명 '${cats[i].label}' → '${v.trim()}'`);
+  });
+  q('[data-cat-del]').forEach(b => b.onclick = () => {
+    const i = +b.dataset.catDel;
+    if (cats.length <= 1) return showToast('분류는 최소 1개 필요해요', 'error');
+    const used = (cache.items || []).filter(x => (x.cat || 'camp') === cats[i].key).length;
+    if (used > 0) return showToast(`'${cats[i].label}'에 장비 ${used}개가 있어요. 먼저 옮겨주세요`, 'error');
+    if (!confirm(`분류 '${cats[i].label}'를 삭제할까요?`)) return;
+    saveItemCats(cats.filter((_, k) => k !== i), `cats(admin): 분류 '${cats[i].label}' 삭제`);
+  });
+  const add = document.getElementById('cat-add');
+  if (add) add.onclick = () => {
+    const v = prompt('새 분류 이름 (예: 텐트/타프)');
+    if (!v || !v.trim()) return;
+    const keys = cats.map(c => c.key);
+    saveItemCats(cats.concat([{ key: _slugKey(v.trim(), keys), label: v.trim() }]),
+      `cats(admin): 분류 '${v.trim()}' 추가`);
+  };
+}
+
 function renderItemList() {
   renderProductList(cache.items, _itemSearch, {
     icon: '🛠', label: '장비', placeholder: '장비명, 설명, 출처',
@@ -6872,6 +6988,12 @@ function renderItemList() {
     setSearch: (v) => { _itemSearch = v; },
     rerender: renderItemList
   });
+  // 분류 관리 바를 검색바 아래에 삽입
+  const bar = document.querySelector('.search-bar');
+  if (bar && !document.getElementById('cat-add')) {
+    bar.insertAdjacentHTML('afterend', itemCatsBarHtml());
+    bindItemCatsBar();
+  }
 }
 function renderItemDetail(idx) {
   renderProductDetail(cache.items[idx], { icon: '🛠', listLabel: '장비', listHash: 'items', idx, onDelete: deleteItem });
@@ -6912,7 +7034,7 @@ function renderItemEditForm(idx) {
     desc: it.desc || '',
     source: it.source || '',
     url: it.url || '',
-    cat: it.cat === 'camera' ? 'camera' : 'camp',
+    cat: it.cat || 'camp',
     video: it.video || '',
     currency: it.currency || 'KRW',
     priceOriginal: it.price_original != null ? String(it.price_original) : '',
@@ -6951,8 +7073,7 @@ function _renderItemFormUI() {
         <div class="form-field">
           <label class="label" for="if-cat">구분 *</label>
           <select id="if-cat" class="input">
-            <option value="camp"${_itemForm.cat !== 'camera' ? ' selected' : ''}>캠핑 장비</option>
-            <option value="camera"${_itemForm.cat === 'camera' ? ' selected' : ''}>촬영 장비</option>
+            ${getItemCats().map(c => `<option value="${escapeHtml(c.key)}"${_itemForm.cat === c.key ? ' selected' : ''}>${escapeHtml(c.label)}</option>`).join('')}
           </select>
         </div>
 
@@ -7227,7 +7348,7 @@ async function submitItemForm() {
         ? (_oldItem.id || makeContentId('item', _itemForm.name.trim()))
         : makeContentId('item', _itemForm.name.trim()),
       name: _itemForm.name.trim(),
-      cat: _itemForm.cat === 'camera' ? 'camera' : 'camp',
+      cat: _itemForm.cat || 'camp',
       video: _itemForm.video.trim(),
       desc: _itemForm.desc.trim(),
       url: _itemForm.url.trim(),
