@@ -208,8 +208,14 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   width:min(460px,100%);box-shadow:0 20px 60px rgba(0,0,0,.28);text-align:center}
 .modal-box .mt{font-weight:700;font-size:clamp(16px,1.9vw,20px);letter-spacing:-.02em;line-height:1.45}
 .modal-box .ma{display:flex;flex-direction:column;gap:9px;margin-top:22px}
-.modal-box a{display:block;padding:clamp(13px,1.6vw,16px);border-radius:999px;
+.modal-box a{display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:clamp(13px,1.6vw,16px);border-radius:999px;
   font-weight:600;font-size:clamp(14px,1.5vw,15.5px);transition:.16s}
+.modal-box .src{font-size:11px;font-weight:800;letter-spacing:-.01em;
+  padding:3px 8px;border-radius:100px;color:#fff;background:#9e9e9e;line-height:1.4}
+.modal-box .src.coupang{background:#FF4B4B}
+.modal-box .src.kurly{background:#5D3CC7}
+.modal-box .src.naver{background:#03C75A}
 .modal-box .go-v{background:var(--ink);color:#fff}
 .modal-box .go-b{background:#fff;color:var(--ink);border:1px solid var(--line)}
 .modal-box a:hover{transform:translateY(-1px)}
@@ -485,7 +491,7 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
     <p class="mt"></p>
     <div class="ma">
       <a class="go-v" href="#" target="_blank" rel="noopener">게시물 보러 가기</a>
-      <a class="go-b" href="#" target="_blank" rel="noopener">구매하러 가기</a>
+      <a class="go-b" href="#" target="_blank" rel="noopener"><span class="src"></span>구매하러 가기</a>
     </div>
     <button type="button" data-close>닫기</button>
   </div>
@@ -732,7 +738,7 @@ function renderProducts(sel,rows,countSel,emptyMsg){
   $(sel).innerHTML=list.length?list.map(p=>{
     const hasV=!!(p.video||'').trim();
     return `<a class="pcard" href="${esc(p.url||'#')}"
-      data-t="${esc(p.name)}" data-v="${esc(p.video||'')}" data-b="${esc(p.url||'')}">
+      data-t="${esc(p.name)}" data-v="${esc(p.video||'')}" data-b="${esc(p.url||'')}" data-s="${esc(p.source||'')}">
       ${p.thumb?`<img src="${esc(abs(p.thumb))}" alt="${esc(p.name)}" loading="lazy">`:''}
       ${hasV?`<span class="play"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -773,17 +779,22 @@ function renderGear(){
 }
 
 /* 영상 있는 제품 클릭 시 선택 팝업 */
-function openPick(t,v,b){
+const SRC_CLS={'쿠팡':'coupang','coupang':'coupang','컬리':'kurly','kurly':'kurly',
+               '네이버':'naver','naver':'naver'};
+function openPick(t,v,b,s){
   const m=$('#pick');
   m.querySelector('.mt').textContent=t;
   const av=m.querySelector('.go-v'), ab=m.querySelector('.go-b');
   if(v){ av.href=v; av.style.display=''; } else { av.style.display='none'; }
   if(b){ ab.href=b; ab.style.display=''; } else { ab.style.display='none'; }
+  const badge=ab.querySelector('.src');
+  if(s){ badge.textContent=s; badge.className='src '+(SRC_CLS[s.toLowerCase()]||SRC_CLS[s]||''); badge.style.display=''; }
+  else { badge.style.display='none'; }
   m.classList.add('on');
 }
 document.addEventListener('click',e=>{
   const c=e.target.closest('.pcard[data-t]');
-  if(c){ e.preventDefault(); openPick(c.dataset.t,c.dataset.v,c.dataset.b); return; }
+  if(c){ e.preventDefault(); openPick(c.dataset.t,c.dataset.v,c.dataset.b,c.dataset.s); return; }
   const m=$('#pick');
   if(m && m.classList.contains('on') && (e.target===m || e.target.closest('[data-close]')))
     m.classList.remove('on');
