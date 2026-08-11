@@ -185,9 +185,16 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .pcard:hover img{transform:scale(1.045)}
 .pcard .pn{position:absolute;left:0;right:0;bottom:0;padding:12px 11px;
   color:#fff;font-weight:700;font-size:13.5px;letter-spacing:-.015em;line-height:1.35;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;overflow:hidden;
   background:linear-gradient(to top,rgba(10,12,13,.92) 0%,rgba(10,12,13,.55) 58%,rgba(10,12,13,0) 100%);
   opacity:0;transform:translateY(6px);transition:opacity .25s ease,transform .25s ease}
+.pcard .pn i{display:inline-block;font-style:normal;white-space:nowrap}
+/* 이름이 카드보다 길 때만 좌우로 흐름 */
+.pcard .pn.flow i{padding-right:28px;animation:slide 9s linear infinite}
+@keyframes slide{
+  0%,14%   {transform:translateX(0)}
+  86%,100% {transform:translateX(calc(-100% + var(--w,0px)))}
+}
 .pcard:hover .pn{opacity:1;transform:none}
 .pcard .play{position:absolute;left:8px;top:8px;z-index:2;
   width:24px;height:24px;border-radius:50%;
@@ -731,9 +738,26 @@ function renderProducts(sel,rows,countSel,emptyMsg){
             :'target="_blank" rel="noopener"'}>
       ${p.thumb?`<img src="${esc(abs(p.thumb))}" alt="${esc(p.name)}" loading="lazy">`:''}
       ${hasV?`<span class="play"><svg viewBox="0 0 10 10" fill="#fff"><path d="M1 0 L10 5 L1 10 Z"/></svg></span>`:''}
-      <span class="pn">${esc(p.name)}</span>
+      <span class="pn"><i>${esc(p.name)}</i></span>
     </a>`;
   }).join(''):`<p class="empty">${esc(emptyMsg||'아직 등록된 항목이 없습니다.')}</p>`;
+  markOverflow(sel);
+}
+
+/* 이름이 카드 폭을 넘는 경우에만 흐름 적용 */
+function markOverflow(sel){
+  requestAnimationFrame(()=>{
+    $$(sel+' .pn').forEach(pn=>{
+      const i=pn.querySelector('i'); if(!i) return;
+      const avail=pn.clientWidth-22;             // 좌우 패딩 제외
+      if(i.scrollWidth>avail){
+        pn.classList.add('flow');
+        pn.style.setProperty('--w', avail+'px');
+      }else{
+        pn.classList.remove('flow');
+      }
+    });
+  });
 }
 
 /* 장비 세부 분류별 섹션 렌더 */
