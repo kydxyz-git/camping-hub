@@ -48,6 +48,11 @@ body{background:#2A2E31;color:#E9EAE6;font-family:var(--sans);min-height:100vh;
 
 <div class="bar">
   <span class="t">KYDZ PREVIEW</span>
+  <div class="seg" id="site">
+    <button data-p="v3.html" class="on">v3</button>
+    <button data-p="index.html">기존</button>
+    <button data-p="__cmp__">비교</button>
+  </div>
   <div class="seg" id="seg">
     <button data-v="both" class="on">나란히</button>
     <button data-v="phone">모바일</button>
@@ -57,6 +62,17 @@ body{background:#2A2E31;color:#E9EAE6;font-family:var(--sans);min-height:100vh;
   <button class="btn go" id="load">열기</button>
   <button class="btn" id="reload">새로고침</button>
   <label class="auto"><input type="checkbox" id="autor"> 5초마다 자동</label>
+</div>
+
+<div class="stage hide" id="cmp">
+  <div class="dev phone">
+    <span class="lbl">v3 · MOBILE</span>
+    <div class="frame" style="width:410px;height:800px"><iframe id="c-v3" title="v3"></iframe></div>
+  </div>
+  <div class="dev phone">
+    <span class="lbl">기존 · MOBILE</span>
+    <div class="frame" style="width:410px;height:800px"><iframe id="c-old" title="기존"></iframe></div>
+  </div>
 </div>
 
 <div class="stage" id="stage">
@@ -83,8 +99,29 @@ function url(){
 function load(){ const u=url(); fP.src=u; fD.src=u; }
 
 $('#load').onclick=load;
-$('#reload').onclick=load;
 $('#path').addEventListener('keydown',e=>{ if(e.key==='Enter') load(); });
+
+$('#site').onclick=e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  [...$('#site').children].forEach(x=>x.classList.toggle('on',x===b));
+  const cmp = b.dataset.p==='__cmp__';
+  $('#cmp').classList.toggle('hide', !cmp);
+  $('#stage').classList.toggle('hide', cmp);
+  $('#seg').style.display = cmp ? 'none' : '';
+  $('#path').style.display = cmp ? 'none' : '';
+  if(cmp){
+    const t=Date.now();
+    $('#c-v3').src  = BASE+'v3.html?nc='+t;
+    $('#c-old').src = BASE+'index.html?nc='+t;
+    [$('#c-v3'),$('#c-old')].forEach(f=>{
+      f.style.width='390px'; f.style.height='780px';
+      f.style.transformOrigin='0 0';
+    });
+  }else{
+    $('#path').value = b.dataset.p;
+    load();
+  }
+};
 
 $('#seg').onclick=e=>{
   const b=e.target.closest('button'); if(!b) return;
@@ -94,9 +131,17 @@ $('#seg').onclick=e=>{
   $('#d-desk').classList.toggle('hide', v==='phone');
 };
 
+function reloadAll(){
+  if(!$('#cmp').classList.contains('hide')){
+    const t=Date.now();
+    $('#c-v3').src  = BASE+'v3.html?nc='+t;
+    $('#c-old').src = BASE+'index.html?nc='+t;
+  }else load();
+}
+$('#reload').onclick=reloadAll;
 $('#autor').onchange=e=>{
   clearInterval(timer);
-  if(e.target.checked) timer=setInterval(load,5000);
+  if(e.target.checked) timer=setInterval(reloadAll,5000);
 };
 
 /* PC 프레임은 1280 기준으로 렌더한 뒤 축소해 실제 데스크톱 폭을 재현 */
