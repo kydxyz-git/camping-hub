@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>공대남자 · 캠핑 기록</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBFBF8;--ink:#15181A;--stone:#8B9089;
+  --line:#E4E4DE;--stamp:#FFE873;
+  --sans:'SUIT Variable','Pretendard Variable',system-ui,sans-serif;
+  --display:'Pretendard Variable','SUIT Variable',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --pad:clamp(20px,5vw,64px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{display:block;width:100%;height:100%;object-fit:cover}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+/* ── nav ── */
+.nav{position:sticky;top:0;z-index:50;background:rgba(251,251,248,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav.bare{border-bottom-color:transparent;background:transparent;backdrop-filter:none}
+.nav-in{max-width:1240px;margin:0 auto;padding:0 var(--pad);height:60px;display:flex;align-items:center;gap:22px}
+.mark{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.14em;white-space:nowrap}
+.mark span{color:var(--stone)}
+.tabs{display:flex;gap:2px;margin-left:auto;align-items:center}
+.nav.bare .tabs{display:none}
+.tab{font-size:14px;font-weight:500;color:var(--stone);padding:8px 11px;border-radius:999px;white-space:nowrap;transition:.15s}
+.tab:hover{color:var(--ink)}
+.tab[aria-current="page"]{color:var(--ink);font-weight:700;background:#EFEFE9}
+.tab.alt{margin-left:10px;padding-left:16px;border-left:1px solid var(--line);border-radius:0;font-size:13px}
+
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
+.view{display:none;padding-bottom:90px}
+.view.on{display:block;animation:fade .3s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── hero ── */
+.hero{padding:clamp(44px,8vw,96px) 0 clamp(28px,4vw,44px)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--stone);margin-bottom:20px}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,5.4vw,58px);line-height:1.14;letter-spacing:-.035em;max-width:16ch}
+.hero h1 em{font-style:normal;position:relative;white-space:nowrap}
+.hero h1 em::after{content:"";position:absolute;left:-.06em;right:-.06em;bottom:.06em;height:.34em;background:var(--stamp);z-index:-1}
+.hero p{margin-top:18px;max-width:44ch;color:#4C524D;font-size:clamp(14px,1.6vw,16px)}
+
+/* ── 메인 메뉴 카드 ── */
+.menu{display:grid;gap:clamp(10px,1.4vw,16px);grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(0,auto)}
+.mcard{position:relative;overflow:hidden;border-radius:5px;background:#EDEDE7;display:block;isolation:isolate}
+.mcard.lg{grid-column:span 4;aspect-ratio:2.1/1}
+.mcard.md{grid-column:span 2;aspect-ratio:1.55/1}
+.mcard.sm{grid-column:span 1;aspect-ratio:1/1}
+.mcard .bg{position:absolute;inset:0;z-index:-2}
+.mcard .bg img{transition:transform .6s cubic-bezier(.2,.7,.3,1)}
+.mcard:hover .bg img{transform:scale(1.05)}
+.mcard::after{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(to top,rgba(12,14,15,.78) 0%,rgba(12,14,15,.34) 45%,rgba(12,14,15,.08) 100%)}
+.mcard .txt{position:absolute;left:0;right:0;bottom:0;padding:clamp(14px,2vw,24px);color:#fff}
+.mcard h2{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.2;
+  font-size:clamp(16px,2.3vw,27px);text-shadow:0 1px 12px rgba(0,0,0,.3)}
+.mcard .n{display:inline-block;margin-top:7px;font-family:var(--mono);font-size:11.5px;font-weight:500;
+  letter-spacing:.06em;color:#15181A;background:var(--stamp);padding:3px 8px;border-radius:2px}
+.mcard.sm h2{font-size:clamp(15px,1.9vw,19px)}
+
+/* 소개협업 배너 */
+.banner{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:clamp(10px,1.4vw,16px);
+  border:1px solid var(--line);background:#fff;border-radius:5px;padding:clamp(20px,3vw,30px) clamp(20px,3vw,32px);transition:.18s}
+.banner:hover{border-color:#C7CAC3;transform:translateY(-1px)}
+.banner b{font-family:var(--display);font-weight:800;font-size:clamp(17px,2.1vw,22px);letter-spacing:-.03em}
+.banner p{color:var(--stone);font-size:13.5px;margin-top:4px}
+.banner .go{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--stone);white-space:nowrap}
+
+/* ── section head ── */
+.head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:clamp(34px,5vw,60px) 0 16px}
+.head h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,2.7vw,30px);letter-spacing:-.03em}
+.head p{font-size:13.5px;color:var(--stone);max-width:52ch}
+.count{font-family:var(--mono);font-size:12px;color:var(--stone)}
+.crumb{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--stone);font-weight:600;padding-top:clamp(28px,4vw,44px)}
+.crumb:hover{color:var(--ink)}
+
+/* ── controls ── */
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-bottom:20px}
+.search{flex:1 1 180px;max-width:260px;border:1px solid var(--line);background:#fff;border-radius:999px;
+  padding:9px 15px;font:inherit;font-size:13.5px}
+.search::placeholder{color:#B0B4AE}
+.search:focus{outline:none;border-color:var(--ink)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 13px;cursor:pointer;
+  font:inherit;font-size:13px;color:#5D635C;transition:.15s}
+.chip:hover{border-color:#C7CAC3}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+
+/* ── grids ── */
+.grid{display:grid;gap:clamp(16px,2.2vw,26px) clamp(10px,1.6vw,18px);grid-template-columns:repeat(4,1fr)}
+.grid.five{grid-template-columns:repeat(5,1fr)}
+.card{display:block}
+.shot{position:relative;aspect-ratio:4/5;overflow:hidden;border-radius:3px;background:#EDEDE7}
+.shot img{transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+.card:hover .shot img{transform:scale(1.045)}
+.stamp{position:absolute;left:9px;bottom:9px;z-index:2;font-family:var(--mono);font-weight:600;font-size:10.5px;
+  letter-spacing:.04em;background:var(--stamp);padding:4px 8px;border-radius:2px}
+.plat{position:absolute;right:9px;top:9px;z-index:2;font-size:10.5px;font-weight:700;
+  background:rgba(21,24,26,.82);color:#fff;padding:4px 8px;border-radius:2px;backdrop-filter:blur(4px)}
+.meta{padding:10px 2px 0}
+.name{font-weight:700;font-size:14.5px;letter-spacing:-.015em;line-height:1.35}
+.region{display:block;margin-top:4px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--stone)}
+.desc{margin-top:5px;font-size:12.5px;color:#5D635C;line-height:1.5}
+.price{margin-top:7px;font-family:var(--mono);font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px}
+.was{font-weight:400;font-size:11.5px;color:#B0B4AE;text-decoration:line-through}
+.off{font-size:11px;font-weight:600;color:#B23A2F;font-family:var(--sans)}
+.epno{font-family:var(--mono);font-size:11px;color:var(--stone);letter-spacing:.06em}
+
+/* 시리즈 카드 */
+.scard{position:relative;overflow:hidden;border-radius:4px;aspect-ratio:1.5/1;background:#EDEDE7;isolation:isolate}
+.scard .bg{position:absolute;inset:0;z-index:-2}
+.scard .bg img{transition:transform .6s cubic-bezier(.2,.7,.3,1)}
+.scard:hover .bg img{transform:scale(1.05)}
+.scard::after{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(to top,rgba(12,14,15,.8) 0%,rgba(12,14,15,.3) 55%,rgba(12,14,15,.06) 100%)}
+.scard .txt{position:absolute;left:0;right:0;bottom:0;padding:clamp(14px,1.8vw,20px);color:#fff}
+.scard h3{font-family:var(--display);font-weight:800;font-size:clamp(15px,1.9vw,20px);letter-spacing:-.03em;line-height:1.25}
+.scard .n{display:inline-block;margin-top:6px;font-family:var(--mono);font-size:11px;
+  background:var(--stamp);color:#15181A;padding:3px 7px;border-radius:2px}
+.sgrid{display:grid;gap:clamp(12px,1.6vw,18px);grid-template-columns:repeat(3,1fr)}
+
+/* 구분선 그룹 */
+.grp{padding-top:clamp(30px,4vw,48px)}
+.grp:first-of-type{padding-top:0}
+.grp-top{display:flex;align-items:baseline;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.grp-top h3{font-size:16px;font-weight:700;letter-spacing:-.02em}
+.grp-top .count{margin-left:auto}
+
+/* about */
+.about{padding:clamp(34px,5vw,60px) 0;display:grid;gap:clamp(26px,4vw,52px);grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.about h2{font-family:var(--display);font-weight:800;font-size:clamp(22px,3vw,34px);letter-spacing:-.03em;line-height:1.2}
+.about h2 + p{margin-top:15px;color:#4C524D;font-size:14.5px;max-width:40ch}
+.rows{border-top:1px solid var(--line)}
+.row{display:flex;gap:16px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line)}
+.row dt{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--stone);width:74px;flex:none}
+.row dd{font-size:14px;font-weight:500}
+.row dd small{display:block;font-weight:400;font-size:12.5px;color:var(--stone);margin-top:3px}
+.cta{display:inline-block;margin-top:22px;background:var(--ink);color:#fff;font-weight:600;font-size:14px;
+  padding:13px 24px;border-radius:999px;transition:.18s}
+.cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(21,24,26,.16)}
+
+.empty{padding:52px 0;text-align:center;color:var(--stone);font-size:13.5px}
+.notice{margin-top:clamp(32px,4vw,52px);padding-top:20px;border-top:1px solid var(--line);font-size:11.5px;color:#9A9E98;line-height:1.65}
+footer{border-top:1px solid var(--line);padding:32px 0 52px;margin-top:18px}
+.foot{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--stone)}
+.foot a{font-weight:600;color:var(--ink)}
+.foot .sp{margin-left:auto;font-family:var(--mono);font-size:11px}
+
+/* ── 태블릿 ── */
+@media (max-width:900px){
+  .grid,.grid.five{grid-template-columns:repeat(3,1fr)}
+  .sgrid{grid-template-columns:repeat(2,1fr)}
+}
+/* ── 모바일: 2열 고정, 가로 스크롤 없음 ── */
+@media (max-width:620px){
+  .nav-in{height:54px;gap:10px}
+  .tabs{gap:0}
+  .tab{padding:7px 8px;font-size:13px}
+  .tab.alt{display:none}          /* 모바일은 메인 배너·푸터로 진입 */
+  .menu{grid-template-columns:repeat(2,1fr)}
+  .mcard.lg{grid-column:span 2;aspect-ratio:1.5/1}
+  .mcard.md{grid-column:span 2;aspect-ratio:1.9/1}
+  .mcard.sm{grid-column:span 1;aspect-ratio:1/1}
+  .grid,.grid.five{grid-template-columns:repeat(2,1fr)}
+  .sgrid{grid-template-columns:1fr}
+  .scard{aspect-ratio:1.9/1}
+  .banner .go{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav class="nav bare" id="nav">
+  <div class="nav-in">
+    <a class="mark" href="#home">KYDZ<span> / 공대남자</span></a>
+    <div class="tabs">
+      <a class="tab" href="#camps">다녀온 캠핑장</a>
+      <a class="tab" href="#stories">캠핑이야기</a>
+      <a class="tab" href="#food">먹은음식</a>
+      <a class="tab" href="#gear">캠핑장비</a>
+      <a class="tab alt" href="#about">소개 · 협업</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 메인 -->
+  <section id="v-home" class="view">
+    <div class="hero">
+      <p class="eyebrow">AUTO CAMPING RECORD · 2026</p>
+      <h1>가본 곳만 씁니다.<br><em>몇 번 갔는지</em>까지.</h1>
+      <p>5년차 부부캠퍼가 실제로 다녀온 캠핑장 기록입니다. 한 번 가보고 좋다고 하는 곳과, 몇 년째 다시 가는 곳은 다릅니다.</p>
+    </div>
+    <div class="menu" id="menu"></div>
+    <a class="banner" href="#about">
+      <div>
+        <b>소개 · 협업 문의</b>
+        <p>캠핑장, 캠핑 장비, 캠핑 음식, 촬영 장비 협업을 받고 있습니다.</p>
+      </div>
+      <span class="go">자세히 →</span>
+    </a>
+  </section>
+
+  <!-- 캠핑장 -->
+  <section id="v-camps" class="view">
+    <div class="head">
+      <div>
+        <h2>다녀온 캠핑장</h2>
+        <p>사진을 누르면 캠핑장 기록으로 이동합니다.</p>
+      </div>
+      <span class="count" id="camp-count"></span>
+    </div>
+    <div class="controls">
+      <input class="search" id="camp-q" type="search" placeholder="캠핑장 이름 검색" aria-label="캠핑장 이름 검색">
+      <div class="chips" id="camp-chips"></div>
+    </div>
+    <div class="grid five" id="camp-grid"></div>
+  </section>
+
+  <!-- 캠핑이야기: 시리즈 목록 -->
+  <section id="v-stories" class="view">
+    <div class="head">
+      <div>
+        <h2>캠핑이야기</h2>
+        <p>주제별로 이어서 만든 영상 기록입니다.</p>
+      </div>
+      <span class="count" id="series-count"></span>
+    </div>
+    <div class="sgrid" id="series-grid"></div>
+  </section>
+
+  <!-- 캠핑이야기: 회차 -->
+  <section id="v-series" class="view">
+    <a class="crumb" href="#stories">← 캠핑이야기</a>
+    <div class="head">
+      <div><h2 id="ser-title"></h2></div>
+      <span class="count" id="ser-count"></span>
+    </div>
+    <div class="grid five" id="ser-grid"></div>
+  </section>
+
+  <!-- 먹은음식 -->
+  <section id="v-food" class="view">
+    <div class="head">
+      <div>
+        <h2>먹은음식</h2>
+        <p>캠핑장에서 직접 해먹고 다시 살 만했던 것만 올립니다.</p>
+      </div>
+      <span class="count" id="food-count"></span>
+    </div>
+    <div class="grid five" id="food-grid"></div>
+    <p class="notice" id="food-notice"></p>
+  </section>
+
+  <!-- 캠핑장비 -->
+  <section id="v-gear" class="view">
+    <div class="head">
+      <div>
+        <h2>캠핑장비</h2>
+        <p>실제로 챙겨 다니는 장비입니다. 사진을 누르면 제품 정보를 확인할 수 있습니다.</p>
+      </div>
+      <span class="count" id="gear-count"></span>
+    </div>
+    <div class="grp">
+      <div class="grp-top"><h3>캠핑 장비</h3><span class="count" id="gear-n1"></span></div>
+      <div class="grid five" id="gear-grid"></div>
+    </div>
+    <div class="grp">
+      <div class="grp-top"><h3>촬영 장비</h3><span class="count" id="gear-n2"></span></div>
+      <div class="grid five" id="camera-grid"></div>
+    </div>
+    <p class="notice" id="gear-notice"></p>
+  </section>
+
+  <!-- 소개 -->
+  <section id="v-about" class="view">
+    <div class="about">
+      <div>
+        <h2>오토캠핑 하나만<br>기록합니다.</h2>
+        <p>5년차 부부캠퍼가 직접 다녀온 캠핑장과 장비만 다룹니다. 협업 제품도 실제로 캠핑장에 들고 나가 써본 뒤에 올립니다.</p>
+        <a class="cta" id="dm-link" href="#">인스타그램 DM 보내기</a>
+      </div>
+      <dl class="rows" id="about-rows"></dl>
+    </div>
+    <div class="about" style="padding-top:0">
+      <div>
+        <h2 style="font-size:clamp(18px,2.2vw,24px)">협업 방식</h2>
+        <p>릴스와 스토리, 이 사이트까지 묶어서 진행합니다.</p>
+      </div>
+      <dl class="rows">
+        <div class="row"><dt>01</dt><dd>제품 사용<small>캠핑장에 실제로 들고 나가 사용한 뒤 촬영합니다</small></dd></div>
+        <div class="row"><dt>02</dt><dd>릴스 제작<small>정보형 구성으로 저장과 공유가 나오게 만듭니다</small></dd></div>
+        <div class="row"><dt>03</dt><dd>확산<small>인스타그램과 페이스북에 함께 게시해 도달을 넓힙니다</small></dd></div>
+        <div class="row"><dt>04</dt><dd>기록<small>이 사이트에 남겨 캠페인이 끝난 뒤에도 계속 노출됩니다</small></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot">
+      <a id="ig-link" href="#">@kyd_zm</a>
+      <a href="#about">소개 · 협업</a>
+      <span class="sp" id="credits"></span>
+    </div>
+  </footer>
+</main>
+
+<script>
+const BASE='https://kydz.kr/';
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const abs=p=>!p?'':/^https?:/.test(p)?p:BASE+String(p).replace(/^\.?\//,'');
+const won=n=>n==null?'':n.toLocaleString('ko-KR')+'원';
+
+const VIEWS=['home','camps','stories','series','food','gear','about'];
+let DATA={};
+
+/* 예약 플랫폼 판별 */
+const PLATFORMS=[
+  [/graega/i,'그래가'],[/camfit/i,'캠핏'],[/thankqcamping/i,'땡큐캠핑'],
+  [/ddnayo/i,'떠나요'],[/xticket/i,'엑스티켓'],[/camperstory/i,'캠퍼스토리'],
+  [/naver\./i,'네이버']
+];
+function platform(c){
+  const u=c.url||'';
+  if(!u) return '';
+  for(const [re,label] of PLATFORMS) if(re.test(u)) return label;
+  return '자체예약';
+}
+function mainImg(c){
+  const pool=(c.imgs||[]).filter(Boolean);
+  return abs(c.main_img && pool.includes(c.main_img) ? c.main_img : pool[0]);
+}
+
+/* ── 라우팅 ── */
+function route(){
+  const raw=location.hash.replace('#','');
+  const [id,arg]=raw.split('/');
+  const view=VIEWS.includes(id)?id:'home';
+  $$('.view').forEach(v=>v.classList.toggle('on', v.id==='v-'+view));
+  $('#nav').classList.toggle('bare', view==='home');
+  $$('.tab').forEach(t=>{
+    const h=t.getAttribute('href').replace('#','');
+    const on = h===view || (view==='series' && h==='stories');
+    on?t.setAttribute('aria-current','page'):t.removeAttribute('aria-current');
+  });
+  if(view==='series') paintSeries(decodeURIComponent(arg||''));
+  window.scrollTo({top:0,behavior:'auto'});
+}
+addEventListener('hashchange',route);
+
+/* ── 로드 ── */
+(async function(){
+  const names=['config','camps','series','foods','items','camera'];
+  try{
+    const res=await Promise.all(names.map(n=>fetch(BASE+'data/'+n+'.json?v='+Date.now())
+      .then(r=>{ if(!r.ok) throw new Error(n); return r.json(); })));
+    names.forEach((n,i)=>DATA[n]=res[i]);
+  }catch(e){
+    $('#menu').innerHTML='<p class="empty">데이터를 불러오지 못했습니다. 새로고침해 주세요.</p>';
+    return;
+  }
+  renderMenu();
+  renderCamps();
+  renderSeriesList();
+  renderProducts('#food-grid',DATA.foods,'#food-count');
+  renderProducts('#gear-grid',DATA.items,'#gear-n1');
+  renderProducts('#camera-grid',DATA.camera,'#gear-n2','촬영 장비를 등록하면 여기에 표시됩니다.');
+  $('#gear-count').textContent=
+    (pub(DATA.items).length+pub(DATA.camera).length)+'개';
+  renderChrome();
+  route();
+})();
+
+const pub=a=>(a||[]).filter(x=>x.published!==false);
+const camps=()=>pub(DATA.camps);
+const sers =()=>pub(DATA.series);
+const epsOf=s=>pub(s.eps).sort((a,b)=>(+b.ep||0)-(+a.ep||0));
+
+/* ── 메인 카드 ── */
+function renderMenu(){
+  const c=camps(), s=sers();
+  const epTotal=s.reduce((a,x)=>a+epsOf(x).length,0);
+  const cover=arr=>{ const f=arr.find(x=>x); return f?abs(f):''; };
+
+  const cards=[
+    {cls:'lg',href:'#camps',  title:'다녀온 캠핑장', n:c.length+'곳',
+     img:mainImg(c[0]||{})},
+    {cls:'md',href:'#stories',title:'캠핑이야기',   n:epTotal+'편',
+     img:cover(s.map(x=>(epsOf(x)[0]||{}).thumb))},
+    {cls:'sm',href:'#food',   title:'먹은음식',     n:pub(DATA.foods).length+'개',
+     img:cover(pub(DATA.foods).map(x=>x.thumb))},
+    {cls:'sm',href:'#gear',   title:'캠핑장비',     n:(pub(DATA.items).length+pub(DATA.camera).length)+'개',
+     img:cover(pub(DATA.items).map(x=>x.thumb))}
+  ];
+
+  $('#menu').innerHTML=cards.map(x=>`
+    <a class="mcard ${x.cls}" href="${x.href}">
+      <div class="bg">${x.img?`<img src="${esc(x.img)}" alt="">`:''}</div>
+      <div class="txt">
+        <h2>${esc(x.title)}</h2>
+        ${x.n&&!/^0/.test(x.n)?`<span class="n">${esc(x.n)}</span>`:''}
+      </div>
+    </a>`).join('');
+}
+
+/* ── 캠핑장 ── */
+let region='전체';
+function renderCamps(){
+  const list=camps();
+  const regions=[...new Set(list.map(c=>c.region).filter(Boolean))];
+  $('#camp-chips').innerHTML=['전체',...regions]
+    .map(r=>`<button class="chip${r===region?' on':''}" data-r="${esc(r)}">${esc(r)}</button>`).join('');
+  $('#camp-chips').onclick=e=>{
+    const b=e.target.closest('.chip'); if(!b) return;
+    region=b.dataset.r;
+    $$('#camp-chips .chip').forEach(x=>x.classList.toggle('on',x.dataset.r===region));
+    paintCamps();
+  };
+  $('#camp-q').oninput=paintCamps;
+  paintCamps();
+}
+function paintCamps(){
+  const q=$('#camp-q').value.trim().toLowerCase();
+  const rows=camps().filter(c=>(region==='전체'||c.region===region)&&(!q||(c.name||'').toLowerCase().includes(q)));
+  $('#camp-count').textContent=rows.length+' / '+camps().length;
+  $('#camp-grid').innerHTML=rows.length?rows.map(c=>{
+    const img=mainImg(c), v=+c.visits||0, p=platform(c);
+    return `<a class="card" href="./camp.html?id=${encodeURIComponent(c.id)}">
+      <div class="shot">
+        ${img?`<img src="${esc(img)}" alt="${esc(c.name)}" loading="lazy">`:''}
+        ${v?`<span class="stamp">${v}번 방문</span>`:''}
+        ${p?`<span class="plat">${esc(p)}</span>`:''}
+      </div>
+      <div class="meta">
+        <p class="name">${esc(c.name)}</p>
+        <span class="region">${esc(c.region||'')}</span>
+      </div>
+    </a>`;
+  }).join(''):'<p class="empty">조건에 맞는 캠핑장이 없습니다. 검색어나 지역을 바꿔보세요.</p>';
+}
+
+/* ── 시리즈 목록 ── */
+function renderSeriesList(){
+  const s=sers();
+  const total=s.reduce((a,x)=>a+epsOf(x).length,0);
+  $('#series-count').textContent=s.length+'개 시리즈 · '+total+'편';
+  $('#series-grid').innerHTML=s.map((x,i)=>{
+    const eps=epsOf(x); if(!eps.length) return '';
+    const cover=abs((eps[0]||{}).thumb);
+    return `<a class="scard" href="#series/${encodeURIComponent(x.id||i)}">
+      <div class="bg">${cover?`<img src="${esc(cover)}" alt="">`:''}</div>
+      <div class="txt">
+        <h3>${esc(x.emoji||'')} ${esc(x.name)}</h3>
+        <span class="n">${eps.length}편</span>
+      </div>
+    </a>`;
+  }).join('');
+}
+function paintSeries(key){
+  const s=sers();
+  const x=s.find((y,i)=>String(y.id||i)===key)||s[0];
+  if(!x){ location.hash='stories'; return; }
+  const eps=epsOf(x);
+  $('#ser-title').textContent=(x.emoji?x.emoji+' ':'')+x.name;
+  $('#ser-count').textContent=eps.length+'편';
+  $('#ser-grid').innerHTML=eps.map(e=>`
+    <a class="card" href="${esc(e.url||'#')}" target="_blank" rel="noopener">
+      <div class="shot">${e.thumb?`<img src="${esc(abs(e.thumb))}" alt="${esc(e.title)}" loading="lazy">`:''}</div>
+      <div class="meta">
+        ${+e.ep?`<p class="epno">EP.${String(e.ep).padStart(2,'0')}</p>`:''}
+        <p class="name">${esc(e.title)}</p>
+      </div>
+    </a>`).join('');
+}
+
+/* ── 음식 · 장비 ── */
+function renderProducts(sel,rows,countSel,emptyMsg){
+  const list=pub(rows);
+  if(countSel) $(countSel).textContent=list.length+'개';
+  $(sel).innerHTML=list.length?list.map(p=>{
+    const sale=p.price_sale??null, org=p.price_original??null, now=sale??org;
+    return `<a class="card" href="${esc(p.url||'#')}" target="_blank" rel="noopener">
+      <div class="shot">
+        ${p.thumb?`<img src="${esc(abs(p.thumb))}" alt="${esc(p.name)}" loading="lazy">`:''}
+        ${p.source?`<span class="plat">${esc(p.source)}</span>`:''}
+      </div>
+      <div class="meta">
+        <p class="name">${esc(p.name)}</p>
+        ${p.desc?`<p class="desc">${esc(p.desc)}</p>`:''}
+        ${now!=null?`<p class="price">${won(now)}
+          ${sale&&org&&org>sale?`<span class="was">${won(org)}</span>`:''}
+          ${p.discount_rate?`<span class="off">${p.discount_rate}%</span>`:''}</p>`:''}
+      </div>
+    </a>`;
+  }).join(''):`<p class="empty">${esc(emptyMsg||'아직 등록된 항목이 없습니다.')}</p>`;
+}
+
+/* ── 공통 ── */
+function renderChrome(){
+  const c=DATA.config||{};
+  const note=(a,b)=>esc(a||'')+esc(b||'')+(c.priceNotice?'<br>'+esc(c.priceNotice):'');
+  $('#food-notice').innerHTML=note(c.foodPartnersLine1,c.foodPartnersLine2);
+  $('#gear-notice').innerHTML=note(c.itemPartnersLine1,c.itemPartnersLine2);
+  $('#ig-link').href=c.footerInstaUrl||'#';
+  $('#credits').textContent=c.footerCredits||'';
+  $('#dm-link').href=c.footerDmUrl||'#';
+
+  const camp=camps();
+  $('#about-rows').innerHTML=[
+    ['분야','오토캠핑 · 캠핑장 · 캠핑 음식 · 장비',`캠핑장 ${camp.length}곳 · 누적 방문 ${camp.reduce((a,x)=>a+(+x.visits||0),0)}회`],
+    ['채널',c.footerInstaLink||'@kyd_zm','릴스 중심 · 페이스북 교차 게시'],
+    ['제휴',c.headerBadge||'그래가 파트너스','캠핑장 예약 연동 · 레퍼럴 코드 공대남자'],
+    ['문의',c.footerEmail||'','메일 또는 인스타그램 DM']
+  ].map(([k,v,s])=>`<div class="row"><dt>${esc(k)}</dt><dd>${esc(v)}${s?`<small>${esc(s)}</small>`:''}</dd></div>`).join('');
+}
+</script>
+</body>
+</html>
