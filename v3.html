@@ -46,8 +46,13 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .hero{padding:clamp(44px,8vw,96px) 0 clamp(28px,4vw,44px);
   display:flex;align-items:flex-start;gap:clamp(24px,4vw,56px)}
 .hero .htxt{flex:1 1 auto;min-width:0}
-.hero .prof{flex:0 0 auto;width:clamp(110px,15vw,196px)}
-.hero .prof img{aspect-ratio:1/1}
+.hero .prof{flex:0 0 auto;width:clamp(110px,15vw,196px);text-align:center}
+.hero .prof .nm{display:block;margin-top:6px;font-family:var(--display);font-weight:800;
+  font-size:clamp(13px,1.4vw,16px);letter-spacing:-.02em;line-height:1.3}
+.hero .prof .id{display:block;margin-top:2px;font-family:var(--mono);font-size:clamp(10px,1vw,12px);
+  letter-spacing:.04em;color:var(--stone);transition:color .15s}
+.hero .prof:hover .id{color:var(--ink)}
+.hero .prof img{aspect-ratio:1/1;height:auto}
 @media (max-width:620px){
   .hero{gap:16px;align-items:center}
   .hero .prof{width:92px}
@@ -220,6 +225,8 @@ footer{border-top:1px solid var(--line);padding:32px 0 52px;margin-top:18px}
       </div>
       <a class="prof" id="prof-link" href="#" target="_blank" rel="noopener" aria-label="인스타그램 @kyd_zm">
         <img src="https://kydz.kr/images/menu/profile.jpg" alt="공대남자 프로필">
+        <span class="nm">공대남자</span>
+        <span class="id">@kyd_zm</span>
       </a>
     </div>
     <div class="menu" id="menu"></div>
@@ -542,7 +549,11 @@ function renderChrome(){
   $('#food-notice').innerHTML=note(c.foodPartnersLine1,c.foodPartnersLine2);
   $('#gear-notice').innerHTML=note(c.itemPartnersLine1,c.itemPartnersLine2);
   $('#ig-link').href=c.footerInstaUrl||'#';
-  const pl=$('#prof-link'); if(pl) pl.href=c.footerInstaUrl||'#';
+  const pl=$('#prof-link'); if(pl){
+    pl.href=c.footerInstaUrl||'#';
+    const idEl=pl.querySelector('.id');
+    if(idEl && c.footerInstaLink) idEl.textContent=c.footerInstaLink;
+  }
   $('#credits').textContent=c.footerCredits||'';
   $('#dm-link').href=c.footerDmUrl||'#';
 
