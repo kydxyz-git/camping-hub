@@ -188,6 +188,28 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   background:linear-gradient(to top,rgba(10,12,13,.92) 0%,rgba(10,12,13,.55) 58%,rgba(10,12,13,0) 100%);
   opacity:0;transform:translateY(6px);transition:opacity .25s ease,transform .25s ease}
 .pcard:hover .pn{opacity:1;transform:none}
+.pcard .play{position:absolute;left:8px;top:8px;z-index:2;
+  width:24px;height:24px;border-radius:50%;
+  background:rgba(15,17,18,.62);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center}
+.pcard .play svg{width:9px;height:9px;margin-left:1px}
+
+/* 선택 팝업 */
+.modal{position:fixed;inset:0;z-index:100;display:none;
+  align-items:center;justify-content:center;padding:24px;
+  background:rgba(15,17,18,.5);backdrop-filter:blur(3px)}
+.modal.on{display:flex;animation:fade .2s ease both}
+.modal-box{background:var(--paper);border-radius:8px;padding:clamp(22px,3vw,30px);
+  width:min(340px,100%);box-shadow:0 20px 60px rgba(0,0,0,.28);text-align:center}
+.modal-box .mt{font-weight:700;font-size:15.5px;letter-spacing:-.02em;line-height:1.4}
+.modal-box .ma{display:flex;flex-direction:column;gap:8px;margin-top:18px}
+.modal-box a{display:block;padding:13px;border-radius:999px;font-weight:600;font-size:14px;transition:.16s}
+.modal-box .go-v{background:var(--ink);color:#fff}
+.modal-box .go-b{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.modal-box a:hover{transform:translateY(-1px)}
+.modal-box button{margin-top:12px;border:none;background:none;font:inherit;font-size:12.5px;
+  color:var(--stone);cursor:pointer}
+.modal-box button:hover{color:var(--ink)}
 
 /* 시리즈 카드 */
 .scard{position:relative;overflow:hidden;border-radius:4px;aspect-ratio:1.2/1;background:#EDEDE7;isolation:isolate}
@@ -301,9 +323,9 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
     <a class="mark" href="#home">공대남자<span> / @kyd_zm</span></a>
     <div class="tabs">
       <a class="tab" href="#camps">다녀온 캠핑장</a>
-      <a class="tab" href="#stories">캠핑이야기</a>
-      <a class="tab" href="#food">먹은음식</a>
-      <a class="tab" href="#gear">캠핑장비</a>
+      <a class="tab" href="#stories">영상모음</a>
+      <a class="tab" href="#food">먹거리</a>
+      <a class="tab" href="#gear">캠핑용품</a>
       <a class="tab alt" href="#about">소개 · 협업</a>
     </div>
   </div>
@@ -348,21 +370,21 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
     <div class="grid five" id="camp-grid"></div>
   </section>
 
-  <!-- 캠핑이야기: 시리즈 목록 -->
+  <!-- 영상모음: 시리즈 목록 -->
   <section id="v-stories" class="view">
     <div class="head">
       <div>
-        <h2>캠핑이야기</h2>
-        <p>주제별로 이어서 만든 영상 기록입니다.</p>
+        <h2>영상모음</h2>
+        <p>주제별로 이어서 만든 릴스 기록입니다.</p>
       </div>
       <span class="count" id="series-count"></span>
     </div>
     <div class="sgrid" id="series-grid"></div>
   </section>
 
-  <!-- 캠핑이야기: 회차 -->
+  <!-- 영상모음: 회차 -->
   <section id="v-series" class="view">
-    <a class="crumb" href="#stories">← 캠핑이야기</a>
+    <a class="crumb" href="#stories">← 영상모음</a>
     <div class="head">
       <div><h2 id="ser-title"></h2></div>
       <span class="count" id="ser-count"></span>
@@ -370,12 +392,12 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
     <div class="grid five" id="ser-grid"></div>
   </section>
 
-  <!-- 먹은음식 -->
+  <!-- 먹거리 -->
   <section id="v-food" class="view">
     <div class="head">
       <div>
-        <h2>먹은음식</h2>
-        <p>캠핑장에서 직접 해먹고 다시 살 만했던 것만 올립니다.</p>
+        <h2>먹거리</h2>
+        <p>캠핑 가서 사 먹은 밀키트와 간편식입니다. 다시 살 만했던 것만 올립니다.</p>
       </div>
       <span class="count" id="food-count"></span>
     </div>
@@ -383,18 +405,18 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
     <div class="grid five" id="food-grid"></div>
   </section>
 
-  <!-- 캠핑장비 -->
+  <!-- 캠핑용품 -->
   <section id="v-gear" class="view">
     <div class="head">
       <div>
-        <h2>캠핑장비</h2>
-        <p>실제로 챙겨 다니는 장비입니다. 사진을 누르면 제품 정보를 확인할 수 있습니다.</p>
+        <h2>캠핑용품</h2>
+        <p>공대남자가 지금 사용중인 캠핑용품입니다. 실제로 챙겨 다니는 것만 올립니다.</p>
       </div>
       <span class="count" id="gear-count"></span>
     </div>
     <p class="notice top" id="gear-notice"></p>
     <div class="grp">
-      <div class="grp-top"><h3>캠핑 장비</h3><span class="count" id="gear-n1"></span></div>
+      <div class="grp-top"><h3>캠핑용품</h3><span class="count" id="gear-n1"></span></div>
       <div class="grid five" id="gear-grid"></div>
     </div>
     <div class="grp">
@@ -437,12 +459,12 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
         <dl class="foot-col">
           <dt>RECORD</dt>
           <a href="#camps">다녀온 캠핑장</a>
-          <a href="#stories">캠핑이야기</a>
+          <a href="#stories">영상모음</a>
         </dl>
         <dl class="foot-col">
           <dt>PICK</dt>
-          <a href="#food">먹은음식</a>
-          <a href="#gear">캠핑장비</a>
+          <a href="#food">먹거리</a>
+          <a href="#gear">캠핑용품</a>
         </dl>
         <dl class="foot-col">
           <dt>CONTACT</dt>
@@ -456,6 +478,17 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
     </div>
   </footer>
 </main>
+
+<div class="modal" id="pick" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <p class="mt"></p>
+    <div class="ma">
+      <a class="go-v" href="#" target="_blank" rel="noopener">영상 보러 가기</a>
+      <a class="go-b" href="#" target="_blank" rel="noopener">구매하러 가기</a>
+    </div>
+    <button type="button" data-close>닫기</button>
+  </div>
+</div>
 
 <script>
 const BASE='https://kydz.kr/';
@@ -543,11 +576,11 @@ function renderMenu(){
   const cards=[
     {cls:'lg',href:'#camps',  title:'다녀온 캠핑장', n:c.length+'곳 / '+visits+'회',
      img:M+'camps.jpg',   color:M+'camps-color.jpg'},
-    {cls:'lg',href:'#stories',title:'캠핑이야기',   n:epTotal?epTotal+'편':'',
+    {cls:'lg',href:'#stories',title:'영상모음',   n:epTotal?epTotal+'편':'',
      img:M+'stories.jpg', color:M+'stories-color.jpg'},
-    {cls:'sm',href:'#food',   title:'먹은음식',     n:nFood?nFood+'개':'',
+    {cls:'sm',href:'#food',   title:'먹거리',     n:nFood?nFood+'개':'',
      img:M+'food.jpg',    color:M+'food-color.jpg'},
-    {cls:'sm',href:'#gear',   title:'캠핑장비',     n:nGear?nGear+'개':'',
+    {cls:'sm',href:'#gear',   title:'캠핑용품',     n:nGear?nGear+'개':'',
      img:M+'gear.jpg',    color:M+'gear-color.jpg'},
     {cls:'sm intro',href:'#about',title:'소개 · 협업', n:'',
      img:'', desc:'캠핑장, 장비, 음식, 촬영 장비 협업을 받고 있습니다.'}
@@ -700,13 +733,36 @@ function paintSeries(key){
 function renderProducts(sel,rows,countSel,emptyMsg){
   const list=pub(rows);
   if(countSel) $(countSel).textContent=list.length+'개';
-  $(sel).innerHTML=list.length?list.map(p=>
-    `<a class="pcard" href="${esc(p.url||'#')}" target="_blank" rel="noopener">
+  $(sel).innerHTML=list.length?list.map(p=>{
+    const hasV=!!(p.video||'').trim();
+    const href=hasV?'#':(p.url||'#');
+    return `<a class="pcard" href="${esc(href)}"
+      ${hasV?`data-v="${esc(p.video)}" data-b="${esc(p.url||'')}" data-t="${esc(p.name)}"`
+            :'target="_blank" rel="noopener"'}>
       ${p.thumb?`<img src="${esc(abs(p.thumb))}" alt="${esc(p.name)}" loading="lazy">`:''}
+      ${hasV?`<span class="play"><svg viewBox="0 0 10 10" fill="#fff"><path d="M1 0 L10 5 L1 10 Z"/></svg></span>`:''}
       <span class="pn">${esc(p.name)}</span>
-    </a>`
-  ).join(''):`<p class="empty">${esc(emptyMsg||'아직 등록된 항목이 없습니다.')}</p>`;
+    </a>`;
+  }).join(''):`<p class="empty">${esc(emptyMsg||'아직 등록된 항목이 없습니다.')}</p>`;
 }
+
+/* 영상 있는 제품 클릭 시 선택 팝업 */
+function openPick(t,v,b){
+  const m=$('#pick');
+  m.querySelector('.mt').textContent=t;
+  const av=m.querySelector('.go-v'), ab=m.querySelector('.go-b');
+  av.href=v;
+  if(b){ ab.href=b; ab.style.display=''; } else { ab.style.display='none'; }
+  m.classList.add('on');
+}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('.pcard[data-v]');
+  if(c){ e.preventDefault(); openPick(c.dataset.t,c.dataset.v,c.dataset.b); return; }
+  const m=$('#pick');
+  if(m && m.classList.contains('on') && (e.target===m || e.target.closest('[data-close]')))
+    m.classList.remove('on');
+});
+addEventListener('keydown',e=>{ if(e.key==='Escape') $('#pick')?.classList.remove('on'); });
 
 /* ── 공통 ── */
 function renderChrome(){

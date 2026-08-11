@@ -6883,7 +6883,7 @@ function renderItemDetail(idx) {
 let _itemForm = {
   mode: 'add', editIdx: null,
   name: '', desc: '', source: '', url: '',
-  cat: 'camp',
+  cat: 'camp', video: '',
   currency: 'KRW',
   priceOriginal: '', priceSale: '', discountRate: '',
   imageBase64: null, imagePreviewUrl: null, imageSize: 0,
@@ -6894,7 +6894,7 @@ function renderItemAddForm() {
   _itemForm = {
     mode: 'add', editIdx: null,
     name: '', desc: '', source: '', url: '',
-    cat: 'camp',
+    cat: 'camp', video: '',
     currency: 'KRW',
     priceOriginal: '', priceSale: '', discountRate: '',
     imageBase64: null, imagePreviewUrl: null, imageSize: 0,
@@ -6913,6 +6913,7 @@ function renderItemEditForm(idx) {
     source: it.source || '',
     url: it.url || '',
     cat: it.cat === 'camera' ? 'camera' : 'camp',
+    video: it.video || '',
     currency: it.currency || 'KRW',
     priceOriginal: it.price_original != null ? String(it.price_original) : '',
     priceSale: it.price_sale != null ? String(it.price_sale) : '',
@@ -6969,6 +6970,12 @@ function _renderItemFormUI() {
           <label class="label" for="if-url">URL *</label>
           <input type="text" id="if-url" class="input" placeholder="https://..." value="${escapeHtml(_itemForm.url)}">
           <div class="help">쿠팡/네이버/컬리 등의 상품 페이지 URL — 입력하면 출처 자동 감지</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="if-video">소개 영상 링크</label>
+          <input type="text" id="if-video" class="input" placeholder="https://www.instagram.com/reel/..." value="${escapeHtml(_itemForm.video)}">
+          <div class="help">입력하면 사이트 카드에 재생 표시가 붙고, 클릭 시 구매/영상 선택 팝업이 뜹니다</div>
         </div>
 
         <div class="form-field">
@@ -7037,6 +7044,7 @@ function _renderItemFormUI() {
 
   $('if-name').oninput = (e) => { _itemForm.name = e.target.value; };
   $('if-cat').onchange = (e) => { _itemForm.cat = e.target.value; };
+  $('if-video').oninput = (e) => { _itemForm.video = e.target.value; };
   $('if-desc').oninput = (e) => { _itemForm.desc = e.target.value; };
   $('if-source').onchange = (e) => { _itemForm.source = e.target.value; };
 
@@ -7220,6 +7228,7 @@ async function submitItemForm() {
         : makeContentId('item', _itemForm.name.trim()),
       name: _itemForm.name.trim(),
       cat: _itemForm.cat === 'camera' ? 'camera' : 'camp',
+      video: _itemForm.video.trim(),
       desc: _itemForm.desc.trim(),
       url: _itemForm.url.trim(),
       source: _itemForm.source || _detectSourceFromUrl(_itemForm.url) || '',
