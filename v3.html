@@ -504,7 +504,7 @@ addEventListener('hashchange',route);
 
 /* ── 로드 ── */
 (async function(){
-  const names=['config','camps','series','foods','items','camera'];
+  const names=['config','camps','series','foods','items'];
   try{
     const res=await Promise.all(names.map(n=>fetch(BASE+'data/'+n+'.json?v='+Date.now())
       .then(r=>{ if(!r.ok) throw new Error(n); return r.json(); })));
@@ -517,10 +517,11 @@ addEventListener('hashchange',route);
   renderCamps();
   renderSeriesList();
   renderProducts('#food-grid',DATA.foods,'#food-count');
-  renderProducts('#gear-grid',DATA.items,'#gear-n1');
-  renderProducts('#camera-grid',DATA.camera,'#gear-n2','촬영 장비를 등록하면 여기에 표시됩니다.');
-  $('#gear-count').textContent=
-    (pub(DATA.items).length+pub(DATA.camera).length)+'개';
+  const camp=pub(DATA.items).filter(x=>x.cat!=='camera');
+  const cam =pub(DATA.items).filter(x=>x.cat==='camera');
+  renderProducts('#gear-grid',camp,'#gear-n1');
+  renderProducts('#camera-grid',cam,'#gear-n2','촬영 장비를 등록하면 여기에 표시됩니다.');
+  $('#gear-count').textContent=(camp.length+cam.length)+'개';
   renderChrome();
   route();
 })();
@@ -538,7 +539,7 @@ function renderMenu(){
 
   const M=BASE+'images/menu/';
   const visits=c.reduce((a,x)=>a+(+x.visits||0),0);
-  const nFood=pub(DATA.foods).length, nGear=pub(DATA.items).length+pub(DATA.camera).length;
+  const nFood=pub(DATA.foods).length, nGear=pub(DATA.items).length;
   const cards=[
     {cls:'lg',href:'#camps',  title:'다녀온 캠핑장', n:c.length+'곳 / '+visits+'회',
      img:M+'camps.jpg',   color:M+'camps-color.jpg'},

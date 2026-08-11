@@ -6883,6 +6883,7 @@ function renderItemDetail(idx) {
 let _itemForm = {
   mode: 'add', editIdx: null,
   name: '', desc: '', source: '', url: '',
+  cat: 'camp',
   currency: 'KRW',
   priceOriginal: '', priceSale: '', discountRate: '',
   imageBase64: null, imagePreviewUrl: null, imageSize: 0,
@@ -6893,6 +6894,7 @@ function renderItemAddForm() {
   _itemForm = {
     mode: 'add', editIdx: null,
     name: '', desc: '', source: '', url: '',
+    cat: 'camp',
     currency: 'KRW',
     priceOriginal: '', priceSale: '', discountRate: '',
     imageBase64: null, imagePreviewUrl: null, imageSize: 0,
@@ -6910,6 +6912,7 @@ function renderItemEditForm(idx) {
     desc: it.desc || '',
     source: it.source || '',
     url: it.url || '',
+    cat: it.cat === 'camera' ? 'camera' : 'camp',
     currency: it.currency || 'KRW',
     priceOriginal: it.price_original != null ? String(it.price_original) : '',
     priceSale: it.price_sale != null ? String(it.price_sale) : '',
@@ -6943,6 +6946,14 @@ function _renderItemFormUI() {
       <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">${isEdit ? '장비 수정' : '새 장비 추가'}</h2>
       ${_formMetaHtml}
       <div class="form-grid">
+
+        <div class="form-field">
+          <label class="label" for="if-cat">구분 *</label>
+          <select id="if-cat" class="input">
+            <option value="camp"${_itemForm.cat !== 'camera' ? ' selected' : ''}>캠핑 장비</option>
+            <option value="camera"${_itemForm.cat === 'camera' ? ' selected' : ''}>촬영 장비</option>
+          </select>
+        </div>
 
         <div class="form-field">
           <label class="label" for="if-name">이름 *</label>
@@ -7025,6 +7036,7 @@ function _renderItemFormUI() {
   $('if-cancel').onclick = () => { resetItemForm(); location.hash = backHash; };
 
   $('if-name').oninput = (e) => { _itemForm.name = e.target.value; };
+  $('if-cat').onchange = (e) => { _itemForm.cat = e.target.value; };
   $('if-desc').oninput = (e) => { _itemForm.desc = e.target.value; };
   $('if-source').onchange = (e) => { _itemForm.source = e.target.value; };
 
@@ -7207,6 +7219,7 @@ async function submitItemForm() {
         ? (_oldItem.id || makeContentId('item', _itemForm.name.trim()))
         : makeContentId('item', _itemForm.name.trim()),
       name: _itemForm.name.trim(),
+      cat: _itemForm.cat === 'camera' ? 'camera' : 'camp',
       desc: _itemForm.desc.trim(),
       url: _itemForm.url.trim(),
       source: _itemForm.source || _detectSourceFromUrl(_itemForm.url) || '',
