@@ -100,19 +100,21 @@
     "updated_at": "2026-08-11T07:40:47.099Z"
   },
   {
-    "name": "울란지 PM01 맥세이프 방식 연장 브라켓",
+    "id": "item_960c2ff01c",
+    "name": "울란지 연장 브라켓(PM01)",
+    "cat": "camera",
+    "video": "https://www.instagram.com/reel/DYAx2p_zTjk/?igsh=MW8xNmhqZmNoM2Y5aQ==",
     "desc": "오즈모 포켓 필수 악세사리",
     "url": "https://naver.me/50BeWhG5",
     "source": "네이버",
     "thumb": "./images/products/item-02.jpg",
+    "currency": "KRW",
     "price_original": 42000,
     "price_sale": 41000,
     "discount_rate": 2,
     "published": true,
-    "id": "item_960c2ff01c",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T02:53:18.159759+00:00",
-    "cat": "camera"
+    "updated_at": "2026-08-11T08:24:45.083Z"
   },
   {
     "id": "item_200bd59067",
