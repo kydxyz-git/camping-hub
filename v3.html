@@ -43,7 +43,16 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* ── hero ── */
-.hero{padding:clamp(44px,8vw,96px) 0 clamp(28px,4vw,44px)}
+.hero{padding:clamp(44px,8vw,96px) 0 clamp(28px,4vw,44px);
+  display:flex;align-items:flex-start;gap:clamp(24px,4vw,56px)}
+.hero .htxt{flex:1 1 auto;min-width:0}
+.hero .prof{flex:0 0 auto;width:clamp(96px,13vw,168px);border-radius:10px;overflow:hidden;
+  border:1px solid var(--line);background:#F2F2EC}
+.hero .prof img{aspect-ratio:1/1}
+@media (max-width:620px){
+  .hero{gap:16px;align-items:center}
+  .hero .prof{width:78px;border-radius:8px}
+}
 .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--stone);margin-bottom:20px}
 .hero h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,5.4vw,58px);line-height:1.14;letter-spacing:-.035em;max-width:16ch}
 .hero h1 em{font-style:normal;position:relative;white-space:nowrap}
@@ -205,9 +214,14 @@ footer{border-top:1px solid var(--line);padding:32px 0 52px;margin-top:18px}
   <!-- 메인 -->
   <section id="v-home" class="view">
     <div class="hero">
-      <p class="eyebrow">AUTO CAMPING RECORD · 2026</p>
-      <h1>가본 곳만 씁니다.<br><em>몇 번 갔는지</em>까지.</h1>
-      <p>5년차 부부캠퍼가 실제로 다녀온 캠핑장 기록입니다. 한 번 가보고 좋다고 하는 곳과, 몇 년째 다시 가는 곳은 다릅니다.</p>
+      <div class="htxt">
+        <p class="eyebrow">AUTO CAMPING RECORD · 2026</p>
+        <h1>가본 곳만 씁니다.<br><em>몇 번 갔는지</em>까지.</h1>
+        <p>5년차 부부캠퍼가 실제로 다녀온 캠핑장 기록입니다. 한 번 가보고 좋다고 하는 곳과, 몇 년째 다시 가는 곳은 다릅니다.</p>
+      </div>
+      <a class="prof" id="prof-link" href="#" target="_blank" rel="noopener" aria-label="인스타그램 @kyd_zm">
+        <img src="https://kydz.kr/images/menu/profile.jpg" alt="공대남자 프로필">
+      </a>
     </div>
     <div class="menu" id="menu"></div>
   </section>
@@ -529,6 +543,7 @@ function renderChrome(){
   $('#food-notice').innerHTML=note(c.foodPartnersLine1,c.foodPartnersLine2);
   $('#gear-notice').innerHTML=note(c.itemPartnersLine1,c.itemPartnersLine2);
   $('#ig-link').href=c.footerInstaUrl||'#';
+  const pl=$('#prof-link'); if(pl) pl.href=c.footerInstaUrl||'#';
   $('#credits').textContent=c.footerCredits||'';
   $('#dm-link').href=c.footerDmUrl||'#';
 
