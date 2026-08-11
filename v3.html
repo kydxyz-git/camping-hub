@@ -27,16 +27,19 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 /* ── nav ── */
 .nav{position:sticky;top:0;z-index:50;background:rgba(251,251,248,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .nav.bare{border-bottom-color:transparent}
-.nav-in{max-width:1240px;margin:0 auto;padding:0 var(--pad);height:60px;display:flex;align-items:center;gap:22px}
-.mark{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.14em;white-space:nowrap}
-.mark span{color:var(--stone)}
-@media (max-width:620px){ .mark span{display:none} }
-.tabs{display:flex;gap:2px;margin-left:auto;align-items:center}
+.nav-in{max-width:1240px;margin:0 auto;padding:14px var(--pad) 0;
+  display:flex;flex-direction:column;align-items:center;gap:10px}
+.mark{font-family:var(--display);font-weight:800;
+  font-size:clamp(22px,3.2vw,34px);letter-spacing:.02em;white-space:nowrap;line-height:1.1}
+.mark span{display:none}
+.tabs{display:flex;gap:2px;align-items:center;justify-content:center;
+  width:100%;border-top:1px solid var(--line);padding:6px 0}
 .nav.bare .tabs{display:none}
+.nav.bare .nav-in{padding-bottom:14px}
 .tab{font-size:14px;font-weight:500;color:var(--stone);padding:8px 11px;border-radius:999px;white-space:nowrap;transition:.15s}
 .tab:hover{color:var(--ink)}
 .tab[aria-current="page"]{color:var(--ink);font-weight:700;background:#EFEFE9}
-.tab.alt{margin-left:10px;padding-left:16px;border-left:1px solid var(--line);border-radius:0;font-size:13px}
+.tab.alt{margin-left:8px;padding-left:14px;border-left:1px solid var(--line);border-radius:0;font-size:13px}
 
 .wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
 .view{display:none;padding-bottom:clamp(28px,4vw,56px)}
@@ -299,9 +302,9 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
 }
 /* ── 모바일: 2열 고정, 가로 스크롤 없음 ── */
 @media (max-width:620px){
-  .nav-in{height:52px;gap:8px;padding:0 14px}
-  .mark{font-size:11px;letter-spacing:.1em}
-  .tabs{gap:0;overflow:visible}
+  .nav-in{gap:8px;padding:11px 12px 0}
+  .mark{font-size:20px}
+  .tabs{gap:0;overflow:visible;padding:5px 0}
   .tab{padding:6px 5px;font-size:11.5px}
   .tab.alt{display:none}          /* 모바일은 메인 배너·푸터로 진입 */
   .menu{grid-template-columns:repeat(6,1fr)}
@@ -337,7 +340,7 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
 
 <nav class="nav bare" id="nav">
   <div class="nav-in">
-    <a class="mark" href="#home">공대남자<span> / @kyd_zm</span></a>
+    <a class="mark" href="#home">공대남자</a>
     <div class="tabs">
       <a class="tab" href="#stories">영상모음</a>
       <a class="tab" href="#camps">다녀온 캠핑장</a>
