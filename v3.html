@@ -208,10 +208,11 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   width:min(460px,100%);box-shadow:0 20px 60px rgba(0,0,0,.28);text-align:center}
 .modal-box .mt{font-weight:700;font-size:clamp(16px,1.9vw,20px);letter-spacing:-.02em;line-height:1.45}
 .modal-box .ma{display:flex;flex-direction:column;gap:9px;margin-top:22px}
-.modal-box a{display:flex;align-items:center;justify-content:center;gap:8px;
+.modal-box a{position:relative;display:flex;align-items:center;justify-content:center;
   padding:clamp(13px,1.6vw,16px);border-radius:999px;
   font-weight:600;font-size:clamp(14px,1.5vw,15.5px);transition:.16s}
-.modal-box .src{font-size:11px;font-weight:800;letter-spacing:-.01em;
+.modal-box .src{position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  font-size:11px;font-weight:800;letter-spacing:-.01em;
   padding:3px 8px;border-radius:100px;color:#fff;background:#9e9e9e;line-height:1.4}
 .modal-box .src.coupang{background:#FF4B4B}
 .modal-box .src.kurly{background:#5D3CC7}
