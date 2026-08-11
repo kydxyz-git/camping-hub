@@ -47,8 +47,8 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   display:flex;align-items:flex-start;gap:clamp(24px,4vw,56px)}
 .hero .htxt{flex:1 1 auto;min-width:0}
 .hero .prof{flex:0 0 auto;width:clamp(110px,15vw,196px);text-align:center}
-.hero .prof .pic{position:relative;aspect-ratio:1/1;border-radius:10px;overflow:hidden}
-.hero .prof .pic img{position:absolute;inset:0;transition:opacity .28s ease}
+.hero .prof .pic{display:block;position:relative;width:100%;aspect-ratio:1/1;border-radius:10px;overflow:hidden}
+.hero .prof .pic img{position:absolute;inset:0;width:100%;height:100%;transition:opacity .28s ease}
 .hero .prof .pic .on{opacity:0}
 .hero .prof:hover .pic .on{opacity:1}
 .hero .prof:hover .pic .off{opacity:0}
