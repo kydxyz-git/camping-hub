@@ -711,9 +711,25 @@ function renderCamps(){
   $('#camp-q').oninput=paintCamps;
   paintCamps();
 }
+/* 캠핑장 정렬 — 기존 사이트와 동일 규칙
+   1) 그래가 우선  2) 이미지 있는 곳 우선
+   3) 그래가끼리는 랜덤, 그 외는 방문 횟수 내림차순  4) 이름순 */
+function sortCamps(arr){
+  const rk=new Map();
+  for(const c of arr) rk.set(c,Math.random());
+  return [...arr].sort((a,b)=>{
+    if(!!a.graega !== !!b.graega) return (b.graega?1:0)-(a.graega?1:0);
+    const ai=(a.imgs&&a.imgs.length)?1:0, bi=(b.imgs&&b.imgs.length)?1:0;
+    if(ai!==bi) return bi-ai;
+    if(a.graega&&b.graega) return rk.get(a)-rk.get(b);
+    const va=+a.visits||0, vb=+b.visits||0;
+    if(va!==vb) return vb-va;
+    return String(a.name).localeCompare(String(b.name),'ko');
+  });
+}
 function paintCamps(){
   const q=$('#camp-q').value.trim().toLowerCase();
-  const rows=camps().filter(c=>(region==='전체'||c.region===region)&&(!q||(c.name||'').toLowerCase().includes(q)));
+  const rows=sortCamps(camps().filter(c=>(region==='전체'||c.region===region)&&(!q||(c.name||'').toLowerCase().includes(q))));
   $('#camp-count').textContent=rows.length+' / '+camps().length;
   $('#camp-grid').innerHTML=rows.length?rows.map(c=>{
     const pool=(c.imgs||[]).filter(Boolean);
