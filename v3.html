@@ -185,8 +185,9 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .pcard:hover img{transform:scale(1.045)}
 .pcard .pn{position:absolute;inset:0;padding:14px;
   display:flex;align-items:center;justify-content:center;text-align:center;
-  color:#fff;font-weight:700;font-size:13.5px;letter-spacing:-.015em;line-height:1.45;
-  background:rgba(12,14,15,.62);backdrop-filter:blur(1px);
+  color:#fff;font-weight:700;font-size:clamp(14px,1.35vw,18px);
+  letter-spacing:-.02em;line-height:1.4;
+  background:rgba(12,14,15,.66);backdrop-filter:blur(1px);
   opacity:0;transition:opacity .22s ease}
 .pcard:hover .pn{opacity:1}
 .pcard .play{position:absolute;left:8px;top:8px;z-index:2;
