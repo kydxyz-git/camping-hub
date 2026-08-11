@@ -52,23 +52,24 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 
 /* ── 메인 메뉴 카드 ── */
 .menu{display:grid;gap:clamp(10px,1.4vw,16px);grid-template-columns:repeat(6,1fr);grid-auto-rows:minmax(0,auto)}
-.mcard{position:relative;overflow:hidden;border-radius:5px;background:#EDEDE7;display:block;isolation:isolate}
+.mcard{position:relative;overflow:hidden;border-radius:5px;background:#F2F2EC;display:block;isolation:isolate;
+  border:1px solid var(--line)}
 .mcard.lg{grid-column:span 3;aspect-ratio:16/10}
 .mcard.sm{grid-column:span 2;aspect-ratio:4/3}
 .mcard .bg{position:absolute;inset:0;z-index:-2}
 .mcard .bg img{transition:transform .6s cubic-bezier(.2,.7,.3,1)}
-.mcard:hover .bg img{transform:scale(1.05)}
+.mcard:hover .bg img{transform:scale(1.04)}
 .mcard::after{content:"";position:absolute;inset:0;z-index:-1;
-  background:linear-gradient(to top,rgba(12,14,15,.62) 0%,rgba(12,14,15,.18) 46%,rgba(12,14,15,0) 100%)}
-.mcard .txt{position:absolute;left:0;right:0;bottom:0;padding:clamp(14px,2vw,24px);color:#fff}
+  background:linear-gradient(to top,rgba(251,251,248,.96) 12%,rgba(251,251,248,.55) 30%,rgba(251,251,248,0) 52%)}
+.mcard .txt{position:absolute;left:0;right:0;bottom:0;padding:clamp(14px,2vw,24px);color:var(--ink)}
 .mcard h2{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.2;
-  font-size:clamp(16px,2.3vw,27px);text-shadow:0 1px 12px rgba(0,0,0,.3)}
+  font-size:clamp(16px,2.3vw,27px)}
 .mcard .n{display:inline-block;margin-top:7px;font-family:var(--mono);font-size:11.5px;font-weight:500;
   letter-spacing:.06em;color:#15181A;background:var(--stamp);padding:3px 8px;border-radius:2px}
 .mcard.sm h2{font-size:clamp(15px,1.9vw,19px)}
-.mcard.intro{background:var(--ink)}
+.mcard.intro{background:var(--ink);border-color:var(--ink)}
 .mcard.intro::after{background:none}
-.mcard.intro .txt{top:0;display:flex;flex-direction:column;justify-content:flex-end}
+.mcard.intro .txt{color:#fff;top:0;display:flex;flex-direction:column;justify-content:flex-end}
 .mcard.intro p{font-size:12.5px;color:rgba(255,255,255,.62);margin-top:6px;line-height:1.5}
 .mcard.intro .ico{position:absolute;left:clamp(14px,2vw,24px);top:clamp(14px,2vw,24px);
   width:clamp(30px,3.4vw,40px);height:auto;opacity:.9;z-index:1}
@@ -396,13 +397,13 @@ function renderMenu(){
 
   const cards=[
     {cls:'lg',href:'#camps',  title:'다녀온 캠핑장', n:c.length+'곳',
-     img:BASE+'images/menu/camps.svg'},
+     img:BASE+'images/menu/camps.jpg'},
     {cls:'lg',href:'#stories',title:'캠핑이야기',   n:epTotal+'편',
-     img:BASE+'images/menu/stories.svg'},
+     img:BASE+'images/menu/stories.jpg'},
     {cls:'sm',href:'#food',   title:'먹은음식',     n:pub(DATA.foods).length+'개',
-     img:BASE+'images/menu/food.svg'},
+     img:BASE+'images/menu/food.jpg'},
     {cls:'sm',href:'#gear',   title:'캠핑장비',     n:(pub(DATA.items).length+pub(DATA.camera).length)+'개',
-     img:BASE+'images/menu/gear.svg'},
+     img:BASE+'images/menu/gear.jpg'},
     {cls:'sm intro',href:'#about',title:'소개 · 협업', n:'',
      img:'', desc:'캠핑장, 장비, 음식, 촬영 장비 협업을 받고 있습니다.'}
   ];
