@@ -30,6 +30,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .nav-in{max-width:1240px;margin:0 auto;padding:0 var(--pad);height:60px;display:flex;align-items:center;gap:22px}
 .mark{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.14em;white-space:nowrap}
 .mark span{color:var(--stone)}
+@media (max-width:620px){ .mark span{display:none} }
 .tabs{display:flex;gap:2px;margin-left:auto;align-items:center}
 .nav.bare .tabs{display:none}
 .tab{font-size:14px;font-weight:500;color:var(--stone);padding:8px 11px;border-radius:999px;white-space:nowrap;transition:.15s}
@@ -38,7 +39,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .tab.alt{margin-left:10px;padding-left:16px;border-left:1px solid var(--line);border-radius:0;font-size:13px}
 
 .wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
-.view{display:none;padding-bottom:90px}
+.view{display:none;padding-bottom:clamp(28px,4vw,56px)}
 .view.on{display:block;animation:fade .3s ease both}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
@@ -81,16 +82,15 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   border:1px solid var(--line)}
 .mcard.lg{grid-column:span 3;aspect-ratio:16/10}
 .mcard.sm{grid-column:span 2;aspect-ratio:4/3}
-.mcard .bg{position:absolute;inset:0;z-index:-2}
+.mcard .bg{position:absolute;left:0;right:0;top:0;bottom:30%;z-index:-2}
 .mcard .bg img{position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;object-position:center 22%;
+  object-fit:contain;object-position:center bottom;
   transition:transform .6s cubic-bezier(.2,.7,.3,1), opacity .3s ease}
 .mcard .bg .on{opacity:0}
 .mcard:hover .bg .on{opacity:1}
 .mcard:hover .bg .off{opacity:0}
 .mcard:hover .bg img{transform:scale(1.04)}
-.mcard::after{content:"";position:absolute;inset:0;z-index:-1;
-  background:linear-gradient(to top,rgba(251,251,248,.96) 12%,rgba(251,251,248,.55) 30%,rgba(251,251,248,0) 52%)}
+.mcard::after{content:none}
 .mcard .txt{position:absolute;left:0;right:0;bottom:0;padding:clamp(14px,2vw,24px);color:var(--ink);
   display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .mcard h2{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.15;
@@ -202,7 +202,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 
 .empty{padding:52px 0;text-align:center;color:var(--stone);font-size:13.5px}
 .notice{margin-top:clamp(32px,4vw,52px);padding-top:20px;border-top:1px solid var(--line);font-size:11.5px;color:#9A9E98;line-height:1.65}
-footer{border-top:1px solid var(--line);padding:clamp(34px,5vw,54px) 0 clamp(30px,4vw,44px);margin-top:clamp(24px,4vw,48px)}
+footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28px,3.5vw,40px);margin-top:0}
 .foot-top{display:flex;gap:clamp(24px,5vw,64px);flex-wrap:wrap;align-items:flex-start;
   padding-bottom:clamp(24px,3vw,34px)}
 .foot-brand b{display:block;font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:-.03em}
@@ -228,19 +228,18 @@ footer{border-top:1px solid var(--line);padding:clamp(34px,5vw,54px) 0 clamp(30p
 }
 /* ── 모바일: 2열 고정, 가로 스크롤 없음 ── */
 @media (max-width:620px){
-  .nav-in{height:54px;gap:10px}
-  .tabs{gap:0}
-  .tab{padding:7px 8px;font-size:13px}
+  .nav-in{height:52px;gap:8px;padding:0 14px}
+  .mark{font-size:11px;letter-spacing:.1em}
+  .tabs{gap:0;overflow:visible}
+  .tab{padding:6px 5px;font-size:11.5px}
   .tab.alt{display:none}          /* 모바일은 메인 배너·푸터로 진입 */
   .menu{grid-template-columns:repeat(6,1fr)}
   .mcard.lg{grid-column:span 6;aspect-ratio:16/10}
   .mcard.sm{grid-column:span 3;aspect-ratio:4/3}
-  .mcard::after{background:linear-gradient(to top,
-    rgba(251,251,248,1) 26%,rgba(251,251,248,.86) 40%,rgba(251,251,248,0) 62%)}
-  .mcard .bg img{object-position:center 12%}
+  .mcard.sm .bg{bottom:36%}
   .mcard h2{font-size:15px}
   .mcard .n{font-size:12.5px}
-  .mcard.sm .txt{flex-direction:column;align-items:flex-start;gap:3px}
+  .mcard.sm .txt{flex-direction:column;align-items:flex-start;gap:2px}
   .mcard.intro{grid-column:span 6;aspect-ratio:2.6/1}
   /* 모바일은 호버가 없어 컬러를 기본 노출 */
   .mcard .bg .on{opacity:1}
