@@ -78,13 +78,16 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .facts{display:flex;gap:clamp(24px,4vw,44px);flex-wrap:wrap}
 .fact b{display:block;font-family:var(--mono);font-weight:600;font-size:clamp(22px,3vw,32px);line-height:1;letter-spacing:-.03em}
 .fact span{display:block;margin-top:7px;font-size:12px;color:var(--stone)}
-.vids{display:grid;gap:10px}
-.vid{display:flex;gap:12px;align-items:center;border:1px solid var(--line);background:#fff;border-radius:4px;padding:12px 14px;transition:.16s}
-.vid:hover{border-color:#C7CAC3;transform:translateY(-1px)}
-.vid b{font-size:14px;font-weight:600}
-.vid b em{display:block;font-style:normal;font-family:var(--mono);font-size:11px;
-  font-weight:400;color:var(--stone);letter-spacing:.04em;margin-top:3px}
-.vid span{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--stone)}
+.vids{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.vid{display:block;transition:.16s}
+.vid:hover{transform:translateY(-2px)}
+.vthumb{display:block;position:relative;aspect-ratio:4/5;overflow:hidden;
+  border-radius:4px;background:#EDEDE7}
+.vthumb img{width:100%;height:100%;object-fit:cover}
+.vmeta{display:block;padding:9px 2px 0}
+.vmeta b{display:block;font-size:13.5px;font-weight:700;letter-spacing:-.015em;line-height:1.4}
+.vmeta em{display:block;font-style:normal;font-family:var(--mono);font-size:10.5px;
+  font-weight:400;color:var(--stone);letter-spacing:.04em;margin-top:4px}
 #map{height:280px;border-radius:4px;border:1px solid var(--line);background:#EDEDE7}
 .notes{list-style:none;display:grid;gap:9px}
 .notes li{position:relative;padding-left:14px;font-size:13.5px;color:#3F4540;line-height:1.6}
@@ -184,10 +187,10 @@ function orderedImgs(c){
     for(const ep of (s.eps||[])){
       if(ep.published===false || ep.camp_id!==c.id || !ep.url) continue;
       const num = ep.ep>0 ? `${s.name} EP.${String(ep.ep).padStart(2,'0')}${ep.ep_sub>0?'-'+ep.ep_sub:''}` : s.name;
-      linked.push({url:ep.url, title:(ep.title||'').trim()||num, sub:num});
+      linked.push({url:ep.url, title:(ep.title||'').trim()||num, sub:num, thumb:ep.thumb||''});
     }
   }
-  const own=(c.videos||[]).filter(x=>x&&x.url).map(x=>({url:x.url,title:x.title||'영상 보기',sub:''}));
+  const own=(c.videos||[]).filter(x=>x&&x.url).map(x=>({url:x.url,title:x.title||'게시물 보기',sub:'',thumb:x.thumb||''}));
   const seen=new Set(); const vids=[];
   for(const x of [...linked,...own]){ if(!seen.has(x.url)){ seen.add(x.url); vids.push(x); } }
 
@@ -225,10 +228,15 @@ function orderedImgs(c){
         </div>`:''}
 
         ${vids.length?`<div class="block">
-          <h2>VIDEO</h2>
+          <h2>POST</h2>
           <div class="vids">
             ${vids.map(x=>`<a class="vid" href="${esc(x.url)}" target="_blank" rel="noopener">
-              <b>${esc(x.title)}${x.sub?`<em>${esc(x.sub)}</em>`:''}</b><span>인스타그램 →</span></a>`).join('')}
+              <span class="vthumb">${x.thumb?`<img src="${esc(abs(x.thumb))}" alt="">`:''}</span>
+              <span class="vmeta">
+                <b>${esc(x.title)}</b>
+                ${x.sub?`<em>${esc(x.sub)}</em>`:''}
+              </span>
+            </a>`).join('')}
           </div>
         </div>`:''}
       </div>
