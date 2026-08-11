@@ -51,6 +51,8 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .gal{padding:clamp(24px,4vw,40px) 0 0}
 .gal-main{position:relative;aspect-ratio:4/5;max-width:520px;margin:0 auto;
   border-radius:4px;overflow:hidden;background:#EDEDE7}
+.gal-main img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:opacity 1.1s ease}
 .gal .thumbs{max-width:520px;margin:8px auto 0}
 .gal-main .stamp{position:absolute;left:14px;bottom:14px;z-index:2;font-family:var(--mono);font-weight:600;font-size:12px;background:var(--stamp);padding:6px 11px;border-radius:2px}
 .thumbs{display:flex;gap:8px;margin-top:8px;overflow-x:auto;scrollbar-width:none}
@@ -163,12 +165,12 @@ function orderedImgs(c){
 
   root.innerHTML=`
     <section class="gal">
-      <div class="gal-main">
-        ${imgs.length?`<img id="main-img" src="${esc(abs(imgs[0]))}" alt="${esc(c.name)}">`:''}
+      <div class="gal-main" id="gal-main">
+        ${imgs.map((s,i)=>`<img src="${esc(abs(s))}" alt="${esc(c.name)}" style="opacity:${i===0?1:0}">`).join('')}
         ${v?`<span class="stamp">${v}번 방문</span>`:''}
       </div>
       ${imgs.length>1?`<div class="thumbs">${imgs.map((s,i)=>
-        `<button data-src="${esc(abs(s))}" class="${i===0?'on':''}" aria-label="사진 ${i+1}"><img src="${esc(abs(s))}" alt=""></button>`).join('')}</div>`:''}
+        `<button data-i="${i}" class="${i===0?'on':''}" aria-label="사진 ${i+1}"><img src="${esc(abs(s))}" alt=""></button>`).join('')}</div>`:''}
     </section>
 
     <header class="title">
@@ -213,12 +215,27 @@ function orderedImgs(c){
     <footer>© 2026 공대남자 · <a href="./v3.html#camps" style="text-decoration:underline">캠핑장 목록으로</a></footer>
   `;
 
+  // 대표 이미지 자동 전환 (랜덤 시작 · 5초 간격) + 썸네일 연동
+  const slides=[...document.querySelectorAll('#gal-main img')];
   const thumbs=root.querySelector('.thumbs');
+  let cur=0, timer=null;
+  function show(n){
+    if(!slides.length) return;
+    slides[cur].style.opacity=0;
+    cur=(n+slides.length)%slides.length;
+    slides[cur].style.opacity=1;
+    if(thumbs) thumbs.querySelectorAll('button')
+      .forEach(b=>b.classList.toggle('on', +b.dataset.i===cur));
+  }
+  if(slides.length>1){
+    show(Math.floor(Math.random()*slides.length));
+    timer=setInterval(()=>show(cur+1),5000);
+  }
   if(thumbs){
     thumbs.addEventListener('click',e=>{
       const b=e.target.closest('button'); if(!b) return;
-      document.getElementById('main-img').src=b.dataset.src;
-      thumbs.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+      clearInterval(timer);            // 직접 고르면 자동 전환 중지
+      show(+b.dataset.i);
     });
   }
 
