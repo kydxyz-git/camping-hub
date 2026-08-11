@@ -156,7 +156,21 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   font:inherit;font-size:13px;color:#5D635C;transition:.15s}
 .chip:hover{border-color:#C7CAC3}
 .chip.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
-.chips.feats{padding-bottom:20px;margin-top:-8px}
+.fbtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 16px;
+  cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;color:#3F5346;
+  display:inline-flex;align-items:center;gap:6px;transition:.15s}
+.fbtn:hover{border-color:#C7CAC3}
+.fbtn[aria-expanded="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.fcount{font-family:var(--mono);font-size:11px}
+.fcount:empty{display:none}
+.fpanel{display:none;padding:4px 0 20px}
+.fpanel.on{display:block;animation:fade .2s ease both}
+.fgroup{display:flex;gap:10px;align-items:flex-start;padding:8px 0}
+.flabel{flex:0 0 34px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  color:var(--stone);padding-top:8px}
+.freset{margin-top:8px;border:none;background:none;font:inherit;font-size:12.5px;
+  color:var(--stone);cursor:pointer;text-decoration:underline;padding:4px 0}
+.freset:hover{color:var(--ink)}
 .chip.feat{font-size:12.5px;padding:6px 12px;color:#3F5346;border-color:#DDE0DA;background:#F4F6F2}
 .chip.feat:hover{border-color:#BFC7BC}
 .chip.feat.on{background:#3F5346;border-color:#3F5346;color:#fff}
@@ -409,9 +423,15 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
     </div>
     <div class="controls">
       <input class="search" id="camp-q" type="search" placeholder="캠핑장 이름 검색" aria-label="캠핑장 이름 검색">
-      <div class="chips" id="camp-chips"></div>
+      <button class="fbtn" id="camp-ftoggle" type="button" aria-expanded="false">
+        필터<span class="fcount" id="camp-fcount"></span>
+      </button>
     </div>
-    <div class="chips feats" id="camp-feats"></div>
+    <div class="fpanel" id="camp-fpanel">
+      <div class="fgroup"><span class="flabel">지역</span><div class="chips" id="camp-chips"></div></div>
+      <div class="fgroup"><span class="flabel">특징</span><div class="chips" id="camp-feats"></div></div>
+      <button class="freset" id="camp-freset" type="button">필터 초기화</button>
+    </div>
     <div class="grid five" id="camp-grid"></div>
   </section>
 
@@ -739,6 +759,18 @@ function renderCamps(){
     paintCamps();
   };
   $('#camp-q').oninput=paintCamps;
+
+  const tg=$('#camp-ftoggle'), pn=$('#camp-fpanel');
+  tg.onclick=()=>{
+    const on=pn.classList.toggle('on');
+    tg.setAttribute('aria-expanded', on?'true':'false');
+  };
+  $('#camp-freset').onclick=()=>{
+    region='전체'; feat.clear();
+    $$('#camp-chips .chip').forEach(x=>x.classList.toggle('on',x.dataset.r==='전체'));
+    $$('#camp-feats .chip').forEach(x=>x.classList.remove('on'));
+    paintCamps();
+  };
   paintCamps();
 }
 /* 사진 미등록 캠핑장 대체 화면 — 지형별 색 + 이름 */
@@ -802,6 +834,8 @@ function paintCamps(){
     return true;
   }));
   $('#camp-count').textContent=rows.length+' / '+camps().length;
+  const nf=(region!=='전체'?1:0)+feat.size;
+  const fc=$('#camp-fcount'); if(fc) fc.textContent=nf?String(nf):'';
   $('#camp-grid').innerHTML=rows.length?rows.map(c=>{
     const pool=(c.imgs||[]).filter(Boolean);
     const main = c.main_img && pool.includes(c.main_img) ? c.main_img : pool[0];
