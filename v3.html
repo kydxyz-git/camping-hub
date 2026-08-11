@@ -200,8 +200,8 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;
   color:#fff;background:rgba(12,14,15,.55);backdrop-filter:blur(3px);
   padding:3px 7px;border-radius:2px}
-.ecard .ereg{display:block;margin-top:3px;font-family:var(--mono);font-size:10.5px;
-  font-weight:500;letter-spacing:.06em;color:rgba(255,255,255,.72)}
+.ecard .ereg{display:block;font-family:var(--display);font-size:clamp(13.5px,1.45vw,16px);
+  font-weight:800;letter-spacing:-.02em;color:#fff}
 .ecard:hover::after,.ecard:hover .etitle{opacity:0}
 
 /* 제품 카드: 이미지 위 제품명 오버레이 */
@@ -751,7 +751,7 @@ function paintSeries(key){
   $('#ser-count').textContent=eps.length+'편';
   $('#ser-grid').innerHTML=eps.map(e=>{
     const c=e.camp_id?cmap[e.camp_id]:null;
-    const label = c ? `${esc(c.name)}<span class="ereg">${esc(c.region||'')}</span>` : esc(e.title);
+    const label = (c && c.region) ? `<span class="ereg">${esc(c.region)}</span>` : esc(e.title);
     return `<a class="ecard" href="${esc(e.url||'#')}" target="_blank" rel="noopener">
       ${e.thumb?`<img src="${esc(abs(e.thumb))}" alt="${esc(e.title)}" loading="lazy">`:''}
       <span class="etitle">${label}</span>
