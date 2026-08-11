@@ -51,6 +51,10 @@
     {
       "key": "camera",
       "label": "촬영장비"
+    },
+    {
+      "key": "cato05ws",
+      "label": "테이블&의자"
     }
   ]
 }
