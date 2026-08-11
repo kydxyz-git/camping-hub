@@ -156,6 +156,13 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .card:hover .shot img{transform:scale(1.045)}
 .plat{position:absolute;right:9px;top:9px;z-index:2;font-size:10.5px;font-weight:700;
   background:rgba(21,24,26,.82);color:#fff;padding:4px 8px;border-radius:2px;backdrop-filter:blur(4px)}
+.plat.graega{background:#2F7D4F}
+.plat.naver{background:#03C75A}
+.plat.camfit{background:#1E64D4}
+.plat.thankq{background:#F2634A}
+.plat.ddnayo{background:#7B5BD6}
+.plat.xticket{background:#2B3A55}
+.plat.camperstory{background:#E0A020;color:#15181A}
 .meta{padding:10px 2px 0}
 .name{font-weight:700;font-size:14.5px;letter-spacing:-.015em;line-height:1.35}
 .region{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--stone)}
@@ -169,6 +176,18 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .was{font-weight:400;font-size:11.5px;color:#B0B4AE;text-decoration:line-through}
 .off{font-size:11px;font-weight:600;color:#B23A2F;font-family:var(--sans)}
 .epno{font-family:var(--mono);font-size:11px;color:var(--stone);letter-spacing:.06em}
+
+/* 제품 카드: 이미지 위 제품명 오버레이 */
+.pcard{display:block;position:relative;overflow:hidden;border-radius:3px;
+  aspect-ratio:4/5;background:#EDEDE7}
+.pcard img{width:100%;height:100%;object-fit:cover;
+  transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+.pcard:hover img{transform:scale(1.045)}
+.pcard .pn{position:absolute;left:0;right:0;bottom:0;padding:12px 11px;
+  color:#fff;font-weight:700;font-size:13.5px;letter-spacing:-.015em;line-height:1.35;
+  background:linear-gradient(to top,rgba(10,12,13,.92) 0%,rgba(10,12,13,.55) 58%,rgba(10,12,13,0) 100%);
+  opacity:0;transform:translateY(6px);transition:opacity .25s ease,transform .25s ease}
+.pcard:hover .pn{opacity:1;transform:none}
 
 /* 시리즈 카드 */
 .scard{position:relative;overflow:hidden;border-radius:4px;aspect-ratio:1.2/1;background:#EDEDE7;isolation:isolate}
@@ -216,6 +235,9 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 
 .empty{padding:52px 0;text-align:center;color:var(--stone);font-size:13.5px}
 .notice{margin-top:clamp(32px,4vw,52px);padding-top:20px;border-top:1px solid var(--line);font-size:11.5px;color:#9A9E98;line-height:1.65}
+.notice.top{margin:0 0 clamp(16px,2vw,22px);padding:10px 13px;border:1px solid var(--line);
+  border-radius:4px;background:#F4F4EE;color:#6A706A;font-size:11.5px}
+.notice.top:empty{display:none}
 footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28px,3.5vw,40px);margin-top:0}
 .foot-top{display:flex;gap:clamp(24px,5vw,64px);flex-wrap:wrap;align-items:flex-start;
   padding-bottom:clamp(24px,3vw,34px)}
@@ -266,6 +288,7 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
   .scard .bg img:nth-child(n+4){display:none}
   /* 모바일은 호버가 없어 편수를 호버 상태로 고정 */
   .scard .n{font-size:44px;color:#fff}
+  .pcard .pn{opacity:1;transform:none;font-size:12.5px;padding:10px 9px}
   .banner .go{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -356,8 +379,8 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
       </div>
       <span class="count" id="food-count"></span>
     </div>
+    <p class="notice top" id="food-notice"></p>
     <div class="grid five" id="food-grid"></div>
-    <p class="notice" id="food-notice"></p>
   </section>
 
   <!-- 캠핑장비 -->
@@ -369,6 +392,7 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
       </div>
       <span class="count" id="gear-count"></span>
     </div>
+    <p class="notice top" id="gear-notice"></p>
     <div class="grp">
       <div class="grp-top"><h3>캠핑 장비</h3><span class="count" id="gear-n1"></span></div>
       <div class="grid five" id="gear-grid"></div>
@@ -377,7 +401,6 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
       <div class="grp-top"><h3>촬영 장비</h3><span class="count" id="gear-n2"></span></div>
       <div class="grid five" id="camera-grid"></div>
     </div>
-    <p class="notice" id="gear-notice"></p>
   </section>
 
   <!-- 소개 -->
@@ -447,15 +470,15 @@ let DATA={};
 
 /* 예약 플랫폼 판별 */
 const PLATFORMS=[
-  [/graega/i,'그래가'],[/camfit/i,'캠핏'],[/thankqcamping/i,'땡큐캠핑'],
-  [/ddnayo/i,'떠나요'],[/xticket/i,'엑스티켓'],[/camperstory/i,'캠퍼스토리'],
-  [/naver\./i,'네이버']
+  [/graega/i,'그래가','graega'],[/camfit/i,'캠핏','camfit'],[/thankqcamping/i,'땡큐캠핑','thankq'],
+  [/ddnayo/i,'떠나요','ddnayo'],[/xticket/i,'엑스티켓','xticket'],[/camperstory/i,'캠퍼스토리','camperstory'],
+  [/naver\./i,'네이버','naver']
 ];
 function platform(c){
   const u=c.url||'';
-  if(!u) return '';
-  for(const [re,label] of PLATFORMS) if(re.test(u)) return label;
-  return '자체예약';
+  if(!u) return null;
+  for(const [re,label,cls] of PLATFORMS) if(re.test(u)) return {label,cls};
+  return {label:'자체예약',cls:''};
 }
 function mainImg(c){
   const pool=(c.imgs||[]).filter(Boolean);
@@ -617,7 +640,7 @@ function paintCamps(){
     return `<a class="card" href="./camp.html?id=${encodeURIComponent(c.id)}">
       <div class="shot">
         ${img?`<img src="${esc(img)}" alt="${esc(c.name)}" loading="lazy" style="object-position:center ${esc(pos)}">`:''}
-        ${p?`<span class="plat">${esc(p)}</span>`:''}
+        ${p?`<span class="plat ${esc(p.cls)}">${esc(p.label)}</span>`:''}
       </div>
       <div class="meta">
         <p class="name">${esc(c.name)}</p>
@@ -676,28 +699,18 @@ function paintSeries(key){
 function renderProducts(sel,rows,countSel,emptyMsg){
   const list=pub(rows);
   if(countSel) $(countSel).textContent=list.length+'개';
-  $(sel).innerHTML=list.length?list.map(p=>{
-    const sale=p.price_sale??null, org=p.price_original??null, now=sale??org;
-    return `<a class="card" href="${esc(p.url||'#')}" target="_blank" rel="noopener">
-      <div class="shot">
-        ${p.thumb?`<img src="${esc(abs(p.thumb))}" alt="${esc(p.name)}" loading="lazy">`:''}
-        ${p.source?`<span class="plat">${esc(p.source)}</span>`:''}
-      </div>
-      <div class="meta">
-        <p class="name">${esc(p.name)}</p>
-        ${p.desc?`<p class="desc">${esc(p.desc)}</p>`:''}
-        ${now!=null?`<p class="price">${won(now)}
-          ${sale&&org&&org>sale?`<span class="was">${won(org)}</span>`:''}
-          ${p.discount_rate?`<span class="off">${p.discount_rate}%</span>`:''}</p>`:''}
-      </div>
-    </a>`;
-  }).join(''):`<p class="empty">${esc(emptyMsg||'아직 등록된 항목이 없습니다.')}</p>`;
+  $(sel).innerHTML=list.length?list.map(p=>
+    `<a class="pcard" href="${esc(p.url||'#')}" target="_blank" rel="noopener">
+      ${p.thumb?`<img src="${esc(abs(p.thumb))}" alt="${esc(p.name)}" loading="lazy">`:''}
+      <span class="pn">${esc(p.name)}</span>
+    </a>`
+  ).join(''):`<p class="empty">${esc(emptyMsg||'아직 등록된 항목이 없습니다.')}</p>`;
 }
 
 /* ── 공통 ── */
 function renderChrome(){
   const c=DATA.config||{};
-  const note=(a,b)=>esc(a||'')+esc(b||'')+(c.priceNotice?'<br>'+esc(c.priceNotice):'');
+  const note=(a,b)=>esc(a||'')+esc(b||'');
   $('#food-notice').innerHTML=note(c.foodPartnersLine1,c.foodPartnersLine2);
   $('#gear-notice').innerHTML=note(c.itemPartnersLine1,c.itemPartnersLine2);
   $('#ig-link').href=c.footerInstaUrl||'#';
