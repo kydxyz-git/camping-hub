@@ -323,13 +323,18 @@
     .env-section { padding:16px 16px 12px; }
     .section-label { font-size:10px; letter-spacing:0.2em; color:var(--text-sub); font-weight:700; margin:0 4px 10px; text-transform:uppercase; display:block; }
     .env-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; }
-    .region-grid { grid-template-columns:repeat(6,1fr); gap:5px; }
-    .region-btn { padding:11px 4px; border-radius:10px; }
-    .region-name { font-size:13px; font-weight:700; letter-spacing:-.02em; }
+    .region-grid { grid-template-columns:repeat(7,1fr); gap:4px; }
     .env-btn { display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 2px 7px; border-radius:10px; transition:all 0.18s; }
     .env-btn.active { background:var(--accent-soft); }
     .env-btn.active .env-icon-wrap { outline:2px solid var(--text); outline-offset:2px; }
     .env-icon-wrap { width:40px; height:40px; border-radius:11px; display:flex; align-items:center; justify-content:center; }
+    .env-icon-wrap[data-t="all"]     {background:#EFEFE9;color:#5D635C}
+    .env-icon-wrap[data-t="r-강원"]   {background:var(--mountain-bg);color:var(--mountain-fg)}
+    .env-icon-wrap[data-t="r-경북"]   {background:var(--forest-bg);color:var(--forest-fg)}
+    .env-icon-wrap[data-t="r-경남"]   {background:var(--valley-bg);color:var(--valley-fg)}
+    .env-icon-wrap[data-t="r-전남"]   {background:var(--ocean-bg);color:var(--ocean-fg)}
+    .env-icon-wrap[data-t="r-충북"]   {background:var(--lake-bg);color:var(--lake-fg)}
+    .env-icon-wrap[data-t="r-충남"]   {background:var(--river-bg);color:var(--river-fg)}
     .env-icon-wrap[data-t="ocean"]    {background:var(--ocean-bg);color:var(--ocean-fg)}
     .env-icon-wrap[data-t="mountain"]{background:var(--mountain-bg);color:var(--mountain-fg)}
     .env-icon-wrap[data-t="forest"]  {background:var(--forest-bg);color:var(--forest-fg)}
@@ -1380,13 +1385,31 @@ function renderProducts(containerId, dataArr) {
 }
 
 /* ─── Landscape + 캠핑장 ─── */
+const REGION_ICON = {
+  '전체': `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 12h17M12 3.5c2.3 2.4 2.3 14.1 0 17M12 3.5c-2.3 2.4-2.3 14.1 0 17" stroke="currentColor" stroke-width="1.3" opacity=".65"/></svg>`,
+  '강원': `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M2 20L8 8l4 6 3-4 7 10H2Z" fill="currentColor" opacity=".6"/><path d="M6.6 12.5L8 8l1.6 4.5Z" fill="#fff" opacity=".9"/></svg>`,
+  '경북': `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3L6.5 12H9l-3.5 7H12v2h1v-2h6.5L16 12h2.5Z" fill="currentColor" opacity=".62"/></svg>`,
+  '경남': `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M2 19L8 9l4 5 4-7 6 12Z" fill="currentColor" opacity=".28"/><path d="M2.5 18.5Q8 16.5 12 18.5Q16 20.5 21.5 18.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M2 19L8 9l4 5 4-7 6 12" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>`,
+  '전남': `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="7" r="2.4" fill="#F5C547"/><path d="M2 13Q5.5 11 9 13Q12.5 15 16 13Q19 11.5 22 13L22 20H2Z" fill="currentColor" opacity=".38"/><path d="M2 16.5Q6 15 10 16.5Q14 18 18 16.5Q20 15.7 22 16.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
+  '충북': `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="15.5" rx="9" ry="3.8" fill="currentColor" opacity=".3"/><path d="M7 10l5-6.5L17 10Z" fill="currentColor" opacity=".75"/></svg>`,
+  '충남': `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M2 8Q6 6 10 8Q14 10 18 8Q20 7 22 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M2 13Q6 11 10 13Q14 15 18 13Q20 12 22 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".7"/><path d="M2 18Q6 16 10 18Q14 20 18 18Q20 17 22 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".45"/></svg>`,
+};
+const REGION_FALLBACK = `<svg class="env-icon" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" fill="currentColor" opacity=".55"/><circle cx="12" cy="10" r="2.6" fill="#fff" opacity=".9"/></svg>`;
+
 function renderEnv() {
-  document.getElementById('env-grid').innerHTML = usedRegions.map(r =>
-    `<button class="env-btn region-btn${state.region.has(r)?' active':''}" data-key="${r}">
-      <span class="region-name">${r}</span>
+  const opts = ['전체', ...usedRegions];
+  const cur = state.region.size ? [...state.region][0] : '전체';
+  document.getElementById('env-grid').innerHTML = opts.map(r =>
+    `<button class="env-btn region-btn${cur===r?' active':''}" data-key="${r}">
+      <div class="env-icon-wrap" data-t="${r==='전체'?'all':'r-'+r}">${REGION_ICON[r] || REGION_FALLBACK}</div>
+      <span class="env-name">${r}</span>
     </button>`).join('');
   document.querySelectorAll('.env-btn').forEach(b =>
-    b.addEventListener('click', ()=>{ toggle(state.region,b.dataset.key); renderEnv(); updTotal(); renderGrid(); }));
+    b.addEventListener('click', ()=>{
+      state.region.clear();
+      if (b.dataset.key !== '전체') state.region.add(b.dataset.key);
+      renderEnv(); updTotal(); renderGrid();
+    }));
 }
 function renderChips(id, opts, set, cntId) {
   const el = document.getElementById(id);
