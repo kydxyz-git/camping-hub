@@ -309,9 +309,9 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
   .hero .prof .pic .off{opacity:0}
   .hero .prof .fx{display:none}
   .grid,.grid.five{grid-template-columns:repeat(2,1fr)}
-  /* 캠핑용품·먹거리는 3열, 이름은 클릭 시 팝업에서 확인 */
-  .grid.five{grid-template-columns:repeat(3,1fr);gap:10px 6px}
-  .pcard .pn{display:none}
+  /* 제품 그리드(먹거리·캠핑용품)만 3열, 이름은 클릭 시 팝업에서 확인 */
+  .grid.prod{grid-template-columns:repeat(3,1fr);gap:10px 6px}
+  .grid.prod .pcard .pn{display:none}
   .sgrid{grid-template-columns:1fr}
   .scard{aspect-ratio:2.3/1}
   .scard .bg{grid-template-rows:1fr}
@@ -410,7 +410,7 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
       <span class="count" id="food-count"></span>
     </div>
     <p class="notice top" id="food-notice"></p>
-    <div class="grid five" id="food-grid"></div>
+    <div class="grid five prod" id="food-grid"></div>
   </section>
 
   <!-- 캠핑용품 -->
@@ -763,7 +763,7 @@ function renderGear(){
     if(!n) return '';
     return `<div class="grp">
       <div class="grp-top"><h3>${esc(c.label)}</h3><span class="count">${n}개</span></div>
-      <div class="grid five" id="gsec-${i}"></div>
+      <div class="grid five prod" id="gsec-${i}"></div>
     </div>`;
   }).join('');
   $('#gear-sections').innerHTML = html || '<p class="empty">아직 등록된 용품이 없습니다.</p>';
