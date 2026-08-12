@@ -921,7 +921,7 @@ function renderProducts(sel,rows,countSel,emptyMsg,mode,cat){
   $(sel).innerHTML=list.length?list.map(p=>{
     const hasV=!!(p.video||'').trim();
     const dead=!(p.url||'').trim() && !hasV;
-    return `<a class="pcard${dead?' dead':''}" href="${esc(p.url||'#')}"
+    return `<${dead?'div':'a'} class="pcard${dead?' dead':''}" ${dead?'':`href="${esc(p.url||'#')}"`}
       ${dead?'':`data-t="${esc(p.name)}" data-v="${esc(p.video||'')}" data-b="${esc(p.url||'')}" data-s="${esc(p.source||'')}"`}
       data-track-path="/${cat}/${esc(p.id||'')}" data-track-title="${esc(p.name)}">
       ${p.thumb?`<img src="${esc(abs(p.thumb))}" alt="${esc(p.name)}" loading="lazy">`:''}
@@ -934,7 +934,7 @@ function renderProducts(sel,rows,countSel,emptyMsg,mode,cat){
         <rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/>
         <circle cx="17.2" cy="6.8" r="1.3" fill="#962FBF" stroke="none"/></svg></span>`:''}
       <span class="pn">${esc(p.name)}</span>
-    </a>`;
+    </${dead?'div':'a'}>`;
   }).join(''):`<p class="empty">${esc(emptyMsg||'아직 등록된 항목이 없습니다.')}</p>`;
 }
 
