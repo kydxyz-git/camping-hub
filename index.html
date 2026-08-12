@@ -1064,10 +1064,22 @@ html.is-pc .epno{font-family:var(--mono);font-size:11px;color:var(--stone);lette
 html.is-pc .ecard{display:block;position:relative;overflow:hidden;border-radius:3px;
   aspect-ratio:4/5;background:#EDEDE7;isolation:isolate}
 html.is-pc .ecard img{width:100%;height:100%;object-fit:cover}
-html.is-pc .ecard .eep{position:absolute;right:9px;bottom:8px;z-index:3;
+html.is-pc .ecard .eep{position:absolute;right:9px;bottom:8px;z-index:4;
   font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;
   color:#fff;background:rgba(12,14,15,.5);backdrop-filter:blur(3px);
   padding:3px 7px;border-radius:2px}
+html.is-pc .ecard img{transition:transform .38s cubic-bezier(.2,.7,.3,1)}
+html.is-pc .ecard:hover img{transform:scale(1.055)}
+html.is-pc .ecard::before{content:"";position:absolute;inset:0;z-index:2;
+  background:linear-gradient(180deg,rgba(12,14,15,.10),rgba(12,14,15,.42));
+  opacity:0;transition:opacity .22s ease}
+html.is-pc .ecard::after{content:"";position:absolute;z-index:3;left:50%;top:50%;
+  width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;
+  background:rgba(255,255,255,.94) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2315181A'%3E%3Cpath d='M8.5 5.4v13.2L19 12z'/%3E%3C/svg%3E") no-repeat 55% 50%/15px 15px;
+  box-shadow:0 4px 14px rgba(0,0,0,.22);
+  opacity:0;transform:scale(.8);transition:opacity .22s ease,transform .22s cubic-bezier(.2,.9,.3,1.3)}
+html.is-pc .ecard:hover::before{opacity:1}
+html.is-pc .ecard:hover::after{opacity:1;transform:scale(1)}
 html.is-pc .pcard{display:block;position:relative;overflow:hidden;border-radius:3px;
   aspect-ratio:4/5;background:#EDEDE7}
 html.is-pc .pcard img{width:100%;height:100%;object-fit:cover;
