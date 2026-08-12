@@ -1,5 +1,17 @@
 [
   {
+    "name": "파세코 캠프25",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/3994c44d5e57.jpg",
+    "published": true,
+    "id": "item_07e316531b",
+    "created_at": "2026-08-12T01:29:32.459893+00:00",
+    "updated_at": "2026-08-12T01:29:32.459893+00:00",
+    "cat": "fire"
+  },
+  {
     "name": "토요토미 기어미션 반사식",
     "desc": "",
     "url": "",
