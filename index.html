@@ -13,6 +13,17 @@
   <meta name="description" content="5년차 부부캠퍼가 직접 다녀온 64곳의 캠핑장 후기, 캠핑 음식 추천, 캠핑 장비 꿀팁을 모았습니다. 오토캠핑 입문자부터 베테랑까지, 진짜 캠퍼의 솔직한 기록.">
   <meta name="keywords" content="공대남자, kyd_zm, 오토캠핑, 캠핑장 추천, 부부캠핑, 캠핑 꿀팁, 캠핑 음식, 캠핑 장비, 캠핑 후기, 그래가, 가족캠핑, 캠핑 블로그">
   <meta name="author" content="공대남자 (@kyd_zm)">
+  <script>
+  (function(){
+    try{
+      if(location.search.indexOf('m=1')>-1) return;        /* ?m=1 → PC에서도 모바일 화면 유지 */
+      if(window.innerWidth < 1024) return;
+      var M={stories:'stories',camps:'camps',foods:'food',items:'gear',map:'camps'};
+      var h=(location.hash||'').replace(/^#/,'').split('/')[0];
+      location.replace('./v3.html'+(M[h]?'#'+M[h]:''));
+    }catch(e){}
+  })();
+  </script>
   <link rel="canonical" href="https://kydz.kr/">
   
   <!-- 🤖 검색엔진 색인 허용 -->

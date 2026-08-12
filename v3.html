@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light only">
 <meta name="supported-color-schemes" content="light">
+<script>
+(function(){
+  try{
+    if(location.search.indexOf('p=1')>-1) return;          /* ?p=1 → 강제로 PC 화면 유지 */
+    if(window.innerWidth >= 1024) return;
+    var M={camps:'camps',stories:'stories',series:'stories',food:'foods',gear:'items'};
+    var h=(location.hash||'').replace(/^#/,'').split('/')[0];
+    location.replace('./'+(M[h]?'#'+M[h]:''));
+  }catch(e){}
+})();
+</script>
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://kydz.kr/">
 <title>공대남자 · 캠핑 기록</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
@@ -737,11 +750,11 @@ function renderMenu(){
 
 /* ── 캠핑장 ── */
 let region='전체';
-/* 노출·필터에 쓸 특징 태그 (landscape/extras 통합) */
+/* 노출·필터에 쓸 특징 태그 (extras 기준) */
 const FEATURES=['계곡','바다','벚꽃','수영장','애견동반','개별샤워실','펜션','노키즈'];
 let feat=new Set();
 function featOf(c){
-  const all=[...(c.landscape||[]),...(c.extras||[])];
+  const all=[...(c.extras||[])];
   return FEATURES.filter(f=>all.includes(f));
 }
 function renderCamps(){
@@ -787,7 +800,7 @@ const NOIMG_GRAD={'바다':['#8FB6C9','#6E9CB4'],'강':['#8AB6B8','#6C9EA1'],
   '숲':['#8CAE95','#6B9377'],'산':['#A8A78F','#8B8A70'],
   '폐교':['#B0A594','#948877'],'기타':['#A3A69C','#868A80']};
 function noImgHtml(c){
-  const ls=(c.landscape&&c.landscape[0])||'산';
+  const ls='산';  // 지형(landscape) 필드는 260812에 삭제됨 — 단일 톤 고정
   const [g1,g2]=NOIMG_GRAD[ls]||['#9AA08C','#7C8370'];
   const nm=String(c.name||'').replace(/오토캠핑장|캠핑빌리지/g,'').replace(/펜션&|&펜션/g,'').trim();
   return `<div class="noimg" style="background:linear-gradient(145deg,${g1},${g2})">
