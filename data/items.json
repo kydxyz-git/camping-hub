@@ -1,5 +1,65 @@
 [
   {
+    "name": "몽벨 멀티 폴딩 테이블",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/428e91af67e3.jpg",
+    "published": true,
+    "id": "item_7bd1dc6926",
+    "created_at": "2026-08-12T00:43:12.051091+00:00",
+    "updated_at": "2026-08-12T00:43:12.051091+00:00",
+    "cat": "table"
+  },
+  {
+    "name": "팀버리지 캠핑 롤링 테이블",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/4e60da86a65a.jpg",
+    "published": true,
+    "id": "item_3bffc91077",
+    "created_at": "2026-08-12T00:43:12.051091+00:00",
+    "updated_at": "2026-08-12T00:43:12.051091+00:00",
+    "cat": "table"
+  },
+  {
+    "name": "부앤오프 4.5 TABLE",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/e893fb6762c5.jpg",
+    "published": true,
+    "id": "item_2405bff7e5",
+    "created_at": "2026-08-12T00:43:12.051091+00:00",
+    "updated_at": "2026-08-12T00:43:12.051091+00:00",
+    "cat": "table"
+  },
+  {
+    "name": "스노우피크 스텐마이테이블",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/dc223a52d713.jpg",
+    "published": true,
+    "id": "item_9f08f89de4",
+    "created_at": "2026-08-12T00:43:12.051091+00:00",
+    "updated_at": "2026-08-12T00:43:12.051091+00:00",
+    "cat": "table"
+  },
+  {
+    "name": "텐트마크디자인 워크테이블 LOW",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/d00ca7329636.jpg",
+    "published": true,
+    "id": "item_bb89bda383",
+    "created_at": "2026-08-12T00:43:12.051091+00:00",
+    "updated_at": "2026-08-12T00:43:12.051091+00:00",
+    "cat": "table"
+  },
+  {
     "name": "하임플래닛 백도어 4시즌",
     "desc": "",
     "url": "",
