@@ -7506,7 +7506,13 @@ async function submitItemForm() {
       ...(_itemForm.pick ? { pick: true } : {}),
       desc: _itemForm.desc.trim(),
       url: _itemForm.url.trim(),
-      source: _itemForm.source || _detectSourceFromUrl(_itemForm.url) || '',
+      // URL로 판별 가능한 쇼핑몰이면 항상 그 값 우선 (수동값이 '기타'로 굳는 문제 방지)
+      source: (() => {
+        const det = _detectSourceFromUrl(_itemForm.url);
+        if (!(_itemForm.url || '').trim()) return '';
+        if (det && det !== '기타') return det;
+        return _itemForm.source || det || '';
+      })(),
       thumb: thumbPath,
       currency: _itemForm.currency || 'KRW',
       price_original: priceOriginal,
