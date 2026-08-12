@@ -329,6 +329,8 @@
     .section-label { font-size:10px; letter-spacing:0.2em; color:var(--text-sub); font-weight:700; margin:0 4px 10px; text-transform:uppercase; display:block; }
     .env-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; }
     .region-grid { grid-template-columns:repeat(7,1fr); gap:4px; }
+    .desc-note { display:inline-flex; align-items:center; gap:2px; white-space:nowrap; }
+    .desc-star { width:12px; height:12px; vertical-align:-2px; }
     .cat-desc { margin:10px 0 6px; padding:12px 4px; text-align:center;
       border-top:1px solid var(--line); border-bottom:1px solid var(--line);
       font-size:12.5px; line-height:1.6; color:var(--text-sub); }
@@ -948,7 +950,7 @@ async function loadData() {
       <span id="partners-line1b"></span>
       <span id="partners-line2b"></span>
     </div>
-    <div class="cat-desc">공대남자가 지금 사용 중인 용품들입니다.</div>
+    <div class="cat-desc">공대남자가 지금 사용 중인 용품들입니다. <span class="desc-note">(<svg class="desc-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.7" stroke-linejoin="round"/></svg> 추천용품)</span></div>
     <section class="product-section">
       <div id="item-grid"></div>
     </section>
