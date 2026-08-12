@@ -111,18 +111,18 @@
       font-size: 10px; letter-spacing: 0.2em; color: var(--point);
       font-weight: 600; text-transform: uppercase; margin-bottom: 6px;
     }
-    .collab-link { display:inline-flex; align-items:center; gap:5px; margin-top:11px;
-      font-size:12.5px; font-weight:700; line-height:1; letter-spacing:-.01em; color:#3F5346;
-      background:#F2F4F0; border:1px solid #E1E6DE; border-radius:999px;
-      padding:8px 13px; transition:.15s; vertical-align:middle; }
-    .collab-link:hover { background:#E8EDE5; border-color:#CFD8CA; }
-    .collab-link svg { width:14px; height:14px; display:block; flex:none; }
+    .topbar { display:flex; align-items:center; justify-content:center; gap:6px;
+      padding:9px 16px; background:var(--text); color:var(--bg);
+      font-size:11.5px; font-weight:600; line-height:1; letter-spacing:-.01em; transition:.15s; }
+    .topbar:hover { background:#333; }
+    .topbar svg { width:13px; height:13px; display:block; flex:none; }
+    .topbar-arrow { opacity:.55; font-weight:700; }
     .header-title {
       font-size: 24px; font-weight: 800;
       letter-spacing: -0.035em; line-height: 1.15;
       white-space: nowrap;
     }
-    .header-right { flex-shrink: 1; text-align: right; margin-top: 22px; }
+    .header-right { flex-shrink: 1; text-align: right; margin-top: 10px; }
     .header-sub {
       font-size: 11.5px; color: var(--text-sub);
       font-weight: 500; line-height: 1.6;
@@ -415,8 +415,8 @@
     /* ── 푸터 ── */
     .footer { background:var(--text); color:var(--bg); padding:28px 20px 20px; text-align:center; }
     .footer-collab-label { font-size:11px; opacity:0.55; letter-spacing:0.02em; margin-bottom:14px; line-height:1.6; }
-    .footer-cta-row { display:flex; gap:8px; max-width:320px; margin:0 auto 18px; }
-    .footer-cta { flex:1; padding:14px 12px; background:var(--bg); color:var(--text); border-radius:8px; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .footer-cta-row { display:flex; gap:8px; justify-content:center; max-width:320px; margin:0 auto 18px; }
+    .footer-cta { flex:0 1 auto; padding:14px 22px; background:var(--bg); color:var(--text); border-radius:8px; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:6px; white-space:nowrap; }
     .footer-cta-icon { font-size:14px; line-height:1; }
     .footer-cta svg { width:16px; height:16px; flex:none; }
     .footer-insta-link { display:inline-block; font-size:12px; opacity:0.6; letter-spacing:0.02em; margin-bottom:14px; color:var(--bg); }
@@ -892,18 +892,21 @@ async function loadData() {
 }
 </script>
 
+  <!-- 최상단 바: 소개 · 협업 문의 -->
+  <a class="topbar" href="./collab.html" data-track-target="협업문의">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 18 L12 14 L20 18"/><path d="M12 14 L8.5 18.5a2.4 2.4 0 0 0 3.2 3.2L15 18.5"/>
+      <path d="M15 18.5l3 3M18 17l3 3"/></svg>
+    공대남자 소개 · 협업 문의하기
+    <span class="topbar-arrow">→</span>
+  </a>
+
   <!-- 헤더: 타이틀 왼쪽 + 부제목 오른쪽 -->
   <header class="header">
     <div class="header-left">
       <div class="header-label" id="header-label"></div>
       <h1 class="header-title" id="header-title"></h1>
-      <a class="collab-link" href="./collab.html" data-track-target="협업문의">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4 18 L12 14 L20 18"/><path d="M12 14 L8.5 18.5a2.4 2.4 0 0 0 3.2 3.2L15 18.5"/>
-          <path d="M15 18.5l3 3M18 17l3 3"/></svg>
-        협업 문의
-      </a>
     </div>
     <div class="header-right">
       <p class="header-sub" id="header-sub"></p>
