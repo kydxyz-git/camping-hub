@@ -9,7 +9,10 @@
 (function(){
   try{
     if(location.search.indexOf('p=1')>-1) return;          /* ?p=1 → 강제로 PC 화면 유지 */
-    if(window.innerWidth >= 1024) return;
+    var ua = navigator.userAgent || '';
+    var isMobile = /iPad|Tablet|tablet|Mobile|Android|iPhone|iPod|Phone|Silk|Kindle/i.test(ua)
+            || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);   /* iPadOS 13+ */
+    if(!isMobile) return;
     var M={camps:'camps',stories:'stories',series:'stories',food:'foods',gear:'items'};
     var h=(location.hash||'').replace(/^#/,'').split('/')[0];
     location.replace('./'+(M[h]?'#'+M[h]:''));
