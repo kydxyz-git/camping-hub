@@ -1,5 +1,41 @@
 [
   {
+    "name": "어반포레스트 헥사타프",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/540a7e93b944.jpg",
+    "published": true,
+    "id": "item_6f2ecec479",
+    "created_at": "2026-08-12T00:30:37.151846+00:00",
+    "updated_at": "2026-08-12T00:30:37.151846+00:00",
+    "cat": "tent"
+  },
+  {
+    "name": "노스페이스 스타프5",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/07204a9df7e1.jpg",
+    "published": true,
+    "id": "item_bbc507958e",
+    "created_at": "2026-08-12T00:30:37.151846+00:00",
+    "updated_at": "2026-08-12T00:30:37.151846+00:00",
+    "cat": "tent"
+  },
+  {
+    "name": "모비가든 ERA205",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/5792a554637c.jpg",
+    "published": true,
+    "id": "item_f8a16a8e45",
+    "created_at": "2026-08-12T00:30:37.151846+00:00",
+    "updated_at": "2026-08-12T00:30:37.151846+00:00",
+    "cat": "tent"
+  },
+  {
     "name": "헬스포츠 발할라",
     "desc": "",
     "url": "",
