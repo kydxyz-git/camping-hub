@@ -3979,7 +3979,7 @@ let _campForm = {
   //   { type: 'new', base64: '...', previewUrl: 'data:...', size: 123 }  ← 새로 업로드
   images: [],
   mainIdx: 0,           // 대표 이미지 인덱스 (카드 썸네일에 쓰임)
-  checkin: '', checkout: '', sites: '', price: '', address: '', notes: '', dm: false,
+  checkin: '', checkout: '', sites: '', price: '', address: '', notes: '', dm: false, pick: false,
 };
 
 function _campImgIdBase() {
@@ -4005,7 +4005,7 @@ function renderCampAddForm() {
     videos: [],
     images: [],
     mainIdx: 0,
-    checkin: '', checkout: '', sites: '', price: '', address: '', notes: '', dm: false,
+    checkin: '', checkout: '', sites: '', price: '', address: '', notes: '', dm: false, pick: false,
   };
   _renderCampFormUI();
 }
@@ -4029,7 +4029,7 @@ function renderCampEditForm(idx) {
     videos: [...(c.videos || [])],
     images: (c.imgs || []).map(src => ({ type: 'existing', src, pos: (c.img_pos || {})[src] || 'center' })),
     checkin: c.checkin || '', checkout: c.checkout || '', sites: c.sites || '',
-    price: c.price || '', address: c.address || '', notes: c.notes || '', dm: !!c.dm,
+    price: c.price || '', address: c.address || '', notes: c.notes || '', dm: !!c.dm, pick: !!c.pick,
     mainIdx: Math.max(0, (c.imgs || []).indexOf(c.main_img)),
   };
   _renderCampFormUI();
@@ -4137,6 +4137,14 @@ function _renderCampFormUI() {
 
         <div class="form-field">
           <label class="label" style="display:flex;align-items:center;gap:7px;cursor:pointer;">
+            <input type="checkbox" id="cf-pick" ${_campForm.pick ? 'checked' : ''} style="margin:0;cursor:pointer;">
+            추천 표시 (별)
+          </label>
+          <div class="help">체크하면 카드에 노란 별이 붙습니다</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label" style="display:flex;align-items:center;gap:7px;cursor:pointer;">
             <input type="checkbox" id="cf-dm" ${_campForm.dm ? 'checked' : ''} style="margin:0;cursor:pointer;">
             명당 자리 DM 안내 표시
           </label>
@@ -4229,6 +4237,7 @@ function _renderCampFormUI() {
     if (el) el.oninput = (e) => { _campForm[k] = e.target.value; };
   });
   if ($('cf-dm')) $('cf-dm').onchange = (e) => { _campForm.dm = e.target.checked; };
+  if ($('cf-pick')) $('cf-pick').onchange = (e) => { _campForm.pick = e.target.checked; };
   $('cf-rating').oninput = (e) => { _campForm.rating = parseFloat(e.target.value) || 0; };
   $('cf-visits').oninput = (e) => { _campForm.visits = parseInt(e.target.value) || 0; };
   $('cf-graega').onchange = (e) => { _campForm.graega = e.target.checked; };
@@ -4820,6 +4829,7 @@ async function submitCampForm() {
       if (v) campObj[k] = v;
     });
     if (_campForm.dm) campObj.dm = true;
+    if (_campForm.pick) campObj.pick = true;
 
     // 대표 이미지 (카드 썸네일). 2장 이상이고 첫 장이 아닐 때만 저장
     const _mi = _campForm.mainIdx;

@@ -1527,7 +1527,7 @@ function renderGrid() {
       <div class="camp-img">
         ${campThumb(c)}
         ${campPlatformBadge(c)}
-        ${(c.rating || 0) >= 4 ? `<span class="pick-badge" title="공대남자 추천"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg></span>` : ''}
+        ${c.pick ? `<span class="pick-badge" title="공대남자 추천"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg></span>` : ''}
       </div>
       <div class="camp-info">
         <div class="camp-name">${c.name}</div>
