@@ -324,9 +324,9 @@
     .section-label { font-size:10px; letter-spacing:0.2em; color:var(--text-sub); font-weight:700; margin:0 4px 10px; text-transform:uppercase; display:block; }
     .env-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; }
     .region-grid { grid-template-columns:repeat(7,1fr); gap:4px; }
-    .cat-desc { margin:8px 0 4px; padding:11px 14px; border:1px solid var(--line);
-      border-radius:8px; background:var(--card,#fff); font-size:12.5px; line-height:1.6;
-      color:var(--text-sub); }
+    .cat-desc { margin:10px 0 6px; padding:12px 4px; text-align:center;
+      border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+      font-size:12.5px; line-height:1.6; color:var(--text-sub); }
     .item-group { margin-bottom:22px; }
     .item-group-head { display:flex; align-items:baseline; gap:8px; padding:0 0 10px;
       border-bottom:1px solid var(--line); margin-bottom:12px; }
@@ -936,7 +936,7 @@ async function loadData() {
       <span id="partners-line1"></span>
       <span id="partners-line2"></span>
     </div>
-    <div class="cat-desc">캠핑 가서 사 먹은 밀키트와 간편식입니다. 다시 살 만했던 것만 올립니다.</div>
+    <div class="cat-desc">캠핑에서 먹은 밀키트(간편식)입니다. 다시 살 만했던 것들만</div>
     <div class="update-date" id="update-date-food"></div>
     <section class="product-section">
       <div class="product-grid" id="food-grid"></div>
@@ -949,7 +949,7 @@ async function loadData() {
       <span id="partners-line1b"></span>
       <span id="partners-line2b"></span>
     </div>
-    <div class="cat-desc">공대남자가 지금 사용중인 캠핑용품입니다. 실제로 챙겨 다니는 것만 올립니다.</div>
+    <div class="cat-desc">공대남자가 지금 사용 중인 용품들입니다.</div>
     <div class="update-date" id="update-date-item"></div>
     <section class="product-section">
       <div id="item-grid"></div>
