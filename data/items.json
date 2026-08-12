@@ -1,5 +1,17 @@
 [
   {
+    "name": "NIP 슬라이드폴대 가방",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/b1ee6a53aef5.jpg",
+    "published": true,
+    "id": "item_f94eb6d3e5",
+    "created_at": "2026-08-12T01:26:25.809920+00:00",
+    "updated_at": "2026-08-12T01:26:25.809920+00:00",
+    "cat": "tarp"
+  },
+  {
     "name": "NIP 타프 스트링(5mm)",
     "desc": "",
     "url": "",
@@ -12,7 +24,7 @@
     "cat": "tarp"
   },
   {
-    "name": "NIP 슬라이드 폴대",
+    "name": "NIP 슬라이드폴대",
     "desc": "",
     "url": "",
     "source": "",
