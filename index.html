@@ -239,7 +239,7 @@
     .badge-coupang { background: #FF4B4B; }
     .badge-kurly   { background: #5D3CC7; }
     .pick-badge { position:absolute; top:5px; left:6px; display:flex; align-items:center; }
-    .pick-badge svg { width:17px; height:17px; filter:drop-shadow(0 1px 3px rgba(0,0,0,.25)); }
+    .pick-badge svg { width:14px; height:14px; }
     .badge-ali     { background: #FF4747; }
     .badge-temu    { background: #FF6A00; }
     .badge-etc     { background: #9e9e9e; }
@@ -330,7 +330,7 @@
     .env-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; }
     .region-grid { grid-template-columns:repeat(7,1fr); gap:4px; }
     .desc-note { display:inline-flex; align-items:center; gap:2px; white-space:nowrap; }
-    .desc-star { width:12px; height:12px; vertical-align:-2px; }
+    .desc-star { width:11px; height:11px; vertical-align:-2px; }
     .cat-desc { margin:10px 0 6px; padding:12px 4px; text-align:center;
       border-top:1px solid var(--line); border-bottom:1px solid var(--line);
       font-size:12.5px; line-height:1.6; color:var(--text-sub); }
@@ -950,7 +950,7 @@ async function loadData() {
       <span id="partners-line1b"></span>
       <span id="partners-line2b"></span>
     </div>
-    <div class="cat-desc">공대남자가 지금 사용 중인 용품들입니다. <span class="desc-note">(<svg class="desc-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.7" stroke-linejoin="round"/></svg> 추천용품)</span></div>
+    <div class="cat-desc">공대남자가 지금 사용 중인 용품들입니다. <span class="desc-note">(<svg class="desc-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg> 추천용품)</span></div>
     <section class="product-section">
       <div id="item-grid"></div>
     </section>
@@ -1395,7 +1395,7 @@ function renderProducts(containerId, dataArr) {
       <div class="product-thumb${item.thumb?'':' ph'}">
         ${item.thumb ? `<img src="${item.thumb}${item.updated_at ? '?v=' + new Date(item.updated_at).getTime() : ''}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
         ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : ''}
-        ${item.pick ? `<span class="pick-badge" title="공대남자 PICK"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.7" stroke-linejoin="round"/></svg></span>` : ''}
+        ${item.pick ? `<span class="pick-badge" title="공대남자 PICK"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg></span>` : ''}
       </div>
       <div class="product-info">
         <div class="product-name">${item.name}</div>
