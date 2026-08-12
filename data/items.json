@@ -430,6 +430,7 @@
     "name": "울란지 오즈모포켓용 브라켓(PM01)",
     "cat": "camera",
     "video": "https://www.instagram.com/reel/DYAx2p_zTjk/?igsh=MW8xNmhqZmNoM2Y5aQ==",
+    "pick": true,
     "desc": "오즈모 포켓 필수 악세사리",
     "url": "https://naver.me/50BeWhG5",
     "source": "네이버",
@@ -440,7 +441,7 @@
     "discount_rate": 2,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-08-11T08:30:34.049Z"
+    "updated_at": "2026-08-12T02:00:22.119Z"
   },
   {
     "id": "item_200bd59067",
