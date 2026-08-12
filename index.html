@@ -2943,7 +2943,7 @@ if(document.documentElement.classList.contains('is-mo')) init();
       <div class="fgroup"><span class="flabel">특징</span><div class="pc-chips" id="camp-feats"></div></div>
       <button class="freset" id="camp-freset" type="button">필터 초기화</button>
     </div>
-    <div class="pc-pc-grid five" id="pc-camp-grid"></div>
+    <div class="pc-grid five" id="pc-camp-grid"></div>
   </section>
 
   <!-- 영상모음: 시리즈 목록 -->
@@ -2965,7 +2965,7 @@ if(document.documentElement.classList.contains('is-mo')) init();
       <div><h2 id="ser-title"></h2></div>
       <span class="count" id="ser-count"></span>
     </div>
-    <div class="pc-pc-grid five" id="ser-grid"></div>
+    <div class="pc-grid five" id="ser-grid"></div>
   </section>
 
   <!-- 먹거리 -->
@@ -2977,7 +2977,7 @@ if(document.documentElement.classList.contains('is-mo')) init();
       <span class="count" id="food-count"></span>
     </div>
     <p class="notice top" id="food-notice"></p>
-    <div class="pc-pc-grid five prod" id="pc-food-grid"></div>
+    <div class="pc-grid five prod" id="pc-food-grid"></div>
   </section>
 
   <!-- 캠핑용품 -->
@@ -3096,7 +3096,7 @@ addEventListener('hashchange',route);
   renderMenu();
   renderCamps();
   renderSeriesList();
-  renderProducts('#pc-pc-food-grid',DATA.foods,'#food-count',null,(DATA.config||{}).foodsSort||'random','foods');
+  renderProducts('#pc-food-grid',DATA.foods,'#food-count',null,(DATA.config||{}).foodsSort||'random','foods');
   renderGear();
   renderChrome();
   route();
@@ -3328,7 +3328,7 @@ function paintCamps(){
   $('#camp-count').textContent=rows.length+' / '+camps().length;
   const nf=(region!=='전체'?1:0)+feat.size;
   const fc=$('#camp-fcount'); if(fc) fc.textContent=nf?String(nf):'';
-  $('#pc-pc-camp-grid').innerHTML=rows.length?rows.map(c=>{
+  $('#pc-camp-grid').innerHTML=rows.length?rows.map(c=>{
     const pool=(c.imgs||[]).filter(Boolean);
     const main = c.main_img && pool.includes(c.main_img) ? c.main_img : pool[0];
     const ordered = main ? [main, ...pool.filter(x=>x!==main)] : pool;
@@ -3487,12 +3487,12 @@ addEventListener('keydown',e=>{ if(e.key==='Escape') $('#pick')?.classList.remov
 function renderChrome(){
   const c=DATA.config||{};
   const note=(a,b)=>esc(a||'')+esc(b||'');
-  $('#food-notice').innerHTML=note(c.foodPartnersLine1,c.foodPartnersLine2);
-  $('#gear-notice').innerHTML=note(c.itemPartnersLine1,c.itemPartnersLine2);
-  $('#ig-link').href=c.footerInstaUrl||'#';
+  const fn=$('#food-notice'); if(fn) fn.innerHTML=note(c.foodPartnersLine1,c.foodPartnersLine2);
+  const gn=$('#gear-notice'); if(gn) gn.innerHTML=note(c.itemPartnersLine1,c.itemPartnersLine2);
+  const ig=$('#ig-link'); if(ig) ig.href=c.footerInstaUrl||'#';
   const pl=$('#prof-link'); if(pl) pl.href=c.footerInstaUrl||'#';
-  $('#credits').textContent=c.footerCredits||'';
-  $('#dm-link').href=c.footerDmUrl||'#';
+  const cr=$('#credits'); if(cr) cr.textContent=c.footerCredits||'';
+  const dl=$('#dm-link'); if(dl) dl.href=c.footerDmUrl||'#';
 
   const camp=camps();
 }

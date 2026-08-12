@@ -999,12 +999,12 @@ addEventListener('keydown',e=>{ if(e.key==='Escape') $('#pick')?.classList.remov
 function renderChrome(){
   const c=DATA.config||{};
   const note=(a,b)=>esc(a||'')+esc(b||'');
-  $('#food-notice').innerHTML=note(c.foodPartnersLine1,c.foodPartnersLine2);
-  $('#gear-notice').innerHTML=note(c.itemPartnersLine1,c.itemPartnersLine2);
-  $('#ig-link').href=c.footerInstaUrl||'#';
+  const fn=$('#food-notice'); if(fn) fn.innerHTML=note(c.foodPartnersLine1,c.foodPartnersLine2);
+  const gn=$('#gear-notice'); if(gn) gn.innerHTML=note(c.itemPartnersLine1,c.itemPartnersLine2);
+  const ig=$('#ig-link'); if(ig) ig.href=c.footerInstaUrl||'#';
   const pl=$('#prof-link'); if(pl) pl.href=c.footerInstaUrl||'#';
-  $('#credits').textContent=c.footerCredits||'';
-  $('#dm-link').href=c.footerDmUrl||'#';
+  const cr=$('#credits'); if(cr) cr.textContent=c.footerCredits||'';
+  const dl=$('#dm-link'); if(dl) dl.href=c.footerDmUrl||'#';
 
   const camp=camps();
 }
