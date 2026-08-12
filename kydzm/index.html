@@ -7113,7 +7113,7 @@ function renderItemDetail(idx) {
 let _itemForm = {
   mode: 'add', editIdx: null,
   name: '', desc: '', source: '', url: '',
-  cat: 'camp', video: '',
+  cat: 'camp', video: '', pick: false,
   currency: 'KRW',
   priceOriginal: '', priceSale: '', discountRate: '',
   imageBase64: null, imagePreviewUrl: null, imageSize: 0,
@@ -7124,7 +7124,7 @@ function renderItemAddForm() {
   _itemForm = {
     mode: 'add', editIdx: null,
     name: '', desc: '', source: '', url: '',
-    cat: 'camp', video: '',
+    cat: 'camp', video: '', pick: false,
     currency: 'KRW',
     priceOriginal: '', priceSale: '', discountRate: '',
     imageBase64: null, imagePreviewUrl: null, imageSize: 0,
@@ -7144,6 +7144,7 @@ function renderItemEditForm(idx) {
     url: it.url || '',
     cat: it.cat || 'camp',
     video: it.video || '',
+    pick: !!it.pick,
     currency: it.currency || 'KRW',
     priceOriginal: it.price_original != null ? String(it.price_original) : '',
     priceSale: it.price_sale != null ? String(it.price_sale) : '',
@@ -7188,6 +7189,14 @@ function _renderItemFormUI() {
           <select id="if-cat" class="input">
             ${getItemCats().map(c => `<option value="${escapeHtml(c.key)}"${_itemForm.cat === c.key ? ' selected' : ''}>${escapeHtml(c.label)}</option>`).join('')}
           </select>
+        </div>
+
+        <div class="form-field">
+          <label class="label" style="display:flex;align-items:center;gap:7px;cursor:pointer;">
+            <input type="checkbox" id="if-pick" ${_itemForm.pick ? 'checked' : ''} style="margin:0;cursor:pointer;">
+            추천 표시 (PICK)
+          </label>
+          <div class="help">체크하면 사이트 카드에 PICK 배지가 붙습니다</div>
         </div>
 
         <div class="form-field">
@@ -7294,6 +7303,7 @@ function _renderItemFormUI() {
   $('if-name').oninput = (e) => { _itemForm.name = e.target.value; };
   $('if-cat').onchange = (e) => { _itemForm.cat = e.target.value; };
   $('if-video').oninput = (e) => { _itemForm.video = e.target.value; };
+  if ($('if-pick')) $('if-pick').onchange = (e) => { _itemForm.pick = e.target.checked; };
   $('if-video-pick').onchange = (e) => {
     const v = e.target.value;
     const wrap = $('if-video-wrap');
@@ -7493,6 +7503,7 @@ async function submitItemForm() {
       name: _itemForm.name.trim(),
       cat: _itemForm.cat || 'camp',
       video: _itemForm.video.trim(),
+      ...(_itemForm.pick ? { pick: true } : {}),
       desc: _itemForm.desc.trim(),
       url: _itemForm.url.trim(),
       source: _itemForm.source || _detectSourceFromUrl(_itemForm.url) || '',
