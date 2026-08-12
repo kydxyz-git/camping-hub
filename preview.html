@@ -48,31 +48,15 @@ body{background:#2A2E31;color:#E9EAE6;font-family:var(--sans);min-height:100vh;
 
 <div class="bar">
   <span class="t">KYDZ PREVIEW</span>
-  <div class="seg" id="site">
-    <button data-p="v3.html" class="on">v3</button>
-    <button data-p="index.html">기존</button>
-    <button data-p="__cmp__">비교</button>
-  </div>
   <div class="seg" id="seg">
-    <button data-v="both" class="on">나란히</button>
-    <button data-v="phone">모바일</button>
+    <button data-v="both">나란히</button>
+    <button data-v="phone" class="on">모바일</button>
     <button data-v="desk">PC</button>
   </div>
-  <input type="text" id="path" value="v3.html" spellcheck="false" aria-label="경로">
+  <input type="text" id="path" value="index.html" spellcheck="false" aria-label="경로">
   <button class="btn go" id="load">열기</button>
   <button class="btn" id="reload">새로고침</button>
   <label class="auto"><input type="checkbox" id="autor"> 5초마다 자동</label>
-</div>
-
-<div class="stage hide" id="cmp">
-  <div class="dev phone">
-    <span class="lbl">v3 · MOBILE</span>
-    <div class="frame" style="width:410px;height:800px"><iframe id="c-v3" title="v3"></iframe></div>
-  </div>
-  <div class="dev phone">
-    <span class="lbl">기존 · MOBILE</span>
-    <div class="frame" style="width:410px;height:800px"><iframe id="c-old" title="기존"></iframe></div>
-  </div>
 </div>
 
 <div class="stage" id="stage">
@@ -101,28 +85,6 @@ function load(){ const u=url(); fP.src=u; fD.src=u; }
 $('#load').onclick=load;
 $('#path').addEventListener('keydown',e=>{ if(e.key==='Enter') load(); });
 
-$('#site').onclick=e=>{
-  const b=e.target.closest('button'); if(!b) return;
-  [...$('#site').children].forEach(x=>x.classList.toggle('on',x===b));
-  const cmp = b.dataset.p==='__cmp__';
-  $('#cmp').classList.toggle('hide', !cmp);
-  $('#stage').classList.toggle('hide', cmp);
-  $('#seg').style.display = cmp ? 'none' : '';
-  $('#path').style.display = cmp ? 'none' : '';
-  if(cmp){
-    const t=Date.now();
-    $('#c-v3').src  = BASE+'v3.html?nc='+t;
-    $('#c-old').src = BASE+'index.html?nc='+t;
-    [$('#c-v3'),$('#c-old')].forEach(f=>{
-      f.style.width='390px'; f.style.height='780px';
-      f.style.transformOrigin='0 0';
-    });
-  }else{
-    $('#path').value = b.dataset.p;
-    load();
-  }
-};
-
 $('#seg').onclick=e=>{
   const b=e.target.closest('button'); if(!b) return;
   [...$('#seg').children].forEach(x=>x.classList.toggle('on',x===b));
@@ -131,13 +93,7 @@ $('#seg').onclick=e=>{
   $('#d-desk').classList.toggle('hide', v==='phone');
 };
 
-function reloadAll(){
-  if(!$('#cmp').classList.contains('hide')){
-    const t=Date.now();
-    $('#c-v3').src  = BASE+'v3.html?nc='+t;
-    $('#c-old').src = BASE+'index.html?nc='+t;
-  }else load();
-}
+function reloadAll(){ load(); }
 $('#reload').onclick=reloadAll;
 $('#autor').onchange=e=>{
   clearInterval(timer);
@@ -159,7 +115,9 @@ function scalePhone(){
   $('#d-phone .frame').style.width='410px';
   $('#d-phone .frame').style.height='800px';
 }
-scaleDesk(); scalePhone(); load();
+scaleDesk(); scalePhone();
+$('#d-desk').classList.add('hide');   // 기본: 모바일만
+load();
 </script>
 </body>
 </html>
