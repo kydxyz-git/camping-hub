@@ -225,6 +225,8 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .pcard img{width:100%;height:100%;object-fit:cover;
   transition:transform .5s cubic-bezier(.2,.7,.3,1)}
 .pcard:hover img{transform:scale(1.045)}
+.pcard.dead{cursor:default}
+.pcard.dead:hover img{transform:none}
 .pcard .pn{position:absolute;inset:0;padding:14px;
   display:flex;align-items:center;justify-content:center;text-align:center;
   color:#fff;font-weight:700;font-size:clamp(14px,1.35vw,18px);
@@ -918,8 +920,9 @@ function renderProducts(sel,rows,countSel,emptyMsg,mode,cat){
   if(countSel) $(countSel).textContent=list.length+'개';
   $(sel).innerHTML=list.length?list.map(p=>{
     const hasV=!!(p.video||'').trim();
-    return `<a class="pcard" href="${esc(p.url||'#')}"
-      data-t="${esc(p.name)}" data-v="${esc(p.video||'')}" data-b="${esc(p.url||'')}" data-s="${esc(p.source||'')}"
+    const dead=!(p.url||'').trim() && !hasV;
+    return `<a class="pcard${dead?' dead':''}" href="${esc(p.url||'#')}"
+      ${dead?'':`data-t="${esc(p.name)}" data-v="${esc(p.video||'')}" data-b="${esc(p.url||'')}" data-s="${esc(p.source||'')}"`}
       data-track-path="/${cat}/${esc(p.id||'')}" data-track-title="${esc(p.name)}">
       ${p.thumb?`<img src="${esc(abs(p.thumb))}" alt="${esc(p.name)}" loading="lazy">`:''}
       ${hasV?`<span class="play"><svg viewBox="0 0 24 24" fill="none" stroke="url(#ig)" stroke-width="2.2"
@@ -981,6 +984,8 @@ function openPick(t,v,b,s){
   m.classList.add('on');
 }
 document.addEventListener('click',e=>{
+  const dead=e.target.closest('.pcard.dead');
+  if(dead){ e.preventDefault(); return; }
   const c=e.target.closest('.pcard[data-t]');
   if(c){ e.preventDefault(); openPick(c.dataset.t,c.dataset.v,c.dataset.b,c.dataset.s); return; }
   const m=$('#pick');

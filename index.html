@@ -264,8 +264,8 @@
     .price-sale { font-size: 12px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
     .price-only { font-size: 12px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
     .product-link svg { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 2; }
-    .product-card.empty { border: 1.5px dashed var(--line); background: transparent; }
-    .product-card.empty .product-name { color: var(--text-sub); font-weight: 400; font-style: italic; }
+    .product-card.empty { cursor: default; }
+    .product-card.empty:hover { transform: none; box-shadow: none; }
 
     /* ── 시리즈 ── */
     .series-section { padding: 20px 0 8px; }
@@ -1374,7 +1374,8 @@ function renderProducts(containerId, dataArr) {
                       '네이버':['badge-naver','네이버'], 'naver':['badge-naver','네이버'],
                       '알리':['badge-ali','알리'], 'ali':['badge-ali','알리'],
                       '테무':['badge-temu','테무'], 'temu':['badge-temu','테무'] };
-    const [bc, bl] = SRC_MAP[_s] || ['badge-etc','기타'];
+    const _empty0 = !item.url || item.url === '#';
+    const [bc, bl] = _empty0 ? ['',''] : (SRC_MAP[_s] || ['badge-etc','기타']);
     const empty = !item.url || item.url==='#';
     // 통계 추적 path/title — ID 기반
     const trackId = item.id || encodeURIComponent(item.name);
