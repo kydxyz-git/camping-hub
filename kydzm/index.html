@@ -6555,7 +6555,9 @@ function _detectSourceFromUrl(url) {
   if (u.includes('gmarket')) return '지마켓';
   if (u.includes('ssg.com')) return 'SSG';
   if (u.includes('oasis')) return '오아시스';
-  return '';
+  if (u.includes('aliexpress')) return '알리';
+  if (u.includes('temu')) return '테무';
+  return '기타';
 }
 
 function _renderFoodFormUI() {
@@ -7310,11 +7312,13 @@ function _renderItemFormUI() {
 
   // URL → 출처 자동 감지
   $('if-url').oninput = (e) => {
+    const prevAuto = _detectSourceFromUrl(_itemForm.url);
     _itemForm.url = e.target.value;
     const detected = _detectSourceFromUrl(e.target.value);
-    if (detected && !_itemForm.source) {
-      _itemForm.source = detected;
-      $('if-source').value = detected;
+    // 비어있거나, 직전 URL에서 자동 감지된 값 그대로면 새 값으로 갱신
+    if (!_itemForm.source || _itemForm.source === prevAuto) {
+      _itemForm.source = e.target.value.trim() ? detected : '';
+      $('if-source').value = _itemForm.source;
     }
   };
 
