@@ -1393,7 +1393,7 @@ function renderProducts(containerId, dataArr) {
       <div class="product-thumb${item.thumb?'':' ph'}">
         ${item.thumb ? `<img src="${item.thumb}${item.updated_at ? '?v=' + new Date(item.updated_at).getTime() : ''}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
         ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : ''}
-        ${item.pick ? `<span class="pick-badge" title="공대남자 PICK"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#8A6A12" stroke-width="1.4" stroke-linejoin="round"/></svg></span>` : ''}
+        ${item.pick ? `<span class="pick-badge" title="공대남자 PICK"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.7" stroke-linejoin="round"/></svg></span>` : ''}
       </div>
       <div class="product-info">
         <div class="product-name">${item.name}</div>
