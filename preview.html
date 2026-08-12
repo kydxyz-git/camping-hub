@@ -76,11 +76,14 @@ const $=s=>document.querySelector(s);
 const fP=$('#f-phone'), fD=$('#f-desk');
 let timer=null;
 
-function url(){
-  const p=$('#path').value.trim().replace(/^\/+/,'')||'v3.html';
-  return BASE+p+(p.includes('?')?'&':'?')+'nc='+Date.now();
+function url(force){
+  /* index.html은 기기(UA)로 화면을 고르므로, 미리보기에서는 강제 파라미터를 붙인다.
+     m=1 → 모바일 화면 / p=1 → PC 화면 */
+  const p=$('#path').value.trim().replace(/^\/+/,'')||'index.html';
+  const sep=p.includes('?')?'&':'?';
+  return BASE+p+sep+force+'&nc='+Date.now();
 }
-function load(){ const u=url(); fP.src=u; fD.src=u; }
+function load(){ fP.src=url('m=1'); fD.src=url('p=1'); }
 
 $('#load').onclick=load;
 $('#path').addEventListener('keydown',e=>{ if(e.key==='Enter') load(); });
