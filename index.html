@@ -937,7 +937,6 @@ async function loadData() {
       <span id="partners-line2"></span>
     </div>
     <div class="cat-desc">캠핑에서 먹은 밀키트(간편식)입니다. 다시 살 만했던 것들만</div>
-    <div class="update-date" id="update-date-food"></div>
     <section class="product-section">
       <div class="product-grid" id="food-grid"></div>
     </section>
@@ -950,7 +949,6 @@ async function loadData() {
       <span id="partners-line2b"></span>
     </div>
     <div class="cat-desc">공대남자가 지금 사용 중인 용품들입니다.</div>
-    <div class="update-date" id="update-date-item"></div>
     <section class="product-section">
       <div id="item-grid"></div>
     </section>
@@ -1074,22 +1072,6 @@ function renderConfig() {
   document.getElementById('partners-line1b').textContent = siteConfig.itemPartnersLine1 || siteConfig.partnersLine1;
   document.getElementById('partners-line2b').textContent = siteConfig.itemPartnersLine2 || siteConfig.partnersLine2;
   // 추천 음식/템 하단 가격 안내문
-  // 추천 음식/템 최종 업데이트 일자 (published 항목의 updated_at 중 최신)
-  const _latestUpdate = (arr) => {
-    let max = 0;
-    for (const it of (arr || [])) {
-      if (it.published === false) continue;
-      const t = new Date(it.updated_at || it.created_at || 0).getTime();
-      if (t > max) max = t;
-    }
-    if (!max) return '';
-    const d = new Date(max);
-    return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
-  };
-  const foodDate = _latestUpdate(foods);
-  const itemDate = _latestUpdate(items);
-  document.getElementById('update-date-food').textContent = foodDate ? `가격·정보 최종 업데이트 ${foodDate}` : '';
-  document.getElementById('update-date-item').textContent = itemDate ? `가격·정보 최종 업데이트 ${itemDate}` : '';
   // 푸터 ─ DM/메일 CTA + 인스타 프로필 보조 링크
   const dmBtn = document.getElementById('footer-dm-btn');
   dmBtn.href = siteConfig.footerDmUrl;
