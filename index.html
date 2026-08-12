@@ -111,6 +111,11 @@
       font-size: 10px; letter-spacing: 0.2em; color: var(--point);
       font-weight: 600; text-transform: uppercase; margin-bottom: 6px;
     }
+    .collab-link { display:inline-flex; align-items:center; gap:3px; margin-top:9px;
+      font-size:12.5px; font-weight:700; letter-spacing:-.01em; color:var(--accent, #3F5346);
+      border-bottom:1px solid currentColor; padding-bottom:1px; transition:opacity .15s; }
+    .collab-link:hover { opacity:.65; }
+    .collab-link svg { width:11px; height:11px; }
     .header-title {
       font-size: 24px; font-weight: 800;
       letter-spacing: -0.035em; line-height: 1.15;
@@ -890,6 +895,12 @@ async function loadData() {
     <div class="header-left">
       <div class="header-label" id="header-label"></div>
       <h1 class="header-title" id="header-title"></h1>
+      <a class="collab-link" href="./collab.html" data-track-target="협업문의">
+        협업 문의
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 6l6 6-6 6"/></svg>
+      </a>
     </div>
     <div class="header-right">
       <p class="header-sub" id="header-sub"></p>
