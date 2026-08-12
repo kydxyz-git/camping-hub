@@ -238,7 +238,8 @@
     .source-badge { position: absolute; bottom: 5px; right: 5px; font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 100px; color: white; letter-spacing: -0.01em; }
     .badge-coupang { background: #FF4B4B; }
     .badge-kurly   { background: #5D3CC7; }
-    .pick-badge { position:absolute; top:5px; left:6px; display:flex; align-items:center; }
+    .pick-badge { position:absolute; top:5px; left:6px; display:flex; align-items:center; z-index:2; }
+    .camp-img .pick-badge { left:auto; right:6px; }
     .pick-badge svg { width:14px; height:14px; }
     .badge-ali     { background: #FF4747; }
     .badge-temu    { background: #FF6A00; }
@@ -927,6 +928,7 @@ async function loadData() {
         </div>
       </details>
     </section>
+    <div class="cat-desc">공대남자가 직접 다녀온 캠핑장입니다. <span class="desc-note">(<svg class="desc-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg> 추천)</span></div>
     <div class="reset-row"><button class="reset-btn" id="reset-btn">필터 초기화</button></div>
     <div class="count-bar"><div><span class="count-num" id="result-count">5</span><span class="count-visits" id="result-visits"></span></div><div class="count-desc">Showing results</div></div>
     <main class="grid" id="camp-grid"></main>
@@ -1526,15 +1528,13 @@ function renderGrid() {
       <div class="camp-img">
         ${campThumb(c)}
         ${campPlatformBadge(c)}
+        ${(c.rating || 0) >= 4 ? `<span class="pick-badge" title="공대남자 추천"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg></span>` : ''}
       </div>
       <div class="camp-info">
         <div class="camp-name">${c.name}</div>
         <div class="camp-region">${c.region}</div>
         <div class="camp-meta">
-          ${c.rating ? (()=>{
-            const f=Math.floor(c.rating), h=(c.rating%1)>=0.5, e=5-f-(h?1:0);
-            return '<span class="camp-stars">'+'<span class="sf">★</span>'.repeat(f)+(h?'<span class="sh">☆</span>':'')+'<span style="color:#e0e0e0;font-size:9px">☆</span>'.repeat(e)+'</span>';
-          })() : '<span></span>'}
+          <span></span>
           ${c.visits ? `<span class="camp-visits">${c.visits}회</span>` : ''}
         </div>
       </div>
