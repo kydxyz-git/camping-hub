@@ -1389,7 +1389,7 @@ function renderProducts(containerId, dataArr) {
       : Number(n).toLocaleString() + '원';
     return `<${empty?'div':'a'} class="product-card${empty?' empty':''}" ${empty?'':`href="${item.url}" target="_blank" rel="noopener"`} ${trackAttrs}>
       <div class="product-thumb${item.thumb?'':' ph'}">
-        ${item.thumb ? `<img src="${item.thumb}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
+        ${item.thumb ? `<img src="${item.thumb}${item.updated_at ? '?v=' + new Date(item.updated_at).getTime() : ''}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
         ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : ''}
       </div>
       <div class="product-info">

@@ -924,7 +924,7 @@ function renderProducts(sel,rows,countSel,emptyMsg,mode,cat){
     return `<${dead?'div':'a'} class="pcard${dead?' dead':''}" ${dead?'':`href="${esc(p.url||'#')}"`}
       ${dead?'':`data-t="${esc(p.name)}" data-v="${esc(p.video||'')}" data-b="${esc(p.url||'')}" data-s="${esc(p.source||'')}"`}
       data-track-path="/${cat}/${esc(p.id||'')}" data-track-title="${esc(p.name)}">
-      ${p.thumb?`<img src="${esc(abs(p.thumb))}" alt="${esc(p.name)}" loading="lazy">`:''}
+      ${p.thumb?`<img src="${esc(abs(p.thumb))}${p.updated_at?'?v='+new Date(p.updated_at).getTime():''}" alt="${esc(p.name)}" loading="lazy">`:''}
       ${hasV?`<span class="play"><svg viewBox="0 0 24 24" fill="none" stroke="url(#ig)" stroke-width="2.2"
         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <defs><linearGradient id="ig" x1="0" y1="1" x2="1" y2="0">
