@@ -97,12 +97,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .row{display:flex;gap:14px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
 .row dt{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--stone);width:56px;flex:none}
 .row dd{font-size:13.5px;font-weight:500;line-height:1.6}
-.dmbox{display:block;border:1px solid var(--line);background:#fff;border-radius:5px;
   padding:16px 18px;transition:.16s}
-.dmbox:hover{border-color:#C7CAC3;transform:translateY(-1px)}
-.dmbox b{font-size:14.5px;font-weight:700}
-.dmbox p{margin-top:6px;font-size:12.5px;color:var(--stone);line-height:1.55}
-.dmbox span{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:11.5px;color:#3F5346}
 .cta{display:block;text-align:center;background:var(--ink);color:#fff;font-weight:700;font-size:15px;padding:16px;border-radius:999px;transition:.18s}
 .cta:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(21,24,26,.18)}
 .cta.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);margin-top:10px;font-weight:600;font-size:14px}
@@ -243,15 +238,6 @@ function orderedImgs(c){
 
       <aside>
         ${(c.lat&&c.lng)?`<div class="block"><h2>LOCATION</h2><div id="map"></div></div>`:''}
-        ${c.dm?`<div class="block">
-          <h2>추천 자리</h2>
-          <a class="dmbox" href="https://ig.me/m/kyd_zm" target="_blank" rel="noopener">
-            <b>명당 자리 안내</b>
-            <p>사이트별 추천 자리와 한장정리 이미지는 인스타그램 DM으로 보내드려요.</p>
-            <span>DM 보내기 →</span>
-          </a>
-        </div>`:''}
-
         <div class="block">
           <h2>RESERVATION</h2>
           ${c.url?`<a class="cta" href="${esc(c.url)}" target="_blank" rel="noopener">예약 페이지 열기</a>`:
