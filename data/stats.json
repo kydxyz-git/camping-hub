@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 8098,
-    "click": 3022,
+    "pv": 8119,
+    "click": 3030,
     "search": 0
   },
   "pages": {
@@ -22,7 +22,7 @@
     "/#foods": 18,
     "/series/series_304565fb77/ep_d7955f38a0": 219,
     "/foods/food_592752e317": 28,
-    "/foods/food_790525d8a8": 22,
+    "/foods/food_790525d8a8": 23,
     "/series/series_e8c17ad5da/ep_e383972ec6": 76,
     "/camps/camp_e5a202316d": 31,
     "/camps/camp_8e1adf57aa": 51,
@@ -53,7 +53,7 @@
     "/camps/camp_c6d9da8748": 13,
     "/camps/camp_8625b4018d": 18,
     "/items/item_960c2ff01c": 43,
-    "/items/item_48f6974ac5": 17,
+    "/items/item_48f6974ac5": 18,
     "/camps/camp_8f72106bcf": 11,
     "/camps/camp_e220a217fd": 36,
     "/camps/camp_c47fbddb56": 10,
@@ -106,9 +106,9 @@
     "/series/series_ba7cc89468/ep_00a18099de": 259,
     "/camps/camp_43b6759cd3": 4,
     "/series/series_304565fb77/ep_17f905660e": 135,
-    "/foods/food_8924631470": 23,
+    "/foods/food_8924631470": 24,
     "/foods/food_673fc958f6": 13,
-    "/items/item_75f77862cd": 29,
+    "/items/item_75f77862cd": 30,
     "/series/series_873cdcaf61/ep_08c284c148": 50,
     "/series/series_ba7cc89468/ep_97e39a4499": 222,
     "/series/series_873cdcaf61/ep_14cbfb6b11": 43,
@@ -128,9 +128,9 @@
     "/series/series_4f27a6d489/ep_3fbc9a3223": 105,
     "/series/series_4f27a6d489/ep_426dd9712f": 82,
     "/items/item_096f88cf80": 11,
-    "/items/item_1e78eeb29a": 13,
+    "/items/item_1e78eeb29a": 16,
     "/items/item_e01fb7d262": 6,
-    "/items/item_6489394674": 15,
+    "/items/item_6489394674": 18,
     "/series/series_873cdcaf61/ep_9b833c820b": 25,
     "/series/series_ba7cc89468/ep_868813ad26": 65,
     "/series/series_ba7cc89468/ep_7727344bb5": 40,
@@ -139,7 +139,7 @@
     "/items/item_edd94b4899": 4,
     "/series/series_4f27a6d489/ep_e8865faeb9": 20,
     "/series/series_873cdcaf61/ep_eff807ca45": 14,
-    "/items/item_b85f78de84": 5,
+    "/items/item_b85f78de84": 6,
     "/series/series_ba7cc89468/ep_2cb64a86cc": 13,
     "/v3.html#camps": 2,
     "/v3.html": 2,
@@ -155,8 +155,17 @@
     "/v3.html#about": 1,
     "/index.html": 1,
     "/items/item_a4b57441e0": 2,
-    "/items/item_0e5652bb69": 1,
-    "/items/item_76917ffdfa": 1
+    "/items/item_0e5652bb69": 2,
+    "/items/item_76917ffdfa": 1,
+    "/items/item_8c39b51888": 1,
+    "/items/item_6e0210eba9": 1,
+    "/items/item_cc722d51b5": 1,
+    "/items/item_2405bff7e5": 1,
+    "/items/item_52bcfa1583": 1,
+    "/items/item_b2011a57b1": 1,
+    "/items/item_07e316531b": 1,
+    "/items/item_7daa20fbb6": 1,
+    "/items/item_b8ba2f7683": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 265,
@@ -178,7 +187,7 @@
     "/foods/food_6b6f5c2711::쿠팡": 12,
     "__external__::그래가파트너스": 8,
     "/items/item_960c2ff01c::네이버예약": 32,
-    "/items/item_48f6974ac5::쿠팡": 9,
+    "/items/item_48f6974ac5::쿠팡": 10,
     "/camps/camp_82599ba9bf::땡큐캠핑": 2,
     "/camps/camp_c47fbddb56::땡큐캠핑": 2,
     "/series/series_ba7cc89468/ep_b953456d73::인스타DM": 135,
@@ -254,7 +263,7 @@
     "/camps/camp_0380055336::www.sjacamping.com": 1,
     "/camps/camp_d69cf442b4::sj-camping.com": 2,
     "/items/item_1e78eeb29a::sinjimorulab.com": 11,
-    "/items/item_6489394674::sinjimorulab.com": 10,
+    "/items/item_6489394674::sinjimorulab.com": 14,
     "/items/item_e01fb7d262::sinjimorulab.com": 2,
     "/series/series_873cdcaf61/ep_9b833c820b::인스타DM": 27,
     "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 43,
@@ -269,17 +278,19 @@
     "/series/series_873cdcaf61/ep_eff807ca45::인스타DM": 1,
     "/items/item_b85f78de84::네이버예약": 1,
     "/series/series_ba7cc89468/ep_2cb64a86cc::인스타DM": 5,
-    "/index.html#camps::인스타DM": 1
+    "/index.html#camps::인스타DM": 1,
+    "/items/item_1e78eeb29a::쿠팡": 2,
+    "/items/item_6489394674::쿠팡": 1
   },
   "searches": {},
   "devices": {
-    "desktop": 418,
-    "mobile": 10693,
+    "desktop": 430,
+    "mobile": 10710,
     "tablet": 9
   },
   "referrers": {
     "direct": 916,
-    "인스타그램": 6453,
+    "인스타그램": 6469,
     "페이스북": 315,
     "구글": 20,
     "네이버": 26,
@@ -7721,8 +7732,8 @@
       ]
     },
     "2026-08-12": {
-      "pv": 11,
-      "click": 5,
+      "pv": 32,
+      "click": 13,
       "search": 0,
       "pages": {
         "/items/item_096f88cf80": 2,
@@ -7732,26 +7743,46 @@
         "/items/item_edd94b4899": 1,
         "/items/item_200bd59067": 1,
         "/items/item_a4b57441e0": 2,
-        "/items/item_0e5652bb69": 1,
-        "/items/item_76917ffdfa": 1
+        "/items/item_0e5652bb69": 2,
+        "/items/item_76917ffdfa": 1,
+        "/items/item_6489394674": 3,
+        "/items/item_1e78eeb29a": 3,
+        "/items/item_75f77862cd": 1,
+        "/items/item_8c39b51888": 1,
+        "/items/item_6e0210eba9": 1,
+        "/items/item_cc722d51b5": 1,
+        "/items/item_2405bff7e5": 1,
+        "/items/item_52bcfa1583": 1,
+        "/items/item_b2011a57b1": 1,
+        "/items/item_07e316531b": 1,
+        "/items/item_7daa20fbb6": 1,
+        "/items/item_b85f78de84": 1,
+        "/items/item_b8ba2f7683": 1,
+        "/items/item_48f6974ac5": 1,
+        "/foods/food_8924631470": 1,
+        "/foods/food_790525d8a8": 1
       },
       "clicks": {
         "/camps/camp_8e1adf57aa::그래가": 1,
         "/items/item_096f88cf80::sinjimorulab.com": 1,
         "/items/item_edd94b4899::www.insta360.com": 2,
-        "/items/item_200bd59067::네이버예약": 1
+        "/items/item_200bd59067::네이버예약": 1,
+        "/items/item_6489394674::sinjimorulab.com": 4,
+        "/items/item_1e78eeb29a::쿠팡": 2,
+        "/items/item_6489394674::쿠팡": 1,
+        "/items/item_48f6974ac5::쿠팡": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 2,
-        "desktop": 14
+        "mobile": 19,
+        "desktop": 26
       },
       "referrers": {
-        "인스타그램": 2
+        "인스타그램": 18
       },
       "hourly": [
         11,
-        0,
+        21,
         0,
         0,
         0,
@@ -7777,5 +7808,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-12T01:00:52.369Z"
+  "updated_at": "2026-08-12T02:00:47.879Z"
 }
