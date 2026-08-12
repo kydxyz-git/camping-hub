@@ -115,8 +115,8 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:20px;font-size
 
 <nav class="nav">
   <div class="nav-in">
-    <a class="mark" href="./v3.html#home">공대남자</a>
-    <div class="navrow"><a class="back" href="./v3.html#camps">← 다녀온 캠핑장</a></div>
+    <a class="mark" href="./">공대남자</a>
+    <div class="navrow"><a class="back" href="./#camps">← 다녀온 캠핑장</a></div>
   </div>
 </nav>
 
@@ -165,7 +165,7 @@ function orderedImgs(c){
 
   const c=(camps||[]).find(x=>x.id===id);
   if(!c || c.published===false){
-    root.innerHTML='<p class="err">해당 캠핑장을 찾을 수 없습니다. <a href="./v3.html#camps" style="text-decoration:underline">목록으로 돌아가기</a></p>'; return;
+    root.innerHTML='<p class="err">해당 캠핑장을 찾을 수 없습니다. <a href="./#camps" style="text-decoration:underline">목록으로 돌아가기</a></p>'; return;
   }
 
   document.title=c.name+' · 공대남자 캠핑 기록';
@@ -260,7 +260,7 @@ function orderedImgs(c){
       </aside>
     </div>
 
-    <footer>© 2026 공대남자 · <a href="./v3.html#camps" style="text-decoration:underline">캠핑장 목록으로</a></footer>
+    <footer>© 2026 공대남자 · <a href="./#camps" style="text-decoration:underline">캠핑장 목록으로</a></footer>
   `;
 
   // 대표 이미지 자동 전환 (랜덤 시작 · 5초 간격) + 썸네일 연동

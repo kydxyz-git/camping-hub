@@ -14,20 +14,19 @@
   <meta name="keywords" content="공대남자, kyd_zm, 오토캠핑, 캠핑장 추천, 부부캠핑, 캠핑 꿀팁, 캠핑 음식, 캠핑 장비, 캠핑 후기, 그래가, 가족캠핑, 캠핑 블로그">
   <meta name="author" content="공대남자 (@kyd_zm)">
   <script>
+  /* 기기 판별 → <html>에 is-pc / is-mo 부여. CSS가 이 값으로 화면을 고른다.
+     화면 폭이 아니라 기기 종류 기준(PC에서 창을 줄여도 PC 화면 유지).
+     ?m=1 → 강제 모바일 화면 / ?p=1 → 강제 PC 화면 */
   (function(){
-    try{
-      if(location.search.indexOf('m=1')>-1) return;        /* ?m=1 → PC에서도 모바일 화면 유지 */
-      var ua = navigator.userAgent || '';
-      /* 태블릿은 PC 화면으로 보냄 — 모바일 화면은 폭 420px 고정이라 태블릿에선 여백만 남음 */
-      var isTablet = /iPad|Tablet|PlayBook|Silk|Kindle/i.test(ua)
-                  || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)    /* iPadOS 13+ */
-                  || (/Android/.test(ua) && !/Mobile/.test(ua));               /* 안드로이드 태블릿 */
-      var isPhone = !isTablet && /iPhone|iPod|Mobile|Windows Phone|IEMobile|Opera Mini/i.test(ua);
-      if(isPhone) return;
-      var M={stories:'stories',camps:'camps',foods:'food',items:'gear',map:'camps'};
-      var h=(location.hash||'').replace(/^#/,'').split('/')[0];
-      location.replace('./v3.html'+(M[h]?'#'+M[h]:''));
-    }catch(e){}
+    var ua = navigator.userAgent || '';
+    var isTablet = /iPad|Tablet|PlayBook|Silk|Kindle/i.test(ua)
+                || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
+                || (/Android/.test(ua) && !/Mobile/.test(ua));
+    var isPhone = !isTablet && /iPhone|iPod|Mobile|Windows Phone|IEMobile|Opera Mini/i.test(ua);
+    var q = location.search;
+    if (q.indexOf('m=1') > -1) isPhone = true;
+    if (q.indexOf('p=1') > -1) isPhone = false;
+    document.documentElement.className += isPhone ? ' is-mo' : ' is-pc';
   })();
   </script>
   <link rel="canonical" href="https://kydz.kr/">
@@ -873,8 +872,362 @@
       background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     }
   </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+html.is-pc{
+  color-scheme:light only;
+  --paper:#FBFBF8;--ink:#15181A;--stone:#8B9089;
+  --line:#E4E4DE;--stamp:#FFE873;
+  --sans:'SUIT Variable','Pretendard Variable',system-ui,sans-serif;
+  --display:'Pretendard Variable','SUIT Variable',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --pad:clamp(20px,5vw,64px);
+}
+html.is-pc *{box-sizing:border-box;margin:0;padding:0}
+html.is-pc body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+html.is-pc a{color:inherit;text-decoration:none}
+html.is-pc img{display:block;width:100%;height:100%;object-fit:cover}
+html.is-pc :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+html.is-pc .nav{position:sticky;top:0;z-index:50;background:rgba(251,251,248,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+html.is-pc .nav.bare{border-bottom-color:transparent}
+html.is-pc .nav-in{max-width:1240px;margin:0 auto;padding:14px var(--pad) 0;
+  display:flex;flex-direction:column;align-items:center;gap:10px}
+html.is-pc .mark{font-family:var(--display);font-weight:800;
+  font-size:clamp(22px,3.2vw,34px);letter-spacing:.02em;white-space:nowrap;line-height:1.1}
+html.is-pc .mark span{display:none}
+html.is-pc .tabs{display:flex;gap:clamp(22px,3vw,44px);align-items:center;justify-content:center;
+  width:100%;border-top:1px solid var(--line);padding:6px 0}
+html.is-pc .nav.bare .tabs{display:none}
+html.is-pc .nav.bare .nav-in{padding-bottom:14px}
+html.is-pc .tab{position:relative;font-size:14px;font-weight:500;color:var(--stone);padding:8px 11px;border-radius:999px;white-space:nowrap;transition:.15s}
+html.is-pc .tab:hover{color:var(--ink)}
+html.is-pc .tab[aria-current="page"]{color:var(--ink);font-weight:700}
+html.is-pc .tab[aria-current="page"]::after{content:"";position:absolute;left:11px;right:11px;bottom:1px;height:2px;background:var(--ink);border-radius:2px}
+html.is-pc .tab.alt{padding-left:clamp(10px,2.4vw,34px);border-left:1px solid var(--line);border-radius:0;font-size:13px}
+html.is-pc .wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
+html.is-pc .view{display:none;padding-bottom:clamp(28px,4vw,56px)}
+html.is-pc .view.on{display:block;animation:fade .3s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+html.is-pc .hero{padding:clamp(20px,4.5vw,60px) 0 clamp(24px,3.4vw,40px);
+  display:flex;align-items:flex-start;gap:clamp(24px,4vw,56px)}
+html.is-pc .hero .htxt{flex:1 1 auto;min-width:0}
+html.is-pc .hero .prof{flex:0 0 auto;width:clamp(110px,15vw,196px);text-align:center;position:relative}
+html.is-pc .hero .prof .fx{position:absolute;left:-6%;top:34%;z-index:2;
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(12px,1.5vw,18px);letter-spacing:-.01em;
+  color:#15181A;
+  transform:rotate(-14deg) scale(.7);opacity:0;
+  transition:transform .26s cubic-bezier(.34,1.56,.64,1),opacity .2s ease;
+  pointer-events:none;white-space:nowrap}
+html.is-pc .hero .prof:hover .fx{opacity:1;transform:rotate(-14deg) scale(1)}
+html.is-pc .hero .prof .pic{display:block;position:relative;width:100%;aspect-ratio:1/1;border-radius:10px;overflow:hidden}
+html.is-pc .hero .prof .pic img{position:absolute;inset:0;width:100%;height:100%;transition:opacity .28s ease}
+html.is-pc .hero .prof .pic .on{opacity:0}
+html.is-pc .hero .prof:hover .pic .on{opacity:1}
+html.is-pc .hero .prof:hover .pic .off{opacity:0}
+html.is-pc .hero .prof .nm{display:block;margin-top:6px;font-family:var(--display);font-weight:800;
+  font-size:clamp(13px,1.4vw,16px);letter-spacing:-.02em;line-height:1.3}
+html.is-pc .hero .prof .id{display:block;margin-top:2px;font-family:var(--mono);font-size:clamp(10px,1vw,12px);
+  letter-spacing:.04em;color:var(--stone);transition:color .15s}
+html.is-pc .hero .prof:hover .id{color:var(--ink)}
+@media (max-width:620px){
+html.is-pc .hero{gap:14px;align-items:center}
+html.is-pc .hero .prof{width:92px}
+
+}
+html.is-pc .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--stone);margin-bottom:16px;white-space:nowrap}
+html.is-pc .hero h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,5.4vw,58px);line-height:1.14;letter-spacing:-.035em;max-width:16ch}
+html.is-pc .hero h1 em{font-style:normal;position:relative;white-space:nowrap}
+html.is-pc .hero h1 em::after{content:"";position:absolute;left:-.06em;right:-.06em;bottom:.06em;height:.34em;background:var(--stamp);z-index:-1}
+html.is-pc .hero p{margin-top:18px;max-width:44ch;color:#4C524D;font-size:clamp(14px,1.6vw,16px)}
+html.is-pc .menu{display:grid;gap:clamp(10px,1.4vw,16px);grid-template-columns:repeat(6,1fr);grid-auto-rows:minmax(0,auto)}
+html.is-pc .mcard{position:relative;overflow:hidden;border-radius:5px;background:#FBFBF9;display:block;isolation:isolate;
+  border:1px solid var(--line)}
+html.is-pc .mcard.lg{grid-column:span 3;aspect-ratio:16/10}
+html.is-pc .mcard.sm{grid-column:span 2;aspect-ratio:4/3}
+html.is-pc .mcard .bg{position:absolute;inset:0;z-index:-2}
+html.is-pc .mcard .bg img{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center top;
+  transition:transform .6s cubic-bezier(.2,.7,.3,1), opacity .3s ease}
+html.is-pc .mcard .bg .on{opacity:0}
+html.is-pc .mcard:hover .bg .on{opacity:1}
+html.is-pc .mcard:hover .bg .off{opacity:0}
+html.is-pc .mcard:hover .bg img{transform:scale(1.04)}
+html.is-pc .mcard::after{content:none}
+html.is-pc .mcard .txt{position:absolute;left:0;right:0;bottom:0;padding:clamp(14px,2vw,24px);color:var(--ink);
+  display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+html.is-pc .mcard h2{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.15;
+  font-size:clamp(16px,2.3vw,27px)}
+html.is-pc .mcard .n{font-family:var(--mono);font-weight:500;font-size:clamp(13px,1.7vw,20px);
+  letter-spacing:-.01em;color:#4C524D;white-space:nowrap;line-height:1.15}
+html.is-pc .mcard.sm h2{font-size:clamp(15px,1.9vw,19px)}
+html.is-pc .mcard.sm .n{font-size:clamp(12px,1.4vw,16px)}
+html.is-pc .mcard.intro{background:#E9EAE4;border-color:#DCDED6;perspective:900px}
+html.is-pc .mcard.intro::after{background:none}
+html.is-pc .mcard.intro .flip{position:absolute;inset:0;transform-style:preserve-3d;
+  will-change:transform;
+  transition:transform .6s cubic-bezier(.3,.7,.3,1)}
+html.is-pc .mcard.intro:hover .flip{transform:rotateY(180deg)}
+html.is-pc .mcard.intro .side{position:absolute;inset:0;backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;transform:translateZ(0);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:clamp(14px,2vw,24px);color:var(--ink)}
+html.is-pc .mcard.intro .back{transform:rotateY(180deg) translateZ(0);background:#E9EAE4}
+html.is-pc .mcard.intro .ico{width:56px;height:56px;margin-bottom:12px}
+html.is-pc .mcard.intro h2{font-size:clamp(15px,1.9vw,19px)}
+html.is-pc .mcard.intro p{font-size:clamp(13px,1.5vw,16px);font-weight:600;color:#5A605A;margin-top:6px;line-height:1.5}
+html.is-pc .mcard.intro .lines{display:inline-flex;flex-direction:column;align-items:flex-start}
+html.is-pc .mcard.intro .ct{margin-top:2px;font-family:var(--mono);font-size:12px;
+  letter-spacing:.02em;line-height:1.9;color:#3A403A;
+  display:flex;align-items:center;gap:7px}
+html.is-pc .mcard.intro .ct svg{width:15px;height:15px;flex:none}
+html.is-pc .mcard.intro .click{margin-top:12px;font-family:var(--mono);font-size:10.5px;font-weight:600;
+  letter-spacing:.22em;background:var(--stamp);color:#15181A;padding:4px 10px;border-radius:2px}
+html.is-pc .banner{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:clamp(10px,1.4vw,16px);
+  border:1px solid var(--line);background:#fff;border-radius:5px;padding:clamp(20px,3vw,30px) clamp(20px,3vw,32px);transition:.18s}
+html.is-pc .banner:hover{border-color:#C7CAC3;transform:translateY(-1px)}
+html.is-pc .banner b{font-family:var(--display);font-weight:800;font-size:clamp(17px,2.1vw,22px);letter-spacing:-.03em}
+html.is-pc .banner p{color:var(--stone);font-size:13.5px;margin-top:4px}
+html.is-pc .banner .go{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--stone);white-space:nowrap}
+html.is-pc .head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:clamp(34px,5vw,60px) 0 16px}
+html.is-pc .head h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,2.7vw,30px);letter-spacing:-.03em}
+html.is-pc .head p{font-size:13.5px;color:var(--stone);max-width:52ch}
+html.is-pc .head h2 .sd{font-family:var(--sans);font-weight:400;font-size:13.5px;color:var(--stone);
+  letter-spacing:0;margin-left:10px;white-space:nowrap}
+html.is-pc .count{font-family:var(--mono);font-size:12px;color:var(--stone)}
+html.is-pc .crumb{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--stone);font-weight:600;padding-top:clamp(28px,4vw,44px)}
+html.is-pc .crumb:hover{color:var(--ink)}
+html.is-pc .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-bottom:20px}
+html.is-pc .search{flex:1 1 180px;max-width:260px;border:1px solid var(--line);background:#fff;border-radius:999px;
+  padding:9px 15px;font:inherit;font-size:13.5px}
+html.is-pc .search::placeholder{color:#B0B4AE}
+html.is-pc .search:focus{outline:none;border-color:var(--ink)}
+html.is-pc .pc-chips{display:flex;gap:6px;flex-wrap:wrap}
+html.is-pc .pc-chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 13px;cursor:pointer;
+  font:inherit;font-size:13px;color:#5D635C;transition:.15s}
+html.is-pc .pc-chip:hover{border-color:#C7CAC3}
+html.is-pc .pc-chip.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+html.is-pc .fbtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 16px;
+  cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;color:#3F5346;
+  display:inline-flex;align-items:center;gap:6px;transition:.15s}
+html.is-pc .fbtn:hover{border-color:#C7CAC3}
+html.is-pc .fbtn[aria-expanded="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+html.is-pc .fcount{font-family:var(--mono);font-size:11px}
+html.is-pc .fcount:empty{display:none}
+html.is-pc .fpanel{display:none;padding:4px 0 20px}
+html.is-pc .fpanel.on{display:block;animation:fade .2s ease both}
+html.is-pc .fgroup{display:flex;gap:10px;align-items:flex-start;padding:8px 0}
+html.is-pc .flabel{flex:0 0 34px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  color:var(--stone);padding-top:8px}
+html.is-pc .freset{margin-top:8px;border:none;background:none;font:inherit;font-size:12.5px;
+  color:var(--stone);cursor:pointer;text-decoration:underline;padding:4px 0}
+html.is-pc .freset:hover{color:var(--ink)}
+html.is-pc .pc-chip.feat{font-size:12.5px;padding:6px 12px;color:#3F5346;border-color:#DDE0DA;background:#F4F6F2}
+html.is-pc .pc-chip.feat:hover{border-color:#BFC7BC}
+html.is-pc .pc-chip.feat.on{background:#3F5346;border-color:#3F5346;color:#fff}
+html.is-pc .pc-grid{display:grid;gap:clamp(16px,2.2vw,26px) clamp(10px,1.6vw,18px);grid-template-columns:repeat(4,1fr)}
+html.is-pc .pc-grid.five{grid-template-columns:repeat(5,1fr)}
+html.is-pc .card{display:block}
+html.is-pc .shot{position:relative;aspect-ratio:4/5;overflow:hidden;border-radius:3px;background:#EDEDE7}
+html.is-pc .shot img{transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+html.is-pc .pc-camp-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:opacity 1.1s ease, transform .5s cubic-bezier(.2,.7,.3,1)}
+html.is-pc .noimg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:14px}
+html.is-pc .noimg span{font-family:var(--display);font-weight:800;font-size:clamp(15px,1.8vw,20px);
+  letter-spacing:-.03em;line-height:1.3;color:rgba(255,255,255,.92);
+  text-shadow:0 1px 10px rgba(0,0,0,.18)}
+html.is-pc .card:hover .shot img{transform:scale(1.045)}
+html.is-pc .plat{position:absolute;left:5px;top:5px;z-index:2;font-size:8px;font-weight:700;
+  letter-spacing:.01em;background:#9e9e9e;color:#fff;padding:2px 5px;border-radius:100px;
+  line-height:1.3}
+html.is-pc .plat.graega{background:#1a1a1a}
+html.is-pc .plat.naver{background:#03C75A}
+html.is-pc .plat.camfit{background:#2D8F4C}
+html.is-pc .plat.thankq{background:#FF6B2C}
+html.is-pc .meta{padding:10px 2px 0}
+html.is-pc .name{font-weight:700;font-size:14.5px;letter-spacing:-.015em;line-height:1.35}
+html.is-pc .region{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--stone)}
+html.is-pc .sub{display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap}
+html.is-pc .sub .visit{font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:#3F5346;
+  position:relative;padding-left:9px}
+html.is-pc .sub .visit::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:3px;border-radius:50%;background:var(--stamp)}
+html.is-pc .desc{margin-top:5px;font-size:12.5px;color:#5D635C;line-height:1.5}
+html.is-pc .price{margin-top:7px;font-family:var(--mono);font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px}
+html.is-pc .was{font-weight:400;font-size:11.5px;color:#B0B4AE;text-decoration:line-through}
+html.is-pc .off{font-size:11px;font-weight:600;color:#B23A2F;font-family:var(--sans)}
+html.is-pc .epno{font-family:var(--mono);font-size:11px;color:var(--stone);letter-spacing:.06em}
+html.is-pc .ecard{display:block;position:relative;overflow:hidden;border-radius:3px;
+  aspect-ratio:4/5;background:#EDEDE7;isolation:isolate}
+html.is-pc .ecard img{width:100%;height:100%;object-fit:cover}
+html.is-pc .ecard .eep{position:absolute;right:9px;bottom:8px;z-index:3;
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;
+  color:#fff;background:rgba(12,14,15,.5);backdrop-filter:blur(3px);
+  padding:3px 7px;border-radius:2px}
+html.is-pc .pcard{display:block;position:relative;overflow:hidden;border-radius:3px;
+  aspect-ratio:4/5;background:#EDEDE7}
+html.is-pc .pcard img{width:100%;height:100%;object-fit:cover;
+  transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+html.is-pc .pcard:hover img{transform:scale(1.045)}
+html.is-pc .pcard.dead{cursor:default}
+html.is-pc .pcard.dead:hover img{transform:none}
+html.is-pc .pcard .pn{position:absolute;inset:0;padding:14px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  color:#fff;font-weight:700;font-size:clamp(14px,1.35vw,18px);
+  letter-spacing:-.02em;line-height:1.4;
+  background:rgba(12,14,15,.66);backdrop-filter:blur(1px);
+  opacity:0;transition:opacity .22s ease}
+html.is-pc .pcard:hover .pn{opacity:1}
+html.is-pc .pcard .pick{position:absolute;left:8px;bottom:8px;z-index:2;
+  font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.04em;
+  background:#E63946;color:#fff;padding:2px 7px;border-radius:100px;
+  box-shadow:0 1px 6px rgba(0,0,0,.18)}
+html.is-pc .pcard .play{position:absolute;right:8px;bottom:8px;z-index:2;
+  width:26px;height:26px;border-radius:50%;
+  background:rgba(255,255,255,.94);
+  box-shadow:0 2px 10px rgba(0,0,0,.3);
+  display:flex;align-items:center;justify-content:center}
+html.is-pc .pcard .play svg{width:14px;height:14px}
+html.is-pc .modal{position:fixed;inset:0;z-index:100;display:none;
+  align-items:center;justify-content:center;padding:24px;
+  background:rgba(15,17,18,.5);backdrop-filter:blur(3px)}
+html.is-pc .modal.on{display:flex;animation:fade .2s ease both}
+html.is-pc .modal-box{background:var(--paper);border-radius:10px;padding:clamp(24px,3.4vw,40px);
+  width:min(460px,100%);box-shadow:0 20px 60px rgba(0,0,0,.28);text-align:center}
+html.is-pc .modal-box .mt{font-weight:700;font-size:clamp(16px,1.9vw,20px);letter-spacing:-.02em;line-height:1.45}
+html.is-pc .modal-box .ma{display:flex;flex-direction:column;gap:9px;margin-top:22px}
+html.is-pc .modal-box a{position:relative;display:flex;align-items:center;justify-content:center;
+  padding:clamp(13px,1.6vw,16px);border-radius:999px;
+  font-weight:600;font-size:clamp(14px,1.5vw,15.5px);transition:.16s}
+html.is-pc .modal-box .src{position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  font-size:11px;font-weight:800;letter-spacing:-.01em;
+  padding:3px 8px;border-radius:100px;color:#fff;background:#9e9e9e;line-height:1.4}
+html.is-pc .modal-box .src.coupang{background:#FF4B4B}
+html.is-pc .modal-box .src.kurly{background:#5D3CC7}
+html.is-pc .modal-box .src.naver{background:#03C75A}
+html.is-pc .modal-box .src.ali{background:#FF4747}
+html.is-pc .modal-box .src.temu{background:#FF6A00}
+html.is-pc .modal-box .go-v{background:var(--ink);color:#fff}
+html.is-pc .modal-box .go-b{background:#fff;color:var(--ink);border:1px solid var(--line)}
+html.is-pc .modal-box a:hover{transform:translateY(-1px)}
+html.is-pc .modal-box button{margin-top:12px;border:none;background:none;font:inherit;font-size:12.5px;
+  color:var(--stone);cursor:pointer}
+html.is-pc .modal-box button:hover{color:var(--ink)}
+html.is-pc .scard{position:relative;overflow:hidden;border-radius:4px;aspect-ratio:1.2/1;background:#EDEDE7;isolation:isolate}
+html.is-pc .scard.one .bg{grid-template-columns:1fr;grid-template-rows:1fr}
+html.is-pc .scard .bg{position:absolute;inset:0;z-index:-2;
+  display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:1px;
+  filter:saturate(.5) brightness(.9);
+  transition:filter .35s ease}
+html.is-pc .scard .bg img{width:100%;height:100%;object-fit:cover}
+html.is-pc .scard:hover .bg{filter:saturate(.25) brightness(.62) blur(2px)}
+html.is-pc .scard::after{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(to bottom,rgba(10,12,13,.88) 0%,rgba(10,12,13,.5) 42%,rgba(10,12,13,.46) 100%)}
+html.is-pc .scard .txt{position:absolute;left:0;right:0;top:0;padding:clamp(14px,1.8vw,20px);color:#fff}
+html.is-pc .scard h3{font-family:var(--display);font-weight:800;font-size:clamp(16px,2.1vw,22px);
+  letter-spacing:-.03em;line-height:1.25;text-shadow:0 1px 10px rgba(0,0,0,.5)}
+html.is-pc .scard .n{position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(30px,4.2vw,50px);letter-spacing:-.05em;line-height:1;
+  color:rgba(255,255,255,.5);
+  text-shadow:0 2px 20px rgba(0,0,0,.45);
+  pointer-events:none;z-index:1;
+  transition:color .35s ease, transform .35s cubic-bezier(.3,.7,.3,1)}
+html.is-pc .scard:hover .n{color:#fff;transform:translate(-50%,-50%) scale(1.06)}
+html.is-pc .sgrid{display:grid;gap:clamp(12px,1.6vw,18px);grid-template-columns:repeat(3,1fr)}
+html.is-pc .grp{padding-top:clamp(30px,4vw,48px)}
+html.is-pc .grp:first-of-type{padding-top:0}
+html.is-pc .grp-top{display:flex;align-items:baseline;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:18px}
+html.is-pc .grp-top h3{font-size:16px;font-weight:700;letter-spacing:-.02em}
+html.is-pc .grp-top .count{margin-left:auto}
+html.is-pc .about{padding:clamp(34px,5vw,60px) 0;display:grid;gap:clamp(26px,4vw,52px);grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+html.is-pc .about h2{font-family:var(--display);font-weight:800;font-size:clamp(22px,3vw,34px);letter-spacing:-.03em;line-height:1.2}
+html.is-pc .about h2 + p{margin-top:15px;color:#4C524D;font-size:14.5px;max-width:40ch}
+html.is-pc .rows{border-top:1px solid var(--line)}
+html.is-pc .row{display:flex;gap:16px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line)}
+html.is-pc .row dt{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--stone);width:74px;flex:none}
+html.is-pc .row dd{font-size:14px;font-weight:500}
+html.is-pc .row dd small{display:block;font-weight:400;font-size:12.5px;color:var(--stone);margin-top:3px}
+html.is-pc .cta{display:inline-block;margin-top:22px;background:var(--ink);color:#fff;font-weight:600;font-size:14px;
+  padding:13px 24px;border-radius:999px;transition:.18s}
+html.is-pc .cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(21,24,26,.16)}
+html.is-pc .empty{padding:52px 0;text-align:center;color:var(--stone);font-size:13.5px}
+html.is-pc .notice{margin-top:clamp(32px,4vw,52px);padding-top:20px;border-top:1px solid var(--line);font-size:11.5px;color:#9A9E98;line-height:1.65}
+html.is-pc .notice.top{margin:0 0 clamp(16px,2vw,22px);padding:10px 13px;border:1px solid var(--line);
+  border-radius:4px;background:#F4F4EE;color:#6A706A;font-size:11.5px}
+html.is-pc .notice.top:empty{display:none}
+html.is-pc footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28px,3.5vw,40px);margin-top:0}
+html.is-pc .foot-top{display:flex;gap:clamp(24px,5vw,64px);flex-wrap:wrap;align-items:flex-start;
+  padding-bottom:clamp(24px,3vw,34px)}
+html.is-pc .foot-brand b{display:block;font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:-.03em}
+html.is-pc .foot-brand p{margin-top:7px;font-size:13px;color:var(--stone);max-width:34ch;line-height:1.6}
+html.is-pc .foot-nav{display:flex;gap:clamp(20px,3vw,44px);margin-left:auto;flex-wrap:wrap}
+html.is-pc .foot-col{display:flex;flex-direction:column;gap:9px}
+html.is-pc .foot-col dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:#B0B4AE;margin-bottom:2px}
+html.is-pc .foot-col a{font-size:13.5px;color:#4C524D;transition:color .15s}
+html.is-pc .foot-col a:hover{color:var(--ink)}
+html.is-pc .foot-bot{display:flex;gap:14px;flex-wrap:wrap;align-items:center;
+  padding-top:clamp(18px,2.4vw,26px);border-top:1px solid var(--line);
+  font-size:12px;color:var(--stone)}
+html.is-pc .foot-bot .sp{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.04em}
+@media (max-width:620px){
+html.is-pc .foot-nav{margin-left:0;gap:28px}
+html.is-pc .foot-bot .sp{margin-left:0;width:100%}
+
+}
+@media (max-width:900px){
+html.is-pc .pc-grid,html.is-pc .pc-grid.five{grid-template-columns:repeat(3,1fr)}
+html.is-pc .sgrid{grid-template-columns:repeat(2,1fr)}
+
+}
+@media (max-width:620px){
+html.is-pc .eyebrow{font-size:8.5px;letter-spacing:.04em;margin-bottom:12px}
+html.is-pc .nav-in{gap:8px;padding:11px 12px 0}
+html.is-pc .mark{font-size:20px}
+html.is-pc .tabs{gap:22px;overflow:visible;padding:5px 0}
+html.is-pc .tab{padding:6px 0;font-size:11px}
+html.is-pc .tab.alt{display:none}
+html.is-pc .menu{grid-template-columns:repeat(6,1fr)}
+html.is-pc .mcard.lg{grid-column:span 6;aspect-ratio:16/10}
+html.is-pc .mcard.sm{grid-column:span 3;aspect-ratio:4/3}
+html.is-pc .mcard h2{font-size:15px}
+html.is-pc .mcard .n{font-size:12.5px}
+html.is-pc .mcard.intro{grid-column:span 6;aspect-ratio:2.6/1}
+html.is-pc .mcard .bg .on{opacity:1}
+html.is-pc .mcard .bg .off{opacity:0}
+html.is-pc .hero .prof .pic .on{opacity:1}
+html.is-pc .hero .prof .pic .off{opacity:0}
+html.is-pc .hero .prof .fx{display:none}
+html.is-pc .pc-grid,html.is-pc .pc-grid.five{grid-template-columns:repeat(2,1fr)}
+html.is-pc .pc-grid.prod{grid-template-columns:repeat(3,1fr);gap:10px 6px}
+html.is-pc .pc-grid.prod .pcard .pn{display:none}
+html.is-pc .sgrid{grid-template-columns:1fr}
+html.is-pc .scard{aspect-ratio:2.3/1}
+html.is-pc .scard .bg{grid-template-rows:1fr}
+html.is-pc .scard .bg img:nth-child(n+4){display:none}
+html.is-pc .scard .n{font-size:44px;color:#fff}
+html.is-pc .head h2 .sd{display:block;margin:6px 0 0;white-space:normal;font-size:13px;line-height:1.5;max-width:34ch}
+html.is-pc .pcard .pn{opacity:1;transform:none;font-size:12.5px;padding:10px 9px}
+html.is-pc .banner .go{display:none}
+
+}
+@media (prefers-reduced-motion:reduce){
+html.is-pc *{animation:none!important;transition:none!important}
+}
+
+/* ── PC/모바일 화면 전환 ── */
+html.is-pc  #mo-root { display:none !important; }
+html.is-mo  #pc-root { display:none !important; }
+html.is-pc  body { max-width:none !important; border-left:0 !important; border-right:0 !important;
+                   background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.6; }
+  </style>
 </head>
 <body>
+<div id="mo-root">
 
 <script>
 /* ══ 데이터 — Phase 1: 외부 JSON으로 분리됨 ══ */
@@ -2223,7 +2576,7 @@ async function init() {
     </div>`;
   }
 }
-init();
+if(document.documentElement.classList.contains('is-mo')) init();
 </script>
 
 <!-- ════════════════════════════════════════════════════════════════════
@@ -2235,6 +2588,919 @@ init();
      ════════════════════════════════════════════════════════════════════ -->
 <script>
 (function() {
+  if(!document.documentElement.classList.contains('is-mo')) return;
+  const STATS_URL = 'https://kyd-stats.kydxyz.workers.dev/log';
+
+  // ─── 디바이스 감지 (클라이언트 측에서 명시) ─────────────────────
+  // Worker가 User-Agent에서 감지하긴 하지만, sendBeacon은 일부 환경에서 UA가
+  // minimal로 전송될 수 있어 클라이언트에서 명시적으로 보내는 게 안전
+  function detectDevice() {
+    const ua = navigator.userAgent || '';
+    if (/iPad|Tablet|tablet/i.test(ua)) return 'tablet';
+    if (/Mobile|Android|iPhone|iPod|Phone/i.test(ua)) return 'mobile';
+    return 'desktop';
+  }
+  const DEVICE = detectDevice();
+
+  // ─── 레퍼러 분류 ────────────────────────────────────────────────
+  // 어디서 유입됐는지 자동 분류 (인스타/검색/직접 등)
+  function classifyReferrer() {
+    const ref = document.referrer || '';
+    if (!ref) return 'direct';  // 북마크, 직접 입력, 앱에서 진입
+    try {
+      const host = new URL(ref).hostname.toLowerCase();
+      // 자기 사이트 → null (referrer로 안 침)
+      if (host === location.hostname || host.endsWith('kydz.kr')) return null;
+      // 분류
+      if (host.includes('instagram') || host.includes('ig.me') || host.includes('cdninstagram')) return '인스타그램';
+      if (host.includes('facebook') || host.includes('fb.com')) return '페이스북';
+      if (host.includes('youtube') || host.includes('youtu.be')) return '유튜브';
+      if (host.includes('google')) return '구글';
+      if (host.includes('naver')) return '네이버';
+      if (host.includes('daum') || host.includes('kakao')) return '다음/카카오';
+      if (host.includes('bing')) return '빙';
+      if (host.includes('graega')) return '그래가';
+      // 기타: 호스트명 그대로
+      return host;
+    } catch { return 'direct'; }
+  }
+  const REFERRER = classifyReferrer();
+
+  // 전송 함수 (sendBeacon 우선, 실패 시 fetch fallback)
+  function send(payload) {
+    try {
+      // 모든 이벤트에 device 자동 포함 (Worker가 fallback으로 UA 봄)
+      payload.device = DEVICE;
+      // referrer는 페이지뷰에만 (클릭은 페이지뷰 context로 묶임)
+      if (payload.type === 'pageview' && REFERRER) {
+        payload.referrer = REFERRER;
+      }
+      const body = JSON.stringify(payload);
+      let beaconOk = false;
+      if (navigator.sendBeacon) {
+        // sendBeacon은 같은 핸들러에서 두 번째 호출 시 false 반환 가능 (브라우저 큐 한계)
+        const blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
+        beaconOk = navigator.sendBeacon(STATS_URL, blob);
+        if (DEBUG && !beaconOk) console.log('[kydz stats] sendBeacon returned false, falling back to fetch');
+      }
+      // sendBeacon이 없거나 false 반환 시 fetch fallback (keepalive로 navigation 후도 OK)
+      if (!beaconOk) {
+        fetch(STATS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body,
+          keepalive: true,
+          mode: 'cors',
+          credentials: 'omit',
+        }).then(r => {
+          if (DEBUG) console.log('[kydz stats] fetch fallback:', r.status);
+        }).catch(err => {
+          if (DEBUG) console.log('[kydz stats] fetch fallback failed:', err.message);
+        });
+      } else if (DEBUG) {
+        console.log('[kydz stats] sendBeacon OK');
+      }
+    } catch (e) {
+      if (DEBUG) console.log('[kydz stats] send error:', e.message);
+    }
+  }
+
+  // ─── 1) 페이지뷰 추적 ──────────────────────────────────────────────
+  // 해시 변경마다 전송 (예: #, #camps, #camps/12, #series/0/3)
+  // 중복 차단 (path 종류에 따라 dedup 강도 분리):
+  // ▶ 방문 카운팅 (/, /#stories, /#camps 등 탭/홈):
+  //   1) 메모리 1초 + 2) sessionStorage 30분 + 3) localStorage 24시간
+  // ▶ 콘텐츠 클릭 (/series/xxx, /camps/xxx, /foods/xxx, /items/xxx 등 카드):
+  //   1) 메모리 1초 + 2) sessionStorage 5분 (기존 유지) — 24시간은 X
+  //   → 자주 본 콘텐츠가 24시간 동안 안 잡히면 인기 데이터가 왜곡되므로 콘텐츠는 짧게
+  let lastPath = '';
+  let lastSent = 0;
+  const MEM_DEDUP_MS       = 1000;                // 1초 (공통)
+  const CONTENT_DEDUP_MS   = 5 * 60 * 1000;       // 콘텐츠 클릭 5분 (기존)
+  const VISIT_DEDUP_MS     = 30 * 60 * 1000;      // 방문 30분 (5분→강화)
+  const VISIT_LOCAL_DEDUP  = 24 * 60 * 60 * 1000; // 방문 24시간 (신규)
+  // 디버그 모드: URL에 ?debug=1 또는 localStorage.setItem('kydzm:debug', '1')
+  const DEBUG = (function() {
+    try {
+      if (location.search.includes('debug=1')) {
+        localStorage.setItem('kydzm:debug', '1');
+        return true;
+      }
+      return localStorage.getItem('kydzm:debug') === '1';
+    } catch { return false; }
+  })();
+  if (DEBUG) console.log('[kydz stats] debug ON, device=' + DEVICE + ', referrer=' + REFERRER);
+
+  // 콘텐츠 경로 판별: /series/xxx, /camps/xxx, /foods/xxx, /items/xxx 형태
+  // 방문 경로 (/, /#stories 등)는 false
+  function isContentPath(path) {
+    return /^\/(series|camps|foods|items)\/[^/]+/.test(path);
+  }
+
+  function shouldTrack(path) {
+    const now = Date.now();
+    const isContent = isContentPath(path);
+    const sessionDedupMs = isContent ? CONTENT_DEDUP_MS : VISIT_DEDUP_MS;
+    // 1) 메모리 중복 차단 (1초, 공통)
+    if (path === lastPath && now - lastSent < MEM_DEDUP_MS) {
+      if (DEBUG) console.log('[kydz stats] dedup 1s:', path);
+      return false;
+    }
+    // 2) sessionStorage 중복 차단 (콘텐츠 5분 / 방문 30분)
+    try {
+      const key = 'kydzm:pv:' + path;
+      const prev = sessionStorage.getItem(key);
+      if (prev && (now - parseInt(prev, 10) < sessionDedupMs)) {
+        if (DEBUG) console.log(`[kydz stats] dedup ${isContent ? '5m' : '30m'}:`, path);
+        return false;
+      }
+      sessionStorage.setItem(key, String(now));
+    } catch (e) {}
+    // 3) localStorage 24시간 dedup — 방문 경로에만 적용 (콘텐츠는 X)
+    if (!isContent) {
+      try {
+        const lkey = 'kydzm:pvd:' + path;
+        const prev = localStorage.getItem(lkey);
+        if (prev && (now - parseInt(prev, 10) < VISIT_LOCAL_DEDUP)) {
+          if (DEBUG) console.log('[kydz stats] dedup 24h:', path);
+          return false;
+        }
+        localStorage.setItem(lkey, String(now));
+      } catch (e) {}
+    }
+    lastPath = path;
+    lastSent = now;
+    return true;
+  }
+
+  // 페이지 로드 시 24시간 지난 localStorage dedup 키 자동 정리 (lazy cleanup)
+  // 방문 dedup만 localStorage 사용하므로 cleanup도 그것만
+  (function cleanupOldLocalDedup() {
+    try {
+      const now = Date.now();
+      const expired = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || !k.startsWith('kydzm:pvd:')) continue;
+        const v = localStorage.getItem(k);
+        if (v && (now - parseInt(v, 10)) > VISIT_LOCAL_DEDUP) {
+          expired.push(k);
+        }
+      }
+      expired.forEach(k => localStorage.removeItem(k));
+      if (DEBUG && expired.length) console.log('[kydz stats] cleanup expired dedup keys:', expired.length);
+    } catch (e) {}
+  })();
+
+  function trackPageView() {
+    const path = location.pathname + (location.hash || '');
+    if (!shouldTrack(path)) return;
+    send({
+      type: 'pageview',
+      path: path || '/',
+      title: document.title || '',
+    });
+  }
+  // 초기 로드
+  trackPageView();
+  // 해시 변경
+  window.addEventListener('hashchange', trackPageView);
+
+  // ─── 2) 외부 링크 클릭 추적 ────────────────────────────────────────
+  // 도메인별 라벨 매핑
+  function detectTarget(url) {
+    if (!url) return null;
+    const u = url.toLowerCase();
+    if (u.includes('graega.co.kr') || u.includes('graega')) return '그래가';
+    if (u.includes('booking.naver') || u.includes('naver.me') || u.includes('place.naver')) return '네이버예약';
+    if (u.includes('campit')) return '캠핏';
+    if (u.includes('thankqcamping') || u.includes('thankq')) return '땡큐캠핑';
+    if (u.includes('coupang')) return '쿠팡';
+    if (u.includes('kurly')) return '컬리';
+    if (u.includes('naver')) return '네이버';
+    if (u.includes('11st')) return '11번가';
+    if (u.includes('gmarket')) return '지마켓';
+    if (u.includes('ssg.com')) return 'SSG';
+    if (u.includes('oasis')) return '오아시스';
+    if (u.includes('ig.me') || u.includes('instagram.com')) return '인스타DM';
+    if (u.startsWith('mailto:')) return '메일';
+    if (u.startsWith('tel:')) return '전화';
+    // 외부 도메인 (자체 도메인 제외)
+    try {
+      const host = new URL(url, location.href).hostname;
+      if (host && host !== location.hostname && !host.endsWith('kydz.kr')) return host;
+    } catch {}
+    return null;
+  }
+
+  // 카드 페이지뷰 - pointerdown 단계에서 미리 발송
+  // 이유: click → 새 탭 navigation 사이 매우 짧은 시간에 send 요청이 drop될 수 있음
+  // pointerdown은 click보다 먼저, 새 탭 열리기 한참 전에 발생 → 안전
+  function sendCardPageview(card) {
+    if (!card) return;
+    const cardPath = card.getAttribute('data-track-path') || '';
+    const cardTitle = card.getAttribute('data-track-title') || '';
+    if (!cardPath) return;
+    if (DEBUG) console.log('[kydz stats] card detected:', cardPath);
+    if (!shouldTrack(cardPath)) return;
+    if (DEBUG) console.log('[kydz stats] sending pageview:', cardPath);
+    send({
+      type: 'pageview',
+      path: cardPath,
+      title: cardTitle,
+    });
+  }
+
+  // pointerdown: 마우스/터치/펜 모두 잡음, 좌클릭만
+  document.addEventListener('pointerdown', function(e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    const card = e.target.closest('[data-track-path]');
+    if (card) sendCardPageview(card);
+  }, true);  // capture 단계에서 빨리
+
+  // 클릭 이벤트 캡쳐 (외부 링크 + fallback)
+  document.addEventListener('click', function(e) {
+    // 명시적 외부 채널 버튼 (data-track-target + data-track-external)
+    const externalBtn = e.target.closest('[data-track-external="1"]');
+    if (externalBtn) {
+      const explicitTarget = externalBtn.getAttribute('data-track-target') || 'unknown';
+      send({
+        type: 'click',
+        target: explicitTarget,
+        url: externalBtn.getAttribute('href') || externalBtn.tagName.toLowerCase() === 'button' ? '#button' : '',
+        context: '__external__',
+      });
+      return;
+    }
+
+    // 카드 fallback (키보드 Enter, 일부 접근성 도구 등 pointerdown 안 발생하는 케이스)
+    const card = e.target.closest('[data-track-path]');
+    let cardPath = '';
+    if (card) {
+      cardPath = card.getAttribute('data-track-path') || '';
+      // pointerdown에서 이미 발송했으면 shouldTrack 1초 dedup에서 차단됨
+      sendCardPageview(card);
+    }
+
+    // 외부 링크 클릭 추적
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href) return;
+    const target = detectTarget(href);
+    if (!target) return; // 내부 링크 또는 미분류 → 추적 안 함
+    // context: 추적 카드 path 우선, 없으면 현재 위치 (탭 hash)
+    const context = cardPath || (location.pathname + (location.hash || ''));
+    send({
+      type: 'click',
+      target,
+      url: href,
+      context,
+    });
+  }, true);
+
+  // ─── 3) 검색어 추적 (디바운스 1초) ────────────────────────────────
+  let searchTimer = null;
+  let lastSearch = { category: '', query: '' };
+  document.addEventListener('input', function(e) {
+    const t = e.target;
+    if (!t || t.tagName !== 'INPUT') return;
+    // 검색창인지 판별 (id에 'search' 포함)
+    const id = (t.id || '').toLowerCase();
+    if (!id.includes('search')) return;
+    // 카테고리 추정 (해시 기반)
+    const hash = (location.hash || '').replace(/^#/, '').split('/')[0];
+    const category = hash || 'unknown';
+    const query = t.value.trim();
+    if (!query || query.length < 2) return; // 너무 짧으면 무시
+    if (category === lastSearch.category && query === lastSearch.query) return;
+
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      lastSearch = { category, query };
+      send({ type: 'search', category, query });
+    }, 1000); // 1초 후 전송 (타이핑 멈춤 감지)
+  }, true);
+})();
+</script>
+</div><!-- /#mo-root -->
+
+<div id="pc-root">
+
+<nav class="nav bare" id="nav">
+  <div class="nav-in">
+    <a class="mark" href="#home">공대남자</a>
+    <div class="tabs">
+      <a class="tab" href="#stories">영상모음</a>
+      <a class="tab" href="#camps">다녀온 캠핑장</a>
+      <a class="tab" href="#food">먹거리</a>
+      <a class="tab" href="#gear">캠핑용품</a>
+      <a class="tab alt" href="./collab.html" data-track-target="협업문의">소개 · 협업</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 메인 -->
+  <section id="v-home" class="view">
+    <div class="hero">
+      <div class="htxt">
+        <p class="eyebrow">AUTO CAMPING · SINCE 2022</p>
+        <h1>가본 곳만 씁니다.<br><em>몇 번 갔는지</em>까지.</h1>
+        <p>5년차 부부캠퍼가 실제로 다녀온 캠핑장 기록입니다. 한 번 가보고 좋다고 하는 곳과, 몇 년째 다시 가는 곳은 다릅니다.</p>
+      </div>
+      <a class="prof" id="prof-link" href="#" target="_blank" rel="noopener" aria-label="인스타그램 @kyd_zm">
+        <span class="pic">
+          <img class="off" src="https://kydz.kr/images/menu/profile.png" alt="공대남자 프로필">
+          <img class="on" src="https://kydz.kr/images/menu/profile-color.png" alt="">
+        </span>
+        <span class="fx" aria-hidden="true">CLICK!</span>
+        <span class="nm">공대남자</span>
+        <span class="id">@kyd_zm</span>
+      </a>
+    </div>
+    <div class="menu" id="menu"></div>
+  </section>
+
+  <!-- 캠핑장 -->
+  <section id="v-camps" class="view">
+    <div class="head">
+      <div>
+        <h2>다녀온 캠핑장</h2>
+        <p>사진을 누르면 캠핑장 기록으로 이동합니다.</p>
+      </div>
+      <span class="count" id="camp-count"></span>
+    </div>
+    <div class="controls">
+      <input class="search" id="camp-q" type="search" placeholder="캠핑장 이름 검색" aria-label="캠핑장 이름 검색">
+      <button class="fbtn" id="camp-ftoggle" type="button" aria-expanded="false">
+        필터<span class="fcount" id="camp-fcount"></span>
+      </button>
+    </div>
+    <div class="fpanel" id="camp-fpanel">
+      <div class="fgroup"><span class="flabel">지역</span><div class="pc-chips" id="camp-chips"></div></div>
+      <div class="fgroup"><span class="flabel">특징</span><div class="pc-chips" id="camp-feats"></div></div>
+      <button class="freset" id="camp-freset" type="button">필터 초기화</button>
+    </div>
+    <div class="pc-pc-grid five" id="pc-camp-grid"></div>
+  </section>
+
+  <!-- 영상모음: 시리즈 목록 -->
+  <section id="v-stories" class="view">
+    <div class="head">
+      <div>
+        <h2>영상모음</h2>
+        <p>주제별로 이어서 만든 릴스 기록입니다.</p>
+      </div>
+      <span class="count" id="series-count"></span>
+    </div>
+    <div class="sgrid" id="series-grid"></div>
+  </section>
+
+  <!-- 영상모음: 회차 -->
+  <section id="v-series" class="view">
+    <a class="crumb" href="#stories">← 영상모음</a>
+    <div class="head">
+      <div><h2 id="ser-title"></h2></div>
+      <span class="count" id="ser-count"></span>
+    </div>
+    <div class="pc-pc-grid five" id="ser-grid"></div>
+  </section>
+
+  <!-- 먹거리 -->
+  <section id="v-food" class="view">
+    <div class="head">
+      <div>
+        <h2>먹거리 <span class="sd">캠핑 가서 사 먹은 밀키트와 간편식입니다. 다시 살 만했던 것만 올립니다.</span></h2>
+      </div>
+      <span class="count" id="food-count"></span>
+    </div>
+    <p class="notice top" id="food-notice"></p>
+    <div class="pc-pc-grid five prod" id="pc-food-grid"></div>
+  </section>
+
+  <!-- 캠핑용품 -->
+  <section id="v-gear" class="view">
+    <div class="head">
+      <div>
+        <h2>캠핑용품 <span class="sd">공대남자가 지금 사용중인 캠핑용품입니다. 실제로 챙겨 다니는 것만 올립니다.</span></h2>
+      </div>
+      <span class="count" id="gear-count"></span>
+    </div>
+    <p class="notice top" id="gear-notice"></p>
+    <div id="gear-sections"></div>
+  </section>
+
+  <footer>
+    <div class="foot-top">
+      <div class="foot-brand">
+        <b>공대남자</b>
+        <p>5년차 부부캠퍼가 직접 다녀온 오토캠핑 기록입니다. 가본 곳만, 몇 번 갔는지까지 남깁니다.</p>
+      </div>
+      <div class="foot-nav">
+        <dl class="foot-col">
+          <dt>RECORD</dt>
+          <a href="#stories">영상모음</a>
+          <a href="#camps">다녀온 캠핑장</a>
+        </dl>
+        <dl class="foot-col">
+          <dt>PICK</dt>
+          <a href="#food">먹거리</a>
+          <a href="#gear">캠핑용품</a>
+        </dl>
+        <dl class="foot-col">
+          <dt>CONTACT</dt>
+          <a href="./collab.html">소개 · 협업</a>
+          <a id="ig-link" href="#" target="_blank" rel="noopener">인스타그램</a>
+        </dl>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span id="credits"></span>
+    </div>
+  </footer>
+</main>
+
+<div class="modal" id="pick" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <p class="mt"></p>
+    <div class="ma">
+      <a class="go-v" href="#" target="_blank" rel="noopener">게시물 보러 가기</a>
+      <a class="go-b" href="#" target="_blank" rel="noopener"><span class="src"></span>구매하러 가기</a>
+    </div>
+    <button type="button" data-close>닫기</button>
+  </div>
+</div>
+
+</div><!-- /#pc-root -->
+
+<script>
+/* ── PC 화면 전용 스크립트 (전역 오염 방지를 위해 즉시실행 함수로 감쌈) ── */
+(function(){
+const BASE='https://kydz.kr/';
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const abs=p=>!p?'':/^https?:/.test(p)?p:BASE+String(p).replace(/^\.?\//,'');
+const won=n=>n==null?'':n.toLocaleString('ko-KR')+'원';
+
+const VIEWS=['home','camps','stories','series','food','gear'];
+let DATA={};
+
+/* 예약 플랫폼 판별 */
+function platform(c){
+  if(c.graega) return {label:'그래가',cls:'graega'};
+  const u=(c.url||'').toLowerCase();
+  if(!u) return null;
+  if(u.includes('naver.com'))    return {label:'네이버',cls:'naver'};
+  if(u.includes('camfit.co.kr')) return {label:'캠핏',cls:'camfit'};
+  if(u.includes('thankqcamping.com')||u.includes('camperstory.com'))
+                                 return {label:'땡큐캠핑',cls:'thankq'};
+  return {label:'기타',cls:''};
+}
+function mainImg(c){
+  const pool=(c.imgs||[]).filter(Boolean);
+  return abs(c.main_img && pool.includes(c.main_img) ? c.main_img : pool[0]);
+}
+
+/* ── 라우팅 ── */
+function route(){
+  const raw=location.hash.replace('#','');
+  const [id,arg]=raw.split('/');
+  const view=VIEWS.includes(id)?id:'home';
+  $$('.view').forEach(v=>v.classList.toggle('on', v.id==='v-'+view));
+  $('#nav').classList.toggle('bare', view==='home');
+  $$('.tab').forEach(t=>{
+    const h=t.getAttribute('href').replace('#','');
+    const on = h===view || (view==='series' && h==='stories');
+    on?t.setAttribute('aria-current','page'):t.removeAttribute('aria-current');
+  });
+  if(view==='series') paintSeries(decodeURIComponent(arg||''));
+  window.scrollTo({top:0,behavior:'auto'});
+}
+addEventListener('hashchange',route);
+
+/* ── 로드 ── */
+(async function(){
+  if(!document.documentElement.classList.contains('is-pc')) return;
+  const names=['config','camps','series','foods','items'];
+  try{
+    const res=await Promise.all(names.map(n=>fetch(BASE+'data/'+n+'.json?v='+Date.now())
+      .then(r=>{ if(!r.ok) throw new Error(n); return r.json(); })));
+    names.forEach((n,i)=>DATA[n]=res[i]);
+  }catch(e){
+    $('#menu').innerHTML='<p class="empty">데이터를 불러오지 못했습니다. 새로고침해 주세요.</p>';
+    return;
+  }
+  renderMenu();
+  renderCamps();
+  renderSeriesList();
+  renderProducts('#pc-pc-food-grid',DATA.foods,'#food-count',null,(DATA.config||{}).foodsSort||'random','foods');
+  renderGear();
+  renderChrome();
+  route();
+})();
+
+const pub=a=>(a||[]).filter(x=>x.published!==false);
+const camps=()=>pub(DATA.camps);
+const sers =()=>pub(DATA.series);
+/* 최근 N일 신규 우선 + 셔플 (기존 사이트와 동일 규칙) */
+function sortRecentFirst(arr,days){
+  const cutoff=Date.now()-(days||7)*86400000;
+  const recent=[],older=[];
+  for(const it of arr){
+    const ts=it.created_at?new Date(it.created_at).getTime():0;
+    (ts&&ts>=cutoff?recent:older).push(it);
+  }
+  recent.sort(()=>Math.random()-.5);
+  older.sort(()=>Math.random()-.5);
+  return [...recent,...older];
+}
+/* 회차 정렬 — admin의 시리즈별 sort 설정을 그대로 따름 */
+function epsOf(s){
+  const eps=pub(s.eps), mode=s.sort||'ep_desc';
+  if(mode==='manual') return [...eps];
+  if(mode==='random') return sortRecentFirst(eps,7);
+  if(mode==='created_desc') return [...eps].sort((a,b)=>
+    (b.created_at?new Date(b.created_at).getTime():0)-(a.created_at?new Date(a.created_at).getTime():0));
+  const asc = mode==='ep_asc';
+  return [...eps].sort((a,b)=>{
+    const aH=(a.ep||0)>0, bH=(b.ep||0)>0;
+    if(aH&&bH){
+      if(a.ep!==b.ep) return asc ? a.ep-b.ep : b.ep-a.ep;
+      return asc ? (a.ep_sub||0)-(b.ep_sub||0) : (b.ep_sub||0)-(a.ep_sub||0);
+    }
+    if(aH) return -1;
+    if(bH) return 1;
+    return Math.random()-.5;
+  });
+}
+
+/* ── 메인 카드 ── */
+function renderMenu(){
+  const c=camps(), s=sers();
+  const epTotal=s.reduce((a,x)=>a+epsOf(x).length,0);
+  const cover=arr=>{ const f=arr.find(x=>x); return f?abs(f):''; };
+
+  const M=BASE+'images/menu/';
+  const visits=c.reduce((a,x)=>a+(+x.visits||0),0);
+  const nFood=pub(DATA.foods).length, nGear=pub(DATA.items).length;
+  const cards=[
+    {cls:'lg',href:'#stories',title:'영상모음',   n:epTotal?epTotal+'편':'',
+     img:M+'stories.jpg', color:M+'stories-color.jpg'},
+    {cls:'lg',href:'#camps',  title:'다녀온 캠핑장', n:c.length+'곳 / '+visits+'회',
+     img:M+'camps.jpg',   color:M+'camps-color.jpg'},
+    {cls:'sm',href:'#food',   title:'먹거리',     n:nFood?nFood+'개':'',
+     img:M+'food.jpg',    color:M+'food-color.jpg'},
+    {cls:'sm',href:'#gear',   title:'캠핑용품',     n:nGear?nGear+'개':'',
+     img:M+'gear.jpg',    color:M+'gear-color.jpg'},
+    {cls:'sm intro',href:'./collab.html',title:'소개 · 협업', n:'',
+     img:'', desc:'캠핑장, 장비, 음식, 촬영 장비 협업을 받고 있습니다.'}
+  ];
+
+  const ICON=`<svg class="ico" viewBox="0 0 48 48" fill="none" stroke="#1D2420" stroke-width="1.9"
+    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 18 L12 14 L20 18 L26 16 L34 20"/>
+    <path d="M44 18 L36 14 L28 18"/>
+    <path d="M20 18 L15 25 a3 3 0 0 0 4 4 l4 -4"/>
+    <path d="M23 25 l5 5 M27 24 l5 5 M31 23 l4 4"/>
+    <path d="M34 20 L38 30" />
+    <path d="M12 14 L8 30" />
+  </svg>`;
+
+  $('#menu').innerHTML=cards.map(x=>{
+    if(x.cls.includes('intro')) return `
+    <a class="mcard ${x.cls}" href="${x.href}">
+      <span class="flip">
+        <span class="side front">
+          ${ICON}
+          <h2>공대남자 채널 소개</h2>
+          <p>협업 문의</p>
+        </span>
+        <span class="side back">
+          <span class="lines">
+          <span class="ct">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2.5" y="5" width="19" height="14" rx="2.5"/>
+              <path d="M3 7 L12 13.2 L21 7"/>
+            </svg>
+            <span id="ct-mail"></span>
+          </span>
+          <span class="ct">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#B8477E" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.2" cy="6.8" r="1.1" fill="#B8477E" stroke="none"/>
+            </svg>
+            <span>@kyd_zm</span>
+          </span>
+          </span>
+          <span class="click">CLICK</span>
+        </span>
+      </span>
+    </a>`;
+    return `
+    <a class="mcard ${x.cls}" href="${x.href}">
+      <div class="bg">
+        ${x.img?`<img class="off" src="${esc(x.img)}" alt="">`:''}
+        ${x.color?`<img class="on" src="${esc(x.color)}" alt="" loading="lazy" onerror="this.remove()">`:''}
+      </div>
+      <div class="txt">
+        <h2>${esc(x.title)}</h2>
+        ${x.n?`<span class="n">${x.n.split('|').map(s=>`<span>${esc(s)}</span>`).join('')}</span>`:''}
+      </div>
+    </a>`;
+  }).join('');
+
+  const mail=(DATA.config||{}).footerEmail;
+  const me=$('#ct-mail'); if(me) me.textContent=mail||'';
+}
+
+/* ── 캠핑장 ── */
+let region='전체';
+/* 노출·필터에 쓸 특징 태그 (extras 기준) */
+const FEATURES=['계곡','바다','벚꽃','수영장','애견동반','개별샤워실','펜션','노키즈'];
+let feat=new Set();
+function featOf(c){
+  const all=[...(c.extras||[])];
+  return FEATURES.filter(f=>all.includes(f));
+}
+function renderCamps(){
+  const list=camps();
+  const regions=[...new Set(list.map(c=>c.region).filter(Boolean))];
+  const featCount={};
+  list.forEach(c=>featOf(c).forEach(f=>featCount[f]=(featCount[f]||0)+1));
+  $('#camp-chips').innerHTML=['전체',...regions]
+    .map(r=>`<button class="pc-chip${r===region?' on':''}" data-r="${esc(r)}">${esc(r)}</button>`).join('');
+  $('#camp-feats').innerHTML=FEATURES.filter(f=>featCount[f])
+    .map(f=>`<button class="pc-chip feat${feat.has(f)?' on':''}" data-f="${esc(f)}">${esc(f)}</button>`).join('');
+  $('#camp-feats').onclick=e=>{
+    const b=e.target.closest('.chip'); if(!b) return;
+    const f=b.dataset.f;
+    feat.has(f)?feat.delete(f):feat.add(f);
+    $$('#camp-feats .chip').forEach(x=>x.classList.toggle('on',feat.has(x.dataset.f)));
+    paintCamps();
+  };
+  $('#camp-chips').onclick=e=>{
+    const b=e.target.closest('.chip'); if(!b) return;
+    region=b.dataset.r;
+    $$('#camp-chips .chip').forEach(x=>x.classList.toggle('on',x.dataset.r===region));
+    paintCamps();
+  };
+  $('#camp-q').oninput=paintCamps;
+
+  const tg=$('#camp-ftoggle'), pn=$('#camp-fpanel');
+  tg.onclick=()=>{
+    const on=pn.classList.toggle('on');
+    tg.setAttribute('aria-expanded', on?'true':'false');
+  };
+  $('#camp-freset').onclick=()=>{
+    region='전체'; feat.clear();
+    $$('#camp-chips .chip').forEach(x=>x.classList.toggle('on',x.dataset.r==='전체'));
+    $$('#camp-feats .chip').forEach(x=>x.classList.remove('on'));
+    paintCamps();
+  };
+  paintCamps();
+}
+/* 사진 미등록 캠핑장 대체 화면 — 지형별 색 + 이름 */
+const NOIMG_GRAD={'바다':['#8FB6C9','#6E9CB4'],'강':['#8AB6B8','#6C9EA1'],
+  '계곡':['#8AB59A','#6A9C7D'],'호수':['#8CB2C4','#6B98AE'],
+  '숲':['#8CAE95','#6B9377'],'산':['#A8A78F','#8B8A70'],
+  '폐교':['#B0A594','#948877'],'기타':['#A3A69C','#868A80']};
+function noImgHtml(c){
+  const ls='산';  // 지형(landscape) 필드는 260812에 삭제됨 — 단일 톤 고정
+  const [g1,g2]=NOIMG_GRAD[ls]||['#9AA08C','#7C8370'];
+  const nm=String(c.name||'').replace(/오토캠핑장|캠핑빌리지/g,'').replace(/펜션&|&펜션/g,'').trim();
+  return `<div class="noimg" style="background:linear-gradient(145deg,${g1},${g2})">
+    <span>${esc(nm).split(' ').join('<br>')}</span></div>`;
+}
+
+/* 카드 이미지 슬라이드 — 시작 이미지 랜덤, 5초마다 전환, 카드별 시차 */
+let _slideTimers=[];
+function startCampSlides(){
+  _slideTimers.forEach(t=>{clearTimeout(t);clearInterval(t);});
+  _slideTimers=[];
+  $$('.camp-img').forEach(el=>{
+    const imgs=el.querySelectorAll('img');
+    if(imgs.length<2) return;
+    let i=Math.floor(Math.random()*imgs.length);
+    imgs.forEach((im,j)=>{ im.style.opacity = j===i?1:0; });
+    const tid=setTimeout(()=>{
+      const iv=setInterval(()=>{
+        const next=(i+1)%imgs.length;
+        imgs[i].style.opacity=0;
+        imgs[next].style.opacity=1;
+        i=next;
+      },5000);
+      _slideTimers.push(iv);
+    }, Math.random()*5000);
+    _slideTimers.push(tid);
+  });
+}
+
+/* 캠핑장 정렬 — 기존 사이트와 동일 규칙
+   1) 그래가 우선  2) 이미지 있는 곳 우선
+   3) 그래가끼리는 랜덤, 그 외는 방문 횟수 내림차순  4) 이름순 */
+function sortCamps(arr){
+  const rk=new Map();
+  for(const c of arr) rk.set(c,Math.random());
+  return [...arr].sort((a,b)=>{
+    if(!!a.graega !== !!b.graega) return (b.graega?1:0)-(a.graega?1:0);
+    const ai=(a.imgs&&a.imgs.length)?1:0, bi=(b.imgs&&b.imgs.length)?1:0;
+    if(ai!==bi) return bi-ai;
+    if(a.graega&&b.graega) return rk.get(a)-rk.get(b);
+    const va=+a.visits||0, vb=+b.visits||0;
+    if(va!==vb) return vb-va;
+    return String(a.name).localeCompare(String(b.name),'ko');
+  });
+}
+function paintCamps(){
+  const q=$('#camp-q').value.trim().toLowerCase();
+  const rows=sortCamps(camps().filter(c=>{
+    if(region!=='전체' && c.region!==region) return false;
+    if(q && !(c.name||'').toLowerCase().includes(q)) return false;
+    if(feat.size){ const f=featOf(c); for(const x of feat) if(!f.includes(x)) return false; }
+    return true;
+  }));
+  $('#camp-count').textContent=rows.length+' / '+camps().length;
+  const nf=(region!=='전체'?1:0)+feat.size;
+  const fc=$('#camp-fcount'); if(fc) fc.textContent=nf?String(nf):'';
+  $('#pc-pc-camp-grid').innerHTML=rows.length?rows.map(c=>{
+    const pool=(c.imgs||[]).filter(Boolean);
+    const main = c.main_img && pool.includes(c.main_img) ? c.main_img : pool[0];
+    const ordered = main ? [main, ...pool.filter(x=>x!==main)] : pool;
+    const v=+c.visits||0, p=platform(c);
+    const pos=(c.img_pos||{});
+    return `<a class="card" href="./camp.html?id=${encodeURIComponent(c.id)}"
+      data-track-path="/camps/${esc(c.id||'')}" data-track-title="${esc(c.name)}">
+      <div class="shot pc-camp-img">
+        ${ordered.length ? ordered.map((s,j)=>`<img src="${esc(abs(s))}" alt="${esc(c.name)}" loading="lazy"
+            style="object-position:center ${esc(pos[s]||'center')};opacity:${j===0?1:0}"
+            onerror="this.remove()">`).join('') : noImgHtml(c)}
+        ${p?`<span class="plat ${esc(p.cls)}">${esc(p.label)}</span>`:''}
+      </div>
+      <div class="meta">
+        <p class="name">${esc(c.name)}</p>
+        <p class="sub">
+          <span class="region">${esc(c.region||'')}</span>
+          ${v?`<span class="visit">${v}번 방문</span>`:''}
+        </p>
+      </div>
+    </a>`;
+  }).join(''):'<p class="empty">조건에 맞는 캠핑장이 없습니다. 검색어나 지역을 바꿔보세요.</p>';
+  startCampSlides();
+}
+
+/* ── 시리즈 목록 ── */
+/* 시리즈 커버 썸네일: PC 6장(3x2), 모바일 3장(3x1) */
+const COVER_N=6;
+function renderSeriesList(){
+  const s=sers();
+  const total=s.reduce((a,x)=>a+epsOf(x).length,0);
+  $('#series-count').textContent=s.length+'개 시리즈 · '+total+'편';
+  $('#series-grid').innerHTML=s.map((x,i)=>{
+    const eps=epsOf(x); if(!eps.length) return '';
+    const pool=eps.map(e=>e.thumb).filter(Boolean);
+    // 1장뿐이면 단일 배경, 그 외엔 6칸을 순환으로 채워 빈칸 방지
+    const single = pool.length<=1;
+    const thumbs = single ? pool.slice(0,1)
+                          : Array.from({length:COVER_N},(_,k)=>pool[k%pool.length]);
+    return `<a class="scard${single?' one':''}" href="#series/${encodeURIComponent(x.id||i)}">
+      <div class="bg">
+        ${thumbs.map(t=>`<img src="${esc(abs(t))}" alt="" loading="lazy">`).join('')}
+      </div>
+      <span class="n">${eps.length}편</span>
+      <div class="txt">
+        <h3>${esc(x.emoji||'')} ${esc(x.name)}</h3>
+      </div>
+    </a>`;
+  }).join('');
+}
+function paintSeries(key){
+  const s=sers();
+  const x=s.find((y,i)=>String(y.id||i)===key)||s[0];
+  if(!x){ location.hash='stories'; return; }
+  const eps=epsOf(x);
+  $('#ser-title').textContent=(x.emoji?x.emoji+' ':'')+x.name;
+  $('#ser-count').textContent=eps.length+'편';
+  $('#ser-grid').innerHTML=eps.map(e=>{
+    return `<a class="ecard" href="${esc(e.url||'#')}" target="_blank" rel="noopener"
+      data-track-path="/series/${esc(x.id||'')}/${esc(e.id||'')}" data-track-title="${esc(e.title||'')}">
+      ${e.thumb?`<img src="${esc(abs(e.thumb))}" alt="${esc(e.title)}" loading="lazy">`:''}
+      ${+e.ep?`<span class="eep">EP.${String(e.ep).padStart(2,'0')}</span>`:''}
+    </a>`;
+  }).join('');
+}
+
+/* ── 음식 · 장비 ── */
+/* 제품 정렬 — config의 foodsSort / itemsSort를 따름 */
+function sortProducts(list,mode){
+  if(mode==='manual') return [...list];
+  if(mode==='latest') return [...list].sort((a,b)=>
+    (b.created_at?new Date(b.created_at).getTime():0)-(a.created_at?new Date(a.created_at).getTime():0));
+  return sortRecentFirst(list,7);
+}
+function renderProducts(sel,rows,countSel,emptyMsg,mode,cat){
+  const list=sortProducts(pub(rows), mode||'random');
+  if(countSel) $(countSel).textContent=list.length+'개';
+  $(sel).innerHTML=list.length?list.map(p=>{
+    const hasV=!!(p.video||'').trim();
+    const dead=!(p.url||'').trim() && !hasV;
+    return `<${dead?'div':'a'} class="pcard${dead?' dead':''}" ${dead?'':`href="${esc(p.url||'#')}"`}
+      ${dead?'':`data-t="${esc(p.name)}" data-v="${esc(p.video||'')}" data-b="${esc(p.url||'')}" data-s="${esc(p.source||'')}"`}
+      data-track-path="/${cat}/${esc(p.id||'')}" data-track-title="${esc(p.name)}">
+      ${p.thumb?`<img src="${esc(abs(p.thumb))}${p.updated_at?'?v='+new Date(p.updated_at).getTime():''}" alt="${esc(p.name)}" loading="lazy">`:''}
+      ${p.pick?`<span class="pick">PICK</span>`:''}
+      ${hasV?`<span class="play"><svg viewBox="0 0 24 24" fill="none" stroke="url(#ig)" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <defs><linearGradient id="ig" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stop-color="#FEDA75"/><stop offset=".35" stop-color="#FA7E1E"/>
+          <stop offset=".65" stop-color="#D62976"/><stop offset="1" stop-color="#962FBF"/>
+        </linearGradient></defs>
+        <rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/>
+        <circle cx="17.2" cy="6.8" r="1.3" fill="#962FBF" stroke="none"/></svg></span>`:''}
+      <span class="pn">${esc(p.name)}</span>
+    </${dead?'div':'a'}>`;
+  }).join(''):`<p class="empty">${esc(emptyMsg||'아직 등록된 항목이 없습니다.')}</p>`;
+}
+
+
+/* 장비 세부 분류별 섹션 렌더 */
+const DEFAULT_CATS=[{key:'camp',label:'캠핑용품'},{key:'camera',label:'촬영장비'}];
+function itemCats(){
+  const c=(DATA.config||{}).itemCats;
+  return (Array.isArray(c)&&c.length)?c:DEFAULT_CATS;
+}
+function gearRows(all,cats,i){
+  const keys=cats.map(c=>c.key);
+  return all.filter(x=>{
+    const k=x.cat||keys[0];
+    return k===cats[i].key || (i===0 && !keys.includes(k));
+  });
+}
+function renderGear(){
+  const all=pub(DATA.items), cats=itemCats();
+  $('#gear-count').textContent=all.length+'개';
+  const html=cats.map((c,i)=>{
+    const n=gearRows(all,cats,i).length;
+    if(!n) return '';
+    return `<div class="grp">
+      <div class="grp-top"><h3>${esc(c.label)}</h3><span class="count">${n}개</span></div>
+      <div class="pc-grid five prod" id="gsec-${i}"></div>
+    </div>`;
+  }).join('');
+  $('#gear-sections').innerHTML = html || '<p class="empty">아직 등록된 용품이 없습니다.</p>';
+  const im=(DATA.config||{}).itemsSort||'random';
+  cats.forEach((c,i)=>{ if($('#gsec-'+i)) renderProducts('#gsec-'+i, gearRows(all,cats,i), null, null, im, 'items'); });
+}
+
+/* 영상 있는 제품 클릭 시 선택 팝업 */
+const SRC_CLS={'쿠팡':'coupang','coupang':'coupang','컬리':'kurly','kurly':'kurly',
+               '네이버':'naver','naver':'naver','알리':'ali','ali':'ali',
+               '테무':'temu','temu':'temu'};
+function openPick(t,v,b,s){
+  const m=$('#pick');
+  m.querySelector('.mt').textContent=t;
+  const av=m.querySelector('.go-v'), ab=m.querySelector('.go-b');
+  if(v){ av.href=v; av.style.display=''; } else { av.style.display='none'; }
+  if(b){ ab.href=b; ab.style.display=''; } else { ab.style.display='none'; }
+  const badge=ab.querySelector('.src');
+  if(s){ badge.textContent=s; badge.className='src '+(SRC_CLS[s.toLowerCase()]||SRC_CLS[s]||''); badge.style.display=''; }
+  else { badge.style.display='none'; }
+  m.classList.add('on');
+}
+document.addEventListener('click',e=>{
+  const dead=e.target.closest('.pcard.dead');
+  if(dead){ e.preventDefault(); return; }
+  const c=e.target.closest('.pcard[data-t]');
+  if(c){ e.preventDefault(); openPick(c.dataset.t,c.dataset.v,c.dataset.b,c.dataset.s); return; }
+  const m=$('#pick');
+  if(m && m.classList.contains('on') && (e.target===m || e.target.closest('[data-close]')))
+    m.classList.remove('on');
+});
+addEventListener('keydown',e=>{ if(e.key==='Escape') $('#pick')?.classList.remove('on'); });
+
+/* ── 공통 ── */
+function renderChrome(){
+  const c=DATA.config||{};
+  const note=(a,b)=>esc(a||'')+esc(b||'');
+  $('#food-notice').innerHTML=note(c.foodPartnersLine1,c.foodPartnersLine2);
+  $('#gear-notice').innerHTML=note(c.itemPartnersLine1,c.itemPartnersLine2);
+  $('#ig-link').href=c.footerInstaUrl||'#';
+  const pl=$('#prof-link'); if(pl) pl.href=c.footerInstaUrl||'#';
+  $('#credits').textContent=c.footerCredits||'';
+  $('#dm-link').href=c.footerDmUrl||'#';
+
+  const camp=camps();
+}
+})();
+</script>
+<script>
+(function() {
+  if(!document.documentElement.classList.contains('is-pc')) return;
   const STATS_URL = 'https://kyd-stats.kydxyz.workers.dev/log';
 
   // ─── 디바이스 감지 (클라이언트 측에서 명시) ─────────────────────
