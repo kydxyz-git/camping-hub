@@ -1381,6 +1381,16 @@
   .series-group-actions .btn { flex: 1; }
 
   /* 시리즈 EP 정렬 모드 선택 바 */
+  .cat-block { margin-bottom: 10px; }
+  .cat-toggle { width:100%; display:flex; align-items:center; gap:8px;
+    background:#f7f7f5; border:1px solid #e8e8e4; border-radius:10px;
+    padding:11px 14px; cursor:pointer; font:inherit; text-align:left; transition:.15s; }
+  .cat-toggle:hover { border-color:#d5d5cf; }
+  .cat-toggle.open { background:#1a1a1a; border-color:#1a1a1a; color:#fff; }
+  .cat-toggle-name { font-size:14px; font-weight:700; letter-spacing:-.02em; }
+  .cat-toggle-cnt { font-size:12px; opacity:.6; }
+  .cat-toggle-arrow { margin-left:auto; font-size:12px; opacity:.7; }
+  .cat-body { padding-top:8px; }
   .series-sort-bar {
     display: flex; align-items: center; gap: 8px;
     padding: 4px 0 8px 0;
@@ -6312,6 +6322,35 @@ function renderProductDetail(item, opts) {
 }
 
 // 리스트 화면 (음식/장비 공통)
+/* 장비 목록 — 세부 분류별 접이식 그룹 */
+let _openItemCats = null;   // null이면 첫 그룹만 열림
+function groupedItemsHtml(arr, opts) {
+  const cats = getItemCats();
+  const keys = cats.map(c => c.key);
+  if (_openItemCats === null) {
+    const first = cats.find((c, i) => arr.some(x => (x.cat || keys[0]) === c.key || (i === 0 && !keys.includes(x.cat || keys[0]))));
+    _openItemCats = new Set(first ? [first.key] : []);
+  }
+  return cats.map((c, i) => {
+    const rows = arr.filter(x => {
+      const k = x.cat || keys[0];
+      return k === c.key || (i === 0 && !keys.includes(k));
+    });
+    if (!rows.length) return '';
+    const open = _openItemCats.has(c.key);
+    return `<div class="cat-block">
+      <button class="cat-toggle${open ? ' open' : ''}" data-cat="${escapeHtml(c.key)}" type="button">
+        <span class="cat-toggle-name">${escapeHtml(c.label)}</span>
+        <span class="cat-toggle-cnt">${rows.length}</span>
+        <span class="cat-toggle-arrow">${open ? '▾' : '▸'}</span>
+      </button>
+      <div class="cat-body" style="${open ? '' : 'display:none;'}">
+        ${rows.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: false })).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function renderProductList(dataArr, searchVar, opts) {
   document.getElementById('topbar-title').innerHTML = `${opts.icon} ${opts.label}`;
   const c = document.getElementById('app-content');
@@ -6348,10 +6387,25 @@ function renderProductList(dataArr, searchVar, opts) {
     ${currentSort === 'manual' && !isSearchActive ? `<div class="series-sort-note">📝 ⋮⋮ 핸들을 드래그해서 순서를 변경하면 자동 저장됩니다</div>` : ''}
     ${currentSort === 'manual' && isSearchActive ? `<div class="series-sort-note" style="background:#fff3cd;border-color:#ffe69c;color:#856404;">⚠️ 검색 중에는 드래그 정렬이 비활성화됩니다 (검색을 비우세요)</div>` : ''}
     <div class="list" id="prod-list">
-      ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: isManual && !isSearchActive })).join('')}
+      ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>'
+        : (opts.type === 'items' && !isSearchActive && !isManual)
+          ? groupedItemsHtml(arr, opts)
+          : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: isManual && !isSearchActive })).join('')}
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
+  // 세부 분류 접기/펼치기
+  document.querySelectorAll('.cat-toggle').forEach(btn => {
+    btn.onclick = () => {
+      const k = btn.dataset.cat;
+      if (_openItemCats.has(k)) _openItemCats.delete(k); else _openItemCats.add(k);
+      const body = btn.nextElementSibling;
+      const open = _openItemCats.has(k);
+      body.style.display = open ? '' : 'none';
+      btn.classList.toggle('open', open);
+      btn.querySelector('.cat-toggle-arrow').textContent = open ? '▾' : '▸';
+    };
+  });
   // 정렬 모드 변경
   const sortSel = document.getElementById('prod-sort-select');
   if (sortSel) {
