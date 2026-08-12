@@ -210,6 +210,8 @@ const IG=`<svg viewBox="0 0 24 24" fill="none" stroke="#B8477E" stroke-width="1.
 const WEB=`<svg viewBox="0 0 24 24" fill="none" stroke="#3F5346" stroke-width="1.7"
   stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/>
   <path d="M3 12h18M12 3c2.4 2.6 2.4 15.4 0 18M12 3c-2.4 2.6-2.4 15.4 0 18"/></svg>`;
+const FB=`<svg viewBox="0 0 24 24"><path fill="#1877F2" d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z"/></svg>`;
+const CLIP=`<svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="16" rx="4.5" fill="#03C75A"/><path d="M10 9.2v5.6l4.6-2.8Z" fill="#fff"/></svg>`;
 
 (async function(){
   let cfg={};
@@ -224,9 +226,9 @@ const WEB=`<svg viewBox="0 0 24 24" fill="none" stroke="#3F5346" stroke-width="1
 
   const items=[
     {ico:IG, name:'인스타그램 @kyd_zm', desc:'메인 채널 · 릴스 중심 오토캠핑 기록', url:igUrl},
-    {img:cfg.headerBadgeFacebookIcon, name:'페이스북 페이지',
+    {ico:FB, name:'페이스북 페이지',
      desc:'릴스 교차 게시 · 도달 확장', url:cfg.headerBadgeFacebookUrl},
-    {img:cfg.headerBadgeNaverIcon, name:'네이버 클립',
+    {ico:CLIP, name:'네이버 클립',
      desc:'Clip Creators 활동', url:cfg.headerBadgeNaverUrl},
     {ico:WEB, name:'kydz.kr', desc:'다녀온 캠핑장·용품 아카이브', url:BASE},
   ].filter(x=>x.url);
