@@ -1,5 +1,41 @@
 [
   {
+    "name": "DJI 오즈모포켓4",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/3d3d9519fe05.jpg",
+    "published": true,
+    "id": "item_6f79a0aa62",
+    "created_at": "2026-08-12T13:04:45.644530+00:00",
+    "updated_at": "2026-08-12T13:04:45.644530+00:00",
+    "cat": "camera"
+  },
+  {
+    "name": "DJI Mini 5 Pro",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/3ed3db8d3db2.jpg",
+    "published": true,
+    "id": "item_e9c79cd70d",
+    "created_at": "2026-08-12T13:04:45.644530+00:00",
+    "updated_at": "2026-08-12T13:04:45.644530+00:00",
+    "cat": "camera"
+  },
+  {
+    "name": "Canon EOS 5Ds",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/dc79f66943f4.jpg",
+    "published": true,
+    "id": "item_3f43285527",
+    "created_at": "2026-08-12T13:04:45.644530+00:00",
+    "updated_at": "2026-08-12T13:04:45.644530+00:00",
+    "cat": "camera"
+  },
+  {
     "name": "카마프 카라비너D형",
     "desc": "",
     "url": "",
