@@ -7210,7 +7210,7 @@ function _renderItemFormUI() {
         </div>
 
         <div class="form-field">
-          <label class="label" for="if-url">URL *</label>
+          <label class="label" for="if-url">URL</label>
           <input type="text" id="if-url" class="input" placeholder="https://..." value="${escapeHtml(_itemForm.url)}">
           <div class="help">쿠팡/네이버/컬리 등의 상품 페이지 URL — 입력하면 출처 자동 감지</div>
         </div>
@@ -7450,7 +7450,6 @@ async function submitItemForm() {
 
   // 검증
   if (!_itemForm.name.trim()) return showToast('이름을 입력해주세요', 'error');
-  if (!_itemForm.url.trim()) return showToast('URL을 입력해주세요', 'error');
   if (!isEdit && !_itemForm.imageBase64) return showToast('이미지를 선택해주세요', 'error');
 
   if (!localStorage.getItem(STORAGE_KEYS.token)) {
