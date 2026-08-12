@@ -4079,17 +4079,7 @@ function _renderCampFormUI() {
         </div>
 
         <div class="form-field">
-          <label class="label">시즌</label>
-          <div class="chip-group">${checkboxesHtml(CAMP_SEASONS, _campForm.seasons, 'seasons')}</div>
-        </div>
-
-        <div class="form-field">
-          <label class="label">풍경</label>
-          <div class="chip-group">${checkboxesHtml(CAMP_LANDSCAPES, _campForm.landscape, 'landscape')}</div>
-        </div>
-
-        <div class="form-field">
-          <label class="label" for="cf-extras">추가 태그</label>
+          <label class="label" for="cf-extras">태그</label>
           <input type="text" id="cf-extras" class="input" placeholder="콤마로 구분 (예: 벚꽃, 글램핑, 수영장)" value="${escapeHtml((_campForm.extras || []).join(', '))}">
           <div class="help">자주 쓰는 태그: ${CAMP_EXTRAS_SUGGEST.join(', ')}</div>
         </div>
@@ -4118,16 +4108,6 @@ function _renderCampFormUI() {
         <div class="form-field">
           <label class="label" for="cf-address">주소</label>
           <input type="text" id="cf-address" class="input" placeholder="경남 산청군 시천면 지리산대로 605" value="${escapeHtml(_campForm.address)}">
-        </div>
-
-        <div class="form-field">
-          <label class="label" for="cf-sites">사이트 구성</label>
-          <input type="text" id="cf-sites" class="input" placeholder="예: 파쇄석 5 / 데크 10 / 정자데크 5" value="${escapeHtml(_campForm.sites)}">
-        </div>
-
-        <div class="form-field">
-          <label class="label" for="cf-price">요금</label>
-          <input type="text" id="cf-price" class="input" placeholder="예: 비수기 주말 5~6만원" value="${escapeHtml(_campForm.price)}">
         </div>
 
         <div class="form-field">
@@ -4232,7 +4212,7 @@ function _renderCampFormUI() {
   $('cf-name').oninput = (e) => { _campForm.name = e.target.value; };
   $('cf-region').onchange = (e) => { _campForm.region = e.target.value; };
   $('cf-url').oninput = (e) => { _campForm.url = e.target.value; };
-  ['checkin','checkout','sites','price','address','notes'].forEach(k => {
+  ['checkin','checkout','address','notes'].forEach(k => {
     const el = $('cf-' + k);
     if (el) el.oninput = (e) => { _campForm[k] = e.target.value; };
   });
@@ -4811,8 +4791,6 @@ async function submitCampForm() {
         : makeContentId('camp', _campForm.name.trim()),
       name: _campForm.name.trim(),
       region: _campForm.region,
-      seasons: _campForm.seasons,
-      landscape: _campForm.landscape,
       extras: _campForm.extras,
       graega: _campForm.graega,
       url: _campForm.url.trim(),
@@ -4824,7 +4802,7 @@ async function submitCampForm() {
       updated_at: _nowIso,
     };
     // 상세 정보 (값 있을 때만 저장)
-    ['checkin','checkout','sites','price','address','notes'].forEach(k => {
+    ['checkin','checkout','address','notes'].forEach(k => {
       const v = (_campForm[k] || '').trim();
       if (v) campObj[k] = v;
     });

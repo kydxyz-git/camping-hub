@@ -3,13 +3,6 @@
     "id": "camp_e5a202316d",
     "name": "합천호코지캠핑장",
     "region": "경남",
-    "seasons": [
-      "봄",
-      "가을"
-    ],
-    "landscape": [
-      "산"
-    ],
     "extras": [
       "벚꽃",
       "글램핑"
@@ -41,13 +34,6 @@
     "id": "camp_b8d29b3f00",
     "name": "캠프627 경호강",
     "region": "경남",
-    "seasons": [
-      "봄",
-      "가을"
-    ],
-    "landscape": [
-      "강"
-    ],
     "extras": [
       "벚꽃",
       "수영장",
@@ -75,13 +61,6 @@
     "id": "camp_d9699234d4",
     "name": "우니메이카 산청",
     "region": "경남",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "계곡",
-      "산"
-    ],
     "extras": [
       "개별샤워실"
     ],
@@ -116,16 +95,6 @@
     "id": "camp_8e1adf57aa",
     "name": "문경 그린스톤",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "계곡",
-      "숲",
-      "산"
-    ],
     "extras": [
       "벚꽃",
       "애견동반"
@@ -152,16 +121,6 @@
     "id": "camp_0741c2c7b7",
     "name": "밀양 구만산장",
     "region": "경남",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "계곡",
-      "숲",
-      "산"
-    ],
     "extras": [
       "벚꽃",
       "수영장",
@@ -200,23 +159,12 @@
     ],
     "dm": true,
     "address": "경남 밀양시 산내면 봉의리 939",
-    "sites": "A존 6 / B존 9 / C존 10 / D존 2 / 가족펜션 7동",
-    "price": "B·C존 5만원부터 / A존 7만원부터 / D존·펜션 12만원부터",
     "notes": "매너타임 23시~08시\n애견 동반 불가, 방문객 출입 불가\n캠핑카·트레일러 입장 가능"
   },
   {
     "id": "camp_e220a217fd",
     "name": "상우농장",
     "region": "강원",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "계곡",
-      "산"
-    ],
     "extras": [],
     "graega": true,
     "url": "https://graega.short.gy/31kydzm",
@@ -251,15 +199,6 @@
     "id": "camp_e06cb829df",
     "name": "봉화별캠핑장",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "숲",
-      "계곡"
-    ],
     "extras": [
       "벚꽃",
       "노키즈",
@@ -292,21 +231,12 @@
     "notes": "매너타임 22시~08시\n애견동반 가능, 11세 미만 이용 제한, 성인 2인까지\n개별샤워실·냉장고·드라이기 완비, 샤워용품·비상약·양념 무료 제공\n겨울 운영 안 함 / 금요일 퇴근박 50% 할인, 롱롱스테이(11시 입실·14시 퇴실) 무료\n1년 3회 방문 시 다음 해 선예약 가능한 단골캠퍼 제도 운영",
     "dm": true,
     "address": "경북 봉화군 소천면 구마동길 513-127",
-    "sites": "단독 1(10×10) / 계곡 구역 12 / 상단 구역 7(9×9.5)",
-    "price": "단독 6.5만원부터 / 계곡·상단 5.5만원부터 (연박 5천원 할인)",
     "pick": true
   },
   {
     "id": "camp_17e022c947",
     "name": "왕피천모래언덕",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름"
-    ],
-    "landscape": [
-      "계곡"
-    ],
     "extras": [
       "벚꽃",
       "수영장",
@@ -332,13 +262,6 @@
     "id": "camp_e1e0dde7b3",
     "name": "곤달비캠프",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름"
-    ],
-    "landscape": [
-      "계곡"
-    ],
     "extras": [
       "벚꽃",
       "수영장",
@@ -363,13 +286,6 @@
   {
     "name": "창바우마을 해송피크닉장",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "가을"
-    ],
-    "landscape": [
-      "바다"
-    ],
     "extras": [
       "일출",
       "펜션"
@@ -392,14 +308,6 @@
   {
     "name": "THE360캠핑장",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "산"
-    ],
     "extras": [
       "수영장"
     ],
@@ -421,14 +329,6 @@
   {
     "name": "또바기캠핑장",
     "region": "경북",
-    "seasons": [
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "숲",
-      "계곡"
-    ],
     "extras": [
       "벚꽃"
     ],
@@ -450,15 +350,6 @@
   {
     "name": "문경히든벨리캠핑장",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "숲",
-      "계곡"
-    ],
     "extras": [
       "벚꽃",
       "수영장"
@@ -481,15 +372,6 @@
   {
     "name": "새움정",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "폐교",
-      "잔디"
-    ],
     "extras": [
       "수영장",
       "애견동반",
@@ -513,13 +395,6 @@
   {
     "name": "왕피천숲속캠핑장",
     "region": "경북",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "숲",
-      "계곡"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://xn--bm4bvl68khmiz2i.com/Reservation",
@@ -539,13 +414,6 @@
   {
     "name": "상주우산오토캠핑장",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "가을"
-    ],
-    "landscape": [
-      "폐교"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=1596",
@@ -564,14 +432,6 @@
   {
     "name": "구미캠핑장",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "강"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://www.gmuc.or.kr/camping/index.do",
@@ -590,13 +450,6 @@
   {
     "name": "내를건너서숲으로",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름"
-    ],
-    "landscape": [
-      "계곡"
-    ],
     "extras": [
       "애견동반"
     ],
@@ -617,15 +470,6 @@
   {
     "name": "안동우니메이카",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을",
-      "겨울"
-    ],
-    "landscape": [
-      "강"
-    ],
     "extras": [
       "펜션"
     ],
@@ -647,14 +491,6 @@
   {
     "name": "월명612",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "산"
-    ],
     "extras": [
       "수영장",
       "펜션"
@@ -676,12 +512,6 @@
   {
     "name": "경주에덴펜션&오토캠핑장",
     "region": "경북",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "바다"
-    ],
     "extras": [
       "수영장",
       "펜션",
@@ -704,15 +534,6 @@
   {
     "name": "포항비손농장",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "산",
-      "바다"
-    ],
     "extras": [
       "수영장",
       "애견동반"
@@ -734,12 +555,6 @@
   {
     "name": "무릉관광농원(캠핑빌리지)",
     "region": "경북",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "숲"
-    ],
     "extras": [
       "수영장"
     ],
@@ -760,13 +575,6 @@
   {
     "name": "하늘아래첫동네",
     "region": "경북",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "계곡",
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -785,15 +593,6 @@
   {
     "name": "휴앤락오토캠핑장",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을",
-      "겨울"
-    ],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://camfit.co.kr/camp/6553c1a5e3c0a5001e3e9f7a",
@@ -812,13 +611,6 @@
   {
     "name": "경주가나캠핑장",
     "region": "경북",
-    "seasons": [
-      "가을",
-      "겨울"
-    ],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://camfit.co.kr/camp/65118dfa875975001e6f1631",
@@ -837,13 +629,6 @@
   {
     "name": "라라캠핑장",
     "region": "경북",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "산",
-      "계곡"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://camfit.co.kr/camp/61406db98c8c0a001e7fd388",
@@ -862,14 +647,6 @@
   {
     "name": "칠곡보오토캠핑장",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "강"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://camp.xticket.kr/web/main?shopEncode=3b8dfd4fe83ef398626319d169929b5df473aafca57da427af869db901ce8b86",
@@ -888,14 +665,6 @@
   {
     "name": "포항백경오토캠핑장",
     "region": "경북",
-    "seasons": [
-      "봄",
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "바다"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://www.camfit.co.kr/camp/6345234e7c0322001ff37468",
@@ -915,13 +684,6 @@
     "id": "camp_82599ba9bf",
     "name": "황매산별쿵캠핑장",
     "region": "경남",
-    "seasons": [
-      "봄",
-      "가을"
-    ],
-    "landscape": [
-      "산"
-    ],
     "extras": [
       "억새",
       "철쭉"
@@ -948,13 +710,6 @@
   {
     "name": "황석산라온오토캠핑장",
     "region": "경남",
-    "seasons": [
-      "사계절"
-    ],
-    "landscape": [
-      "산",
-      "계곡"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=3639",
@@ -969,13 +724,6 @@
   {
     "name": "산중오토캠핑장",
     "region": "경남",
-    "seasons": [
-      "봄",
-      "가을"
-    ],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -990,10 +738,6 @@
   {
     "name": "산중오토계곡캠핑장",
     "region": "",
-    "seasons": [],
-    "landscape": [
-      "계곡"
-    ],
     "extras": [],
     "graega": false,
     "url": "http://sj-camping.com/bbs/board.php?bo_table=yb_booking02",
@@ -1008,14 +752,6 @@
   {
     "name": "버드하우스캠핑장",
     "region": "경남",
-    "seasons": [
-      "봄",
-      "가을",
-      "겨울"
-    ],
-    "landscape": [
-      "폐교"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1030,14 +766,6 @@
   {
     "name": "합천정양오토캠핑장",
     "region": "경남",
-    "seasons": [
-      "봄",
-      "가을",
-      "겨울"
-    ],
-    "landscape": [
-      "강"
-    ],
     "extras": [],
     "graega": false,
     "url": "http://hcjypark.com/",
@@ -1052,10 +780,6 @@
   {
     "name": "든해솔계곡캠핑장",
     "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "계곡"
-    ],
     "extras": [],
     "graega": false,
     "url": "http://r.camperstory.com/?P2156",
@@ -1070,14 +794,6 @@
   {
     "name": "사천솔섬오토캠핑장",
     "region": "경남",
-    "seasons": [
-      "봄",
-      "가을",
-      "겨울"
-    ],
-    "landscape": [
-      "바다"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://www.camfit.co.kr/camp/62c7d0649fa6e0001e270aa9",
@@ -1092,10 +808,6 @@
   {
     "name": "산청별천지캠핑장",
     "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=1747",
@@ -1111,10 +823,6 @@
   {
     "name": "청풍호반오토캠핑장",
     "region": "충북",
-    "seasons": [],
-    "landscape": [
-      "호수"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1130,12 +838,6 @@
     "id": "camp_9ada4f994a",
     "name": "산청 지리산반달캠핑장",
     "region": "경남",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "계곡"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://camfit.co.kr/camp/65546172cd3e77001f33656e",
@@ -1164,18 +866,12 @@
     ],
     "dm": true,
     "address": "경남 산청군 시천면 지리산대로 758",
-    "sites": "A존 12 / B존 11 / 타프존 10 / 두가족 1 / 평상 2",
-    "price": "5.5만원부터 (연박 시 5천원 할인)",
     "notes": "2024년 6월 오픈, 3년 연속 방문\n타프존 간격이 넓어 프라이버시 좋음\n샤워실 칸마다 분리, 드라이기·탈수기·냉장고 구비\n애견동반 가능(10kg 이하 소형견 1마리), 캠핑카·카라반 가능",
     "pick": true
   },
   {
     "name": "경남밀양솔바람캠핑장",
     "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1190,10 +886,6 @@
   {
     "name": "구지강변오토캠핑장",
     "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "강"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1208,10 +900,6 @@
   {
     "name": "바람이좋은저녁캠핑장",
     "region": "",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1226,11 +914,6 @@
   {
     "name": "거창강가펜션캠핑장",
     "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "산",
-      "계곡"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1245,10 +928,6 @@
   {
     "name": "고흥나로힐링캠핑장",
     "region": "전남",
-    "seasons": [],
-    "landscape": [
-      "바다"
-    ],
     "extras": [],
     "graega": false,
     "url": "http://www.narohealing.kr/",
@@ -1263,10 +942,6 @@
   {
     "name": "대경오토캠핑장",
     "region": "경북",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1281,10 +956,6 @@
   {
     "name": "구례섬지캠핑장",
     "region": "전남",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1299,10 +970,6 @@
   {
     "name": "안녕오토캠핑장",
     "region": "",
-    "seasons": [],
-    "landscape": [
-      "바다"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1317,10 +984,6 @@
   {
     "name": "캠프하다",
     "region": "",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1335,10 +998,6 @@
   {
     "name": "온새미로캠핑장",
     "region": "경북",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1353,10 +1012,6 @@
   {
     "name": "달서별빛캠핑장",
     "region": "",
-    "seasons": [],
-    "landscape": [
-      "기타"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1372,12 +1027,6 @@
     "id": "camp_ed97486488",
     "name": "덕풍계곡별빛야영장",
     "region": "경북",
-    "seasons": [
-      "여름"
-    ],
-    "landscape": [
-      "계곡"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://map.naver.com/p/entry/place/38491516?lng=129.1793007&lat=37.1020523&placePath=%2Fhome&entry=plt&searchType=place&c=15.00,0,0,2,dh",
@@ -1410,14 +1059,6 @@
     "id": "camp_02c72e06a3",
     "name": "단양소풍캠핑장",
     "region": "충북",
-    "seasons": [
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "계곡",
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://m.place.naver.com/accommodation/1667975888/room?entry=plt&businessCategory=camping",
@@ -1444,18 +1085,12 @@
     "address": "충북 단양군 영춘면 김삿갓로 126",
     "checkin": "14:00",
     "checkout": "11:00",
-    "sites": "데크 23 / 파쇄석 14 / 정자 2 / 펜션 3",
-    "price": "5만원 (성수기 6만원)",
     "notes": "샤워실에 드라이기 없어 개인 지참 필요\n애견동반 불가, 8인 이상 불가\n캠핑장은 단양이지만 바로 앞 계곡은 영월",
     "pick": true
   },
   {
     "name": "경산갓바위캠핑장",
     "region": "경북",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "http://www.gatbawi-camp.co.kr/",
@@ -1471,14 +1106,6 @@
     "id": "camp_8625b4018d",
     "name": "지리산365오토캠핑펜션",
     "region": "경남",
-    "seasons": [
-      "여름",
-      "가을"
-    ],
-    "landscape": [
-      "산",
-      "계곡"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://m.thankqcamping.com/resv/view.hbb?cseq=3795",
@@ -1497,18 +1124,12 @@
     "address": "경남 산청군 시천면 지리산대로 605",
     "checkin": "14:00",
     "checkout": "12:00",
-    "sites": "파쇄석 5 / 계곡 데크 10 / 정자데크 5 / 폭포뷰 데크 2 / 민박 3",
-    "price": "5~6만원 (민박 25만원)",
     "notes": "애견동반 가능, 카라반 가능\n정자데크는 7/1부터 당일 피크닉존으로 전환",
     "pick": true
   },
   {
     "name": "해피단밀오토캠핑장",
     "region": "경북",
-    "seasons": [],
-    "landscape": [
-      "폐교"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1523,11 +1144,6 @@
   {
     "name": "캠핑느루",
     "region": "",
-    "seasons": [],
-    "landscape": [
-      "산",
-      "계곡"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1542,10 +1158,6 @@
   {
     "name": "하늘하루펜션앤캠핑장",
     "region": "",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1560,10 +1172,6 @@
   {
     "name": "양산무릉도원캠핑장",
     "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://www.xn--hq1bk3iuobz1y.net/",
@@ -1578,11 +1186,6 @@
   {
     "name": "나조스트",
     "region": "",
-    "seasons": [],
-    "landscape": [
-      "숲",
-      "계곡"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1597,10 +1200,6 @@
   {
     "name": "장성편백힐치유의숲",
     "region": "전남",
-    "seasons": [],
-    "landscape": [
-      "숲"
-    ],
     "extras": [],
     "graega": false,
     "url": "https://heal3001.modoo.at/",
@@ -1615,8 +1214,6 @@
   {
     "name": "너와두리농촌캠핑장",
     "region": "",
-    "seasons": [],
-    "landscape": [],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1631,10 +1228,6 @@
   {
     "name": "고성상족암캠핑장",
     "region": "경남",
-    "seasons": [],
-    "landscape": [
-      "바다"
-    ],
     "extras": [],
     "graega": false,
     "url": "http://www.sjacamping.com/",
@@ -1649,10 +1242,6 @@
   {
     "name": "몽산포오션캠핑장",
     "region": "충남",
-    "seasons": [],
-    "landscape": [
-      "바다"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1667,10 +1256,6 @@
   {
     "name": "교육청수련원",
     "region": "",
-    "seasons": [],
-    "landscape": [
-      "산"
-    ],
     "extras": [],
     "graega": false,
     "url": "",
@@ -1686,15 +1271,6 @@
     "id": "camp_a9bbd60ec3",
     "name": "덕동골오토캠핑장",
     "region": "충북",
-    "seasons": [
-      "여름",
-      "가을",
-      "봄"
-    ],
-    "landscape": [
-      "계곡",
-      "산"
-    ],
     "extras": [],
     "graega": true,
     "url": "https://graega.short.gy/7129kydzm",
