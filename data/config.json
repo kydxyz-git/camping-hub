@@ -29,7 +29,7 @@
   "headerBadgeFacebookIcon": "./images/refs/facebook-icon.svg",
   "headerBadgeFacebookUrl": "https://www.facebook.com/profile.php?id=61588881720150",
   "foodsSort": "random",
-  "itemsSort": "latest",
+  "itemsSort": "random",
   "tab5": "캠핑여지도",
   "itemCats": [
     {
@@ -42,7 +42,11 @@
     },
     {
       "key": "tent",
-      "label": "텐트·타프"
+      "label": "텐트"
+    },
+    {
+      "key": "tarp",
+      "label": "타프"
     },
     {
       "key": "table",
