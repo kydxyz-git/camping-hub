@@ -58,9 +58,10 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   width:100%;border-top:1px solid var(--line);padding:6px 0}
 .nav.bare .tabs{display:none}
 .nav.bare .nav-in{padding-bottom:14px}
-.tab{font-size:14px;font-weight:500;color:var(--stone);padding:8px 11px;border-radius:999px;white-space:nowrap;transition:.15s}
+.tab{position:relative;font-size:14px;font-weight:500;color:var(--stone);padding:8px 11px;border-radius:999px;white-space:nowrap;transition:.15s}
 .tab:hover{color:var(--ink)}
-.tab[aria-current="page"]{color:var(--ink);font-weight:700;background:#EFEFE9}
+.tab[aria-current="page"]{color:var(--ink);font-weight:700}
+.tab[aria-current="page"]::after{content:"";position:absolute;left:11px;right:11px;bottom:1px;height:2px;background:var(--ink);border-radius:2px}
 .tab.alt{padding-left:clamp(10px,2.4vw,34px);border-left:1px solid var(--line);border-radius:0;font-size:13px}
 
 .wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
@@ -411,7 +412,7 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
       <a class="tab" href="#camps">다녀온 캠핑장</a>
       <a class="tab" href="#food">먹거리</a>
       <a class="tab" href="#gear">캠핑용품</a>
-      <a class="tab alt" href="#about">소개 · 협업</a>
+      <a class="tab alt" href="./collab.html" data-track-target="협업문의">소개 · 협업</a>
     </div>
   </div>
 </nav>
@@ -508,30 +509,6 @@ footer{border-top:1px solid var(--line);padding:clamp(30px,4vw,48px) 0 clamp(28p
     <div id="gear-sections"></div>
   </section>
 
-  <!-- 소개 -->
-  <section id="v-about" class="view">
-    <div class="about">
-      <div>
-        <h2>오토캠핑 하나만<br>기록합니다.</h2>
-        <p>5년차 부부캠퍼가 직접 다녀온 캠핑장과 장비만 다룹니다. 협업 제품도 실제로 캠핑장에 들고 나가 써본 뒤에 올립니다.</p>
-        <a class="cta" id="dm-link" href="#">인스타그램 DM 보내기</a>
-      </div>
-      <dl class="rows" id="about-rows"></dl>
-    </div>
-    <div class="about" style="padding-top:0">
-      <div>
-        <h2 style="font-size:clamp(18px,2.2vw,24px)">협업 방식</h2>
-        <p>릴스와 스토리, 이 사이트까지 묶어서 진행합니다.</p>
-      </div>
-      <dl class="rows">
-        <div class="row"><dt>01</dt><dd>제품 사용<small>캠핑장에 실제로 들고 나가 사용한 뒤 촬영합니다</small></dd></div>
-        <div class="row"><dt>02</dt><dd>릴스 제작<small>정보형 구성으로 저장과 공유가 나오게 만듭니다</small></dd></div>
-        <div class="row"><dt>03</dt><dd>확산<small>인스타그램과 페이스북에 함께 게시해 도달을 넓힙니다</small></dd></div>
-        <div class="row"><dt>04</dt><dd>기록<small>이 사이트에 남겨 캠페인이 끝난 뒤에도 계속 노출됩니다</small></dd></div>
-      </dl>
-    </div>
-  </section>
-
   <footer>
     <div class="foot-top">
       <div class="foot-brand">
@@ -581,7 +558,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const abs=p=>!p?'':/^https?:/.test(p)?p:BASE+String(p).replace(/^\.?\//,'');
 const won=n=>n==null?'':n.toLocaleString('ko-KR')+'원';
 
-const VIEWS=['home','camps','stories','series','food','gear','about'];
+const VIEWS=['home','camps','stories','series','food','gear'];
 let DATA={};
 
 /* 예약 플랫폼 판별 */
@@ -1030,12 +1007,6 @@ function renderChrome(){
   $('#dm-link').href=c.footerDmUrl||'#';
 
   const camp=camps();
-  $('#about-rows').innerHTML=[
-    ['분야','오토캠핑 · 캠핑장 · 캠핑 음식 · 장비',`캠핑장 ${camp.length}곳 · 누적 방문 ${camp.reduce((a,x)=>a+(+x.visits||0),0)}회`],
-    ['채널',c.footerInstaLink||'@kyd_zm','릴스 중심 · 페이스북 교차 게시'],
-    ['제휴',c.headerBadge||'그래가 파트너스','캠핑장 예약 연동 · 레퍼럴 코드 공대남자'],
-    ['문의',c.footerEmail||'','메일 또는 인스타그램 DM']
-  ].map(([k,v,s])=>`<div class="row"><dt>${esc(k)}</dt><dd>${esc(v)}${s?`<small>${esc(s)}</small>`:''}</dd></div>`).join('');
 }
 </script>
 <script>
