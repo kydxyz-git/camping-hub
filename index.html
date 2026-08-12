@@ -238,6 +238,9 @@
     .source-badge { position: absolute; bottom: 5px; right: 5px; font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 100px; color: white; letter-spacing: -0.01em; }
     .badge-coupang { background: #FF4B4B; }
     .badge-kurly   { background: #5D3CC7; }
+    .badge-ali     { background: #FF4747; }
+    .badge-temu    { background: #FF6A00; }
+    .badge-etc     { background: #9e9e9e; }
     .badge-naver   { background: #03C75A; }
     .product-info { padding: 7px 8px 9px; }
     .product-name {
@@ -1365,8 +1368,13 @@ function renderProducts(containerId, dataArr) {
     return;
   }
   grid.innerHTML = shuffled.map(item => {
-    const src = (item.source||'').toLowerCase(); const bc = (src==='쿠팡'||src==='coupang')?'badge-coupang':(src==='컬리'||src==='kurly')?'badge-kurly':(src==='네이버'||src==='naver')?'badge-naver':'';
-    const bl = (src==='쿠팡'||src==='coupang')?'쿠팡':(src==='컬리'||src==='kurly')?'컬리':(src==='네이버'||src==='naver')?'네이버':'';
+    const _s = (item.source||'').toLowerCase();
+    const SRC_MAP = { '쿠팡':['badge-coupang','쿠팡'], 'coupang':['badge-coupang','쿠팡'],
+                      '컬리':['badge-kurly','컬리'], 'kurly':['badge-kurly','컬리'],
+                      '네이버':['badge-naver','네이버'], 'naver':['badge-naver','네이버'],
+                      '알리':['badge-ali','알리'], 'ali':['badge-ali','알리'],
+                      '테무':['badge-temu','테무'], 'temu':['badge-temu','테무'] };
+    const [bc, bl] = SRC_MAP[_s] || ['badge-etc','기타'];
     const empty = !item.url || item.url==='#';
     // 통계 추적 path/title — ID 기반
     const trackId = item.id || encodeURIComponent(item.name);
