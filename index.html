@@ -129,8 +129,8 @@
       word-break: keep-all;
     }
     .header-badges {
-      display: inline-flex; flex-wrap: wrap; gap: 5px;
-      margin-top: 6px; justify-content: flex-end;
+      display: flex; flex-wrap: wrap; gap: 5px;
+      justify-content: center; padding: 0 20px 12px;
     }
     .header-badge {
       display: inline-flex; align-items: center;
@@ -910,13 +910,15 @@ async function loadData() {
     </div>
     <div class="header-right">
       <p class="header-sub" id="header-sub"></p>
-      <div class="header-badges">
-        <a class="header-badge header-badge-naver" id="header-badge-naver" data-track-target="Clip Creators" data-track-external="1" target="_blank" rel="noopener"></a>
-        <a class="header-badge header-badge-facebook" id="header-badge-facebook" data-track-target="Facebook" data-track-external="1" target="_blank" rel="noopener"></a>
-        <a class="header-badge" id="header-badge" data-track-target="그래가파트너스" data-track-external="1" target="_blank" rel="noopener"></a>
-      </div>
     </div>
   </header>
+
+  <!-- 채널 배지 -->
+  <div class="header-badges">
+    <a class="header-badge header-badge-naver" id="header-badge-naver" data-track-target="Clip Creators" data-track-external="1" target="_blank" rel="noopener"></a>
+    <a class="header-badge header-badge-facebook" id="header-badge-facebook" data-track-target="Facebook" data-track-external="1" target="_blank" rel="noopener"></a>
+    <a class="header-badge" id="header-badge" data-track-target="그래가파트너스" data-track-external="1" target="_blank" rel="noopener"></a>
+  </div>
 
   <!-- 탭 바 -->
   <nav class="tab-bar">
