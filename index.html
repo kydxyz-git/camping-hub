@@ -350,9 +350,6 @@
     .env-btn.active { background:var(--accent-soft); }
     .env-btn.active .env-icon-wrap { outline:2px solid var(--text); outline-offset:2px; }
     .env-icon-wrap { width:40px; height:40px; border-radius:11px; display:flex; align-items:center; justify-content:center; position:relative; }
-    .env-cnt { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-      font-family:var(--mono, monospace); font-size:12px; font-weight:700; color:#1a1a1a;
-      text-shadow:0 0 3px rgba(255,255,255,.95), 0 0 6px rgba(255,255,255,.85); }
     .env-icon-wrap[data-t="all"]     {background:#EFEFE9;color:#6A706A}
     .env-icon-wrap[data-t^="r-"]     {background:var(--mountain-bg);color:var(--mountain-fg)}
     .env-icon-wrap[data-t="ocean"]    {background:var(--ocean-bg);color:var(--ocean-fg)}
@@ -1453,7 +1450,6 @@ function renderEnv() {
     `<button class="env-btn region-btn${cur===r?' active':''}${r!=='전체'&&!usedRegions.includes(r)?' empty-region':''}" data-key="${r}">
       <div class="env-icon-wrap" data-t="${r==='전체'?'all':'r-'+r}">
         ${REGION_ICON[r] || REGION_FALLBACK}
-        <span class="env-cnt">${cnt[r] || 0}</span>
       </div>
       <span class="env-name">${r}</span>
     </button>`).join('');
