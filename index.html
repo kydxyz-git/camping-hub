@@ -416,8 +416,9 @@
     .footer { background:var(--text); color:var(--bg); padding:28px 20px 20px; text-align:center; }
     .footer-collab-label { font-size:11px; opacity:0.55; letter-spacing:0.02em; margin-bottom:14px; line-height:1.6; }
     .footer-cta-row { display:flex; gap:8px; max-width:320px; margin:0 auto 18px; }
-    .footer-cta { flex:1; padding:13px 12px; background:var(--bg); color:var(--text); border-radius:8px; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .footer-cta { flex:1; padding:14px 12px; background:var(--bg); color:var(--text); border-radius:8px; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:6px; }
     .footer-cta-icon { font-size:14px; line-height:1; }
+    .footer-cta svg { width:16px; height:16px; flex:none; }
     .footer-insta-link { display:inline-block; font-size:12px; opacity:0.6; letter-spacing:0.02em; margin-bottom:14px; color:var(--bg); }
     .footer-insta-link:hover { opacity:0.85; }
     .footer-credits { font-size:10px; opacity:0.35; letter-spacing:0.05em; padding-top:12px; border-top:1px solid rgba(255,255,255,0.08); }
@@ -984,12 +985,13 @@ async function loadData() {
   <footer class="footer">
     <div class="footer-collab-label" id="footer-collab"></div>
     <div class="footer-cta-row">
-      <a id="footer-dm-btn" data-track-target="DM 보내기" data-track-external="1" target="_blank" class="footer-cta">
-        <span class="footer-cta-icon">💬</span><span>DM 보내기</span>
+      <a href="./collab.html" data-track-target="협업 문의" class="footer-cta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7 L12 13.2 L21 7"/>
+        </svg>
+        <span>협업 문의하기</span>
       </a>
-      <button type="button" id="footer-email-btn" data-track-target="메일 보내기" data-track-external="1" class="footer-cta">
-        <span class="footer-cta-icon">✉</span><span>메일 보내기</span>
-      </button>
     </div>
     <a id="footer-insta-link" data-track-target="인스타 프로필" data-track-external="1" target="_blank" class="footer-insta-link"></a>
     <div class="footer-credits" id="footer-credits"></div>
@@ -1093,11 +1095,7 @@ function renderConfig() {
   document.getElementById('partners-line1b').textContent = siteConfig.itemPartnersLine1 || siteConfig.partnersLine1;
   document.getElementById('partners-line2b').textContent = siteConfig.itemPartnersLine2 || siteConfig.partnersLine2;
   // 추천 음식/템 하단 가격 안내문
-  // 푸터 ─ DM/메일 CTA + 인스타 프로필 보조 링크
-  const dmBtn = document.getElementById('footer-dm-btn');
-  dmBtn.href = siteConfig.footerDmUrl;
-  const emailBtn = document.getElementById('footer-email-btn');
-  emailBtn.addEventListener('click', openEmailModal);
+  // 푸터 ─ 협업 문의 CTA + 인스타 프로필 보조 링크
   const instaLink = document.getElementById('footer-insta-link');
   instaLink.textContent = siteConfig.footerInstaLink;
   instaLink.href = siteConfig.footerInstaUrl;
