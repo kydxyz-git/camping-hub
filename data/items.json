@@ -557,7 +557,8 @@
     "currency": "KRW",
     "published": true,
     "created_at": "2026-08-13T14:49:05.687Z",
-    "updated_at": "2026-08-13T14:49:05.687Z"
+    "updated_at": "2026-08-13T14:49:05.687Z",
+    "pick": 1
   },
   {
     "id": "item_b85f78de84",
