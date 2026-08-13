@@ -420,26 +420,12 @@
     .camp-meta { display:flex; align-items:center; justify-content:flex-end; margin-top:4px; }
     .camp-noimg { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:10px; border-radius:var(--radius) var(--radius) 0 0; }
 
-    /* DM 링크로 들어온 장비 — 분류 위 고정 카드 */
+    /* DM 링크로 들어온 장비 — 분류 위 고정 노출 (일반 카드와 같은 크기, 가운데 정렬) */
     #item-pinned:empty { display:none; }
-    .pin-card { display:flex; gap:12px; padding:12px; margin:0 0 16px;
-      border:1.5px solid var(--point,#3F5346); border-radius:10px; background:#FBFBF8; }
-    .pin-thumb { width:84px; height:84px; flex:none; border-radius:7px; overflow:hidden;
-      background:#EFEFE9; display:flex; align-items:center; justify-content:center; font-size:28px; }
-    .pin-thumb img { width:100%; height:100%; object-fit:cover; }
-    .pin-body { flex:1; min-width:0; }
-    .pin-name { font-size:14px; font-weight:800; line-height:1.35; letter-spacing:-.02em; word-break:keep-all; }
-    .pin-star { color:#F2A900; margin-right:3px; }
-    .pin-desc { margin-top:3px; font-size:12px; color:var(--text-sub,#6b6b6b); line-height:1.45;
-      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-    .pin-price-row { margin-top:5px; }
-    .pin-price { font-size:14px; font-weight:800; }
-    .pin-price-was { margin-left:5px; font-size:11.5px; color:#9a9a9a; text-decoration:line-through; }
-    .pin-actions { display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
-    .pin-buy { display:inline-block; padding:8px 14px; border-radius:7px;
-      background:#1a1a1a; color:#fff; font-size:12.5px; font-weight:700; }
-    .pin-vid { display:inline-block; padding:8px 12px; border-radius:7px;
-      background:#fff; border:1px solid #ddd; color:#333; font-size:12.5px; font-weight:600; }
+    #item-pinned { margin-bottom: 18px; }
+    .pin-wrap { display:flex; justify-content:center; gap:8px; margin-top:0; }
+    .pin-wrap .product-card { flex:0 0 calc((100% - 16px) / 3); }
+    .pin-wrap .pick-badge { display:none; }
     .camp-noimg-txt { color:#2a2a2a; font-size:11px; font-weight:800; text-align:center; line-height:1.45; letter-spacing:-0.02em; word-break:keep-all; }
     .camp-stars { display:none; }
     .camp-visits { font-size:9px; color:var(--text-sub); font-weight:600; }
@@ -1254,21 +1240,10 @@ html.is-pc *{animation:none!important;transition:none!important}
 }
 
 html.is-pc #pc-gear-pinned:empty{display:none}
-html.is-pc .pin-card{display:flex;gap:16px;padding:16px;margin:0 0 22px;
-  border:1.5px solid var(--ink);border-radius:5px;background:#fff}
-html.is-pc .pin-thumb{width:120px;height:120px;flex:none;border-radius:4px;overflow:hidden;
-  background:#EDEDE7;display:flex;align-items:center;justify-content:center;font-size:36px}
-html.is-pc .pin-thumb img{width:100%;height:100%;object-fit:cover}
-html.is-pc .pin-body{flex:1;min-width:0}
-html.is-pc .pin-name{font-size:17px;font-weight:800;letter-spacing:-.02em;word-break:keep-all}
-html.is-pc .pin-star{color:#F2A900;margin-right:4px}
-html.is-pc .pin-desc{margin-top:5px;font-size:13px;color:var(--stone);line-height:1.55}
-html.is-pc .pin-price-row{margin-top:8px}
-html.is-pc .pin-price{font-size:16px;font-weight:800}
-html.is-pc .pin-price-was{margin-left:6px;font-size:12.5px;color:#9a9a9a;text-decoration:line-through}
-html.is-pc .pin-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-html.is-pc .pin-buy{padding:10px 18px;border-radius:4px;background:var(--ink);color:#fff;font-size:13px;font-weight:700}
-html.is-pc .pin-vid{padding:10px 16px;border-radius:4px;background:#fff;border:1px solid var(--line);font-size:13px;font-weight:600}
+html.is-pc #pc-gear-pinned{margin-bottom:26px}
+html.is-pc .pin-wrap{display:flex;justify-content:center;gap:clamp(10px,1.6vw,18px)}
+html.is-pc .pin-wrap .pcard{flex:0 0 calc((100% - 3 * clamp(10px,1.6vw,18px)) / 4)}
+html.is-pc .pin-wrap .pick{display:none}
 
 /* ── PC/모바일 화면 전환 ── */
 html.is-pc  #mo-root { display:none !important; }
@@ -1795,7 +1770,7 @@ function renderItemGroups(containerId, dataArr) {
   });
 }
 
-function renderProducts(containerId, dataArr) {
+function renderProducts(containerId, dataArr, keepOrder) {
   const grid = document.getElementById(containerId);
   // 통계 추적 카테고리 (food-grid → foods, item-grid → items)
   const trackCategory = containerId.startsWith('food') ? 'foods' : containerId.startsWith('item') ? 'items' : 'product';
@@ -1804,7 +1779,7 @@ function renderProducts(containerId, dataArr) {
     ? (siteConfig.foodsSort || 'random')
     : (siteConfig.itemsSort || 'random');
   const visible = (dataArr || []).filter(x => x.published !== false);
-  const shuffled = sortProductsByMode(visible, sortMode);
+  const shuffled = keepOrder ? visible : sortProductsByMode(visible, sortMode);
   if (!shuffled.length) {
     grid.innerHTML = `<div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--text-sub);font-size:13px;">아직 등록된 항목이 없어요</div>`;
     return;
@@ -2589,36 +2564,16 @@ function applyHashTab() {
   renderPinnedItem((base || '').toLowerCase() === 'items' ? decodeURIComponent(arg || '') : '');
 }
 
-// DM 링크로 들어온 장비를 맨 위에 따로 보여준다 (구매 버튼까지 바로 노출)
-function renderPinnedItem(id) {
+// DM 링크로 들어온 장비를 맨 위에 보여준다 (#items/id 또는 #items/id1,id2,id3)
+function renderPinnedItem(idsRaw) {
   const box = document.getElementById('item-pinned');
   if (!box) return;
-  const it = id && (items || []).find(x => x.id === id && x.published !== false);
-  if (!it) { box.innerHTML = ''; return; }
-  const isUsd = it.currency === 'USD';
-  const fmt = n => isUsd ? '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2 })
-                         : Number(n).toLocaleString('ko-KR') + '원';
-  const priceHtml = it.price_sale
-    ? `<span class="pin-price">${fmt(it.price_sale)}</span>` +
-      (it.price_original ? `<span class="pin-price-was">${fmt(it.price_original)}</span>` : '')
-    : (it.price_original ? `<span class="pin-price">${fmt(it.price_original)}</span>` : '');
-  const thumb = it.thumb ? `<img src="${it.thumb}" alt="" loading="lazy">` : '🏕️';
-  const buy = (it.url && it.url !== '#')
-    ? `<a class="pin-buy" href="${it.url}" target="_blank" rel="noopener"
-          data-track-path="/items/${it.id}" data-track-title="${(it.name||'').replace(/"/g,'&quot;')}"
-          data-track-external="1">구매하러 가기</a>` : '';
-  const vid = it.video
-    ? `<a class="pin-vid" href="${it.video}" target="_blank" rel="noopener">제품소개 영상 보러 가기</a>` : '';
-  box.innerHTML = `
-    <div class="pin-card">
-      <div class="pin-thumb">${thumb}</div>
-      <div class="pin-body">
-        <div class="pin-name">${it.pick ? '<span class="pin-star">★</span>' : ''}${it.name || ''}</div>
-        ${it.desc ? `<div class="pin-desc">${it.desc}</div>` : ''}
-        <div class="pin-price-row">${priceHtml}</div>
-        <div class="pin-actions">${buy}${vid}</div>
-      </div>
-    </div>`;
+  const ids = (idsRaw || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 3);
+  if (!ids.length) { box.innerHTML = ''; return; }
+  const picked = ids.map(id => (items || []).find(x => x.id === id && x.published !== false)).filter(Boolean);
+  if (!picked.length) { box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="pin-wrap" id="item-pinned-grid"></div>`;
+  renderProducts('item-pinned-grid', picked, true);
 }
 applyHashTab();
 // 뒤로가기/앞으로가기 시 해시 변경 대응
@@ -3154,31 +3109,14 @@ function mainImg(c){
   return abs(c.main_img && pool.includes(c.main_img) ? c.main_img : pool[0]);
 }
 
-/* ── DM 링크로 들어온 장비를 분류 목록 위에 고정 노출 ── */
-function paintPinnedGear(id){
+/* ── DM 링크로 들어온 장비를 분류 목록 위에 고정 노출 (#items/id 또는 id1,id2,id3) ── */
+function paintPinnedGear(idsRaw){
   const box=$('#pc-gear-pinned'); if(!box) return;
-  const it=id && (DATA.items||[]).find(x=>x.id===id && x.published!==false);
-  if(!it){ box.innerHTML=''; return; }
-  const usd=it.currency==='USD';
-  const fmt=n=> usd ? '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2})
-                    : Number(n).toLocaleString('ko-KR')+'원';
-  const price = it.price_sale
-    ? `<span class="pin-price">${fmt(it.price_sale)}</span>`+
-      (it.price_original?`<span class="pin-price-was">${fmt(it.price_original)}</span>`:'')
-    : (it.price_original?`<span class="pin-price">${fmt(it.price_original)}</span>`:'');
-  const buy=(it.url&&it.url!=='#')
-    ? `<a class="pin-buy" href="${esc(it.url)}" target="_blank" rel="noopener">구매하러 가기</a>`:'';
-  const vid=it.video?`<a class="pin-vid" href="${esc(it.video)}" target="_blank" rel="noopener">제품소개 영상 보러 가기</a>`:'';
-  box.innerHTML=`
-    <div class="pin-card">
-      <div class="pin-thumb">${it.thumb?`<img src="${esc(abs(it.thumb))}" alt="">`:'🏕️'}</div>
-      <div class="pin-body">
-        <div class="pin-name">${it.pick?'<span class="pin-star">★</span>':''}${esc(it.name||'')}</div>
-        ${it.desc?`<div class="pin-desc">${esc(it.desc)}</div>`:''}
-        <div class="pin-price-row">${price}</div>
-        <div class="pin-actions">${buy}${vid}</div>
-      </div>
-    </div>`;
+  const ids=(idsRaw||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,3);
+  const picked=ids.map(id=>(DATA.items||[]).find(x=>x.id===id && x.published!==false)).filter(Boolean);
+  if(!picked.length){ box.innerHTML=''; return; }
+  box.innerHTML='<div class="pin-wrap pc-grid prod" id="pc-pin-grid"></div>';
+  renderProducts('#pc-pin-grid',picked,null,null,'manual','items');
 }
 
 /* ── 라우팅 ── */
