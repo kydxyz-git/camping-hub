@@ -274,7 +274,7 @@
     "checkout": "12:00",
     "notes": "25년 정책 변경, 펜션도 운영",
     "address": "경북 울진군 근남면 왕피천로 534-1",
-    "pick": true
+    "pick": false
   },
   {
     "id": "camp_e1e0dde7b3",
