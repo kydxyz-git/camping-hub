@@ -1813,7 +1813,9 @@ function renderProducts(containerId, dataArr, keepOrder) {
                       '알리':['badge-ali','알리'], 'ali':['badge-ali','알리'],
                       '테무':['badge-temu','테무'], 'temu':['badge-temu','테무'] };
     const _empty0 = !item.url || item.url === '#';
-    const [bc, bl] = _empty0 ? ['',''] : (SRC_MAP[_s] || ['badge-etc','기타']);
+    // 캠핑용품은 판매처 배지를 표시하지 않는다 (수가 많아지면 광고처럼 보임)
+    const _showSrc = trackCategory !== 'items';
+    const [bc, bl] = (_empty0 || !_showSrc) ? ['',''] : (SRC_MAP[_s] || ['badge-etc','기타']);
     const empty = !item.url || item.url==='#';
     // 통계 추적 path/title — ID 기반
     const trackId = item.id || encodeURIComponent(item.name);
