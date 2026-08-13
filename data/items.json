@@ -227,16 +227,22 @@
     "cat": "table"
   },
   {
+    "id": "item_7bd1dc6926",
     "name": "몽벨 멀티 폴딩 테이블",
+    "cat": "table",
+    "video": "",
+    "pick": true,
     "desc": "",
     "url": "",
     "source": "",
     "thumb": "./images/products/428e91af67e3.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
     "published": true,
-    "id": "item_7bd1dc6926",
     "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-12T00:43:12.051091+00:00",
-    "cat": "table"
+    "updated_at": "2026-08-13T02:22:52.980Z"
   },
   {
     "name": "헬리녹스 x LMC 체어원",
