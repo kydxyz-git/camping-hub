@@ -284,8 +284,7 @@
     .price-sale { font-size: 12px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
     .price-only { font-size: 12px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
     .product-link svg { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 2; }
-    .product-card.empty { cursor: default; }
-    .product-card.empty:hover { transform: none; box-shadow: none; }
+    .product-card.empty { cursor: pointer; }   /* 눌리면 안내 팝업 */
 
     /* ── 시리즈 ── */
     .series-section { padding: 20px 0 8px; }
@@ -433,6 +432,15 @@
     }
     .pin-wrap .product-card .product-name { font-weight:800; }
     .pin-wrap .pick-badge { display:none; }
+    /* 구매 링크 없는 제품 안내 팝업 */
+    .nolink-overlay { position:fixed; inset:0; z-index:120; display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,.45); padding:24px; }
+    .nolink-overlay[hidden] { display:none; }
+    .nolink-box { width:100%; max-width:300px; background:#fff; border-radius:14px; padding:22px 20px 16px; text-align:center; }
+    .nolink-name { font-size:14px; font-weight:800; letter-spacing:-.02em; word-break:keep-all; }
+    .nolink-msg { margin-top:10px; font-size:12.5px; line-height:1.6; color:var(--text-sub); }
+    .nolink-close { margin-top:16px; width:100%; padding:11px 0; border-radius:9px;
+      background:var(--text); color:#fff; font-size:13px; font-weight:700; }
     .camp-noimg-txt { color:#2a2a2a; font-size:11px; font-weight:800; text-align:center; line-height:1.45; letter-spacing:-0.02em; word-break:keep-all; }
     .camp-stars { display:none; }
     .camp-visits { font-size:9px; color:var(--text-sub); font-weight:600; }
@@ -1380,6 +1388,15 @@ async function loadData() {
     <div id="camp-map"></div>
   </div>
 
+  <!-- 구매 링크 없는 제품 안내 -->
+  <div class="nolink-overlay" id="nolink-pop" hidden>
+    <div class="nolink-box" role="dialog" aria-modal="true">
+      <div class="nolink-name" id="nolink-name"></div>
+      <p class="nolink-msg">이 제품은 단종되었거나<br>구매 링크가 연결되어 있지 않습니다.</p>
+      <button type="button" class="nolink-close" id="nolink-close">닫기</button>
+    </div>
+  </div>
+
   <!-- 푸터 -->
   <footer class="footer">
     <div class="footer-collab-label" id="footer-collab"></div>
@@ -1806,7 +1823,7 @@ function renderProducts(containerId, dataArr, keepOrder) {
     const _fmtPrice = (n) => _isUsd
       ? '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
       : Number(n).toLocaleString() + '원';
-    return `<${empty?'div':'a'} class="product-card${empty?' empty':''}" ${empty?'':`href="${item.url}" target="_blank" rel="noopener"`} ${trackAttrs}>
+    return `<${empty?'div':'a'} class="product-card${empty?' empty':''}" ${empty?`role="button" tabindex="0" data-nolink="${trackTitle}"`:`href="${item.url}" target="_blank" rel="noopener"`} ${trackAttrs}>
       <div class="product-thumb${item.thumb?'':' ph'}">
         ${item.thumb ? `<img src="${item.thumb}${item.updated_at ? '?v=' + new Date(item.updated_at).getTime() : ''}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
         ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : ''}
@@ -2583,6 +2600,20 @@ function renderPinned(kind, idsRaw) {
   box.innerHTML = `<div class="pin-wrap" id="${gridId}"></div><div class="pin-label">${label}</div>`;
   renderProducts(gridId, picked, true);
 }
+
+// 구매 링크 없는 제품을 누르면 이유를 알려준다
+(function () {
+  const pop = document.getElementById('nolink-pop');
+  const nameEl = document.getElementById('nolink-name');
+  if (!pop) return;
+  const close = () => pop.hidden = true;
+  document.addEventListener('click', (e) => {
+    const card = e.target.closest('.product-card[data-nolink]');
+    if (card) { nameEl.textContent = card.getAttribute('data-nolink') || ''; pop.hidden = false; return; }
+    if (e.target === pop || e.target.id === 'nolink-close') close();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+})();
 
 applyHashTab();
 // 뒤로가기/앞으로가기 시 해시 변경 대응
