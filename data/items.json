@@ -464,16 +464,22 @@
     "updated_at": "2026-08-12T02:00:57.272Z"
   },
   {
+    "id": "item_6f79a0aa62",
     "name": "DJI 오즈모포켓4",
+    "cat": "camera",
+    "video": "",
+    "pick": true,
     "desc": "",
     "url": "",
     "source": "",
     "thumb": "./images/products/3d3d9519fe05.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
     "published": true,
-    "id": "item_6f79a0aa62",
     "created_at": "2026-08-12T13:04:45.644530+00:00",
-    "updated_at": "2026-08-12T13:04:45.644530+00:00",
-    "cat": "camera"
+    "updated_at": "2026-08-13T02:33:25.508Z"
   },
   {
     "name": "DJI Mini 5 Pro",
