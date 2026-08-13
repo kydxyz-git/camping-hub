@@ -1863,19 +1863,23 @@ const cache = {
 //  · 토큰이 있으면 GitHub 저장소(원본)에서 직접 읽는다. 저장 즉시 최신이라
 //    배포(1~5분)를 기다릴 필요가 없고, 옛 데이터를 덮어쓰는 사고도 없다.
 //  · 토큰이 없으면 배포된 사이트에서 읽는다(기존 방식).
-async function fetchDataFile(name) {
+// 저장소의 텍스트 파일을 직접 읽는다 (배포 대기 없이 항상 최신)
+async function fetchRepoText(path) {
   if (localStorage.getItem(STORAGE_KEYS.token)) {
     try {
-      const r = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/contents/data/${name}.json?ref=${GH_BRANCH}&t=${Date.now()}`);
-      const txt = decodeURIComponent(escape(atob(r.content.replace(/\n/g, ''))));
-      return JSON.parse(txt);
+      const r = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/contents/${path}?ref=${GH_BRANCH}&t=${Date.now()}`);
+      return decodeURIComponent(escape(atob(r.content.replace(/\n/g, ''))));
     } catch (e) {
-      console.warn(`[data] GitHub 직접 읽기 실패(${name}), 사이트에서 재시도`, e);
+      console.warn(`[repo] GitHub 직접 읽기 실패(${path}), 사이트에서 재시도`, e);
     }
   }
-  const r2 = await fetch(`../data/${name}.json?v=${Date.now()}`);
-  if (!r2.ok) throw new Error(`${name}.json: ${r2.status}`);
-  return r2.json();
+  const r2 = await fetch(`../${path}?v=${Date.now()}`);
+  if (!r2.ok) throw new Error(`${path}: ${r2.status}`);
+  return r2.text();
+}
+
+async function fetchDataFile(name) {
+  return JSON.parse(await fetchRepoText(`data/${name}.json`));
 }
 
 async function loadAllData(force = false) {
@@ -5840,8 +5844,7 @@ async function submitEpForm() {
       }
 
       const today = kstToday();
-      const sitemapResp = await fetch(`../sitemap.xml?v=${Date.now()}`);
-      const sitemapText = await sitemapResp.text();
+      const sitemapText = await fetchRepoText('sitemap.xml');
       const newSitemap = sitemapText.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g, `<lastmod>${today}</lastmod>`);
 
       ptext.textContent = 'GitHub 업로드 중...';
