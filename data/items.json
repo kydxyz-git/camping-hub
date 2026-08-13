@@ -15,7 +15,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:22:20.860864+00:00",
-    "updated_at": "2026-08-13T00:32:13.377Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_0e5652bb69",
@@ -32,7 +32,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:22:20.860864+00:00",
-    "updated_at": "2026-08-13T13:11:35.695Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "name": "미니멀웍스 브이하우스M",
@@ -43,7 +43,7 @@
     "published": true,
     "id": "item_d30401a3a0",
     "created_at": "2026-08-12T00:22:20.860864+00:00",
-    "updated_at": "2026-08-12T00:22:20.860864+00:00",
+    "updated_at": "2026-08-13T13:53:02.837Z",
     "cat": "tent"
   },
   {
@@ -55,7 +55,7 @@
     "published": true,
     "id": "item_f8a16a8e45",
     "created_at": "2026-08-12T00:30:37.151846+00:00",
-    "updated_at": "2026-08-12T00:30:37.151846+00:00",
+    "updated_at": "2026-08-13T13:53:02.837Z",
     "cat": "tent"
   },
   {
@@ -74,7 +74,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:36:13.335681+00:00",
-    "updated_at": "2026-08-13T01:16:19.219Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_76917ffdfa",
@@ -92,7 +92,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:22:20.860864+00:00",
-    "updated_at": "2026-08-13T01:19:28.917Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_b8ba2f7683",
@@ -109,7 +109,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:22:20.860864+00:00",
-    "updated_at": "2026-08-13T09:33:27.414Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "name": "캠빌 고동",
@@ -120,7 +120,7 @@
     "published": true,
     "id": "item_d7822bf823",
     "created_at": "2026-08-12T00:22:20.860864+00:00",
-    "updated_at": "2026-08-12T00:22:20.860864+00:00",
+    "updated_at": "2026-08-13T13:53:02.837Z",
     "cat": "tent"
   },
   {
@@ -139,7 +139,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:30:37.151846+00:00",
-    "updated_at": "2026-08-13T01:57:46.968Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "name": "노스페이스 스타프5",
@@ -150,7 +150,7 @@
     "published": true,
     "id": "item_bbc507958e",
     "created_at": "2026-08-12T00:30:37.151846+00:00",
-    "updated_at": "2026-08-12T00:30:37.151846+00:00",
+    "updated_at": "2026-08-13T13:53:02.837Z",
     "cat": "tarp"
   },
   {
@@ -169,7 +169,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T01:21:56.377951+00:00",
-    "updated_at": "2026-08-13T01:20:07.048Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_f94eb6d3e5",
@@ -187,7 +187,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T01:26:25.809920+00:00",
-    "updated_at": "2026-08-13T01:58:05.263Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_6e0210eba9",
@@ -204,7 +204,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T01:23:11.436853+00:00",
-    "updated_at": "2026-08-13T02:05:00.407Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_3a7d4dd061",
@@ -217,7 +217,7 @@
     "currency": "KRW",
     "published": true,
     "created_at": "2026-08-13T13:26:15.434Z",
-    "updated_at": "2026-08-13T13:26:15.434Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_cc722d51b5",
@@ -235,7 +235,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T01:34:47.348771+00:00",
-    "updated_at": "2026-08-13T01:58:17.988Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_2405bff7e5",
@@ -253,7 +253,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-13T02:23:11.425Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "name": "팀버리지 캠핑 롤링 테이블",
@@ -264,7 +264,7 @@
     "published": true,
     "id": "item_3bffc91077",
     "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-12T00:43:12.051091+00:00",
+    "updated_at": "2026-08-13T13:53:02.837Z",
     "cat": "table"
   },
   {
@@ -283,7 +283,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-13T02:22:52.980Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_9f08f89de4",
@@ -301,7 +301,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-13T02:29:19.857Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "name": "텐트마크디자인 워크테이블 LOW",
@@ -312,7 +312,7 @@
     "published": true,
     "id": "item_bb89bda383",
     "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-12T00:43:12.051091+00:00",
+    "updated_at": "2026-08-13T13:53:02.837Z",
     "cat": "table"
   },
   {
@@ -324,7 +324,7 @@
     "published": true,
     "id": "item_b2011a57b1",
     "created_at": "2026-08-12T01:05:07.258878+00:00",
-    "updated_at": "2026-08-12T01:05:07.258878+00:00",
+    "updated_at": "2026-08-13T13:53:02.837Z",
     "cat": "table"
   },
   {
@@ -343,7 +343,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T01:05:07.258878+00:00",
-    "updated_at": "2026-08-13T02:29:50.390Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "name": "헬리녹스 x LMC 체어원",
@@ -354,7 +354,7 @@
     "published": true,
     "id": "item_52bcfa1583",
     "created_at": "2026-08-12T01:05:07.258878+00:00",
-    "updated_at": "2026-08-12T01:05:07.258878+00:00",
+    "updated_at": "2026-08-13T13:53:02.837Z",
     "cat": "table"
   },
   {
@@ -366,7 +366,7 @@
     "published": true,
     "id": "item_90f00d1c73",
     "created_at": "2026-08-12T01:05:07.258878+00:00",
-    "updated_at": "2026-08-12T01:05:07.258878+00:00",
+    "updated_at": "2026-08-13T13:53:02.837Z",
     "cat": "table"
   },
   {
@@ -385,7 +385,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T01:30:36.767706+00:00",
-    "updated_at": "2026-08-13T02:31:47.701Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_63c49d8aa7",
@@ -403,7 +403,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T01:29:06.364705+00:00",
-    "updated_at": "2026-08-13T02:31:58.870Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_07e316531b",
@@ -420,7 +420,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T01:29:32.459893+00:00",
-    "updated_at": "2026-08-13T13:40:03.046Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_bf45bb2b31",
@@ -438,7 +438,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-13T13:20:57.937Z",
-    "updated_at": "2026-08-13T13:21:58.509Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_1427db326c",
@@ -451,7 +451,7 @@
     "currency": "KRW",
     "published": true,
     "created_at": "2026-08-13T13:43:33.980Z",
-    "updated_at": "2026-08-13T13:43:33.980Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_fedcb5008b",
@@ -464,7 +464,7 @@
     "currency": "KRW",
     "published": true,
     "created_at": "2026-08-13T13:46:21.697Z",
-    "updated_at": "2026-08-13T13:46:21.697Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_c9c551ed52",
@@ -477,7 +477,7 @@
     "currency": "KRW",
     "published": true,
     "created_at": "2026-08-13T13:46:21.697Z",
-    "updated_at": "2026-08-13T13:46:21.697Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_85f4706603",
@@ -490,7 +490,7 @@
     "currency": "KRW",
     "published": true,
     "created_at": "2026-08-13T13:47:13.866Z",
-    "updated_at": "2026-08-13T13:47:13.866Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_7daa20fbb6",
@@ -508,7 +508,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T01:27:47.739726+00:00",
-    "updated_at": "2026-08-13T02:32:50.452Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "name": "포레스트유 데크팩SET",
@@ -522,7 +522,7 @@
     "published": true,
     "id": "item_48f6974ac5",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-08-13T13:53:02.837Z",
     "cat": "camp"
   },
   {
@@ -541,7 +541,7 @@
     "discount_rate": 22,
     "published": true,
     "created_at": "2026-08-08T11:38:48.402Z",
-    "updated_at": "2026-08-13T02:32:17.934Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_edd94b4899",
@@ -559,7 +559,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-04T08:43:53.283Z",
-    "updated_at": "2026-08-12T02:00:57.272Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_6f79a0aa62",
@@ -577,7 +577,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T13:04:45.644530+00:00",
-    "updated_at": "2026-08-13T02:33:25.508Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_e9c79cd70d",
@@ -595,7 +595,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T13:04:45.644530+00:00",
-    "updated_at": "2026-08-13T02:34:00.056Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "name": "Canon EOS 5Ds",
@@ -606,7 +606,7 @@
     "published": true,
     "id": "item_3f43285527",
     "created_at": "2026-08-12T13:04:45.644530+00:00",
-    "updated_at": "2026-08-12T13:04:45.644530+00:00",
+    "updated_at": "2026-08-13T13:53:02.837Z",
     "cat": "camera"
   },
   {
@@ -625,7 +625,7 @@
     "discount_rate": 2,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-08-12T02:00:22.119Z"
+    "updated_at": "2026-08-13T13:53:25.185Z"
   },
   {
     "id": "item_200bd59067",
@@ -642,7 +642,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-06-04T23:55:23.406Z",
-    "updated_at": "2026-08-11T08:23:14.103Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_32e1cc5f58",
@@ -660,7 +660,7 @@
     "discount_rate": 31,
     "published": true,
     "created_at": "2026-06-30T22:53:24.688Z",
-    "updated_at": "2026-08-12T02:00:37.098Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_75f77862cd",
@@ -677,7 +677,7 @@
     "discount_rate": 24,
     "published": true,
     "created_at": "2026-06-15T04:18:00.596Z",
-    "updated_at": "2026-08-11T08:21:30.449Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_096f88cf80",
@@ -694,7 +694,7 @@
     "discount_rate": 28,
     "published": false,
     "created_at": "2026-07-20T08:01:27.930Z",
-    "updated_at": "2026-08-12T01:07:53.530Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_e01fb7d262",
@@ -711,7 +711,7 @@
     "discount_rate": 20,
     "published": false,
     "created_at": "2026-07-20T08:04:49.725Z",
-    "updated_at": "2026-08-11T08:31:14.123Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_1e78eeb29a",
@@ -729,7 +729,7 @@
     "discount_rate": 36,
     "published": true,
     "created_at": "2026-07-20T05:56:52.847Z",
-    "updated_at": "2026-08-12T02:00:07.217Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   },
   {
     "id": "item_6489394674",
@@ -747,6 +747,6 @@
     "discount_rate": 30,
     "published": true,
     "created_at": "2026-07-20T07:59:54.439Z",
-    "updated_at": "2026-08-12T01:59:44.762Z"
+    "updated_at": "2026-08-13T13:53:02.837Z"
   }
 ]
