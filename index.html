@@ -421,8 +421,10 @@
     .camp-noimg { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:10px; border-radius:var(--radius) var(--radius) 0 0; }
 
     /* DM 링크로 들어온 장비 — 분류 위 고정 노출 (일반 카드와 같은 크기, 가운데 정렬) */
-    #item-pinned:empty { display:none; }
-    #item-pinned { padding: 0 16px; margin-bottom: 18px; }  /* .product-section 과 동일한 좌우 여백 */
+    #item-pinned:empty, #food-pinned:empty { display:none; }
+    #item-pinned, #food-pinned { padding: 0 16px; margin-bottom: 18px; }  /* .product-section 과 동일한 좌우 여백 */
+    .pin-label { margin-top: 8px; text-align:center; font-size:11.5px; font-weight:700;
+      letter-spacing:-.01em; color: var(--point); }
     .pin-wrap { display:flex; justify-content:center; gap:8px; margin-top:0; }
     .pin-wrap .product-card {
       flex:0 0 calc((100% - 16px) / 3);
@@ -1354,6 +1356,7 @@ async function loadData() {
       <span id="partners-line2"></span>
     </div>
     <div class="cat-desc">캠핑에서 먹은 밀키트 중 다시 살 만했던 것들만 정리했습니다.</div>
+    <div id="food-pinned"></div>
     <section class="product-section">
       <div class="product-grid" id="food-grid"></div>
     </section>
@@ -2560,20 +2563,27 @@ function applyHashTab() {
   const targetTab = HASH_TAB_MAP[(base || '').toLowerCase()];
   if (targetTab) activateTab(targetTab, false);
   // #items/{장비id} → 해당 장비를 분류 목록 위에 한 칸으로 고정 노출
-  renderPinnedItem((base || '').toLowerCase() === 'items' ? decodeURIComponent(arg || '') : '');
+  const b = (base || '').toLowerCase();
+  renderPinned('items', b === 'items' ? decodeURIComponent(arg || '') : '');
+  renderPinned('foods', b === 'foods' ? decodeURIComponent(arg || '') : '');
 }
 
-// DM 링크로 들어온 장비를 맨 위에 보여준다 (#items/id 또는 #items/id1,id2,id3)
-function renderPinnedItem(idsRaw) {
-  const box = document.getElementById('item-pinned');
+// DM 링크로 들어온 제품/음식을 맨 위에 보여준다
+//   #items/id  ·  #items/id1,id2,id3  ·  #foods/id ...
+function renderPinned(kind, idsRaw) {
+  const isItems = kind === 'items';
+  const box = document.getElementById(isItems ? 'item-pinned' : 'food-pinned');
   if (!box) return;
   const ids = (idsRaw || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 3);
-  if (!ids.length) { box.innerHTML = ''; return; }
-  const picked = ids.map(id => (items || []).find(x => x.id === id && x.published !== false)).filter(Boolean);
+  const src = isItems ? items : foods;
+  const picked = ids.map(id => (src || []).find(x => x.id === id && x.published !== false)).filter(Boolean);
   if (!picked.length) { box.innerHTML = ''; return; }
-  box.innerHTML = `<div class="pin-wrap" id="item-pinned-grid"></div>`;
-  renderProducts('item-pinned-grid', picked, true);
+  const gridId = isItems ? 'item-pinned-grid' : 'food-pinned-grid';
+  const label = isItems ? '영상에 소개한 제품' : '영상에 소개한 음식';
+  box.innerHTML = `<div class="pin-wrap" id="${gridId}"></div><div class="pin-label">${label}</div>`;
+  renderProducts(gridId, picked, true);
 }
+
 applyHashTab();
 // 뒤로가기/앞으로가기 시 해시 변경 대응
 window.addEventListener('hashchange', applyHashTab);
