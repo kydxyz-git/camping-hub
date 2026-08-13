@@ -54,6 +54,18 @@
     "cat": "tent"
   },
   {
+    "name": "코오롱 오두막SP",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/9370154ef88f.jpg",
+    "published": true,
+    "id": "item_0e5652bb69",
+    "created_at": "2026-08-12T00:22:20.860864+00:00",
+    "updated_at": "2026-08-12T00:22:20.860864+00:00",
+    "cat": "tent"
+  },
+  {
     "name": "폴러투맨 퓨리카모4P",
     "desc": "",
     "url": "",
@@ -73,18 +85,6 @@
     "thumb": "./images/products/28916f5058e4.jpg",
     "published": true,
     "id": "item_d7822bf823",
-    "created_at": "2026-08-12T00:22:20.860864+00:00",
-    "updated_at": "2026-08-12T00:22:20.860864+00:00",
-    "cat": "tent"
-  },
-  {
-    "name": "코오롱 오두막SP",
-    "desc": "",
-    "url": "",
-    "source": "",
-    "thumb": "./images/products/9370154ef88f.jpg",
-    "published": true,
-    "id": "item_0e5652bb69",
     "created_at": "2026-08-12T00:22:20.860864+00:00",
     "updated_at": "2026-08-12T00:22:20.860864+00:00",
     "cat": "tent"
