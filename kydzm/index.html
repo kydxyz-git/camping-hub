@@ -961,6 +961,11 @@
   }
   .order-savebar-msg { flex:1; min-width:150px; font-size:12.5px; font-weight:600; color:#7A5B00; }
   .btn-ghost { background:#fff; color:#555; border:1px solid #ddd; }
+  .link-copy-btn {
+    flex:none; margin-right:6px; padding:5px 7px; border-radius:6px;
+    background:#F4F5F7; border:1px solid #e2e4e8; cursor:pointer; font-size:13px; line-height:1;
+  }
+  .link-copy-btn:hover { background:#e9ebef; }
   .pick-badge {
     display:inline-block; vertical-align:baseline; margin-right:4px;
     color:#F2A900; font-size:14px; line-height:1;
@@ -6315,6 +6320,8 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
           <div class="list-item-meta">${src}${escapeHtml(item.desc || '')}</div>
         </div>
       </a>
+      ${item.id ? `<button type="button" class="link-copy-btn" data-copy-id="${item.id}"
+        data-copy-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}" title="DM용 링크 복사">🔗</button>` : ''}
       ${toggleHtml(isPub, `data-${dataAttrKey}="${item._idx}"`)}
       <a class="list-item-arrow" href="#${hrefPrefix}/${item._idx}">›</a>
     </div>
@@ -6445,6 +6452,21 @@ function renderProductList(dataArr, searchVar, opts) {
       btn.querySelector('.cat-toggle-arrow').textContent = open ? '▾' : '▸';
     };
   });
+  // DM용 개별 링크 복사
+  document.querySelectorAll('.link-copy-btn').forEach(btn => {
+    btn.onclick = async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const url = `https://kydz.kr/#${btn.dataset.copyKind}/${btn.dataset.copyId}`;
+      try {
+        await navigator.clipboard.writeText(url);
+        showToast('링크 복사됨 · ' + url, 'success', 3000);
+      } catch (err) {
+        // 클립보드 권한이 없을 때는 선택 가능한 형태로 보여준다
+        prompt('아래 링크를 복사하세요', url);
+      }
+    };
+  });
+
   // 순서 저장 / 되돌리기
   const saveBtn = document.getElementById('order-save-btn');
   if (saveBtn) saveBtn.onclick = async () => {
