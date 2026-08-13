@@ -1286,7 +1286,7 @@ async function loadData() {
 </script>
 
   <!-- 최상단 바: 소개 · 협업 문의 -->
-  <a class="topbar" href="./collab.html" data-track-target="협업문의">
+  <a class="topbar" href="./collab.html" data-track-target="협업 문의" data-track-internal="1">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M4 12 L12 8 L20 12"/><path d="M12 8 L8.5 12.5a2.4 2.4 0 0 0 3.2 3.2L15 12.5"/>
@@ -1384,7 +1384,7 @@ async function loadData() {
   <footer class="footer">
     <div class="footer-collab-label" id="footer-collab"></div>
     <div class="footer-cta-row">
-      <a href="./collab.html" data-track-target="협업 문의" class="footer-cta">
+      <a href="./collab.html" data-track-target="협업 문의" data-track-internal="1" class="footer-cta">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7 L12 13.2 L21 7"/>
@@ -2805,8 +2805,18 @@ if(document.documentElement.classList.contains('is-mo')) init();
     } catch (e) {}
   })();
 
+  // PC 화면은 해시 이름이 달라(#gear/#food/#home) 같은 탭이 따로 집계된다 → 모바일 이름으로 통일
+  const PATH_ALIAS = { '/#gear': '/#items', '/#food': '/#foods', '/#home': '/' };
+  function normalizePath(p) {
+    const base = p.split('/').slice(0, 2).join('/');
+    if (PATH_ALIAS[p]) return PATH_ALIAS[p];
+    if (p.startsWith('/#gear/')) return p.replace('/#gear/', '/#items/');
+    if (p.startsWith('/#food/')) return p.replace('/#food/', '/#foods/');
+    return p;
+  }
+
   function trackPageView() {
-    const path = location.pathname + (location.hash || '');
+    const path = normalizePath(location.pathname + (location.hash || ''));
     if (!shouldTrack(path)) return;
     send({
       type: 'pageview',
@@ -2873,6 +2883,18 @@ if(document.documentElement.classList.contains('is-mo')) init();
 
   // 클릭 이벤트 캡쳐 (외부 링크 + fallback)
   document.addEventListener('click', function(e) {
+    // 내부 페이지 이동 버튼 (협업 문의 등) — 외부 도메인이 아니어서 자동 분류가 안 됨
+    const internalBtn = e.target.closest('[data-track-internal="1"]');
+    if (internalBtn) {
+      send({
+        type: 'click',
+        target: internalBtn.getAttribute('data-track-target') || 'unknown',
+        url: internalBtn.getAttribute('href') || '',
+        context: location.pathname + (location.hash || ''),
+      });
+      // 계속 진행 — 아래 카드/외부 링크 처리와 겹치지 않음
+    }
+
     // 명시적 외부 채널 버튼 (data-track-target + data-track-external)
     const externalBtn = e.target.closest('[data-track-external="1"]');
     if (externalBtn) {
@@ -2948,7 +2970,7 @@ if(document.documentElement.classList.contains('is-mo')) init();
       <a class="tab" href="#camps">다녀온 캠핑장</a>
       <a class="tab" href="#food">먹거리</a>
       <a class="tab" href="#gear">캠핑용품</a>
-      <a class="tab alt" href="./collab.html" data-track-target="협업문의">소개 · 협업</a>
+      <a class="tab alt" href="./collab.html" data-track-target="협업 문의">소개 · 협업</a>
     </div>
   </div>
 </nav>
@@ -3720,8 +3742,18 @@ function renderChrome(){
     } catch (e) {}
   })();
 
+  // PC 화면은 해시 이름이 달라(#gear/#food/#home) 같은 탭이 따로 집계된다 → 모바일 이름으로 통일
+  const PATH_ALIAS = { '/#gear': '/#items', '/#food': '/#foods', '/#home': '/' };
+  function normalizePath(p) {
+    const base = p.split('/').slice(0, 2).join('/');
+    if (PATH_ALIAS[p]) return PATH_ALIAS[p];
+    if (p.startsWith('/#gear/')) return p.replace('/#gear/', '/#items/');
+    if (p.startsWith('/#food/')) return p.replace('/#food/', '/#foods/');
+    return p;
+  }
+
   function trackPageView() {
-    const path = location.pathname + (location.hash || '');
+    const path = normalizePath(location.pathname + (location.hash || ''));
     if (!shouldTrack(path)) return;
     send({
       type: 'pageview',
@@ -3788,6 +3820,18 @@ function renderChrome(){
 
   // 클릭 이벤트 캡쳐 (외부 링크 + fallback)
   document.addEventListener('click', function(e) {
+    // 내부 페이지 이동 버튼 (협업 문의 등) — 외부 도메인이 아니어서 자동 분류가 안 됨
+    const internalBtn = e.target.closest('[data-track-internal="1"]');
+    if (internalBtn) {
+      send({
+        type: 'click',
+        target: internalBtn.getAttribute('data-track-target') || 'unknown',
+        url: internalBtn.getAttribute('href') || '',
+        context: location.pathname + (location.hash || ''),
+      });
+      // 계속 진행 — 아래 카드/외부 링크 처리와 겹치지 않음
+    }
+
     // 명시적 외부 채널 버튼 (data-track-target + data-track-external)
     const externalBtn = e.target.closest('[data-track-external="1"]');
     if (externalBtn) {

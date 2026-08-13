@@ -282,5 +282,325 @@ function orderedImgs(c){
   }
 })();
 </script>
+
+<script>
+/* ── 방문·클릭 통계 (index.html과 동일 로직) ── */
+(function() {
+  const STATS_URL = 'https://kyd-stats.kydxyz.workers.dev/log';
+
+  // ─── 디바이스 감지 (클라이언트 측에서 명시) ─────────────────────
+  // Worker가 User-Agent에서 감지하긴 하지만, sendBeacon은 일부 환경에서 UA가
+  // minimal로 전송될 수 있어 클라이언트에서 명시적으로 보내는 게 안전
+  function detectDevice() {
+    const ua = navigator.userAgent || '';
+    if (/iPad|Tablet|tablet/i.test(ua)) return 'tablet';
+    if (/Mobile|Android|iPhone|iPod|Phone/i.test(ua)) return 'mobile';
+    return 'desktop';
+  }
+  const DEVICE = detectDevice();
+
+  // ─── 레퍼러 분류 ────────────────────────────────────────────────
+  // 어디서 유입됐는지 자동 분류 (인스타/검색/직접 등)
+  function classifyReferrer() {
+    const ref = document.referrer || '';
+    if (!ref) return 'direct';  // 북마크, 직접 입력, 앱에서 진입
+    try {
+      const host = new URL(ref).hostname.toLowerCase();
+      // 자기 사이트 → null (referrer로 안 침)
+      if (host === location.hostname || host.endsWith('kydz.kr')) return null;
+      // 분류
+      if (host.includes('instagram') || host.includes('ig.me') || host.includes('cdninstagram')) return '인스타그램';
+      if (host.includes('facebook') || host.includes('fb.com')) return '페이스북';
+      if (host.includes('youtube') || host.includes('youtu.be')) return '유튜브';
+      if (host.includes('google')) return '구글';
+      if (host.includes('naver')) return '네이버';
+      if (host.includes('daum') || host.includes('kakao')) return '다음/카카오';
+      if (host.includes('bing')) return '빙';
+      if (host.includes('graega')) return '그래가';
+      // 기타: 호스트명 그대로
+      return host;
+    } catch { return 'direct'; }
+  }
+  const REFERRER = classifyReferrer();
+
+  // 전송 함수 (sendBeacon 우선, 실패 시 fetch fallback)
+  function send(payload) {
+    try {
+      // 모든 이벤트에 device 자동 포함 (Worker가 fallback으로 UA 봄)
+      payload.device = DEVICE;
+      // referrer는 페이지뷰에만 (클릭은 페이지뷰 context로 묶임)
+      if (payload.type === 'pageview' && REFERRER) {
+        payload.referrer = REFERRER;
+      }
+      const body = JSON.stringify(payload);
+      let beaconOk = false;
+      if (navigator.sendBeacon) {
+        // sendBeacon은 같은 핸들러에서 두 번째 호출 시 false 반환 가능 (브라우저 큐 한계)
+        const blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
+        beaconOk = navigator.sendBeacon(STATS_URL, blob);
+        if (DEBUG && !beaconOk) console.log('[kydz stats] sendBeacon returned false, falling back to fetch');
+      }
+      // sendBeacon이 없거나 false 반환 시 fetch fallback (keepalive로 navigation 후도 OK)
+      if (!beaconOk) {
+        fetch(STATS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body,
+          keepalive: true,
+          mode: 'cors',
+          credentials: 'omit',
+        }).then(r => {
+          if (DEBUG) console.log('[kydz stats] fetch fallback:', r.status);
+        }).catch(err => {
+          if (DEBUG) console.log('[kydz stats] fetch fallback failed:', err.message);
+        });
+      } else if (DEBUG) {
+        console.log('[kydz stats] sendBeacon OK');
+      }
+    } catch (e) {
+      if (DEBUG) console.log('[kydz stats] send error:', e.message);
+    }
+  }
+
+  // ─── 1) 페이지뷰 추적 ──────────────────────────────────────────────
+  // 해시 변경마다 전송 (예: #, #camps, #camps/12, #series/0/3)
+  // 중복 차단 (path 종류에 따라 dedup 강도 분리):
+  // ▶ 방문 카운팅 (/, /#stories, /#camps 등 탭/홈):
+  //   1) 메모리 1초 + 2) sessionStorage 30분 + 3) localStorage 24시간
+  // ▶ 콘텐츠 클릭 (/series/xxx, /camps/xxx, /foods/xxx, /items/xxx 등 카드):
+  //   1) 메모리 1초 + 2) sessionStorage 5분 (기존 유지) — 24시간은 X
+  //   → 자주 본 콘텐츠가 24시간 동안 안 잡히면 인기 데이터가 왜곡되므로 콘텐츠는 짧게
+  let lastPath = '';
+  let lastSent = 0;
+  const MEM_DEDUP_MS       = 1000;                // 1초 (공통)
+  const CONTENT_DEDUP_MS   = 5 * 60 * 1000;       // 콘텐츠 클릭 5분 (기존)
+  const VISIT_DEDUP_MS     = 30 * 60 * 1000;      // 방문 30분 (5분→강화)
+  const VISIT_LOCAL_DEDUP  = 24 * 60 * 60 * 1000; // 방문 24시간 (신규)
+  // 디버그 모드: URL에 ?debug=1 또는 localStorage.setItem('kydzm:debug', '1')
+  const DEBUG = (function() {
+    try {
+      if (location.search.includes('debug=1')) {
+        localStorage.setItem('kydzm:debug', '1');
+        return true;
+      }
+      return localStorage.getItem('kydzm:debug') === '1';
+    } catch { return false; }
+  })();
+  if (DEBUG) console.log('[kydz stats] debug ON, device=' + DEVICE + ', referrer=' + REFERRER);
+
+  // 콘텐츠 경로 판별: /series/xxx, /camps/xxx, /foods/xxx, /items/xxx 형태
+  // 방문 경로 (/, /#stories 등)는 false
+  function isContentPath(path) {
+    return /^\/(series|camps|foods|items)\/[^/]+/.test(path);
+  }
+
+  function shouldTrack(path) {
+    const now = Date.now();
+    const isContent = isContentPath(path);
+    const sessionDedupMs = isContent ? CONTENT_DEDUP_MS : VISIT_DEDUP_MS;
+    // 1) 메모리 중복 차단 (1초, 공통)
+    if (path === lastPath && now - lastSent < MEM_DEDUP_MS) {
+      if (DEBUG) console.log('[kydz stats] dedup 1s:', path);
+      return false;
+    }
+    // 2) sessionStorage 중복 차단 (콘텐츠 5분 / 방문 30분)
+    try {
+      const key = 'kydzm:pv:' + path;
+      const prev = sessionStorage.getItem(key);
+      if (prev && (now - parseInt(prev, 10) < sessionDedupMs)) {
+        if (DEBUG) console.log(`[kydz stats] dedup ${isContent ? '5m' : '30m'}:`, path);
+        return false;
+      }
+      sessionStorage.setItem(key, String(now));
+    } catch (e) {}
+    // 3) localStorage 24시간 dedup — 방문 경로에만 적용 (콘텐츠는 X)
+    if (!isContent) {
+      try {
+        const lkey = 'kydzm:pvd:' + path;
+        const prev = localStorage.getItem(lkey);
+        if (prev && (now - parseInt(prev, 10) < VISIT_LOCAL_DEDUP)) {
+          if (DEBUG) console.log('[kydz stats] dedup 24h:', path);
+          return false;
+        }
+        localStorage.setItem(lkey, String(now));
+      } catch (e) {}
+    }
+    lastPath = path;
+    lastSent = now;
+    return true;
+  }
+
+  // 페이지 로드 시 24시간 지난 localStorage dedup 키 자동 정리 (lazy cleanup)
+  // 방문 dedup만 localStorage 사용하므로 cleanup도 그것만
+  (function cleanupOldLocalDedup() {
+    try {
+      const now = Date.now();
+      const expired = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || !k.startsWith('kydzm:pvd:')) continue;
+        const v = localStorage.getItem(k);
+        if (v && (now - parseInt(v, 10)) > VISIT_LOCAL_DEDUP) {
+          expired.push(k);
+        }
+      }
+      expired.forEach(k => localStorage.removeItem(k));
+      if (DEBUG && expired.length) console.log('[kydz stats] cleanup expired dedup keys:', expired.length);
+    } catch (e) {}
+  })();
+
+  // PC 화면은 해시 이름이 달라(#gear/#food/#home) 같은 탭이 따로 집계된다 → 모바일 이름으로 통일
+  const PATH_ALIAS = { '/#gear': '/#items', '/#food': '/#foods', '/#home': '/' };
+  function normalizePath(p) {
+    const base = p.split('/').slice(0, 2).join('/');
+    if (PATH_ALIAS[p]) return PATH_ALIAS[p];
+    if (p.startsWith('/#gear/')) return p.replace('/#gear/', '/#items/');
+    if (p.startsWith('/#food/')) return p.replace('/#food/', '/#foods/');
+    return p;
+  }
+
+  function trackPageView() {
+    const path = normalizePath(location.pathname + (location.hash || ''));
+    if (!shouldTrack(path)) return;
+    send({
+      type: 'pageview',
+      path: path || '/',
+      title: document.title || '',
+    });
+  }
+  // 초기 로드
+  trackPageView();
+  // 해시 변경
+  window.addEventListener('hashchange', trackPageView);
+
+  // ─── 2) 외부 링크 클릭 추적 ────────────────────────────────────────
+  // 도메인별 라벨 매핑
+  function detectTarget(url) {
+    if (!url) return null;
+    const u = url.toLowerCase();
+    if (u.includes('graega.co.kr') || u.includes('graega')) return '그래가';
+    if (u.includes('booking.naver') || u.includes('naver.me') || u.includes('place.naver')) return '네이버예약';
+    if (u.includes('campit')) return '캠핏';
+    if (u.includes('thankqcamping') || u.includes('thankq')) return '땡큐캠핑';
+    if (u.includes('coupang')) return '쿠팡';
+    if (u.includes('kurly')) return '컬리';
+    if (u.includes('naver')) return '네이버';
+    if (u.includes('11st')) return '11번가';
+    if (u.includes('gmarket')) return '지마켓';
+    if (u.includes('ssg.com')) return 'SSG';
+    if (u.includes('oasis')) return '오아시스';
+    if (u.includes('ig.me') || u.includes('instagram.com')) return '인스타DM';
+    if (u.startsWith('mailto:')) return '메일';
+    if (u.startsWith('tel:')) return '전화';
+    // 외부 도메인 (자체 도메인 제외)
+    try {
+      const host = new URL(url, location.href).hostname;
+      if (host && host !== location.hostname && !host.endsWith('kydz.kr')) return host;
+    } catch {}
+    return null;
+  }
+
+  // 카드 페이지뷰 - pointerdown 단계에서 미리 발송
+  // 이유: click → 새 탭 navigation 사이 매우 짧은 시간에 send 요청이 drop될 수 있음
+  // pointerdown은 click보다 먼저, 새 탭 열리기 한참 전에 발생 → 안전
+  function sendCardPageview(card) {
+    if (!card) return;
+    const cardPath = card.getAttribute('data-track-path') || '';
+    const cardTitle = card.getAttribute('data-track-title') || '';
+    if (!cardPath) return;
+    if (DEBUG) console.log('[kydz stats] card detected:', cardPath);
+    if (!shouldTrack(cardPath)) return;
+    if (DEBUG) console.log('[kydz stats] sending pageview:', cardPath);
+    send({
+      type: 'pageview',
+      path: cardPath,
+      title: cardTitle,
+    });
+  }
+
+  // pointerdown: 마우스/터치/펜 모두 잡음, 좌클릭만
+  document.addEventListener('pointerdown', function(e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    const card = e.target.closest('[data-track-path]');
+    if (card) sendCardPageview(card);
+  }, true);  // capture 단계에서 빨리
+
+  // 클릭 이벤트 캡쳐 (외부 링크 + fallback)
+  document.addEventListener('click', function(e) {
+    // 내부 페이지 이동 버튼 (협업 문의 등) — 외부 도메인이 아니어서 자동 분류가 안 됨
+    const internalBtn = e.target.closest('[data-track-internal="1"]');
+    if (internalBtn) {
+      send({
+        type: 'click',
+        target: internalBtn.getAttribute('data-track-target') || 'unknown',
+        url: internalBtn.getAttribute('href') || '',
+        context: location.pathname + (location.hash || ''),
+      });
+      // 계속 진행 — 아래 카드/외부 링크 처리와 겹치지 않음
+    }
+
+    // 명시적 외부 채널 버튼 (data-track-target + data-track-external)
+    const externalBtn = e.target.closest('[data-track-external="1"]');
+    if (externalBtn) {
+      const explicitTarget = externalBtn.getAttribute('data-track-target') || 'unknown';
+      send({
+        type: 'click',
+        target: explicitTarget,
+        url: externalBtn.getAttribute('href') || externalBtn.tagName.toLowerCase() === 'button' ? '#button' : '',
+        context: '__external__',
+      });
+      return;
+    }
+
+    // 카드 fallback (키보드 Enter, 일부 접근성 도구 등 pointerdown 안 발생하는 케이스)
+    const card = e.target.closest('[data-track-path]');
+    let cardPath = '';
+    if (card) {
+      cardPath = card.getAttribute('data-track-path') || '';
+      // pointerdown에서 이미 발송했으면 shouldTrack 1초 dedup에서 차단됨
+      sendCardPageview(card);
+    }
+
+    // 외부 링크 클릭 추적
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href) return;
+    const target = detectTarget(href);
+    if (!target) return; // 내부 링크 또는 미분류 → 추적 안 함
+    // context: 추적 카드 path 우선, 없으면 현재 위치 (탭 hash)
+    const context = cardPath || (location.pathname + (location.hash || ''));
+    send({
+      type: 'click',
+      target,
+      url: href,
+      context,
+    });
+  }, true);
+
+  // ─── 3) 검색어 추적 (디바운스 1초) ────────────────────────────────
+  let searchTimer = null;
+  let lastSearch = { category: '', query: '' };
+  document.addEventListener('input', function(e) {
+    const t = e.target;
+    if (!t || t.tagName !== 'INPUT') return;
+    // 검색창인지 판별 (id에 'search' 포함)
+    const id = (t.id || '').toLowerCase();
+    if (!id.includes('search')) return;
+    // 카테고리 추정 (해시 기반)
+    const hash = (location.hash || '').replace(/^#/, '').split('/')[0];
+    const category = hash || 'unknown';
+    const query = t.value.trim();
+    if (!query || query.length < 2) return; // 너무 짧으면 무시
+    if (category === lastSearch.category && query === lastSearch.query) return;
+
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      lastSearch = { category, query };
+      send({ type: 'search', category, query });
+    }, 1000); // 1초 후 전송 (타이핑 멈춤 감지)
+  }, true);
+})();
+</script>
 </body>
 </html>
