@@ -45,12 +45,12 @@
       "label": "물놀이용품"
     },
     {
-      "key": "camera",
-      "label": "촬영장비"
-    },
-    {
       "key": "table",
       "label": "테이블·체어"
+    },
+    {
+      "key": "camera",
+      "label": "촬영장비"
     },
     {
       "key": "sleep",
