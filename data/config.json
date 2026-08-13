@@ -37,12 +37,12 @@
       "label": "물놀이용품"
     },
     {
-      "key": "camera",
-      "label": "촬영장비"
-    },
-    {
       "key": "tent",
       "label": "텐트"
+    },
+    {
+      "key": "camera",
+      "label": "촬영장비"
     },
     {
       "key": "tarp",
