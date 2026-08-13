@@ -2654,6 +2654,8 @@ async function init() {
     renderGrid();
     renderProducts('food-grid', foods);
     renderItemGroups('item-grid', items);
+    // 데이터 로드가 끝난 뒤에 다시 한 번 — 첫 호출 시점엔 items가 비어 있어 그려지지 않는다
+    applyHashTab();
   } catch (e) {
     console.error('초기화 실패:', e);
     document.body.innerHTML = `<div style="padding:40px;text-align:center;font-family:system-ui;">
