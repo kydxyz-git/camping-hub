@@ -33,12 +33,12 @@
   "tab5": "캠핑여지도",
   "itemCats": [
     {
-      "key": "cat8m8hc",
-      "label": "물놀이용품"
-    },
-    {
       "key": "tent",
       "label": "텐트"
+    },
+    {
+      "key": "cat8m8hc",
+      "label": "물놀이용품"
     },
     {
       "key": "camera",
