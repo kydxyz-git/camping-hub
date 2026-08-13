@@ -1244,13 +1244,6 @@ html.is-pc .banner .go{display:none}
 html.is-pc *{animation:none!important;transition:none!important}
 }
 
-html.is-pc #pc-gear-pinned:empty{display:none}
-html.is-pc #pc-gear-pinned{margin-bottom:26px}
-html.is-pc .pin-wrap{display:flex;justify-content:center;gap:clamp(10px,1.6vw,18px)}
-html.is-pc .pin-wrap .pcard{flex:0 0 calc((100% - 3 * clamp(10px,1.6vw,18px)) / 4);
-  outline:1.5px solid var(--ink);outline-offset:0;box-shadow:0 3px 14px rgba(21,24,26,.14)}
-html.is-pc .pin-wrap .pick{display:none}
-
 /* ── PC/모바일 화면 전환 ── */
 html.is-pc  #mo-root { display:none !important; }
 html.is-mo  #pc-root { display:none !important; }
@@ -3039,7 +3032,6 @@ if(document.documentElement.classList.contains('is-mo')) init();
       <span class="count" id="gear-count"></span>
     </div>
     <p class="notice top" id="gear-notice"></p>
-    <div id="pc-gear-pinned"></div>
     <div id="gear-sections"></div>
   </section>
 
@@ -3115,16 +3107,6 @@ function mainImg(c){
   return abs(c.main_img && pool.includes(c.main_img) ? c.main_img : pool[0]);
 }
 
-/* ── DM 링크로 들어온 장비를 분류 목록 위에 고정 노출 (#items/id 또는 id1,id2,id3) ── */
-function paintPinnedGear(idsRaw){
-  const box=$('#pc-gear-pinned'); if(!box) return;
-  const ids=(idsRaw||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,3);
-  const picked=ids.map(id=>(DATA.items||[]).find(x=>x.id===id && x.published!==false)).filter(Boolean);
-  if(!picked.length){ box.innerHTML=''; return; }
-  box.innerHTML='<div class="pin-wrap pc-grid prod" id="pc-pin-grid"></div>';
-  renderProducts('#pc-pin-grid',picked,null,null,'manual','items');
-}
-
 /* ── 라우팅 ── */
 // 모바일과 링크를 공유하기 위한 별칭 (#items → gear, #foods → food)
 const VIEW_ALIAS={items:'gear',foods:'food'};
@@ -3141,7 +3123,6 @@ function route(){
     on?t.setAttribute('aria-current','page'):t.removeAttribute('aria-current');
   });
   if(view==='series') paintSeries(decodeURIComponent(arg||''));
-  paintPinnedGear(view==='gear' ? decodeURIComponent(arg||'') : '');
   window.scrollTo({top:0,behavior:'auto'});
 }
 addEventListener('hashchange',route);
