@@ -49,12 +49,12 @@
       "label": "화로·난방"
     },
     {
-      "key": "camera",
-      "label": "촬영장비"
-    },
-    {
       "key": "sleep",
       "label": "침구"
+    },
+    {
+      "key": "camera",
+      "label": "촬영장비"
     },
     {
       "key": "cat8m8hc",
