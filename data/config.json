@@ -57,12 +57,12 @@
       "label": "수납·기타"
     },
     {
-      "key": "light",
-      "label": "조명·전기"
-    },
-    {
       "key": "kitchen",
       "label": "주방용품"
+    },
+    {
+      "key": "light",
+      "label": "조명·전기"
     },
     {
       "key": "camera",
