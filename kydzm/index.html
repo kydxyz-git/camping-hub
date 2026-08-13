@@ -954,6 +954,12 @@
     margin-bottom: 2px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
+  .pick-badge {
+    display:inline-block; vertical-align:middle; margin-right:5px;
+    padding:1px 5px; border-radius:3px;
+    background:#E03131; color:#fff;
+    font-size:10px; font-weight:800; letter-spacing:.02em; line-height:1.5;
+  }
   .list-item-meta {
     font-size: 12px; color: var(--muted);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -6265,7 +6271,7 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
       <a class="list-item-link" href="#${hrefPrefix}/${item._idx}">
         <div class="list-item-thumb">${thumb}</div>
         <div class="list-item-body">
-          <div class="list-item-title">${escapeHtml(item.name)}</div>
+          <div class="list-item-title">${item.pick ? '<span class="pick-badge" title="추천 표시">PICK</span>' : ''}${escapeHtml(item.name)}</div>
           <div class="list-item-meta">${src}${escapeHtml(item.desc || '')}</div>
         </div>
       </a>
