@@ -251,6 +251,18 @@
     "updated_at": "2026-08-13T02:22:52.980Z"
   },
   {
+    "name": "헬리녹스 택티컬 체어원",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/30615dbec4f8.jpg",
+    "published": true,
+    "id": "item_5c8fae4f26",
+    "created_at": "2026-08-12T01:05:07.258878+00:00",
+    "updated_at": "2026-08-12T01:05:07.258878+00:00",
+    "cat": "table"
+  },
+  {
     "name": "헬리녹스 x LMC 체어원",
     "desc": "",
     "url": "",
@@ -284,18 +296,6 @@
     "id": "item_9f08f89de4",
     "created_at": "2026-08-12T00:43:12.051091+00:00",
     "updated_at": "2026-08-12T00:43:12.051091+00:00",
-    "cat": "table"
-  },
-  {
-    "name": "헬리녹스 택티컬 체어원",
-    "desc": "",
-    "url": "",
-    "source": "",
-    "thumb": "./images/products/30615dbec4f8.jpg",
-    "published": true,
-    "id": "item_5c8fae4f26",
-    "created_at": "2026-08-12T01:05:07.258878+00:00",
-    "updated_at": "2026-08-12T01:05:07.258878+00:00",
     "cat": "table"
   },
   {
