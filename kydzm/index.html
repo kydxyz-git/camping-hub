@@ -961,6 +961,16 @@
   }
   .order-savebar-msg { flex:1; min-width:150px; font-size:12.5px; font-weight:600; color:#7A5B00; }
   .btn-ghost { background:#fff; color:#555; border:1px solid #ddd; }
+  .src-btn {
+    flex:none; margin-right:6px; padding:4px 8px; border-radius:100px; border:0; cursor:pointer;
+    font-size:10px; font-weight:800; letter-spacing:-.01em; color:#fff; white-space:nowrap;
+  }
+  .src-coupang { background:#FF4B4B; }
+  .src-naver   { background:#03C75A; }
+  .src-kurly   { background:#5D3CC7; }
+  .src-ali     { background:#FF6A00; }
+  .src-etc     { background:#5E6C4F; }
+  .src-none    { background:#fff; color:#9aa0a6; border:1px dashed #ccd0d5; }
   .link-copy-btn {
     flex:none; margin-right:6px; padding:5px 7px; border-radius:6px;
     background:#F4F5F7; border:1px solid #e2e4e8; cursor:pointer; font-size:13px; line-height:1;
@@ -6321,6 +6331,13 @@ function priceHtml(item) {
 }
 
 // 리스트 카드 한 줄
+// 판매처별 배지 색 (공개 사이트 배지와 동일 계열)
+function srcClass(item) {
+  if (!item.url) return 'src-none';
+  const m = { '쿠팡': 'src-coupang', '네이버': 'src-naver', '컬리': 'src-kurly', '알리': 'src-ali' };
+  return m[item.source] || 'src-etc';
+}
+
 function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
   opts = opts || {};
   const thumb = item.thumb
@@ -6341,6 +6358,9 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
       </a>
       ${item.id ? `<button type="button" class="link-copy-btn" data-copy-id="${item.id}"
         data-copy-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}" title="DM용 링크 복사">🔗</button>` : ''}
+      <button type="button" class="src-btn ${srcClass(item)}" data-src-idx="${item._idx}"
+        data-src-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}"
+        title="구매처 링크 등록·수정">${item.url ? escapeHtml(item.source || '등록됨') : '미등록'}</button>
       ${toggleHtml(isPub, `data-${dataAttrKey}="${item._idx}"`)}
       <a class="list-item-arrow" href="#${hrefPrefix}/${item._idx}">›</a>
     </div>
@@ -6471,6 +6491,50 @@ function renderProductList(dataArr, searchVar, opts) {
       btn.querySelector('.cat-toggle-arrow').textContent = open ? '▾' : '▸';
     };
   });
+  // 구매처 링크 등록·수정 (배지 버튼)
+  document.querySelectorAll('.src-btn').forEach(btn => {
+    btn.onclick = async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const kind = btn.dataset.srcKind;
+      const idx = +btn.dataset.srcIdx;
+      const arr = cache[kind] || [];
+      const it = arr[idx];
+      if (!it) return;
+      const cur = it.url || '';
+      const url = prompt(`${it.name}\n\n구매처 링크를 입력하세요 (비우면 등록 해제)`, cur);
+      if (url === null) return;                    // 취소
+      const v = url.trim();
+      if (v && !/^https?:\/\//i.test(v)) { showToast('http:// 또는 https://로 시작해야 해요', 'error'); return; }
+      if (v === cur) return;
+
+      // 판매처 이름은 주소에서 자동 판별 (수동 지정값이 있으면 유지)
+      const detect = (u) => {
+        const s = u.toLowerCase();
+        if (s.includes('coupang')) return '쿠팡';
+        if (s.includes('naver')) return '네이버';
+        if (s.includes('kurly')) return '컬리';
+        if (s.includes('aliexpress') || s.includes('ali')) return '알리';
+        return '기타';
+      };
+      const next = arr.map((x, i) => i === idx
+        ? (v ? { ...x, url: v, source: detect(v) } : { ...x, url: '', source: '' })
+        : x);
+
+      const label = kind === 'foods' ? '음식' : '장비';
+      try {
+        await ghCommitMultipleFiles(
+          [{ path: `data/${kind}.json`, content: JSON.stringify(next, null, 2) + '\n', encoding: 'utf-8' }],
+          `update(admin): ${label} '${it.name}' 구매처 링크 ${v ? '등록' : '해제'}`
+        );
+        cache[kind] = next;
+        showToast(v ? '구매처 링크 저장됨' : '구매처 링크 해제됨', 'success');
+        if (kind === 'foods') renderFoodList(); else renderItemList();
+      } catch (err) {
+        showToast('저장 실패: ' + err.message, 'error', 4000);
+      }
+    };
+  });
+
   // DM용 개별 링크 복사
   document.querySelectorAll('.link-copy-btn').forEach(btn => {
     btn.onclick = async (e) => {
