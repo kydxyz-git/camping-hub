@@ -405,6 +405,19 @@
     "cat": "fire"
   },
   {
+    "id": "item_bf45bb2b31",
+    "name": "NIP 플랫버너(IGT)",
+    "cat": "kitchen",
+    "desc": "IGT 프레임에 그대로 들어가는 평평한 버너",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/180e2abe0968.jpg",
+    "currency": "KRW",
+    "published": true,
+    "created_at": "2026-08-13T13:20:57.937Z",
+    "updated_at": "2026-08-13T13:20:57.937Z"
+  },
+  {
     "id": "item_7daa20fbb6",
     "name": "N.I.P 멀티 컴팩트 스탠드 M",
     "cat": "camp",
