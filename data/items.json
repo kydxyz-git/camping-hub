@@ -561,6 +561,19 @@
     "pick": true
   },
   {
+    "id": "item_239d48d277",
+    "name": "N.I.P 팩가방",
+    "cat": "camp",
+    "desc": "팩·해머·소품을 나눠 담는 수납 가방",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/15b1700514d1.jpg",
+    "currency": "KRW",
+    "published": true,
+    "created_at": "2026-08-13T14:54:43.189Z",
+    "updated_at": "2026-08-13T14:54:43.189Z"
+  },
+  {
     "id": "item_b85f78de84",
     "name": "웨버 라이터 큐브",
     "cat": "supply",
