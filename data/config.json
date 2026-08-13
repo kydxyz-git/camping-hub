@@ -41,12 +41,12 @@
       "label": "물놀이용품"
     },
     {
-      "key": "camera",
-      "label": "촬영장비"
-    },
-    {
       "key": "tarp",
       "label": "타프"
+    },
+    {
+      "key": "camera",
+      "label": "촬영장비"
     },
     {
       "key": "table",
