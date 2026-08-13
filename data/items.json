@@ -215,18 +215,6 @@
     "updated_at": "2026-08-13T02:05:00.407Z"
   },
   {
-    "name": "몽벨 멀티 폴딩 테이블",
-    "desc": "",
-    "url": "",
-    "source": "",
-    "thumb": "./images/products/428e91af67e3.jpg",
-    "published": true,
-    "id": "item_7bd1dc6926",
-    "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-12T00:43:12.051091+00:00",
-    "cat": "table"
-  },
-  {
     "name": "부앤오프 4.5 TABLE",
     "desc": "",
     "url": "",
@@ -234,6 +222,18 @@
     "thumb": "./images/products/e893fb6762c5.jpg",
     "published": true,
     "id": "item_2405bff7e5",
+    "created_at": "2026-08-12T00:43:12.051091+00:00",
+    "updated_at": "2026-08-12T00:43:12.051091+00:00",
+    "cat": "table"
+  },
+  {
+    "name": "몽벨 멀티 폴딩 테이블",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/428e91af67e3.jpg",
+    "published": true,
+    "id": "item_7bd1dc6926",
     "created_at": "2026-08-12T00:43:12.051091+00:00",
     "updated_at": "2026-08-12T00:43:12.051091+00:00",
     "cat": "table"
