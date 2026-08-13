@@ -65,12 +65,12 @@
       "label": "수납·기타"
     },
     {
-      "key": "camera",
-      "label": "촬영장비"
-    },
-    {
       "key": "supply",
       "label": "소모품"
+    },
+    {
+      "key": "camera",
+      "label": "촬영장비"
     },
     {
       "key": "cat8m8hc",
