@@ -955,10 +955,8 @@
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .pick-badge {
-    display:inline-block; vertical-align:middle; margin-right:5px;
-    padding:1px 5px; border-radius:3px;
-    background:#E03131; color:#fff;
-    font-size:10px; font-weight:800; letter-spacing:.02em; line-height:1.5;
+    display:inline-block; vertical-align:baseline; margin-right:4px;
+    color:#F2A900; font-size:14px; line-height:1;
   }
   .list-item-meta {
     font-size: 12px; color: var(--muted);
@@ -6271,7 +6269,7 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
       <a class="list-item-link" href="#${hrefPrefix}/${item._idx}">
         <div class="list-item-thumb">${thumb}</div>
         <div class="list-item-body">
-          <div class="list-item-title">${item.pick ? '<span class="pick-badge" title="추천 표시">PICK</span>' : ''}${escapeHtml(item.name)}</div>
+          <div class="list-item-title">${item.pick ? '<span class="pick-badge" title="추천 표시">★</span>' : ''}${escapeHtml(item.name)}</div>
           <div class="list-item-meta">${src}${escapeHtml(item.desc || '')}</div>
         </div>
       </a>
@@ -6429,9 +6427,17 @@ function renderProductList(dataArr, searchVar, opts) {
       const persistOrder = () => {
         const newOrder = Array.from(listEl.querySelectorAll('.list-item[data-idx]'))
           .map(el => +el.dataset.idx);
-        if (newOrder.length !== dataArr.length) return;   // 일부만 보이면 저장하지 않음
-        const originalOrder = dataArr.map((_, i) => i);
-        const changed = newOrder.some((v, i) => v !== originalOrder[i]);
+        // 무결성 검증: 0..n-1 을 중복 없이 정확히 한 번씩 담고 있어야 저장한다.
+        // (하나라도 어긋나면 목록 전체가 뒤섞이므로 저장하지 않고 되돌린다)
+        const valid = newOrder.length === dataArr.length
+          && new Set(newOrder).size === dataArr.length
+          && newOrder.every(v => Number.isInteger(v) && v >= 0 && v < dataArr.length);
+        if (!valid) {
+          showToast('순서를 읽지 못해 저장하지 않았습니다. 새로고침 후 다시 시도해주세요', 'error');
+          if (opts.type === 'foods') renderFoodList(); else renderItemList();
+          return;
+        }
+        const changed = newOrder.some((v, i) => v !== i);
         if (!changed) return;
         saveProductOrder(opts.type, newOrder);
       };
