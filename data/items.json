@@ -233,6 +233,18 @@
     "updated_at": "2026-08-13T02:23:11.425Z"
   },
   {
+    "name": "팀버리지 캠핑 롤링 테이블",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/4e60da86a65a.jpg",
+    "published": true,
+    "id": "item_3bffc91077",
+    "created_at": "2026-08-12T00:43:12.051091+00:00",
+    "updated_at": "2026-08-12T00:43:12.051091+00:00",
+    "cat": "table"
+  },
+  {
     "id": "item_7bd1dc6926",
     "name": "몽벨 멀티 폴딩 테이블",
     "cat": "table",
@@ -269,16 +281,34 @@
     "updated_at": "2026-08-13T02:29:19.857Z"
   },
   {
+    "name": "텐트마크디자인 워크테이블 LOW",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/d00ca7329636.jpg",
+    "published": true,
+    "id": "item_bb89bda383",
+    "created_at": "2026-08-12T00:43:12.051091+00:00",
+    "updated_at": "2026-08-12T00:43:12.051091+00:00",
+    "cat": "table"
+  },
+  {
+    "id": "item_5c8fae4f26",
     "name": "헬리녹스 택티컬 체어원",
+    "cat": "table",
+    "video": "",
+    "pick": true,
     "desc": "",
     "url": "",
     "source": "",
     "thumb": "./images/products/30615dbec4f8.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
     "published": true,
-    "id": "item_5c8fae4f26",
     "created_at": "2026-08-12T01:05:07.258878+00:00",
-    "updated_at": "2026-08-12T01:05:07.258878+00:00",
-    "cat": "table"
+    "updated_at": "2026-08-13T02:29:50.390Z"
   },
   {
     "name": "헬리녹스 x LMC 체어원",
@@ -293,42 +323,6 @@
     "cat": "table"
   },
   {
-    "name": "카즈미 다운힐체어",
-    "desc": "",
-    "url": "",
-    "source": "",
-    "thumb": "./images/products/b66bcb69b848.jpg",
-    "published": true,
-    "id": "item_b2011a57b1",
-    "created_at": "2026-08-12T01:05:07.258878+00:00",
-    "updated_at": "2026-08-12T01:05:07.258878+00:00",
-    "cat": "table"
-  },
-  {
-    "name": "팀버리지 캠핑 롤링 테이블",
-    "desc": "",
-    "url": "",
-    "source": "",
-    "thumb": "./images/products/4e60da86a65a.jpg",
-    "published": true,
-    "id": "item_3bffc91077",
-    "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-12T00:43:12.051091+00:00",
-    "cat": "table"
-  },
-  {
-    "name": "텐트마크디자인 워크테이블 LOW",
-    "desc": "",
-    "url": "",
-    "source": "",
-    "thumb": "./images/products/d00ca7329636.jpg",
-    "published": true,
-    "id": "item_bb89bda383",
-    "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-12T00:43:12.051091+00:00",
-    "cat": "table"
-  },
-  {
     "name": "헬리녹스 카페체어",
     "desc": "",
     "url": "",
@@ -336,6 +330,18 @@
     "thumb": "./images/products/87ae7ec0bc40.jpg",
     "published": true,
     "id": "item_90f00d1c73",
+    "created_at": "2026-08-12T01:05:07.258878+00:00",
+    "updated_at": "2026-08-12T01:05:07.258878+00:00",
+    "cat": "table"
+  },
+  {
+    "name": "카즈미 다운힐체어",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/b66bcb69b848.jpg",
+    "published": true,
+    "id": "item_b2011a57b1",
     "created_at": "2026-08-12T01:05:07.258878+00:00",
     "updated_at": "2026-08-12T01:05:07.258878+00:00",
     "cat": "table"
