@@ -954,6 +954,13 @@
     margin-bottom: 2px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
+  .order-savebar {
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    margin:8px 0 4px; padding:10px 12px; border-radius:8px;
+    background:#FFF4D6; border:1px solid #F3D98B;
+  }
+  .order-savebar-msg { flex:1; min-width:150px; font-size:12.5px; font-weight:600; color:#7A5B00; }
+  .btn-ghost { background:#fff; color:#555; border:1px solid #ddd; }
   .pick-badge {
     display:inline-block; vertical-align:baseline; margin-right:4px;
     color:#F2A900; font-size:14px; line-height:1;
@@ -1852,15 +1859,29 @@ const cache = {
   loadedAt: null,
 };
 
+// 데이터 출처
+//  · 토큰이 있으면 GitHub 저장소(원본)에서 직접 읽는다. 저장 즉시 최신이라
+//    배포(1~5분)를 기다릴 필요가 없고, 옛 데이터를 덮어쓰는 사고도 없다.
+//  · 토큰이 없으면 배포된 사이트에서 읽는다(기존 방식).
+async function fetchDataFile(name) {
+  if (localStorage.getItem(STORAGE_KEYS.token)) {
+    try {
+      const r = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/contents/data/${name}.json?ref=${GH_BRANCH}&t=${Date.now()}`);
+      const txt = decodeURIComponent(escape(atob(r.content.replace(/\n/g, ''))));
+      return JSON.parse(txt);
+    } catch (e) {
+      console.warn(`[data] GitHub 직접 읽기 실패(${name}), 사이트에서 재시도`, e);
+    }
+  }
+  const r2 = await fetch(`../data/${name}.json?v=${Date.now()}`);
+  if (!r2.ok) throw new Error(`${name}.json: ${r2.status}`);
+  return r2.json();
+}
+
 async function loadAllData(force = false) {
   if (cache.loaded && !force) return cache;
   const files = ['config', 'series', 'foods', 'items', 'camps'];
-  const results = await Promise.all(
-    files.map(name => fetch(`../data/${name}.json?v=${Date.now()}`).then(r => {
-      if (!r.ok) throw new Error(`${name}.json: ${r.status}`);
-      return r.json();
-    }))
-  );
+  const results = await Promise.all(files.map(fetchDataFile));
   cache.config = results[0];
   cache.series = results[1];
   cache.foods  = results[2];
@@ -5217,8 +5238,10 @@ async function saveProductOrder(type, newOrder) {
   document.body.appendChild(progress);
   try {
     const cacheKey = type;
-    const origArr = cache[cacheKey];
-    const reordered = newOrder.map(i => origArr[i]);
+    // newOrder 가 인덱스 배열이면 원본에서 재배열, 이미 정렬된 배열이면 그대로 사용
+    const reordered = (newOrder.length && typeof newOrder[0] === 'number')
+      ? newOrder.map(i => cache[cacheKey][i])
+      : newOrder;
     const typeLabel = type === 'foods' ? '음식' : '장비';
     const dataPath = `data/${cacheKey}.json`;
     await ghCommitMultipleFiles([
@@ -5228,11 +5251,12 @@ async function saveProductOrder(type, newOrder) {
     cache.loadedAt = Date.now();
     progress.remove();
     showToast('순서 저장 완료', 'success');
+    return true;
   } catch (e) {
     console.error(e);
     progress.remove();
     showToast('순서 저장 실패: ' + e.message, 'error', 4000);
-    if (type === 'foods') renderFoodList(); else renderItemList();
+    return false;
   }
 }
 
@@ -5930,6 +5954,9 @@ const SORT_MODES = [
 ];
 
 // 음식/장비용 정렬 모드 (시리즈와 다름: EP 개념 없음)
+// 저장하지 않은 순서 변경이 있는지 (foods/items 별)
+let _pendingOrder = { foods: false, items: false };
+
 const PRODUCT_SORT_MODES = [
   { value: 'random', label: '🎲 랜덤',   desc: '✨ 최근 7일 신규 상위 + 셔플' },
   { value: 'latest', label: '🔝 최신순', desc: 'created_at 내림차순' },
@@ -6376,7 +6403,12 @@ function renderProductList(dataArr, searchVar, opts) {
       </select>
     </div>
     ${currentSort === 'random' ? `<div class="series-sort-note">🎲 메인 사이트에서는 매 페이지 로드마다 다른 순서로 보입니다 (admin은 입력 순서)<br>✨ 최근 7일 이내 신규는 항상 상위에 노출됩니다</div>` : ''}
-    ${currentSort === 'manual' && !isSearchActive ? `<div class="series-sort-note">📝 ⋮⋮ 핸들을 드래그해서 순서를 변경하면 자동 저장됩니다</div>` : ''}
+    ${currentSort === 'manual' && !isSearchActive && !_pendingOrder[opts.type] ? `<div class="series-sort-note">📝 ⋮⋮ 핸들을 드래그해서 순서를 바꾼 뒤 [순서 저장]을 누르세요</div>` : ''}
+    ${_pendingOrder[opts.type] ? `<div class="order-savebar">
+        <span class="order-savebar-msg">저장하지 않은 순서 변경이 있습니다</span>
+        <button type="button" class="btn btn-sm" id="order-save-btn">순서 저장</button>
+        <button type="button" class="btn btn-sm btn-ghost" id="order-reset-btn">되돌리기</button>
+      </div>` : ''}
     ${currentSort === 'manual' && isSearchActive ? `<div class="series-sort-note" style="background:#fff3cd;border-color:#ffe69c;color:#856404;">⚠️ 검색 중에는 드래그 정렬이 비활성화됩니다 (검색을 비우세요)</div>` : ''}
     <div class="list" id="prod-list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>'
@@ -6398,6 +6430,20 @@ function renderProductList(dataArr, searchVar, opts) {
       btn.querySelector('.cat-toggle-arrow').textContent = open ? '▾' : '▸';
     };
   });
+  // 순서 저장 / 되돌리기
+  const saveBtn = document.getElementById('order-save-btn');
+  if (saveBtn) saveBtn.onclick = async () => {
+    const ok = await saveProductOrder(opts.type, cache[opts.type]);
+    if (ok) { _pendingOrder[opts.type] = false; opts.rerender(); }
+  };
+  const resetBtn = document.getElementById('order-reset-btn');
+  if (resetBtn) resetBtn.onclick = async () => {
+    if (!confirm('저장하지 않은 순서 변경을 버리고 원래대로 되돌릴까요?')) return;
+    _pendingOrder[opts.type] = false;
+    await loadAllData(true);
+    opts.rerender();
+  };
+
   // 정렬 모드 변경
   const sortSel = document.getElementById('prod-sort-select');
   if (sortSel) {
@@ -6424,22 +6470,24 @@ function renderProductList(dataArr, searchVar, opts) {
     const listEl = document.getElementById('prod-list');
     if (listEl) {
       // 순서 저장은 항상 목록 전체(분류 순 → 분류 내 순서) 기준으로 계산한다
-      const persistOrder = () => {
+      // 드래그할 때마다 커밋하지 않는다. 화면 순서만 메모리에 반영하고,
+      // 사용자가 '순서 저장'을 누를 때 한 번만 커밋한다.
+      const applyOrderLocally = () => {
         const newOrder = Array.from(listEl.querySelectorAll('.list-item[data-idx]'))
           .map(el => +el.dataset.idx);
-        // 무결성 검증: 0..n-1 을 중복 없이 정확히 한 번씩 담고 있어야 저장한다.
-        // (하나라도 어긋나면 목록 전체가 뒤섞이므로 저장하지 않고 되돌린다)
+        // 무결성 검증: 0..n-1 을 중복 없이 정확히 한 번씩 담고 있어야 한다
         const valid = newOrder.length === dataArr.length
           && new Set(newOrder).size === dataArr.length
           && newOrder.every(v => Number.isInteger(v) && v >= 0 && v < dataArr.length);
         if (!valid) {
-          showToast('순서를 읽지 못해 저장하지 않았습니다. 새로고침 후 다시 시도해주세요', 'error');
+          showToast('순서를 읽지 못했습니다. 새로고침 후 다시 시도해주세요', 'error');
           if (opts.type === 'foods') renderFoodList(); else renderItemList();
           return;
         }
-        const changed = newOrder.some((v, i) => v !== i);
-        if (!changed) return;
-        saveProductOrder(opts.type, newOrder);
+        if (!newOrder.some((v, i) => v !== i)) return;
+        cache[opts.type] = newOrder.map(i => dataArr[i]);
+        _pendingOrder[opts.type] = true;
+        if (opts.type === 'foods') renderFoodList(); else renderItemList();
       };
       const sortableOpts = (groupName) => ({
         handle: '.drag-handle--product',
@@ -6452,7 +6500,7 @@ function renderProductList(dataArr, searchVar, opts) {
         dragClass: 'sortable-drag',
         // 분류별로 group 이름을 달리해 분류를 넘나드는 이동을 막는다
         group: groupName ? { name: groupName, pull: false, put: false } : undefined,
-        onEnd: persistOrder,
+        onEnd: applyOrderLocally,
       });
       const catBodies = listEl.querySelectorAll('.cat-block .cat-body');
       if (catBodies.length) {
