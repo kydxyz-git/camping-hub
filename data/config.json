@@ -57,12 +57,12 @@
       "label": "주방용품"
     },
     {
-      "key": "camp",
-      "label": "수납·기타"
-    },
-    {
       "key": "light",
       "label": "조명·전기"
+    },
+    {
+      "key": "camp",
+      "label": "수납·기타"
     },
     {
       "key": "camera",
