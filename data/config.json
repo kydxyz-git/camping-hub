@@ -45,12 +45,12 @@
       "label": "테이블·체어"
     },
     {
-      "key": "camera",
-      "label": "촬영장비"
-    },
-    {
       "key": "fire",
       "label": "화로·난방"
+    },
+    {
+      "key": "camera",
+      "label": "촬영장비"
     },
     {
       "key": "cat8m8hc",
