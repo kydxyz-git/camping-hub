@@ -6312,7 +6312,7 @@ function renderProductDetail(item, opts) {
 // 리스트 화면 (음식/장비 공통)
 /* 장비 목록 — 세부 분류별 접이식 그룹 */
 let _openItemCats = null;   // null이면 첫 그룹만 열림
-function groupedItemsHtml(arr, opts) {
+function groupedItemsHtml(arr, opts, manual) {
   const cats = getItemCats();
   const keys = cats.map(c => c.key);
   if (_openItemCats === null) {
@@ -6333,7 +6333,7 @@ function groupedItemsHtml(arr, opts) {
         <span class="cat-toggle-arrow">${open ? '▾' : '▸'}</span>
       </button>
       <div class="cat-body" style="${open ? '' : 'display:none;'}">
-        ${rows.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: false })).join('')}
+        ${rows.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: !!manual })).join('')}
       </div>
     </div>`;
   }).join('');
@@ -6376,8 +6376,8 @@ function renderProductList(dataArr, searchVar, opts) {
     ${currentSort === 'manual' && isSearchActive ? `<div class="series-sort-note" style="background:#fff3cd;border-color:#ffe69c;color:#856404;">⚠️ 검색 중에는 드래그 정렬이 비활성화됩니다 (검색을 비우세요)</div>` : ''}
     <div class="list" id="prod-list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>'
-        : (opts.type === 'items' && !isSearchActive && !isManual)
-          ? groupedItemsHtml(arr, opts)
+        : (opts.type === 'items' && !isSearchActive)
+          ? groupedItemsHtml(arr, opts, isManual)
           : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: isManual && !isSearchActive })).join('')}
     </div>
   `;
@@ -6419,7 +6419,17 @@ function renderProductList(dataArr, searchVar, opts) {
   if (isManual && !isSearchActive && typeof Sortable !== 'undefined') {
     const listEl = document.getElementById('prod-list');
     if (listEl) {
-      Sortable.create(listEl, {
+      // 순서 저장은 항상 목록 전체(분류 순 → 분류 내 순서) 기준으로 계산한다
+      const persistOrder = () => {
+        const newOrder = Array.from(listEl.querySelectorAll('.list-item[data-idx]'))
+          .map(el => +el.dataset.idx);
+        if (newOrder.length !== dataArr.length) return;   // 일부만 보이면 저장하지 않음
+        const originalOrder = dataArr.map((_, i) => i);
+        const changed = newOrder.some((v, i) => v !== originalOrder[i]);
+        if (!changed) return;
+        saveProductOrder(opts.type, newOrder);
+      };
+      const sortableOpts = (groupName) => ({
         handle: '.drag-handle--product',
         animation: 180,
         delay: 200,
@@ -6428,15 +6438,16 @@ function renderProductList(dataArr, searchVar, opts) {
         preventOnFilter: false,
         ghostClass: 'sortable-ghost',
         dragClass: 'sortable-drag',
-        onEnd: () => {
-          const newOrder = Array.from(listEl.querySelectorAll('.list-item[data-idx]'))
-            .map(el => +el.dataset.idx);
-          const originalOrder = dataArr.map((_, i) => i);
-          const changed = newOrder.some((v, i) => v !== originalOrder[i]);
-          if (!changed) return;
-          saveProductOrder(opts.type, newOrder);
-        }
+        // 분류별로 group 이름을 달리해 분류를 넘나드는 이동을 막는다
+        group: groupName ? { name: groupName, pull: false, put: false } : undefined,
+        onEnd: persistOrder,
       });
+      const catBodies = listEl.querySelectorAll('.cat-block .cat-body');
+      if (catBodies.length) {
+        catBodies.forEach((body, i) => Sortable.create(body, sortableOpts('itemcat-' + i)));
+      } else {
+        Sortable.create(listEl, sortableOpts(null));
+      }
     }
   }
   const s = document.getElementById('prod-search');
