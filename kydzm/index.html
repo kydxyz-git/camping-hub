@@ -4845,8 +4845,20 @@ async function submitCampForm() {
       if (im.pos && im.pos !== 'center' && finalImgs[i]) _pos[finalImgs[i]] = im.pos;
     });
     if (Object.keys(_pos).length) campObj.img_pos = _pos;
-    // 좌표 (값 있을 때만 포함 — null/undefined는 JSON에서 깔끔하게 생략)    if (typeof _campForm.lat === 'number' && !isNaN(_campForm.lat)) campObj.lat = _campForm.lat;
+    // 좌표 (값 있을 때만 포함 — null/undefined는 JSON에서 깔끔하게 생략)
+    if (typeof _campForm.lat === 'number' && !isNaN(_campForm.lat)) campObj.lat = _campForm.lat;
     if (typeof _campForm.lng === 'number' && !isNaN(_campForm.lng)) campObj.lng = _campForm.lng;
+    // 입력창에만 적어두고 [+ 추가]를 누르지 않은 콘텐츠도 저장에 포함한다
+    // (누르지 않으면 조용히 사라져서, 등록했는데 반영이 안 된 것처럼 보였음)
+    try {
+      const _pv = ($('cf-video-input')?.value || '').trim();
+      if (_pv && /^https?:\/\//i.test(_pv)) {
+        const _pt = ($('cf-video-title')?.value || '').trim();
+        const _dup = _campForm.videos.some(v => (typeof v === 'string' ? v : v.url) === _pv);
+        if (!_dup) _campForm.videos.push({ url: _pv, title: _pt });
+      }
+    } catch (e) { /* 폼이 없는 경우 무시 */ }
+
     // 개별 영상 URL (비어있지 않을 때만 포함)
     if (Array.isArray(_campForm.videos) && _campForm.videos.length > 0) {
       campObj.videos = _campForm.videos.slice();
