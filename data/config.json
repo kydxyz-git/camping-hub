@@ -53,12 +53,12 @@
       "label": "물놀이용품"
     },
     {
-      "key": "sleep",
-      "label": "침구"
-    },
-    {
       "key": "fire",
       "label": "화로·난방"
+    },
+    {
+      "key": "sleep",
+      "label": "침구"
     },
     {
       "key": "kitchen",
