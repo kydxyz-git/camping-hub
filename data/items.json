@@ -156,6 +156,18 @@
     "updated_at": "2026-08-13T01:20:07.048Z"
   },
   {
+    "name": "N.I.P 슬라이드폴대 가방",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/b1ee6a53aef5.jpg",
+    "published": true,
+    "id": "item_f94eb6d3e5",
+    "created_at": "2026-08-12T01:26:25.809920+00:00",
+    "updated_at": "2026-08-12T01:26:25.809920+00:00",
+    "cat": "tarp"
+  },
+  {
     "name": "카마프 카라비너D형",
     "desc": "",
     "url": "",
@@ -177,18 +189,6 @@
     "id": "item_6e0210eba9",
     "created_at": "2026-08-12T01:23:11.436853+00:00",
     "updated_at": "2026-08-12T01:23:11.436853+00:00",
-    "cat": "tarp"
-  },
-  {
-    "name": "N.I.P 슬라이드폴대 가방",
-    "desc": "",
-    "url": "",
-    "source": "",
-    "thumb": "./images/products/b1ee6a53aef5.jpg",
-    "published": true,
-    "id": "item_f94eb6d3e5",
-    "created_at": "2026-08-12T01:26:25.809920+00:00",
-    "updated_at": "2026-08-12T01:26:25.809920+00:00",
     "cat": "tarp"
   },
   {
