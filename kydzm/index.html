@@ -961,6 +961,12 @@
   }
   .order-savebar-msg { flex:1; min-width:150px; font-size:12.5px; font-weight:600; color:#7A5B00; }
   .btn-ghost { background:#fff; color:#555; border:1px solid #ddd; }
+  .pick-btn {
+    flex:none; margin-right:5px; padding:3px 6px; border:0; background:none; cursor:pointer;
+    font-size:16px; line-height:1; color:#d8dade; transition:.12s;
+  }
+  .pick-btn.on { color:#F2A900; }
+  .pick-btn:hover { transform:scale(1.15); }
   .src-btn {
     flex:none; margin-right:6px; padding:4px 8px; border-radius:100px; border:0; cursor:pointer;
     font-size:10px; font-weight:800; letter-spacing:-.01em; color:#fff; white-space:nowrap;
@@ -6352,10 +6358,13 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
       <a class="list-item-link" href="#${hrefPrefix}/${item._idx}">
         <div class="list-item-thumb">${thumb}</div>
         <div class="list-item-body">
-          <div class="list-item-title">${item.pick ? '<span class="pick-badge" title="추천 표시">★</span>' : ''}${escapeHtml(item.name)}</div>
+          <div class="list-item-title">${escapeHtml(item.name)}</div>
           <div class="list-item-meta">${src}${escapeHtml(item.desc || '')}</div>
         </div>
       </a>
+      <button type="button" class="pick-btn ${item.pick ? 'on' : ''}" data-pick-idx="${item._idx}"
+        data-pick-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}"
+        title="${item.pick ? '추천 해제' : '추천으로 표시'}">★</button>
       ${item.id ? `<button type="button" class="link-copy-btn" data-copy-id="${item.id}"
         data-copy-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}" title="DM용 링크 복사">🔗</button>` : ''}
       <button type="button" class="src-btn ${srcClass(item)}" data-src-idx="${item._idx}"
@@ -6491,6 +6500,36 @@ function renderProductList(dataArr, searchVar, opts) {
       btn.querySelector('.cat-toggle-arrow').textContent = open ? '▾' : '▸';
     };
   });
+  // 추천(PICK) 토글
+  document.querySelectorAll('.pick-btn').forEach(btn => {
+    btn.onclick = async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      if (btn.dataset.busy) return;
+      btn.dataset.busy = '1';
+      const kind = btn.dataset.pickKind;
+      const idx = +btn.dataset.pickIdx;
+      const arr = cache[kind] || [];
+      const it = arr[idx];
+      if (!it) { delete btn.dataset.busy; return; }
+      const next = arr.map((x, i) => i === idx ? { ...x, pick: !x.pick } : x);
+      const on = !it.pick;
+      btn.classList.toggle('on', on);   // 먼저 화면에 반영 (응답 기다리는 동안)
+      const label = kind === 'foods' ? '음식' : '장비';
+      try {
+        await ghCommitMultipleFiles(
+          [{ path: `data/${kind}.json`, content: JSON.stringify(next, null, 2) + '\n', encoding: 'utf-8' }],
+          `update(admin): ${label} '${it.name}' 추천 ${on ? '설정' : '해제'}`
+        );
+        cache[kind] = next;
+        showToast(on ? '★ 추천으로 표시됨' : '추천 해제됨', 'success', 1500);
+        if (kind === 'foods') renderFoodList(); else renderItemList();
+      } catch (err) {
+        btn.classList.toggle('on', !on);   // 실패 시 되돌림
+        showToast('저장 실패: ' + err.message, 'error', 4000);
+      } finally { delete btn.dataset.busy; }
+    };
+  });
+
   // 구매처 링크 등록·수정 (배지 버튼)
   document.querySelectorAll('.src-btn').forEach(btn => {
     btn.onclick = async (e) => {
