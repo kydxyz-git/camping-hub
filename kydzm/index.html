@@ -3873,6 +3873,8 @@ function renderCampList() {
                 <div class="list-item-meta-row">${metaParts.join('')}</div>
               </div>
             </a>
+            <button type="button" class="pick-btn ${camp.pick ? 'on' : ''}" data-cpick-idx="${camp._idx}"
+              title="${camp.pick ? '추천 해제' : '추천으로 표시'}">★</button>
             ${toggleHtml(isPub, `data-camp-idx="${camp._idx}"`)}
             <a class="list-item-arrow" href="#camps/${camp._idx}">›</a>
           </div>
@@ -3889,6 +3891,33 @@ function renderCampList() {
       renderCampList();
     };
   }
+  // 추천(PICK) 토글
+  c.querySelectorAll('.pick-btn[data-cpick-idx]').forEach(btn => {
+    btn.onclick = async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      if (btn.dataset.busy) return;
+      btn.dataset.busy = '1';
+      const idx = +btn.dataset.cpickIdx;
+      const camp = (cache.camps || [])[idx];
+      if (!camp) { delete btn.dataset.busy; return; }
+      const on = !camp.pick;
+      const next = cache.camps.map((x, i) => i === idx ? { ...x, pick: on } : x);
+      btn.classList.toggle('on', on);
+      try {
+        await ghCommitMultipleFiles(
+          [{ path: 'data/camps.json', content: JSON.stringify(next, null, 2) + '\n', encoding: 'utf-8' }],
+          `update(admin): 캠핑장 '${camp.name}' 추천 ${on ? '설정' : '해제'}`
+        );
+        cache.camps = next;
+        showToast(on ? '★ 추천으로 표시됨' : '추천 해제됨', 'success', 1500);
+        renderCampList();
+      } catch (err) {
+        btn.classList.toggle('on', !on);
+        showToast('저장 실패: ' + err.message, 'error', 4000);
+      } finally { delete btn.dataset.busy; }
+    };
+  });
+
   // 토글 핸들러
   c.querySelectorAll('[data-camp-idx]').forEach(toggleEl => {
     const cb = toggleEl.querySelector('input');
