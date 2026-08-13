@@ -61,12 +61,12 @@
       "label": "조명·전기"
     },
     {
-      "key": "camera",
-      "label": "촬영장비"
-    },
-    {
       "key": "kitchen",
       "label": "주방용품"
+    },
+    {
+      "key": "camera",
+      "label": "촬영장비"
     },
     {
       "key": "cat8m8hc",
