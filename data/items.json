@@ -150,7 +150,7 @@
     "published": true,
     "id": "item_bbc507958e",
     "created_at": "2026-08-12T00:30:37.151846+00:00",
-    "updated_at": "2026-08-13T14:17:24.715Z",
+    "updated_at": "2026-08-13T14:10:48.777Z",
     "cat": "tarp"
   },
   {
@@ -444,14 +444,19 @@
     "id": "item_1427db326c",
     "name": "코베아 캠프1",
     "cat": "kitchen",
+    "video": "",
+    "pick": true,
     "desc": "바람에 강한 원형 버너, 접이식 고아라 지지대",
     "url": "",
     "source": "",
     "thumb": "./images/products/685f4f23b8ec.jpg",
     "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
     "published": true,
     "created_at": "2026-08-13T13:43:33.980Z",
-    "updated_at": "2026-08-13T14:10:48.777Z"
+    "updated_at": "2026-08-13T14:20:05.792Z"
   },
   {
     "id": "item_fedcb5008b",
@@ -577,7 +582,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T13:04:45.644530+00:00",
-    "updated_at": "2026-08-13T14:17:24.715Z"
+    "updated_at": "2026-08-13T14:10:48.777Z"
   },
   {
     "id": "item_e9c79cd70d",
