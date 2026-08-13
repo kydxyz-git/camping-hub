@@ -97,9 +97,9 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .row{display:flex;gap:14px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
 .row dt{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--stone);width:56px;flex:none}
 .row dd{font-size:13.5px;font-weight:500;line-height:1.6}
-  padding:16px 18px;transition:.16s}
 .cta{display:block;text-align:center;background:var(--ink);color:#fff;font-weight:700;font-size:15px;padding:16px;border-radius:999px;transition:.18s}
 .cta:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(21,24,26,.18)}
+.cta-arrow{margin-left:5px;opacity:.65;font-weight:800}
 .cta.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);margin-top:10px;font-weight:600;font-size:14px}
 .note{margin-top:12px;font-size:12px;color:var(--stone);text-align:center;line-height:1.6}
 footer{border-top:1px solid var(--line);padding:30px 0;margin-top:20px;font-size:12.5px;color:var(--stone)}
@@ -185,7 +185,10 @@ function orderedImgs(c){
       linked.push({url:ep.url, title:(ep.title||'').trim()||num, sub:num, thumb:ep.thumb||''});
     }
   }
-  const own=(c.videos||[]).filter(x=>x&&x.url).map(x=>({url:x.url,title:x.title||'게시물 보기',sub:'',thumb:x.thumb||''}));
+  // 캠핑장에 직접 등록한 영상은 썸네일이 없다 → 캠핑장 대표 사진으로 대신 채운다
+  const fallbackThumb=(imgs&&imgs[0])||'';
+  const own=(c.videos||[]).filter(x=>x&&x.url)
+    .map(x=>({url:x.url,title:x.title||'게시물 보기',sub:'',thumb:x.thumb||fallbackThumb}));
   const seen=new Set(); const vids=[];
   for(const x of [...linked,...own]){ if(!seen.has(x.url)){ seen.add(x.url); vids.push(x); } }
 
@@ -240,7 +243,7 @@ function orderedImgs(c){
         ${(c.lat&&c.lng)?`<div class="block"><h2>LOCATION</h2><div id="map"></div></div>`:''}
         <div class="block">
           <h2>RESERVATION</h2>
-          ${c.url?`<a class="cta" href="${esc(c.url)}" target="_blank" rel="noopener">예약 페이지 열기</a>`:
+          ${c.url?`<a class="cta" href="${esc(c.url)}" target="_blank" rel="noopener">예약 페이지 열기 <span class="cta-arrow">→</span></a>`:
                   `<p class="note">등록된 예약 링크가 없습니다. 인스타그램 DM으로 문의해 주세요.</p>`}
         </div>
       </aside>
