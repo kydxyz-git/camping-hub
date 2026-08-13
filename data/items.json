@@ -441,6 +441,19 @@
     "updated_at": "2026-08-13T13:21:58.509Z"
   },
   {
+    "id": "item_1427db326c",
+    "name": "코베아 캠프1",
+    "cat": "kitchen",
+    "desc": "바람에 강한 원형 버너, 접이식 고아라 지지대",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/685f4f23b8ec.jpg",
+    "currency": "KRW",
+    "published": true,
+    "created_at": "2026-08-13T13:43:33.980Z",
+    "updated_at": "2026-08-13T13:43:33.980Z"
+  },
+  {
     "id": "item_7daa20fbb6",
     "name": "N.I.P 멀티 컴팩트 스탠드 M",
     "cat": "camp",
