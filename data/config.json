@@ -65,12 +65,12 @@
       "label": "물놀이용품"
     },
     {
-      "key": "kitchen",
-      "label": "주방용품"
-    },
-    {
       "key": "light",
       "label": "조명·전기"
+    },
+    {
+      "key": "kitchen",
+      "label": "주방용품"
     },
     {
       "key": "supply",
