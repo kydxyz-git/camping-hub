@@ -38,7 +38,7 @@
     "extras": [
       "벚꽃",
       "수영장",
-      "개별샤워실"
+      "펜션"
     ],
     "graega": true,
     "url": "https://graega.short.gy/6973kydzm",
@@ -53,11 +53,10 @@
     "visits": 3,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-08-12T14:39:25Z",
-    "lat": 35.33001,
-    "lng": 127.92676,
+    "updated_at": "2026-08-13T04:06:28.467Z",
+    "address": "경남 산청군 단성면 호암로1320번길 90-31",
     "pick": true,
-    "address": "경남 산청군 단성면 호암로1320번길 90-31"
+    "lng": 127.92676
   },
   {
     "id": "camp_d9699234d4",
