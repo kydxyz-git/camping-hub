@@ -256,7 +256,7 @@
     .source-badge { position: absolute; bottom: 5px; right: 5px; font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 100px; color: white; letter-spacing: -0.01em; }
     .badge-coupang { background: #FF4B4B; }
     .badge-kurly   { background: #5D3CC7; }
-    .pick-badge { position:absolute; top:5px; left:6px; display:flex; align-items:center; z-index:2; }
+    .pick-badge { position:absolute; top:5px; left:6px; display:flex; align-items:center; gap:1px; z-index:2; }
     .pick-badge svg { width:14px; height:14px; }
     .badge-ali     { background: #FF4747; }
     .badge-temu    { background: #FF6A00; }
@@ -1831,7 +1831,10 @@ function renderProducts(containerId, dataArr, keepOrder) {
       <div class="product-thumb${item.thumb?'':' ph'}">
         ${item.thumb ? `<img src="${item.thumb}${item.updated_at ? '?v=' + new Date(item.updated_at).getTime() : ''}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
         ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : ''}
-        ${item.pick ? `<span class="pick-badge" title="공대남자 PICK"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg></span>` : ''}
+        ${item.pick ? `<span class="pick-badge" title="공대남자 PICK">${
+          Array.from({length: Math.min(3, Math.max(1, Number(item.pick) || 1))}, () =>
+            `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg>`
+          ).join('')}</span>` : ''}
       </div>
       <div class="product-info">
         <div class="product-name">${item.name}</div>
@@ -3527,7 +3530,7 @@ function renderProducts(sel,rows,countSel,emptyMsg,mode,cat){
       ${dead?'':`data-t="${esc(p.name)}" data-v="${esc(p.video||'')}" data-b="${esc(p.url||'')}" data-s="${esc(p.source||'')}"`}
       data-track-path="/${cat}/${esc(p.id||'')}" data-track-title="${esc(p.name)}">
       ${p.thumb?`<img src="${esc(abs(p.thumb))}${p.updated_at?'?v='+new Date(p.updated_at).getTime():''}" alt="${esc(p.name)}" loading="lazy">`:''}
-      ${p.pick?`<span class="pick">PICK</span>`:''}
+      ${p.pick?`<span class="pick">${'★'.repeat(Math.min(3, Math.max(1, Number(p.pick)||1)))}</span>`:''}
       ${hasV?`<span class="play"><svg viewBox="0 0 24 24" fill="none" stroke="url(#ig)" stroke-width="2.2"
         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <defs><linearGradient id="ig" x1="0" y1="1" x2="1" y2="0">

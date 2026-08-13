@@ -961,8 +961,9 @@
   }
   .order-savebar-msg { flex:1; min-width:150px; font-size:12.5px; font-weight:600; color:#7A5B00; }
   .btn-ghost { background:#fff; color:#555; border:1px solid #ddd; }
+  .pick-stars { flex:none; display:inline-flex; margin-right:4px; }
   .pick-btn {
-    flex:none; margin-right:5px; padding:3px 6px; border:0; background:none; cursor:pointer;
+    flex:none; padding:3px 1px; border:0; background:none; cursor:pointer;
     font-size:16px; line-height:1; color:#d8dade; transition:.12s;
   }
   .pick-btn.on { color:#F2A900; }
@@ -6391,9 +6392,11 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
           <div class="list-item-meta">${src}${escapeHtml(item.desc || '')}</div>
         </div>
       </a>
-      <button type="button" class="pick-btn ${item.pick ? 'on' : ''}" data-pick-idx="${item._idx}"
+      <span class="pick-stars">${[1,2,3].map(n => `<button type="button"
+        class="pick-btn ${(Number(item.pick)||0) >= n ? 'on' : ''}"
+        data-pick-idx="${item._idx}" data-pick-lv="${n}"
         data-pick-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}"
-        title="${item.pick ? '추천 해제' : '추천으로 표시'}">★</button>
+        title="별 ${n}개${(Number(item.pick)||0) === n ? ' (다시 누르면 해제)' : ''}">★</button>`).join('')}</span>
       ${item.id ? `<button type="button" class="link-copy-btn" data-copy-id="${item.id}"
         data-copy-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}" title="DM용 링크 복사">🔗</button>` : ''}
       <button type="button" class="src-btn ${srcClass(item)}" data-src-idx="${item._idx}"
@@ -6540,9 +6543,14 @@ function renderProductList(dataArr, searchVar, opts) {
       const arr = cache[kind] || [];
       const it = arr[idx];
       if (!it) { delete btn.dataset.busy; return; }
-      const next = arr.map((x, i) => i === idx ? { ...x, pick: !x.pick } : x);
-      const on = !it.pick;
-      btn.classList.toggle('on', on);   // 먼저 화면에 반영 (응답 기다리는 동안)
+      const lv = +btn.dataset.pickLv || 1;
+      const cur = Number(it.pick) || 0;
+      const val = (cur === lv) ? 0 : lv;      // 같은 별 다시 누르면 해제
+      const next = arr.map((x, i) => i === idx ? { ...x, pick: val } : x);
+      const on = val > 0;
+      // 먼저 화면에 반영 (응답 기다리는 동안)
+      btn.closest('.pick-stars').querySelectorAll('.pick-btn')
+        .forEach((b, i) => b.classList.toggle('on', i < val));
       const label = kind === 'foods' ? '음식' : '장비';
       try {
         await ghCommitMultipleFiles(
@@ -6550,10 +6558,11 @@ function renderProductList(dataArr, searchVar, opts) {
           `update(admin): ${label} '${it.name}' 추천 ${on ? '설정' : '해제'}`
         );
         cache[kind] = next;
-        showToast(on ? '★ 추천으로 표시됨' : '추천 해제됨', 'success', 1500);
+        showToast(on ? `${'★'.repeat(val)} 추천 ${val}단계` : '추천 해제됨', 'success', 1500);
         if (kind === 'foods') renderFoodList(); else renderItemList();
       } catch (err) {
-        btn.classList.toggle('on', !on);   // 실패 시 되돌림
+        btn.closest('.pick-stars').querySelectorAll('.pick-btn')
+          .forEach((b, i) => b.classList.toggle('on', i < cur));   // 실패 시 되돌림
         showToast('저장 실패: ' + err.message, 'error', 4000);
       } finally { delete btn.dataset.busy; }
     };
