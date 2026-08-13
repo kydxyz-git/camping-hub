@@ -253,7 +253,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-13T14:20:36.331Z"
+    "updated_at": "2026-08-13T14:10:48.777Z"
   },
   {
     "name": "팀버리지 캠핑 롤링 테이블",
@@ -343,7 +343,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T01:05:07.258878+00:00",
-    "updated_at": "2026-08-13T14:20:36.331Z"
+    "updated_at": "2026-08-13T14:10:48.777Z"
   },
   {
     "name": "헬리녹스 x LMC 체어원",
@@ -489,8 +489,8 @@
     "name": "토리베 가위(KS-203)",
     "cat": "kitchen",
     "desc": "분해 세척이 되는 일본산 주방 가위",
-    "url": "",
-    "source": "",
+    "url": "https://link.coupang.com/a/gbyRPQ9P52",
+    "source": "쿠팡",
     "thumb": "./images/products/fa9db3981a2d.jpg",
     "currency": "KRW",
     "published": true,
@@ -546,7 +546,7 @@
     "discount_rate": 22,
     "published": true,
     "created_at": "2026-08-08T11:38:48.402Z",
-    "updated_at": "2026-08-13T14:22:28.802Z"
+    "updated_at": "2026-08-13T14:10:48.777Z"
   },
   {
     "id": "item_edd94b4899",
@@ -630,7 +630,7 @@
     "discount_rate": 2,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-08-13T14:22:28.802Z"
+    "updated_at": "2026-08-13T14:12:35.458Z"
   },
   {
     "id": "item_200bd59067",
@@ -734,7 +734,7 @@
     "discount_rate": 36,
     "published": true,
     "created_at": "2026-07-20T05:56:52.847Z",
-    "updated_at": "2026-08-13T14:20:36.331Z"
+    "updated_at": "2026-08-13T14:10:48.777Z"
   },
   {
     "id": "item_6489394674",
