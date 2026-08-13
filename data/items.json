@@ -4,7 +4,7 @@
     "name": "헬스포츠 발할",
     "cat": "tent",
     "video": "",
-    "pick": 2,
+    "pick": 1,
     "desc": "",
     "url": "",
     "source": "",
@@ -15,7 +15,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:22:20.860864+00:00",
-    "updated_at": "2026-08-13T14:10:48.777Z"
+    "updated_at": "2026-08-13T15:03:12.839Z"
   },
   {
     "id": "item_0e5652bb69",
@@ -81,7 +81,7 @@
     "name": "듀랑고 에어4",
     "cat": "tent",
     "video": "",
-    "pick": 2,
+    "pick": 1,
     "desc": "",
     "url": "https://link.coupang.com/a/gbtSvrKNRQ",
     "source": "쿠팡",
@@ -92,7 +92,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:22:20.860864+00:00",
-    "updated_at": "2026-08-13T14:10:48.777Z"
+    "updated_at": "2026-08-13T15:03:12.839Z"
   },
   {
     "id": "item_b8ba2f7683",
@@ -290,7 +290,7 @@
     "name": "스노우피크 스텐마이테이블",
     "cat": "table",
     "video": "",
-    "pick": 2,
+    "pick": 1,
     "desc": "",
     "url": "https://link.coupang.com/a/gbvlYOdHzg",
     "source": "쿠팡",
@@ -301,7 +301,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-13T14:10:48.777Z"
+    "updated_at": "2026-08-13T15:03:12.839Z"
   },
   {
     "name": "텐트마크디자인 워크테이블 LOW",
@@ -374,7 +374,7 @@
     "name": "신일 팬히터 1200 블랙",
     "cat": "fire",
     "video": "",
-    "pick": 2,
+    "pick": 1,
     "desc": "",
     "url": "https://link.coupang.com/a/gbvIKR4NCS",
     "source": "쿠팡",
@@ -385,7 +385,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T01:30:36.767706+00:00",
-    "updated_at": "2026-08-13T14:10:48.777Z"
+    "updated_at": "2026-08-13T15:03:12.839Z"
   },
   {
     "id": "item_63c49d8aa7",
@@ -579,7 +579,7 @@
     "name": "웨버 라이터 큐브",
     "cat": "supply",
     "video": "",
-    "pick": 2,
+    "pick": 1,
     "desc": "착화제 최고 가성비 용품",
     "url": "https://naver.me/G5kDTyut",
     "source": "네이버",
@@ -590,7 +590,7 @@
     "discount_rate": 22,
     "published": true,
     "created_at": "2026-08-08T11:38:48.402Z",
-    "updated_at": "2026-08-13T14:27:33.752Z"
+    "updated_at": "2026-08-13T15:03:12.839Z"
   },
   {
     "id": "item_edd94b4899",
