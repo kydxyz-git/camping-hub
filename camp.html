@@ -277,7 +277,8 @@ function orderedImgs(c){
   }
 
   if(c.lat&&c.lng&&window.L){
-    const map=L.map('map',{scrollWheelZoom:false}).setView([c.lat,c.lng],13);
+    // 휠로 확대·축소 가능 / 처음엔 주변 지형이 함께 보이도록 넓게
+    const map=L.map('map',{scrollWheelZoom:true}).setView([c.lat,c.lng],11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
       maxZoom:18, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
