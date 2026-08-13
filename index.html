@@ -1107,7 +1107,7 @@ html.is-pc .pcard{display:block;position:relative;overflow:hidden;border-radius:
 html.is-pc .pcard img{width:100%;height:100%;object-fit:cover;
   transition:transform .5s cubic-bezier(.2,.7,.3,1)}
 html.is-pc .pcard:hover img{transform:scale(1.045)}
-html.is-pc .pcard.dead{cursor:default}
+html.is-pc .pcard.dead{cursor:pointer}
 html.is-pc .pcard.dead:hover img{transform:none}
 html.is-pc .pcard .pn{position:absolute;inset:0;padding:14px;
   display:flex;align-items:center;justify-content:center;text-align:center;
@@ -1134,6 +1134,7 @@ html.is-pc .modal.on{display:flex;animation:fade .2s ease both}
 html.is-pc .modal-box{background:var(--paper);border-radius:10px;padding:clamp(24px,3.4vw,40px);
   width:min(460px,100%);box-shadow:0 20px 60px rgba(0,0,0,.28);text-align:center}
 html.is-pc .modal-box .mt{font-weight:700;font-size:clamp(16px,1.9vw,20px);letter-spacing:-.02em;line-height:1.45}
+html.is-pc .modal-box .no-link-note{margin-top:12px;font-size:13px;line-height:1.6;color:var(--stone)}
 html.is-pc .modal-box .ma{display:flex;flex-direction:column;gap:9px;margin-top:22px}
 html.is-pc .modal-box a{position:relative;display:flex;align-items:center;justify-content:center;
   padding:clamp(13px,1.6vw,16px);border-radius:999px;
@@ -3131,6 +3132,7 @@ if(document.documentElement.classList.contains('is-mo')) init();
 <div class="modal" id="pick" role="dialog" aria-modal="true">
   <div class="modal-box">
     <p class="mt"></p>
+    <p class="no-link-note" style="display:none">이 제품은 단종되었거나<br>구매 링크가 연결되어 있지 않습니다.</p>
     <div class="ma">
       <a class="go-v" href="#" target="_blank" rel="noopener">제품소개 영상 보러 가기</a>
       <a class="go-b" href="#" target="_blank" rel="noopener"><span class="src"></span>구매하러 가기</a>
@@ -3518,7 +3520,7 @@ function renderProducts(sel,rows,countSel,emptyMsg,mode,cat){
   $(sel).innerHTML=list.length?list.map(p=>{
     const hasV=!!(p.video||'').trim();
     const dead=!(p.url||'').trim() && !hasV;
-    return `<${dead?'div':'a'} class="pcard${dead?' dead':''}" ${dead?'':`href="${esc(p.url||'#')}"`}
+    return `<${dead?'div':'a'} class="pcard${dead?' dead':''}" ${dead?`data-nm="${esc(p.name)}"`:`href="${esc(p.url||'#')}"`}
       ${dead?'':`data-t="${esc(p.name)}" data-v="${esc(p.video||'')}" data-b="${esc(p.url||'')}" data-s="${esc(p.source||'')}"`}
       data-track-path="/${cat}/${esc(p.id||'')}" data-track-title="${esc(p.name)}">
       ${p.thumb?`<img src="${esc(abs(p.thumb))}${p.updated_at?'?v='+new Date(p.updated_at).getTime():''}" alt="${esc(p.name)}" loading="lazy">`:''}
@@ -3570,9 +3572,11 @@ function renderGear(){
 const SRC_CLS={'쿠팡':'coupang','coupang':'coupang','컬리':'kurly','kurly':'kurly',
                '네이버':'naver','naver':'naver','알리':'ali','ali':'ali',
                '테무':'temu','temu':'temu'};
-function openPick(t,v,b,s){
+function openPick(t,v,b,s,noLink){
   const m=$('#pick');
   m.querySelector('.mt').textContent=t;
+  const note=m.querySelector('.no-link-note');
+  if(note) note.style.display = noLink ? '' : 'none';
   const av=m.querySelector('.go-v'), ab=m.querySelector('.go-b');
   if(v){ av.href=v; av.style.display=''; } else { av.style.display='none'; }
   if(b){ ab.href=b; ab.style.display=''; } else { ab.style.display='none'; }
@@ -3583,7 +3587,7 @@ function openPick(t,v,b,s){
 }
 document.addEventListener('click',e=>{
   const dead=e.target.closest('.pcard.dead');
-  if(dead){ e.preventDefault(); return; }
+  if(dead){ e.preventDefault(); openPick(dead.getAttribute('data-nm')||'', '', '', '', true); return; }
   const c=e.target.closest('.pcard[data-t]');
   if(c){ e.preventDefault(); openPick(c.dataset.t,c.dataset.v,c.dataset.b,c.dataset.s); return; }
   const m=$('#pick');
