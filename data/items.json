@@ -55,7 +55,7 @@
     "published": true,
     "id": "item_f8a16a8e45",
     "created_at": "2026-08-12T00:30:37.151846+00:00",
-    "updated_at": "2026-08-13T13:53:02.837Z",
+    "updated_at": "2026-08-13T14:07:01.715Z",
     "cat": "tent"
   },
   {
@@ -120,7 +120,7 @@
     "published": true,
     "id": "item_d7822bf823",
     "created_at": "2026-08-12T00:22:20.860864+00:00",
-    "updated_at": "2026-08-13T13:53:02.837Z",
+    "updated_at": "2026-08-13T14:07:01.715Z",
     "cat": "tent"
   },
   {
@@ -139,7 +139,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:30:37.151846+00:00",
-    "updated_at": "2026-08-13T13:53:02.837Z"
+    "updated_at": "2026-08-13T14:07:01.715Z"
   },
   {
     "name": "노스페이스 스타프5",
@@ -150,7 +150,7 @@
     "published": true,
     "id": "item_bbc507958e",
     "created_at": "2026-08-12T00:30:37.151846+00:00",
-    "updated_at": "2026-08-13T13:53:02.837Z",
+    "updated_at": "2026-08-13T14:07:01.715Z",
     "cat": "tarp"
   },
   {
@@ -301,7 +301,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-13T13:53:02.837Z"
+    "updated_at": "2026-08-13T14:07:01.715Z"
   },
   {
     "name": "텐트마크디자인 워크테이블 LOW",
@@ -312,7 +312,7 @@
     "published": true,
     "id": "item_bb89bda383",
     "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-13T13:53:02.837Z",
+    "updated_at": "2026-08-13T14:07:01.715Z",
     "cat": "table"
   },
   {
