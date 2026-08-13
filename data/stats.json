@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 8665,
-    "click": 3094,
+    "pv": 8672,
+    "click": 3095,
     "search": 0
   },
   "pages": {
@@ -158,18 +158,18 @@
     "/items/item_0e5652bb69": 11,
     "/items/item_76917ffdfa": 8,
     "/items/item_8c39b51888": 8,
-    "/items/item_6e0210eba9": 3,
-    "/items/item_cc722d51b5": 12,
-    "/items/item_2405bff7e5": 12,
+    "/items/item_6e0210eba9": 4,
+    "/items/item_cc722d51b5": 13,
+    "/items/item_2405bff7e5": 13,
     "/items/item_52bcfa1583": 3,
     "/items/item_b2011a57b1": 5,
     "/items/item_07e316531b": 5,
     "/items/item_7daa20fbb6": 13,
-    "/items/item_b8ba2f7683": 12,
-    "/items/item_f8a16a8e45": 12,
+    "/items/item_b8ba2f7683": 13,
+    "/items/item_f8a16a8e45": 13,
     "/items/item_d7822bf823": 4,
-    "/items/item_f94eb6d3e5": 11,
-    "/items/item_6f2ecec479": 12,
+    "/items/item_f94eb6d3e5": 12,
+    "/items/item_6f2ecec479": 13,
     "/items/item_90f00d1c73": 3,
     "/items/item_5c8fae4f26": 12,
     "/items/item_bb89bda383": 3,
@@ -325,17 +325,18 @@
     "/items/item_f8a16a8e45::쿠팡": 2,
     "/items/item_76917ffdfa::쿠팡": 1,
     "/index.html#stories::협업 문의": 1,
-    "/::협업 문의": 1
+    "/::협업 문의": 1,
+    "/items/item_6e0210eba9::네이버예약": 1
   },
   "searches": {},
   "devices": {
     "desktop": 525,
-    "mobile": 11225,
+    "mobile": 11233,
     "tablet": 9
   },
   "referrers": {
     "direct": 1059,
-    "인스타그램": 6676,
+    "인스타그램": 6683,
     "페이스북": 315,
     "구글": 20,
     "네이버": 26,
@@ -7961,8 +7962,8 @@
       ]
     },
     "2026-08-13": {
-      "pv": 323,
-      "click": 39,
+      "pv": 330,
+      "click": 40,
       "search": 0,
       "pages": {
         "/#camps": 2,
@@ -7983,7 +7984,7 @@
         "/series/series_c0b82ea145/ep_39cf2ffa99": 2,
         "/items/item_8c39b51888": 5,
         "/items/item_0e5652bb69": 8,
-        "/items/item_cc722d51b5": 10,
+        "/items/item_cc722d51b5": 11,
         "/items/item_7bd1dc6926": 4,
         "/items/item_3bffc91077": 2,
         "/items/item_63c49d8aa7": 2,
@@ -8010,8 +8011,8 @@
         "/series/series_ba7cc89468/ep_27438d1204": 1,
         "/series/series_ba7cc89468/ep_00a18099de": 1,
         "/items/item_76917ffdfa": 6,
-        "/items/item_6e0210eba9": 2,
-        "/items/item_6f2ecec479": 11,
+        "/items/item_6e0210eba9": 3,
+        "/items/item_6f2ecec479": 12,
         "/items/item_3e09fe35cb": 3,
         "/items/item_5c8fae4f26": 10,
         "/items/item_f54ab947bf": 11,
@@ -8020,7 +8021,7 @@
         "/foods/food_48d51f3296": 1,
         "/foods/food_6b6f5c2711": 3,
         "/series/series_ba7cc89468/ep_3acff3998f": 1,
-        "/items/item_2405bff7e5": 10,
+        "/items/item_2405bff7e5": 11,
         "/items/item_9f08f89de4": 11,
         "/#items": 3,
         "/series/series_304565fb77/ep_9032e63bcd": 1,
@@ -8029,10 +8030,10 @@
         "/items/item_07e316531b": 2,
         "/items/item_e9c79cd70d": 3,
         "/items/item_200bd59067": 3,
-        "/items/item_f8a16a8e45": 10,
+        "/items/item_f8a16a8e45": 11,
         "/items/item_d30401a3a0": 6,
-        "/items/item_f94eb6d3e5": 8,
-        "/items/item_b8ba2f7683": 10,
+        "/items/item_f94eb6d3e5": 9,
+        "/items/item_b8ba2f7683": 11,
         "/#items/item_a4b57441e0,item_edd94b4899,item_f54ab947bf": 1,
         "/#items/item_a4b57441e0,item_edd94b4899": 1,
         "/items/item_d7822bf823": 2,
@@ -8087,16 +8088,17 @@
         "/items/item_75f77862cd::s.click.aliexpress.com": 1,
         "/items/item_200bd59067::네이버예약": 1,
         "/index.html#stories::협업 문의": 1,
-        "/::협업 문의": 1
+        "/::협업 문의": 1,
+        "/items/item_6e0210eba9::네이버예약": 1
       },
       "searches": {},
       "devices": {
         "desktop": 32,
-        "mobile": 330
+        "mobile": 338
       },
       "referrers": {
         "direct": 65,
-        "인스타그램": 93
+        "인스타그램": 100
       },
       "hourly": [
         42,
@@ -8120,11 +8122,11 @@
         0,
         1,
         0,
-        0,
+        7,
         0,
         0
       ]
     }
   },
-  "updated_at": "2026-08-13T20:00:18.776Z"
+  "updated_at": "2026-08-13T22:00:19.883Z"
 }
