@@ -32,7 +32,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T00:22:20.860864+00:00",
-    "updated_at": "2026-08-13T14:10:48.777Z"
+    "updated_at": "2026-08-13T14:12:35.458Z"
   },
   {
     "name": "미니멀웍스 브이하우스M",
@@ -625,7 +625,7 @@
     "discount_rate": 2,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-08-13T14:10:48.777Z"
+    "updated_at": "2026-08-13T14:12:35.458Z"
   },
   {
     "id": "item_200bd59067",
@@ -660,7 +660,7 @@
     "discount_rate": 31,
     "published": true,
     "created_at": "2026-06-30T22:53:24.688Z",
-    "updated_at": "2026-08-13T14:10:48.777Z"
+    "updated_at": "2026-08-13T14:12:35.458Z"
   },
   {
     "id": "item_75f77862cd",
@@ -677,7 +677,7 @@
     "discount_rate": 24,
     "published": true,
     "created_at": "2026-06-15T04:18:00.596Z",
-    "updated_at": "2026-08-13T14:10:48.777Z"
+    "updated_at": "2026-08-13T14:12:35.458Z"
   },
   {
     "id": "item_096f88cf80",
@@ -747,6 +747,6 @@
     "discount_rate": 30,
     "published": true,
     "created_at": "2026-07-20T07:59:54.439Z",
-    "updated_at": "2026-08-13T14:10:48.777Z"
+    "updated_at": "2026-08-13T14:12:35.458Z"
   }
 ]
