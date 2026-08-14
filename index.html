@@ -1950,26 +1950,26 @@ function renderGrid() {
     const trackId = c.id || encodeURIComponent(c.name);
     const trackAttrs = `data-track-path="/camps/${trackId}" data-track-title="${(c.name || '').replace(/"/g, '&quot;')}"`;
     let tag, attrs, style, cardTrackAttrs;
-    if (hasContent) {
-      // 콘텐츠 연결됨: 클릭 시 레이어 팝업 (콘텐츠 보기 / 예약 선택)
-      tag = 'div';
-      attrs = `onclick="_openCampChooser('${(c.id || c.name).replace(/'/g, "\\'")}')"`;
-      style = `style="animation-delay:${i*0.03}s;cursor:pointer;"`;
-      cardTrackAttrs = '';  // 예약 추적은 레이어 안 버튼에서
+    if (hasUrl) {
+      // 콘텐츠가 있어도 예약 페이지로 바로 보낸다 (선택 단계 없음)
+      tag = 'a';
+      attrs = `href="${c.url}" target="_blank" rel="noopener"`;
+      style = `style="animation-delay:${i*0.03}s"`;
+      cardTrackAttrs = trackAttrs;
     } else if (hasUrl) {
-      // 콘텐츠 없음: 기존처럼 바로 예약 페이지
       tag = 'a';
       attrs = `href="${c.url}" target="_blank" rel="noopener"`;
       style = `style="animation-delay:${i*0.03}s"`;
       cardTrackAttrs = trackAttrs;
     } else {
+      // 예약 링크가 없으면 이유를 알려준다
       tag = 'div';
-      attrs = '';
-      style = `style="cursor:default;animation-delay:${i*0.03}s"`;
+      attrs = `role="button" tabindex="0" data-nolink-camp="${(c.name || '').replace(/"/g, '&quot;')}"`;
+      style = `style="cursor:pointer;animation-delay:${i*0.03}s"`;
       cardTrackAttrs = '';
     }
     return `
-    <${tag} ${attrs} ${cardTrackAttrs} class="camp-card${(hasUrl||hasContent)?'':' no-link'}" ${style}>
+    <${tag} ${attrs} ${cardTrackAttrs} class="camp-card${hasUrl?'':' no-link'}" ${style}>
       <div class="camp-img">
         ${campThumb(c)}
         ${campPlatformBadge(c)}
@@ -2612,11 +2612,19 @@ function renderPinned(kind, idsRaw) {
 (function () {
   const pop = document.getElementById('nolink-pop');
   const nameEl = document.getElementById('nolink-name');
+  const msgEl = pop ? pop.querySelector('.nolink-msg') : null;
   if (!pop) return;
   const close = () => pop.hidden = true;
   document.addEventListener('click', (e) => {
-    const card = e.target.closest('.product-card[data-nolink]');
-    if (card) { nameEl.textContent = card.getAttribute('data-nolink') || ''; pop.hidden = false; return; }
+    const card = e.target.closest('[data-nolink], [data-nolink-camp]');
+    if (card) {
+      const isCamp = card.hasAttribute('data-nolink-camp');
+      nameEl.textContent = card.getAttribute(isCamp ? 'data-nolink-camp' : 'data-nolink') || '';
+      msgEl.innerHTML = isCamp
+        ? '이 캠핑장은 예약 링크가<br>연결되어 있지 않습니다.'
+        : '이 제품은 단종되었거나<br>구매 링크가 연결되어 있지 않습니다.';
+      pop.hidden = false; return;
+    }
     if (e.target === pop || e.target.id === 'nolink-close') close();
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
