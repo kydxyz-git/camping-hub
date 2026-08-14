@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 8763,
+    "pv": 8764,
     "click": 3106,
     "search": 0
   },
   "pages": {
-    "/": 1546,
+    "/": 1547,
     "/series/series_ba7cc89468/ep_ad505df37d": 332,
     "/series/series_304565fb77/ep_c2e684a351": 217,
     "/series/series_873cdcaf61/ep_7dd208fe26": 114,
@@ -334,10 +334,10 @@
   "devices": {
     "desktop": 540,
     "mobile": 11320,
-    "tablet": 9
+    "tablet": 10
   },
   "referrers": {
-    "direct": 1068,
+    "direct": 1069,
     "인스타그램": 6760,
     "페이스북": 318,
     "구글": 20,
@@ -8131,11 +8131,11 @@
       ]
     },
     "2026-08-14": {
-      "pv": 91,
+      "pv": 92,
       "click": 11,
       "search": 0,
       "pages": {
-        "/": 10,
+        "/": 11,
         "/#stories": 1,
         "/#series/series_e8c17ad5da": 1,
         "/#series/series_4f27a6d489": 1,
@@ -8208,13 +8208,14 @@
       "searches": {},
       "devices": {
         "desktop": 15,
-        "mobile": 87
+        "mobile": 87,
+        "tablet": 1
       },
       "referrers": {
         "www.draze.com": 1,
         "인스타그램": 77,
         "페이스북": 3,
-        "direct": 9
+        "direct": 10
       },
       "hourly": [
         1,
@@ -8233,7 +8234,7 @@
         36,
         21,
         0,
-        0,
+        1,
         0,
         0,
         0,
@@ -8244,5 +8245,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-14T15:00:10.225Z"
+  "updated_at": "2026-08-14T17:00:07.994Z"
 }
