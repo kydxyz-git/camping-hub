@@ -442,6 +442,16 @@
     .nolink-msg { margin-top:10px; font-size:12.5px; line-height:1.6; color:var(--text-sub); }
     .nolink-close { margin-top:16px; width:100%; padding:11px 0; border-radius:9px;
       background:var(--text); color:#fff; font-size:13px; font-weight:700; }
+    /* 영상 보기 — 카드 본체는 예약, 이 버튼만 영상으로 */
+    .camp-play {
+      position:absolute; top:4px; right:4px; z-index:3;
+      width:30px; height:30px; border-radius:50%; padding:0;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(20,22,24,.5); border:1.2px solid rgba(255,255,255,.85);
+      backdrop-filter:blur(2px); cursor:pointer;
+    }
+    .camp-play svg { width:13px; height:13px; margin-left:1px; display:block; }
+    .camp-play:active { transform:scale(0.92); }
     .camp-noimg-txt { color:#2a2a2a; font-size:11px; font-weight:800; text-align:center; line-height:1.45; letter-spacing:-0.02em; word-break:keep-all; }
     .camp-stars { display:none; }
     .camp-visits { font-size:9px; color:var(--text-sub); font-weight:600; }
@@ -1945,7 +1955,14 @@ function renderGrid() {
   }
   grid.innerHTML = filtered.map((c,i) => {
     const hasUrl = !!c.url;
-    const hasContent = _getCampVideoList(c).length > 0 || !!(c.notes || '').trim();
+    const _vids = _getCampVideoList(c);
+    const hasContent = _vids.length > 0 || !!(c.notes || '').trim();
+    // 영상 버튼이 바로 열 수 있도록 카드 그릴 때 목록을 담아둔다
+    const campKey = c.id || c.name;
+    if (_vids.length) {
+      window._campVideoLists = window._campVideoLists || {};
+      window._campVideoLists[campKey] = { name: c.name, videos: _vids };
+    }
     // 통계 추적용: ID 기반 path (이름 바뀌어도 동일 ID로 누적)
     const trackId = c.id || encodeURIComponent(c.name);
     const trackAttrs = `data-track-path="/camps/${trackId}" data-track-title="${(c.name || '').replace(/"/g, '&quot;')}"`;
@@ -1974,6 +1991,10 @@ function renderGrid() {
         ${campThumb(c)}
         ${campPlatformBadge(c)}
         ${c.pick ? `<span class="pick-badge" title="공대남자 추천"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg></span>` : ''}
+        ${_vids.length ? `<button type="button" class="camp-play"
+          data-camp-play="${(c.id || c.name).replace(/"/g, '&quot;')}"
+          data-track-path="/camps/${trackId}/video" data-track-title="${(c.name||'').replace(/"/g,'&quot;')} 영상"
+          aria-label="영상 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4.8v14.4L20 12z" fill="#fff"/></svg></button>` : ''}
       </div>
       <div class="camp-info">
         <div class="camp-name">${c.name}</div>
@@ -2607,6 +2628,15 @@ function renderPinned(kind, idsRaw) {
   box.innerHTML = `<div class="pin-wrap" id="${gridId}"></div><div class="pin-label">${label}</div>`;
   renderProducts(gridId, picked, true);
 }
+
+// 캠핑장 카드의 영상 버튼 — 카드(예약) 클릭과 분리
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.camp-play');
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  _openVideoChooser(btn.getAttribute('data-camp-play'));
+}, true);
 
 // 구매 링크 없는 제품을 누르면 이유를 알려준다
 (function () {
