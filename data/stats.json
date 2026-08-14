@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 8672,
+    "pv": 8673,
     "click": 3095,
     "search": 0
   },
   "pages": {
-    "/": 1536,
+    "/": 1537,
     "/series/series_ba7cc89468/ep_ad505df37d": 331,
     "/series/series_304565fb77/ep_c2e684a351": 217,
     "/series/series_873cdcaf61/ep_7dd208fe26": 114,
@@ -330,7 +330,7 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 525,
+    "desktop": 526,
     "mobile": 11233,
     "tablet": 9
   },
@@ -343,7 +343,8 @@
     "link.inpock.co.kr": 4,
     "l.threads.com": 1,
     "socialbiz-c.nhndata.com": 23,
-    "www.terra.com": 1
+    "www.terra.com": 1,
+    "www.draze.com": 1
   },
   "daily": {
     "2026-05-21": {
@@ -8126,7 +8127,49 @@
         0,
         0
       ]
+    },
+    "2026-08-14": {
+      "pv": 1,
+      "click": 0,
+      "search": 0,
+      "pages": {
+        "/": 1
+      },
+      "clicks": {},
+      "searches": {},
+      "devices": {
+        "desktop": 1
+      },
+      "referrers": {
+        "www.draze.com": 1
+      },
+      "hourly": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   },
-  "updated_at": "2026-08-13T22:00:19.883Z"
+  "updated_at": "2026-08-14T00:00:18.703Z"
 }
