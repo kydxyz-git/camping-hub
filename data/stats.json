@@ -1,6 +1,6 @@
 {
   "total": {
-    "pv": 8689,
+    "pv": 8703,
     "click": 3095,
     "search": 0
   },
@@ -53,7 +53,7 @@
     "/camps/camp_c6d9da8748": 13,
     "/camps/camp_8625b4018d": 18,
     "/items/item_960c2ff01c": 45,
-    "/items/item_48f6974ac5": 19,
+    "/items/item_48f6974ac5": 20,
     "/camps/camp_8f72106bcf": 11,
     "/camps/camp_e220a217fd": 38,
     "/camps/camp_c47fbddb56": 11,
@@ -117,7 +117,7 @@
     "/camps/camp_0760ee65ba": 3,
     "/series/series_ba7cc89468/ep_860867be0e": 177,
     "/series/series_873cdcaf61/ep_3def2c1289": 54,
-    "/items/item_32e1cc5f58": 27,
+    "/items/item_32e1cc5f58": 28,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 135,
     "/series/series_4f27a6d489/ep_9873ededda": 136,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 138,
@@ -139,7 +139,7 @@
     "/items/item_edd94b4899": 16,
     "/series/series_4f27a6d489/ep_e8865faeb9": 28,
     "/series/series_873cdcaf61/ep_eff807ca45": 19,
-    "/items/item_b85f78de84": 20,
+    "/items/item_b85f78de84": 21,
     "/series/series_ba7cc89468/ep_2cb64a86cc": 22,
     "/v3.html#camps": 4,
     "/v3.html": 4,
@@ -154,28 +154,28 @@
     "/v3.html#series/series_e8c17ad5da": 1,
     "/v3.html#about": 2,
     "/index.html": 4,
-    "/items/item_a4b57441e0": 22,
+    "/items/item_a4b57441e0": 23,
     "/items/item_0e5652bb69": 11,
     "/items/item_76917ffdfa": 8,
     "/items/item_8c39b51888": 8,
     "/items/item_6e0210eba9": 4,
     "/items/item_cc722d51b5": 13,
-    "/items/item_2405bff7e5": 13,
+    "/items/item_2405bff7e5": 14,
     "/items/item_52bcfa1583": 3,
     "/items/item_b2011a57b1": 5,
     "/items/item_07e316531b": 5,
     "/items/item_7daa20fbb6": 13,
-    "/items/item_b8ba2f7683": 13,
-    "/items/item_f8a16a8e45": 13,
+    "/items/item_b8ba2f7683": 14,
+    "/items/item_f8a16a8e45": 14,
     "/items/item_d7822bf823": 4,
     "/items/item_f94eb6d3e5": 12,
-    "/items/item_6f2ecec479": 13,
+    "/items/item_6f2ecec479": 14,
     "/items/item_90f00d1c73": 3,
     "/items/item_5c8fae4f26": 12,
     "/items/item_bb89bda383": 3,
     "/items/item_3bffc91077": 4,
     "/items/item_7bd1dc6926": 7,
-    "/items/item_f54ab947bf": 13,
+    "/items/item_f54ab947bf": 14,
     "/#home": 1,
     "/#food": 2,
     "/#gear": 2,
@@ -188,11 +188,11 @@
     "/#series/series_304565fb77": 2,
     "/#series/series_873cdcaf61": 1,
     "/items/item_6f79a0aa62": 3,
-    "/items/item_9f08f89de4": 12,
+    "/items/item_9f08f89de4": 13,
     "/items/item_bbc507958e": 2,
     "/items/item_d30401a3a0": 7,
     "/items/item_63c49d8aa7": 2,
-    "/items/item_3f43285527": 9,
+    "/items/item_3f43285527": 10,
     "/items/item_3e09fe35cb": 3,
     "/#items/item_a4b57441e0": 1,
     "/items/item_e9c79cd70d": 3,
@@ -200,9 +200,9 @@
     "/#items/item_a4b57441e0,item_edd94b4899": 1,
     "/collab.html": 3,
     "/camp.html": 1,
-    "/items/item_bf45bb2b31": 6,
-    "/items/item_c9c551ed52": 6,
-    "/items/item_7e65f604b9": 1,
+    "/items/item_bf45bb2b31": 7,
+    "/items/item_c9c551ed52": 7,
+    "/items/item_7e65f604b9": 2,
     "/#series/series_e8c17ad5da": 1,
     "/#series/series_c0b82ea145": 1
   },
@@ -333,12 +333,12 @@
   "searches": {},
   "devices": {
     "desktop": 540,
-    "mobile": 11235,
+    "mobile": 11249,
     "tablet": 9
   },
   "referrers": {
     "direct": 1068,
-    "인스타그램": 6687,
+    "인스타그램": 6701,
     "페이스북": 317,
     "구글": 20,
     "네이버": 26,
@@ -8131,7 +8131,7 @@
       ]
     },
     "2026-08-14": {
-      "pv": 17,
+      "pv": 31,
       "click": 0,
       "search": 0,
       "pages": {
@@ -8144,17 +8144,31 @@
         "/#camps": 1,
         "/#foods": 1,
         "/#items": 1,
-        "/#series/series_304565fb77": 1
+        "/#series/series_304565fb77": 1,
+        "/items/item_a4b57441e0": 1,
+        "/items/item_f8a16a8e45": 1,
+        "/items/item_b8ba2f7683": 1,
+        "/items/item_6f2ecec479": 1,
+        "/items/item_2405bff7e5": 1,
+        "/items/item_9f08f89de4": 1,
+        "/items/item_f54ab947bf": 1,
+        "/items/item_bf45bb2b31": 1,
+        "/items/item_c9c551ed52": 1,
+        "/items/item_7e65f604b9": 1,
+        "/items/item_48f6974ac5": 1,
+        "/items/item_b85f78de84": 1,
+        "/items/item_3f43285527": 1,
+        "/items/item_32e1cc5f58": 1
       },
       "clicks": {},
       "searches": {},
       "devices": {
         "desktop": 15,
-        "mobile": 2
+        "mobile": 16
       },
       "referrers": {
         "www.draze.com": 1,
-        "인스타그램": 4,
+        "인스타그램": 18,
         "페이스북": 2,
         "direct": 9
       },
@@ -8170,7 +8184,7 @@
         0,
         0,
         0,
-        0,
+        14,
         0,
         0,
         0,
@@ -8186,5 +8200,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-14T08:00:19.878Z"
+  "updated_at": "2026-08-14T12:00:08.987Z"
 }
