@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 8764,
-    "click": 3106,
+    "pv": 8768,
+    "click": 3107,
     "search": 0
   },
   "pages": {
-    "/": 1547,
+    "/": 1548,
     "/series/series_ba7cc89468/ep_ad505df37d": 332,
     "/series/series_304565fb77/ep_c2e684a351": 217,
     "/series/series_873cdcaf61/ep_7dd208fe26": 114,
@@ -118,9 +118,9 @@
     "/series/series_ba7cc89468/ep_860867be0e": 178,
     "/series/series_873cdcaf61/ep_3def2c1289": 54,
     "/items/item_32e1cc5f58": 29,
-    "/series/series_4f27a6d489/ep_c8dbf171b7": 135,
-    "/series/series_4f27a6d489/ep_9873ededda": 136,
-    "/series/series_4f27a6d489/ep_eb8b1702fa": 138,
+    "/series/series_4f27a6d489/ep_c8dbf171b7": 136,
+    "/series/series_4f27a6d489/ep_9873ededda": 137,
+    "/series/series_4f27a6d489/ep_eb8b1702fa": 139,
     "/camps/camp_2d2adbe3fd": 1,
     "/series/series_ba7cc89468/ep_aa0e809292": 130,
     "/camps/camp_75ee389015": 1,
@@ -286,7 +286,7 @@
     "/items/item_32e1cc5f58::네이버예약": 9,
     "/series/series_873cdcaf61/ep_3def2c1289::인스타DM": 28,
     "/camps/camp_d9699234d4::그래가": 7,
-    "/series/series_4f27a6d489/ep_c8dbf171b7::인스타DM": 48,
+    "/series/series_4f27a6d489/ep_c8dbf171b7::인스타DM": 49,
     "/series/series_4f27a6d489/ep_9873ededda::인스타DM": 48,
     "/series/series_4f27a6d489/ep_eb8b1702fa::인스타DM": 47,
     "/series/series_ba7cc89468/ep_aa0e809292::인스타DM": 100,
@@ -333,13 +333,13 @@
   "searches": {},
   "devices": {
     "desktop": 540,
-    "mobile": 11320,
+    "mobile": 11325,
     "tablet": 10
   },
   "referrers": {
     "direct": 1069,
     "인스타그램": 6760,
-    "페이스북": 318,
+    "페이스북": 322,
     "구글": 20,
     "네이버": 26,
     "link.inpock.co.kr": 4,
@@ -8243,7 +8243,54 @@
         0,
         0
       ]
+    },
+    "2026-08-15": {
+      "pv": 4,
+      "click": 1,
+      "search": 0,
+      "pages": {
+        "/": 1,
+        "/series/series_4f27a6d489/ep_eb8b1702fa": 1,
+        "/series/series_4f27a6d489/ep_9873ededda": 1,
+        "/series/series_4f27a6d489/ep_c8dbf171b7": 1
+      },
+      "clicks": {
+        "/series/series_4f27a6d489/ep_c8dbf171b7::인스타DM": 1
+      },
+      "searches": {},
+      "devices": {
+        "mobile": 5
+      },
+      "referrers": {
+        "페이스북": 4
+      },
+      "hourly": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        0
+      ]
     }
   },
-  "updated_at": "2026-08-14T17:00:07.994Z"
+  "updated_at": "2026-08-15T23:00:42.369Z"
 }
