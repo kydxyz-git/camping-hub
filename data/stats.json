@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 8778,
-    "click": 3108,
+    "pv": 8788,
+    "click": 3110,
     "search": 0
   },
   "pages": {
-    "/": 1550,
+    "/": 1551,
     "/series/series_ba7cc89468/ep_ad505df37d": 332,
     "/series/series_304565fb77/ep_c2e684a351": 217,
     "/series/series_873cdcaf61/ep_7dd208fe26": 114,
@@ -117,7 +117,7 @@
     "/camps/camp_0760ee65ba": 3,
     "/series/series_ba7cc89468/ep_860867be0e": 178,
     "/series/series_873cdcaf61/ep_3def2c1289": 54,
-    "/items/item_32e1cc5f58": 29,
+    "/items/item_32e1cc5f58": 30,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 137,
     "/series/series_4f27a6d489/ep_9873ededda": 138,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 140,
@@ -136,7 +136,7 @@
     "/series/series_ba7cc89468/ep_7727344bb5": 45,
     "/series/series_304565fb77/ep_67c3e626c9": 21,
     "/series/series_ba7cc89468/ep_996b471cb5": 47,
-    "/items/item_edd94b4899": 16,
+    "/items/item_edd94b4899": 17,
     "/series/series_4f27a6d489/ep_e8865faeb9": 29,
     "/series/series_873cdcaf61/ep_eff807ca45": 19,
     "/items/item_b85f78de84": 22,
@@ -165,17 +165,17 @@
     "/items/item_b2011a57b1": 5,
     "/items/item_07e316531b": 5,
     "/items/item_7daa20fbb6": 13,
-    "/items/item_b8ba2f7683": 15,
-    "/items/item_f8a16a8e45": 15,
+    "/items/item_b8ba2f7683": 16,
+    "/items/item_f8a16a8e45": 16,
     "/items/item_d7822bf823": 4,
     "/items/item_f94eb6d3e5": 13,
-    "/items/item_6f2ecec479": 14,
+    "/items/item_6f2ecec479": 15,
     "/items/item_90f00d1c73": 3,
     "/items/item_5c8fae4f26": 13,
     "/items/item_bb89bda383": 3,
     "/items/item_3bffc91077": 4,
     "/items/item_7bd1dc6926": 7,
-    "/items/item_f54ab947bf": 14,
+    "/items/item_f54ab947bf": 15,
     "/#home": 1,
     "/#food": 2,
     "/#gear": 2,
@@ -192,15 +192,15 @@
     "/items/item_bbc507958e": 2,
     "/items/item_d30401a3a0": 7,
     "/items/item_63c49d8aa7": 2,
-    "/items/item_3f43285527": 11,
+    "/items/item_3f43285527": 12,
     "/items/item_3e09fe35cb": 3,
     "/#items/item_a4b57441e0": 1,
-    "/items/item_e9c79cd70d": 3,
+    "/items/item_e9c79cd70d": 4,
     "/#items/item_a4b57441e0,item_edd94b4899,item_f54ab947bf": 1,
     "/#items/item_a4b57441e0,item_edd94b4899": 1,
     "/collab.html": 3,
     "/camp.html": 1,
-    "/items/item_bf45bb2b31": 7,
+    "/items/item_bf45bb2b31": 8,
     "/items/item_c9c551ed52": 8,
     "/items/item_7e65f604b9": 3,
     "/#series/series_e8c17ad5da": 1,
@@ -311,7 +311,7 @@
     "/series/series_ba7cc89468/ep_7727344bb5::인스타DM": 13,
     "/items/item_096f88cf80::sinjimorulab.com": 4,
     "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 42,
-    "/items/item_edd94b4899::www.insta360.com": 9,
+    "/items/item_edd94b4899::www.insta360.com": 10,
     "/series/series_304565fb77/ep_67c3e626c9::인스타DM": 1,
     "/series/series_4f27a6d489/ep_e8865faeb9::인스타DM": 11,
     "/series/series_873cdcaf61/ep_eff807ca45::인스타DM": 1,
@@ -328,16 +328,17 @@
     "/items/item_76917ffdfa::쿠팡": 1,
     "/index.html#stories::협업 문의": 1,
     "/::협업 문의": 2,
-    "/items/item_6e0210eba9::네이버예약": 1
+    "/items/item_6e0210eba9::네이버예약": 1,
+    "/items/item_e9c79cd70d::쿠팡": 1
   },
   "searches": {},
   "devices": {
     "desktop": 540,
-    "mobile": 11336,
+    "mobile": 11348,
     "tablet": 10
   },
   "referrers": {
-    "direct": 1069,
+    "direct": 1079,
     "인스타그램": 6770,
     "페이스북": 322,
     "구글": 20,
@@ -8299,19 +8300,32 @@
       ]
     },
     "2026-08-16": {
-      "pv": 1,
-      "click": 0,
+      "pv": 11,
+      "click": 2,
       "search": 0,
       "pages": {
-        "/": 1
+        "/": 2,
+        "/items/item_f8a16a8e45": 1,
+        "/items/item_b8ba2f7683": 1,
+        "/items/item_6f2ecec479": 1,
+        "/items/item_f54ab947bf": 1,
+        "/items/item_bf45bb2b31": 1,
+        "/items/item_3f43285527": 1,
+        "/items/item_32e1cc5f58": 1,
+        "/items/item_e9c79cd70d": 1,
+        "/items/item_edd94b4899": 1
       },
-      "clicks": {},
+      "clicks": {
+        "/items/item_e9c79cd70d::쿠팡": 1,
+        "/items/item_edd94b4899::www.insta360.com": 1
+      },
       "searches": {},
       "devices": {
-        "mobile": 1
+        "mobile": 13
       },
       "referrers": {
-        "인스타그램": 1
+        "인스타그램": 1,
+        "direct": 10
       },
       "hourly": [
         0,
@@ -8323,7 +8337,7 @@
         0,
         0,
         0,
-        0,
+        10,
         0,
         0,
         0,
@@ -8341,5 +8355,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-16T03:00:37.444Z"
+  "updated_at": "2026-08-16T10:00:37.335Z"
 }
