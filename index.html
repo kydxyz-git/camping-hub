@@ -1961,7 +1961,7 @@ function renderGrid() {
     const campKey = c.id || c.name;
     if (_vids.length) {
       window._campVideoLists = window._campVideoLists || {};
-      window._campVideoLists[campKey] = { name: c.name, videos: _vids };
+      window._campVideoLists[campKey] = { name: c.name, videos: _vids, notes: c.notes || '' };
     }
     // 통계 추적용: ID 기반 path (이름 바뀌어도 동일 ID로 누적)
     const trackId = c.id || encodeURIComponent(c.name);
@@ -2257,7 +2257,7 @@ function _openCampChooser(campId) {
         <span class="video-chooser-title">🏕 ${_mapEscHtml(c.name)}</span>
         <button class="video-chooser-close" onclick="_closeVideoChooser()">✕</button>
       </div>
-      ${c.notes ? `<ul class="camp-chooser-notes">${String(c.notes).split('\n').filter(x=>x.trim()).map(x=>`<li>${_mapEscHtml(x.trim())}</li>`).join('')}</ul>` : ''}
+      ${data.notes ? `<ul class="camp-chooser-notes">${String(data.notes).split('\n').filter(x=>x.trim()).map(x=>`<li>${_mapEscHtml(x.trim())}</li>`).join('')}</ul>` : ''}
       ${itemsHtml ? `<div class="video-chooser-list">${itemsHtml}</div>` : ''}
       ${bookBtn ? `<div class="camp-chooser-book-wrap">${bookBtn}</div>` : ''}
     </div>
@@ -2498,7 +2498,7 @@ function _renderCampMap(camps) {
       // 영상 2개+: 영상보기 클릭 시 레이어 팝업 (전역에 영상 목록 저장)
       const videoListId = 'vl_' + (c.id || Math.random().toString(36).slice(2, 8));
       window._campVideoLists = window._campVideoLists || {};
-      window._campVideoLists[videoListId] = { name: c.name, videos: videoList };
+      window._campVideoLists[videoListId] = { name: c.name, videos: videoList, notes: c.notes || '' };
       btnsHtml = `
         <div class="camp-popup-btns">
           <a class="camp-popup-link camp-popup-link-half btn-instagram" href="#" onclick="event.preventDefault(); _openVideoChooser('${videoListId}');">📱 콘텐츠 ${videoList.length}개</a>
