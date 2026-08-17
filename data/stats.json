@@ -1,6 +1,6 @@
 {
   "total": {
-    "pv": 8817,
+    "pv": 8818,
     "click": 3122,
     "search": 0
   },
@@ -18,7 +18,7 @@
     "/series/series_304565fb77/ep_a8b40077ca": 138,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 105,
     "/series/series_e8c17ad5da/ep_7a390bade9": 90,
-    "/#camps": 20,
+    "/#camps": 21,
     "/#foods": 19,
     "/series/series_304565fb77/ep_d7955f38a0": 220,
     "/foods/food_592752e317": 29,
@@ -338,7 +338,7 @@
   "searches": {},
   "devices": {
     "desktop": 544,
-    "mobile": 11385,
+    "mobile": 11386,
     "tablet": 10
   },
   "referrers": {
@@ -8373,7 +8373,7 @@
       ]
     },
     "2026-08-17": {
-      "pv": 13,
+      "pv": 14,
       "click": 5,
       "search": 0,
       "pages": {
@@ -8383,7 +8383,7 @@
         "/camps/camp_e220a217fd": 1,
         "/camps/camp_e5a202316d": 1,
         "/camps/camp_a9bbd60ec3/video": 1,
-        "/#camps": 1,
+        "/#camps": 2,
         "/camps/camp_a9bbd60ec3": 1
       },
       "clicks": {
@@ -8392,7 +8392,7 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 16,
+        "mobile": 17,
         "desktop": 2
       },
       "referrers": {
@@ -8409,7 +8409,7 @@
         0,
         1,
         1,
-        0,
+        1,
         0,
         0,
         0,
@@ -8428,5 +8428,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-17T08:00:36.139Z"
+  "updated_at": "2026-08-17T09:00:38.431Z"
 }
