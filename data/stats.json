@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 8841,
+    "pv": 8847,
     "click": 3124,
     "search": 0
   },
   "pages": {
-    "/": 1563,
+    "/": 1564,
     "/series/series_ba7cc89468/ep_ad505df37d": 332,
     "/series/series_304565fb77/ep_c2e684a351": 217,
     "/series/series_873cdcaf61/ep_7dd208fe26": 114,
@@ -17,7 +17,7 @@
     "/series/series_ba7cc89468/ep_27438d1204": 235,
     "/series/series_304565fb77/ep_a8b40077ca": 138,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 105,
-    "/series/series_e8c17ad5da/ep_7a390bade9": 90,
+    "/series/series_e8c17ad5da/ep_7a390bade9": 91,
     "/#camps": 21,
     "/#foods": 19,
     "/series/series_304565fb77/ep_d7955f38a0": 220,
@@ -110,7 +110,7 @@
     "/foods/food_673fc958f6": 16,
     "/items/item_75f77862cd": 33,
     "/series/series_873cdcaf61/ep_08c284c148": 53,
-    "/series/series_ba7cc89468/ep_97e39a4499": 224,
+    "/series/series_ba7cc89468/ep_97e39a4499": 225,
     "/series/series_873cdcaf61/ep_14cbfb6b11": 46,
     "/series/series_873cdcaf61/ep_eb18e20c30": 44,
     "/camps/camp_bcd074ef33": 4,
@@ -119,7 +119,7 @@
     "/series/series_873cdcaf61/ep_3def2c1289": 54,
     "/items/item_32e1cc5f58": 30,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 137,
-    "/series/series_4f27a6d489/ep_9873ededda": 139,
+    "/series/series_4f27a6d489/ep_9873ededda": 140,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 140,
     "/camps/camp_2d2adbe3fd": 1,
     "/series/series_ba7cc89468/ep_aa0e809292": 130,
@@ -131,10 +131,10 @@
     "/items/item_1e78eeb29a": 25,
     "/items/item_e01fb7d262": 6,
     "/items/item_6489394674": 22,
-    "/series/series_873cdcaf61/ep_9b833c820b": 29,
+    "/series/series_873cdcaf61/ep_9b833c820b": 30,
     "/series/series_ba7cc89468/ep_868813ad26": 66,
     "/series/series_ba7cc89468/ep_7727344bb5": 45,
-    "/series/series_304565fb77/ep_67c3e626c9": 21,
+    "/series/series_304565fb77/ep_67c3e626c9": 22,
     "/series/series_ba7cc89468/ep_996b471cb5": 47,
     "/items/item_edd94b4899": 17,
     "/series/series_4f27a6d489/ep_e8865faeb9": 29,
@@ -339,12 +339,12 @@
   "searches": {},
   "devices": {
     "desktop": 544,
-    "mobile": 11411,
+    "mobile": 11417,
     "tablet": 10
   },
   "referrers": {
     "direct": 1087,
-    "인스타그램": 6801,
+    "인스타그램": 6807,
     "페이스북": 325,
     "구글": 20,
     "네이버": 26,
@@ -8374,11 +8374,11 @@
       ]
     },
     "2026-08-17": {
-      "pv": 37,
+      "pv": 43,
       "click": 7,
       "search": 0,
       "pages": {
-        "/": 8,
+        "/": 9,
         "/series/series_4f27a6d489/ep_3fbc9a3223": 1,
         "/camps/camp_e5a202316d/video": 1,
         "/camps/camp_e220a217fd": 2,
@@ -8405,7 +8405,12 @@
         "/items/item_b2011a57b1": 1,
         "/items/item_90f00d1c73": 1,
         "/items/item_07e316531b": 1,
-        "/items/item_200bd59067": 1
+        "/items/item_200bd59067": 1,
+        "/series/series_ba7cc89468/ep_97e39a4499": 1,
+        "/series/series_4f27a6d489/ep_9873ededda": 1,
+        "/series/series_304565fb77/ep_67c3e626c9": 1,
+        "/series/series_873cdcaf61/ep_9b833c820b": 1,
+        "/series/series_e8c17ad5da/ep_7a390bade9": 1
       },
       "clicks": {
         "/camps/camp_e5a202316d/video::네이버": 2,
@@ -8415,13 +8420,13 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 42,
+        "mobile": 48,
         "desktop": 2
       },
       "referrers": {
         "페이스북": 3,
         "direct": 6,
-        "인스타그램": 27
+        "인스타그램": 33
       },
       "hourly": [
         0,
@@ -8439,7 +8444,7 @@
         23,
         0,
         0,
-        0,
+        6,
         0,
         0,
         0,
@@ -8451,5 +8456,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-17T13:00:39.881Z"
+  "updated_at": "2026-08-17T16:00:36.893Z"
 }
