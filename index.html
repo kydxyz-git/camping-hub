@@ -2630,15 +2630,6 @@ function renderPinned(kind, idsRaw) {
   renderProducts(gridId, picked, true);
 }
 
-// 캠핑장 카드의 영상 버튼 — 카드(예약) 클릭과 분리
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('.camp-play');
-  if (!btn) return;
-  e.preventDefault();
-  e.stopPropagation();
-  _openVideoChooser(btn.getAttribute('data-camp-play'));
-}, true);
-
 // 구매 링크 없는 제품을 누르면 이유를 알려준다
 (function () {
   const pop = document.getElementById('nolink-pop');
