@@ -452,6 +452,7 @@
     }
     .camp-play svg { width:13px; height:13px; margin-left:1px; display:block; }
     .camp-play:active { transform:scale(0.92); }
+    .camp-play { -webkit-tap-highlight-color:transparent; }
     .camp-noimg-txt { color:#2a2a2a; font-size:11px; font-weight:800; text-align:center; line-height:1.45; letter-spacing:-0.02em; word-break:keep-all; }
     .camp-stars { display:none; }
     .camp-visits { font-size:9px; color:var(--text-sub); font-weight:600; }
@@ -1991,10 +1992,10 @@ function renderGrid() {
         ${campThumb(c)}
         ${campPlatformBadge(c)}
         ${c.pick ? `<span class="pick-badge" title="공대남자 추천"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg></span>` : ''}
-        ${_vids.length ? `<button type="button" class="camp-play"
-          data-camp-play="${(c.id || c.name).replace(/"/g, '&quot;')}"
+        ${_vids.length ? `<span class="camp-play" role="button" tabindex="0"
+          onclick="event.preventDefault(); event.stopPropagation(); _openVideoChooser('${String(campKey).replace(/'/g, "\\'")}');"
           data-track-path="/camps/${trackId}/video" data-track-title="${(c.name||'').replace(/"/g,'&quot;')} 영상"
-          aria-label="영상 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4.8v14.4L20 12z" fill="#fff"/></svg></button>` : ''}
+          aria-label="영상 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4.8v14.4L20 12z" fill="#fff"/></svg></span>` : ''}
       </div>
       <div class="camp-info">
         <div class="camp-name">${c.name}</div>
