@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 8878,
-    "click": 3140,
+    "pv": 8880,
+    "click": 3141,
     "search": 0
   },
   "pages": {
-    "/": 1566,
+    "/": 1567,
     "/series/series_ba7cc89468/ep_ad505df37d": 332,
     "/series/series_304565fb77/ep_c2e684a351": 217,
     "/series/series_873cdcaf61/ep_7dd208fe26": 114,
@@ -115,7 +115,7 @@
     "/series/series_873cdcaf61/ep_eb18e20c30": 44,
     "/camps/camp_bcd074ef33": 4,
     "/camps/camp_0760ee65ba": 3,
-    "/series/series_ba7cc89468/ep_860867be0e": 179,
+    "/series/series_ba7cc89468/ep_860867be0e": 180,
     "/series/series_873cdcaf61/ep_3def2c1289": 54,
     "/items/item_32e1cc5f58": 30,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 137,
@@ -287,7 +287,7 @@
     "/series/series_873cdcaf61/ep_4f183af0df::인스타DM": 1,
     "/series/series_873cdcaf61/ep_14cbfb6b11::인스타DM": 4,
     "/series/series_873cdcaf61/ep_eb18e20c30::인스타DM": 3,
-    "/series/series_ba7cc89468/ep_860867be0e::인스타DM": 122,
+    "/series/series_ba7cc89468/ep_860867be0e::인스타DM": 123,
     "/camps/camp_bb40ee2105::www.gmuc.or.kr": 1,
     "/camps/camp_e5a202316d::네이버": 3,
     "/items/item_32e1cc5f58::네이버예약": 9,
@@ -347,13 +347,13 @@
   "searches": {},
   "devices": {
     "desktop": 545,
-    "mobile": 11463,
+    "mobile": 11466,
     "tablet": 10
   },
   "referrers": {
     "direct": 1103,
     "인스타그램": 6822,
-    "페이스북": 325,
+    "페이스북": 327,
     "구글": 20,
     "네이버": 26,
     "link.inpock.co.kr": 4,
@@ -8485,7 +8485,52 @@
         27,
         0
       ]
+    },
+    "2026-08-18": {
+      "pv": 2,
+      "click": 1,
+      "search": 0,
+      "pages": {
+        "/": 1,
+        "/series/series_ba7cc89468/ep_860867be0e": 1
+      },
+      "clicks": {
+        "/series/series_ba7cc89468/ep_860867be0e::인스타DM": 1
+      },
+      "searches": {},
+      "devices": {
+        "mobile": 3
+      },
+      "referrers": {
+        "페이스북": 2
+      },
+      "hourly": [
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   },
-  "updated_at": "2026-08-17T23:00:37.589Z"
+  "updated_at": "2026-08-18T05:00:37.527Z"
 }
