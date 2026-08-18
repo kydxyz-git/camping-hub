@@ -2292,7 +2292,6 @@ function _openVideoChooser(listId) {
         <span class="video-chooser-title">📱 ${_mapEscHtml(data.name)} 콘텐츠 ${data.videos.length}개</span>
         <button class="video-chooser-close" onclick="_closeVideoChooser()">✕</button>
       </div>
-      ${data.notes ? `<ul class="camp-chooser-notes">${String(data.notes).split('\n').filter(x=>x.trim()).map(x=>`<li>${_mapEscHtml(x.trim())}</li>`).join('')}</ul>` : ''}
       ${itemsHtml ? `<div class="video-chooser-list">${itemsHtml}</div>` : ''}
     </div>
   `;
