@@ -230,13 +230,23 @@
       "./images/camps/f3baf09d2e72.jpg",
       "./images/camps/f3baf09d2e72-2.jpg",
       "./images/camps/f3baf09d2e72-3.jpg",
-      "./images/camps/f3baf09d2e72-4.jpg"
+      "./images/camps/f3baf09d2e72-4.jpg",
+      "./images/camps/f3baf09d2e72-5.jpg",
+      "./images/camps/f3baf09d2e72-6.jpg",
+      "./images/camps/f3baf09d2e72-7.jpg",
+      "./images/camps/f3baf09d2e72-8.jpg",
+      "./images/camps/f3baf09d2e72-9.jpg"
     ],
     "rating": 5,
-    "visits": 27,
+    "visits": 28,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-06-19T01:09:23.991Z",
+    "updated_at": "2026-08-18T06:13:19.669Z",
+    "checkin": "13:00",
+    "checkout": "12:00",
+    "address": "경북 봉화군 소천면 구마동길 513-127",
+    "notes": "애견동반 가능, 11세 미만 이용 제한, 성인 2인까지\n개별샤워실·냉장고·드라이기 완비, 샤워용품·비상약·양념 무료 제공\n겨울 운영 안 함\n1년 3회 방문 시 다음 해 선예약 가능한 단골캠퍼 제도 운영",
+    "pick": true,
     "lat": 37.00513,
     "lng": 128.97052,
     "videos": [
@@ -244,12 +254,7 @@
         "url": "https://www.instagram.com/reel/DZvju8xTEve/?igsh=aG5sMGJncGY4bmdx",
         "title": "여름에 가기 좋은 계곡캠핑장 TOP4"
       }
-    ],
-    "checkin": "13:00",
-    "checkout": "12:00",
-    "notes": "매너타임 22시~08시\n애견동반 가능, 11세 미만 이용 제한, 성인 2인까지\n개별샤워실·냉장고·드라이기 완비, 샤워용품·비상약·양념 무료 제공\n겨울 운영 안 함 / 금요일 퇴근박 50% 할인, 롱롱스테이(11시 입실·14시 퇴실) 무료\n1년 3회 방문 시 다음 해 선예약 가능한 단골캠퍼 제도 운영",
-    "address": "경북 봉화군 소천면 구마동길 513-127",
-    "pick": true
+    ]
   },
   {
     "id": "camp_17e022c947",
