@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 8973,
-    "click": 3161,
+    "pv": 8982,
+    "click": 3168,
     "search": 0
   },
   "pages": {
-    "/": 1581,
+    "/": 1582,
     "/series/series_ba7cc89468/ep_ad505df37d": 332,
     "/series/series_304565fb77/ep_c2e684a351": 218,
     "/series/series_873cdcaf61/ep_7dd208fe26": 116,
@@ -18,7 +18,7 @@
     "/series/series_304565fb77/ep_a8b40077ca": 141,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 106,
     "/series/series_e8c17ad5da/ep_7a390bade9": 91,
-    "/#camps": 21,
+    "/#camps": 22,
     "/#foods": 19,
     "/series/series_304565fb77/ep_d7955f38a0": 220,
     "/foods/food_592752e317": 29,
@@ -42,7 +42,7 @@
     "/camps/camp_bb40ee2105": 13,
     "/camps/camp_17e022c947": 13,
     "/camps/camp_7b58bb3d0e": 5,
-    "/camps/camp_51082836b6": 4,
+    "/camps/camp_51082836b6": 5,
     "/camps/camp_ec631c9ffe": 4,
     "/camps/camp_fd26ab4286": 9,
     "/camps/camp_0741c2c7b7": 20,
@@ -85,20 +85,20 @@
     "/camps/camp_c51f85254a": 5,
     "/camps/camp_c0830df6de": 5,
     "/camps/camp_58cc50d43a": 5,
-    "/camps/camp_117766ff1c": 9,
-    "/camps/camp_6f9fbf5abd": 10,
+    "/camps/camp_117766ff1c": 10,
+    "/camps/camp_6f9fbf5abd": 11,
     "/camps/camp_4ba7c9c565": 3,
     "/camps/camp_7f83d13375": 4,
     "/camps/camp_0380055336": 11,
     "/camps/camp_7fafd07d0a": 6,
-    "/camps/camp_02c72e06a3": 32,
+    "/camps/camp_02c72e06a3": 34,
     "/series/series_ba7cc89468/ep_4da176323e": 329,
     "/camps/camp_f756d38620": 1,
     "/#map": 14,
     "/camps/camp_b8d29b3f00": 32,
     "/camps/camp_e2b57e4e5d": 7,
     "/series/series_ba7cc89468/ep_c56ed16c13": 269,
-    "/camps/camp_a9bbd60ec3": 33,
+    "/camps/camp_a9bbd60ec3": 35,
     "/items/item_200bd59067": 20,
     "/series/series_873cdcaf61/ep_116826a88d": 66,
     "/series/series_e8c17ad5da/ep_7a004a6412": 63,
@@ -258,9 +258,9 @@
     "/#map::www.sanddune.co.kr": 1,
     "/#map::땡큐캠핑": 1,
     "/camps/camp_8e1adf57aa::그래가": 12,
-    "/camps/camp_02c72e06a3::네이버예약": 16,
+    "/camps/camp_02c72e06a3::네이버예약": 18,
     "/series/series_ba7cc89468/ep_c56ed16c13::인스타DM": 154,
-    "/camps/camp_a9bbd60ec3::그래가": 12,
+    "/camps/camp_a9bbd60ec3::그래가": 14,
     "/camps/camp_d9699234d4::네이버": 1,
     "/items/item_200bd59067::네이버예약": 6,
     "/series/series_873cdcaf61/ep_116826a88d::인스타DM": 7,
@@ -346,16 +346,19 @@
     "/camps/camp_0741c2c7b7/video::그래가": 2,
     "/camps/camp_b8d29b3f00/video::그래가": 2,
     "/camps/camp_e06cb829df/video::네이버": 1,
-    "/camps/camp_02c72e06a3/video::네이버예약": 2
+    "/camps/camp_02c72e06a3/video::네이버예약": 2,
+    "/camps/camp_117766ff1c::camfit.co.kr": 1,
+    "/camps/camp_6f9fbf5abd::camfit.co.kr": 1,
+    "/camps/camp_51082836b6::camfit.co.kr": 1
   },
   "searches": {},
   "devices": {
     "desktop": 546,
-    "mobile": 11578,
+    "mobile": 11594,
     "tablet": 10
   },
   "referrers": {
-    "direct": 1103,
+    "direct": 1112,
     "인스타그램": 6913,
     "페이스북": 327,
     "구글": 20,
@@ -8587,11 +8590,11 @@
       ]
     },
     "2026-08-19": {
-      "pv": 39,
-      "click": 12,
+      "pv": 48,
+      "click": 19,
       "search": 0,
       "pages": {
-        "/": 8,
+        "/": 9,
         "/series/series_ba7cc89468/ep_27438d1204": 1,
         "/series/series_4f27a6d489/ep_eb8b1702fa": 1,
         "/series/series_304565fb77/ep_17f905660e": 1,
@@ -8617,26 +8620,36 @@
         "/series/series_ba7cc89468/ep_73bdfba72e": 1,
         "/series/series_4f27a6d489/ep_e8865faeb9": 1,
         "/series/series_304565fb77/ep_a8b40077ca": 1,
-        "/camps/camp_6f9fbf5abd": 1,
-        "/camps/camp_a9bbd60ec3": 1,
+        "/camps/camp_6f9fbf5abd": 2,
+        "/camps/camp_a9bbd60ec3": 3,
         "/camps/camp_a9bbd60ec3/video": 1,
-        "/camps/camp_02c72e06a3/video": 1
+        "/camps/camp_02c72e06a3/video": 1,
+        "/camps/camp_117766ff1c": 1,
+        "/camps/camp_02c72e06a3": 2,
+        "/#camps": 1,
+        "/camps/camp_51082836b6": 1
       },
       "clicks": {
         "/series/series_c0b82ea145/ep_39cf2ffa99::인스타DM": 5,
         "/camps/camp_d9699234d4/video::그래가": 1,
         "/series/series_304565fb77/ep_a8b40077ca::인스타DM": 1,
         "/camps/camp_a9bbd60ec3/video::그래가": 3,
-        "/camps/camp_02c72e06a3/video::네이버예약": 2
+        "/camps/camp_02c72e06a3/video::네이버예약": 2,
+        "/camps/camp_117766ff1c::camfit.co.kr": 1,
+        "/camps/camp_a9bbd60ec3::그래가": 2,
+        "/camps/camp_02c72e06a3::네이버예약": 2,
+        "/camps/camp_6f9fbf5abd::camfit.co.kr": 1,
+        "/camps/camp_51082836b6::camfit.co.kr": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 50,
+        "mobile": 66,
         "desktop": 1
       },
       "referrers": {
         "인스타그램": 38,
-        "www.incogna.com": 1
+        "www.incogna.com": 1,
+        "direct": 9
       },
       "hourly": [
         21,
@@ -8648,7 +8661,7 @@
         0,
         0,
         4,
-        0,
+        9,
         0,
         0,
         0,
@@ -8666,5 +8679,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-19T09:00:29.295Z"
+  "updated_at": "2026-08-19T10:00:30.838Z"
 }
