@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 8968,
+    "pv": 8969,
     "click": 3156,
     "search": 0
   },
   "pages": {
-    "/": 1580,
+    "/": 1581,
     "/series/series_ba7cc89468/ep_ad505df37d": 332,
     "/series/series_304565fb77/ep_c2e684a351": 218,
     "/series/series_873cdcaf61/ep_7dd208fe26": 116,
@@ -349,12 +349,12 @@
   "searches": {},
   "devices": {
     "desktop": 546,
-    "mobile": 11568,
+    "mobile": 11569,
     "tablet": 10
   },
   "referrers": {
     "direct": 1103,
-    "인스타그램": 6908,
+    "인스타그램": 6909,
     "페이스북": 327,
     "구글": 20,
     "네이버": 26,
@@ -8585,11 +8585,11 @@
       ]
     },
     "2026-08-19": {
-      "pv": 34,
+      "pv": 35,
       "click": 7,
       "search": 0,
       "pages": {
-        "/": 7,
+        "/": 8,
         "/series/series_ba7cc89468/ep_27438d1204": 1,
         "/series/series_4f27a6d489/ep_eb8b1702fa": 1,
         "/series/series_304565fb77/ep_17f905660e": 1,
@@ -8623,11 +8623,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 40,
+        "mobile": 41,
         "desktop": 1
       },
       "referrers": {
-        "인스타그램": 33,
+        "인스타그램": 34,
         "www.incogna.com": 1
       },
       "hourly": [
@@ -8636,7 +8636,7 @@
         4,
         4,
         2,
-        0,
+        1,
         0,
         0,
         0,
@@ -8658,5 +8658,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-19T05:00:27.709Z"
+  "updated_at": "2026-08-19T06:00:27.505Z"
 }
