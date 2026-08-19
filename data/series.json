@@ -7,6 +7,17 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_cc21192ea2",
+        "ep": 0,
+        "title": "비가 와도 좋은 곳",
+        "url": "https://www.instagram.com/reel/DcMlUmCzpQG/?igsh=ZThva2QzY24wMHV1&igsi=ZThva2QzY24wMHV1",
+        "thumb": "./images/series/spring-fall-mszxpqd6.jpg",
+        "published": true,
+        "created_at": "2026-08-19T10:14:19.578Z",
+        "updated_at": "2026-08-19T10:14:19.578Z",
+        "camp_id": "camp_e06cb829df"
+      },
+      {
         "id": "ep_39cf2ffa99",
         "ep": 1,
         "title": "철쭉 명소 바로 옆 캠핑장",
