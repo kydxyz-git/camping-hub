@@ -1,15 +1,15 @@
 {
   "total": {
-    "pv": 8966,
+    "pv": 8968,
     "click": 3156,
     "search": 0
   },
   "pages": {
-    "/": 1579,
+    "/": 1580,
     "/series/series_ba7cc89468/ep_ad505df37d": 332,
     "/series/series_304565fb77/ep_c2e684a351": 218,
     "/series/series_873cdcaf61/ep_7dd208fe26": 116,
-    "/series/series_e8c17ad5da/ep_e46450a717": 106,
+    "/series/series_e8c17ad5da/ep_e46450a717": 107,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 113,
     "/#stories": 14,
     "/series/series_ba7cc89468/ep_73bdfba72e": 275,
@@ -349,12 +349,12 @@
   "searches": {},
   "devices": {
     "desktop": 546,
-    "mobile": 11566,
+    "mobile": 11568,
     "tablet": 10
   },
   "referrers": {
     "direct": 1103,
-    "인스타그램": 6906,
+    "인스타그램": 6908,
     "페이스북": 327,
     "구글": 20,
     "네이버": 26,
@@ -8585,16 +8585,16 @@
       ]
     },
     "2026-08-19": {
-      "pv": 32,
+      "pv": 34,
       "click": 7,
       "search": 0,
       "pages": {
-        "/": 6,
+        "/": 7,
         "/series/series_ba7cc89468/ep_27438d1204": 1,
         "/series/series_4f27a6d489/ep_eb8b1702fa": 1,
         "/series/series_304565fb77/ep_17f905660e": 1,
         "/series/series_873cdcaf61/ep_eb18e20c30": 1,
-        "/series/series_e8c17ad5da/ep_e46450a717": 1,
+        "/series/series_e8c17ad5da/ep_e46450a717": 2,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 1,
         "/camps/camp_b8d29b3f00": 1,
         "/camps/camp_d9699234d4": 2,
@@ -8623,11 +8623,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 38,
+        "mobile": 40,
         "desktop": 1
       },
       "referrers": {
-        "인스타그램": 31,
+        "인스타그램": 33,
         "www.incogna.com": 1
       },
       "hourly": [
@@ -8635,7 +8635,7 @@
         3,
         4,
         4,
-        0,
+        2,
         0,
         0,
         0,
@@ -8658,5 +8658,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-19T04:00:28.435Z"
+  "updated_at": "2026-08-19T05:00:27.709Z"
 }
