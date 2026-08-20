@@ -1,5 +1,79 @@
 [
   {
+    "name": "또 해먹고 싶은 캠핑 음식",
+    "emoji": "🍖",
+    "color": "#C94A4A",
+    "published": true,
+    "sort": "random",
+    "eps": [
+      {
+        "id": "ep_67c3e626c9",
+        "ep": 0,
+        "title": "캠핑장에서 멜론아이스크림 만들기",
+        "url": "https://www.instagram.com/reel/Dbae7XSTvxx/?igsh=MTB0dHE0YmNtbGV5Yw==",
+        "thumb": "./images/series/foods-ms7jbgbe.jpg",
+        "published": true,
+        "created_at": "2026-07-30T13:13:45.818Z",
+        "updated_at": "2026-07-30T13:13:45.818Z"
+      },
+      {
+        "id": "ep_9032e63bcd",
+        "ep": 5,
+        "title": "불닭냉면, 오징어감자전, 염통꼬치 등",
+        "url": "https://www.instagram.com/p/Dai-Bugk-qb/?igsh=MWgweDlycHA1ZWwwag==",
+        "thumb": "./images/series/foods-ep05.jpg",
+        "published": true,
+        "created_at": "2026-07-08T07:07:07.574Z",
+        "updated_at": "2026-07-08T21:19:32.073Z"
+      },
+      {
+        "id": "ep_17f905660e",
+        "ep": 4,
+        "title": "토마토콩피 샌드위치, 아롱사태 수육 등",
+        "url": "https://www.instagram.com/p/DZa-Rr4k8JH/?igsh=b2d4eGxxNjc4eWd1",
+        "thumb": "./images/series/foods-ep04.jpg",
+        "published": true,
+        "created_at": "2026-06-10T22:09:42.925Z",
+        "updated_at": "2026-06-10T22:09:42.925Z"
+      },
+      {
+        "id": "ep_d7955f38a0",
+        "ep": 3,
+        "title": "양갈비 구이, 조조칼국수, 참외샐러드 등",
+        "url": "https://www.instagram.com/p/DYnZcRPE3Lb/?igsh=OWZxc214enF6cGRk",
+        "thumb": "./images/series/foods-ep03.jpg",
+        "published": true,
+        "created_at": "2026-05-21T21:25:18.850Z",
+        "updated_at": "2026-05-21T21:25:18.850Z"
+      },
+      {
+        "ep": 2,
+        "title": "두릅 튀김, 등갈비 구이 등",
+        "url": "https://www.instagram.com/p/DX5BnxlE6hr/?igsh=amQzanpudnFjYzJs",
+        "thumb": "./images/series/food-ep02.jpg",
+        "page_id": "35502bbd-cd95-8014-8b29-fbe8aa605599",
+        "published": true,
+        "id": "ep_c2e684a351",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
+      },
+      {
+        "ep": 1,
+        "title": "야키토리 토리야 등",
+        "url": "https://www.instagram.com/p/DXUCu6vE6lw/?igsh=eDlvdml3dzFmaHMw",
+        "thumb": "./images/series/food-ep01.jpg",
+        "page_id": "34a02bbd-cd95-80a2-9894-c9bdb1d19f73",
+        "published": true,
+        "id": "ep_a8b40077ca",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
+      }
+    ],
+    "id": "series_304565fb77",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
+  },
+  {
     "name": "봄·가을에 가기 좋은 캠핑장",
     "emoji": "🌸",
     "color": "#E89BB9",
@@ -283,80 +357,6 @@
     ],
     "created_at": "2026-07-03T01:35:37.978Z",
     "updated_at": "2026-07-13T23:43:30.148Z"
-  },
-  {
-    "name": "또 해먹고 싶은 캠핑 음식",
-    "emoji": "🍖",
-    "color": "#C94A4A",
-    "published": true,
-    "sort": "random",
-    "eps": [
-      {
-        "id": "ep_67c3e626c9",
-        "ep": 0,
-        "title": "캠핑장에서 멜론아이스크림 만들기",
-        "url": "https://www.instagram.com/reel/Dbae7XSTvxx/?igsh=MTB0dHE0YmNtbGV5Yw==",
-        "thumb": "./images/series/foods-ms7jbgbe.jpg",
-        "published": true,
-        "created_at": "2026-07-30T13:13:45.818Z",
-        "updated_at": "2026-07-30T13:13:45.818Z"
-      },
-      {
-        "id": "ep_9032e63bcd",
-        "ep": 5,
-        "title": "불닭냉면, 오징어감자전, 염통꼬치 등",
-        "url": "https://www.instagram.com/p/Dai-Bugk-qb/?igsh=MWgweDlycHA1ZWwwag==",
-        "thumb": "./images/series/foods-ep05.jpg",
-        "published": true,
-        "created_at": "2026-07-08T07:07:07.574Z",
-        "updated_at": "2026-07-08T21:19:32.073Z"
-      },
-      {
-        "id": "ep_17f905660e",
-        "ep": 4,
-        "title": "토마토콩피 샌드위치, 아롱사태 수육 등",
-        "url": "https://www.instagram.com/p/DZa-Rr4k8JH/?igsh=b2d4eGxxNjc4eWd1",
-        "thumb": "./images/series/foods-ep04.jpg",
-        "published": true,
-        "created_at": "2026-06-10T22:09:42.925Z",
-        "updated_at": "2026-06-10T22:09:42.925Z"
-      },
-      {
-        "id": "ep_d7955f38a0",
-        "ep": 3,
-        "title": "양갈비 구이, 조조칼국수, 참외샐러드 등",
-        "url": "https://www.instagram.com/p/DYnZcRPE3Lb/?igsh=OWZxc214enF6cGRk",
-        "thumb": "./images/series/foods-ep03.jpg",
-        "published": true,
-        "created_at": "2026-05-21T21:25:18.850Z",
-        "updated_at": "2026-05-21T21:25:18.850Z"
-      },
-      {
-        "ep": 2,
-        "title": "두릅 튀김, 등갈비 구이 등",
-        "url": "https://www.instagram.com/p/DX5BnxlE6hr/?igsh=amQzanpudnFjYzJs",
-        "thumb": "./images/series/food-ep02.jpg",
-        "page_id": "35502bbd-cd95-8014-8b29-fbe8aa605599",
-        "published": true,
-        "id": "ep_c2e684a351",
-        "created_at": "2026-05-21T02:53:18.159759+00:00",
-        "updated_at": "2026-05-21T02:53:18.159759+00:00"
-      },
-      {
-        "ep": 1,
-        "title": "야키토리 토리야 등",
-        "url": "https://www.instagram.com/p/DXUCu6vE6lw/?igsh=eDlvdml3dzFmaHMw",
-        "thumb": "./images/series/food-ep01.jpg",
-        "page_id": "34a02bbd-cd95-80a2-9894-c9bdb1d19f73",
-        "published": true,
-        "id": "ep_a8b40077ca",
-        "created_at": "2026-05-21T02:53:18.159759+00:00",
-        "updated_at": "2026-05-21T02:53:18.159759+00:00"
-      }
-    ],
-    "id": "series_304565fb77",
-    "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
     "name": "장비소개",
