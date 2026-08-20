@@ -1,12 +1,12 @@
 {
   "total": {
-    "pv": 9163,
+    "pv": 9170,
     "click": 3210,
     "search": 0
   },
   "pages": {
-    "/": 1597,
-    "/series/series_ba7cc89468/ep_ad505df37d": 335,
+    "/": 1599,
+    "/series/series_ba7cc89468/ep_ad505df37d": 336,
     "/series/series_304565fb77/ep_c2e684a351": 219,
     "/series/series_873cdcaf61/ep_7dd208fe26": 118,
     "/series/series_e8c17ad5da/ep_e46450a717": 108,
@@ -20,7 +20,7 @@
     "/series/series_e8c17ad5da/ep_7a390bade9": 95,
     "/#camps": 22,
     "/#foods": 19,
-    "/series/series_304565fb77/ep_d7955f38a0": 223,
+    "/series/series_304565fb77/ep_d7955f38a0": 224,
     "/foods/food_592752e317": 29,
     "/foods/food_790525d8a8": 28,
     "/series/series_e8c17ad5da/ep_e383972ec6": 84,
@@ -101,7 +101,7 @@
     "/camps/camp_a9bbd60ec3": 36,
     "/items/item_200bd59067": 22,
     "/series/series_873cdcaf61/ep_116826a88d": 70,
-    "/series/series_e8c17ad5da/ep_7a004a6412": 64,
+    "/series/series_e8c17ad5da/ep_7a004a6412": 65,
     "/series/series_873cdcaf61/ep_4f183af0df": 68,
     "/series/series_ba7cc89468/ep_00a18099de": 270,
     "/camps/camp_43b6759cd3": 4,
@@ -126,12 +126,12 @@
     "/camps/camp_75ee389015": 1,
     "/series/series_304565fb77/ep_9032e63bcd": 57,
     "/series/series_4f27a6d489/ep_3fbc9a3223": 121,
-    "/series/series_4f27a6d489/ep_426dd9712f": 92,
+    "/series/series_4f27a6d489/ep_426dd9712f": 93,
     "/items/item_096f88cf80": 11,
     "/items/item_1e78eeb29a": 26,
     "/items/item_e01fb7d262": 6,
     "/items/item_6489394674": 22,
-    "/series/series_873cdcaf61/ep_9b833c820b": 32,
+    "/series/series_873cdcaf61/ep_9b833c820b": 33,
     "/series/series_ba7cc89468/ep_868813ad26": 68,
     "/series/series_ba7cc89468/ep_7727344bb5": 52,
     "/series/series_304565fb77/ep_67c3e626c9": 27,
@@ -357,13 +357,13 @@
   "searches": {},
   "devices": {
     "desktop": 547,
-    "mobile": 11816,
+    "mobile": 11823,
     "tablet": 10
   },
   "referrers": {
     "direct": 1131,
-    "인스타그램": 7058,
-    "페이스북": 329,
+    "인스타그램": 7059,
+    "페이스북": 335,
     "구글": 20,
     "네이버": 26,
     "link.inpock.co.kr": 4,
@@ -8747,11 +8747,11 @@
       ]
     },
     "2026-08-20": {
-      "pv": 48,
+      "pv": 55,
       "click": 24,
       "search": 0,
       "pages": {
-        "/": 5,
+        "/": 7,
         "/series/series_c0b82ea145/ep_cc21192ea2": 1,
         "/series/series_ba7cc89468/ep_97e39a4499": 3,
         "/series/series_4f27a6d489/ep_e8865faeb9": 1,
@@ -8761,12 +8761,12 @@
         "/series/series_304565fb77/ep_67c3e626c9": 1,
         "/series/series_4f27a6d489/ep_eb8b1702fa": 1,
         "/series/series_4f27a6d489/ep_c8dbf171b7": 1,
-        "/series/series_4f27a6d489/ep_426dd9712f": 2,
+        "/series/series_4f27a6d489/ep_426dd9712f": 3,
         "/series/series_4f27a6d489/ep_3fbc9a3223": 1,
         "/series/series_873cdcaf61/ep_cf2282cf4e": 1,
         "/series/series_e8c17ad5da/ep_7a390bade9": 1,
         "/series/series_ba7cc89468/ep_996b471cb5": 1,
-        "/series/series_ba7cc89468/ep_ad505df37d": 1,
+        "/series/series_ba7cc89468/ep_ad505df37d": 2,
         "/series/series_ba7cc89468/ep_00a18099de": 1,
         "/series/series_ba7cc89468/ep_27438d1204": 1,
         "/series/series_ba7cc89468/ep_868813ad26": 1,
@@ -8788,7 +8788,10 @@
         "/camps/camp_02c72e06a3": 1,
         "/camps/camp_a9bbd60ec3": 1,
         "/foods/food_8924631470": 1,
-        "/foods/food_790525d8a8": 1
+        "/foods/food_790525d8a8": 1,
+        "/series/series_304565fb77/ep_d7955f38a0": 1,
+        "/series/series_873cdcaf61/ep_9b833c820b": 1,
+        "/series/series_e8c17ad5da/ep_7a004a6412": 1
       },
       "clicks": {
         "/series/series_c0b82ea145/ep_cc21192ea2::인스타DM": 1,
@@ -8813,11 +8816,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 72
+        "mobile": 79
       },
       "referrers": {
-        "페이스북": 2,
-        "인스타그램": 33,
+        "페이스북": 8,
+        "인스타그램": 34,
         "direct": 13
       },
       "hourly": [
@@ -8832,7 +8835,7 @@
         0,
         0,
         0,
-        0,
+        7,
         0,
         0,
         0,
@@ -8848,5 +8851,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-20T08:00:28.460Z"
+  "updated_at": "2026-08-20T12:00:28.919Z"
 }
