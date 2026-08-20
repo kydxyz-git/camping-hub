@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 9154,
-    "click": 3206,
+    "pv": 9160,
+    "click": 3208,
     "search": 0
   },
   "pages": {
@@ -26,7 +26,7 @@
     "/series/series_e8c17ad5da/ep_e383972ec6": 84,
     "/camps/camp_e5a202316d": 40,
     "/camps/camp_8e1adf57aa": 59,
-    "/camps/camp_e06cb829df": 27,
+    "/camps/camp_e06cb829df": 28,
     "/foods/food_48d51f3296": 26,
     "/foods/food_b7f447dd02": 33,
     "/series/series_e8c17ad5da/ep_ff868ac30c": 93,
@@ -37,7 +37,7 @@
     "/foods/food_9966103a5b": 26,
     "/series/series_ba7cc89468/ep_b953456d73": 182,
     "/camps/camp_e1e0dde7b3": 35,
-    "/camps/camp_357cccb118": 24,
+    "/camps/camp_357cccb118": 25,
     "/camps/camp_873dcfe92d": 13,
     "/camps/camp_bb40ee2105": 13,
     "/camps/camp_17e022c947": 13,
@@ -45,7 +45,7 @@
     "/camps/camp_51082836b6": 5,
     "/camps/camp_ec631c9ffe": 4,
     "/camps/camp_fd26ab4286": 9,
-    "/camps/camp_0741c2c7b7": 22,
+    "/camps/camp_0741c2c7b7": 23,
     "/camps/camp_c284aeffe4": 32,
     "/camps/camp_9ada4f994a": 26,
     "/camps/camp_6cc478b0b1": 7,
@@ -56,7 +56,7 @@
     "/items/item_48f6974ac5": 22,
     "/camps/camp_8f72106bcf": 14,
     "/camps/camp_e220a217fd": 43,
-    "/camps/camp_c47fbddb56": 11,
+    "/camps/camp_c47fbddb56": 12,
     "/camps/camp_82599ba9bf": 14,
     "/camps/camp_b2804ced5e": 19,
     "/camps/camp_133dd5b2c6": 20,
@@ -91,14 +91,14 @@
     "/camps/camp_7f83d13375": 4,
     "/camps/camp_0380055336": 11,
     "/camps/camp_7fafd07d0a": 6,
-    "/camps/camp_02c72e06a3": 34,
+    "/camps/camp_02c72e06a3": 35,
     "/series/series_ba7cc89468/ep_4da176323e": 331,
     "/camps/camp_f756d38620": 1,
     "/#map": 14,
     "/camps/camp_b8d29b3f00": 33,
     "/camps/camp_e2b57e4e5d": 7,
     "/series/series_ba7cc89468/ep_c56ed16c13": 272,
-    "/camps/camp_a9bbd60ec3": 35,
+    "/camps/camp_a9bbd60ec3": 36,
     "/items/item_200bd59067": 22,
     "/series/series_873cdcaf61/ep_116826a88d": 70,
     "/series/series_e8c17ad5da/ep_7a004a6412": 64,
@@ -260,9 +260,9 @@
     "/#map::www.sanddune.co.kr": 1,
     "/#map::땡큐캠핑": 1,
     "/camps/camp_8e1adf57aa::그래가": 12,
-    "/camps/camp_02c72e06a3::네이버예약": 18,
+    "/camps/camp_02c72e06a3::네이버예약": 19,
     "/series/series_ba7cc89468/ep_c56ed16c13::인스타DM": 155,
-    "/camps/camp_a9bbd60ec3::그래가": 14,
+    "/camps/camp_a9bbd60ec3::그래가": 15,
     "/camps/camp_d9699234d4::네이버": 1,
     "/items/item_200bd59067::네이버예약": 7,
     "/series/series_873cdcaf61/ep_116826a88d::인스타DM": 7,
@@ -357,11 +357,11 @@
   "searches": {},
   "devices": {
     "desktop": 547,
-    "mobile": 11803,
+    "mobile": 11811,
     "tablet": 10
   },
   "referrers": {
-    "direct": 1125,
+    "direct": 1131,
     "인스타그램": 7055,
     "페이스북": 329,
     "구글": 20,
@@ -8747,8 +8747,8 @@
       ]
     },
     "2026-08-20": {
-      "pv": 39,
-      "click": 20,
+      "pv": 45,
+      "click": 22,
       "search": 0,
       "pages": {
         "/": 4,
@@ -8780,7 +8780,13 @@
         "/items/item_fedcb5008b": 1,
         "/items/item_960c2ff01c": 1,
         "/items/item_32e1cc5f58": 1,
-        "/items/item_200bd59067": 1
+        "/items/item_200bd59067": 1,
+        "/camps/camp_0741c2c7b7": 1,
+        "/camps/camp_c47fbddb56": 1,
+        "/camps/camp_357cccb118": 1,
+        "/camps/camp_e06cb829df": 1,
+        "/camps/camp_02c72e06a3": 1,
+        "/camps/camp_a9bbd60ec3": 1
       },
       "clicks": {
         "/series/series_c0b82ea145/ep_cc21192ea2::인스타DM": 1,
@@ -8798,16 +8804,18 @@
         "/series/series_ba7cc89468/ep_3acff3998f::인스타DM": 1,
         "/items/item_960c2ff01c::네이버예약": 1,
         "/items/item_32e1cc5f58::네이버예약": 1,
-        "/items/item_200bd59067::네이버예약": 1
+        "/items/item_200bd59067::네이버예약": 1,
+        "/camps/camp_02c72e06a3::네이버예약": 1,
+        "/camps/camp_a9bbd60ec3::그래가": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 59
+        "mobile": 67
       },
       "referrers": {
         "페이스북": 2,
         "인스타그램": 30,
-        "direct": 7
+        "direct": 13
       },
       "hourly": [
         2,
@@ -8816,7 +8824,7 @@
         15,
         1,
         21,
-        0,
+        6,
         0,
         0,
         0,
@@ -8837,5 +8845,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-20T06:00:35.778Z"
+  "updated_at": "2026-08-20T07:00:29.101Z"
 }
