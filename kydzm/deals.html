@@ -240,7 +240,17 @@ async function loadLabels(){
     if (r.status === 404) { LABELS = {}; LABELS_SHA = null; return; }
     const j = await r.json();
     LABELS_SHA = j.sha;
-    LABELS = JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))));
+    const parsed = JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))));
+    // 파일 전체가 아닌 labels 필드만 취한다 (중첩 방지)
+    const src = parsed.labels && typeof parsed.labels === 'object' ? parsed.labels : parsed;
+    LABELS = {};
+    (function unwrap(o){
+      for (const [k,v] of Object.entries(o)){
+        if (k==='updated_at'||k==='count') continue;
+        if (k==='labels' && v && typeof v==='object') unwrap(v);
+        else if (v && typeof v==='object' && 'v' in v) LABELS[k]=v;
+      }
+    })(src);
   } catch(e){ LABELS = {}; LABELS_SHA = null; }
 }
 
