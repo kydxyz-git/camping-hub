@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 9339,
+    "pv": 9340,
     "click": 3243,
     "search": 0
   },
   "pages": {
-    "/": 1624,
+    "/": 1625,
     "/series/series_ba7cc89468/ep_ad505df37d": 337,
     "/series/series_304565fb77/ep_c2e684a351": 224,
     "/series/series_873cdcaf61/ep_7dd208fe26": 119,
@@ -357,7 +357,7 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 559,
+    "desktop": 560,
     "mobile": 12013,
     "tablet": 10
   },
@@ -372,7 +372,8 @@
     "socialbiz-c.nhndata.com": 24,
     "www.terra.com": 1,
     "www.draze.com": 1,
-    "www.incogna.com": 1
+    "www.incogna.com": 1,
+    "www.seekfu.com": 1
   },
   "daily": {
     "2026-05-21": {
@@ -8880,11 +8881,11 @@
       ]
     },
     "2026-08-21": {
-      "pv": 101,
+      "pv": 102,
       "click": 30,
       "search": 0,
       "pages": {
-        "/": 16,
+        "/": 17,
         "/series/series_304565fb77/ep_67c3e626c9": 3,
         "/series/series_304565fb77/ep_a8b40077ca": 1,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 3,
@@ -8955,13 +8956,14 @@
       "searches": {},
       "devices": {
         "mobile": 124,
-        "desktop": 7
+        "desktop": 8
       },
       "referrers": {
         "인스타그램": 78,
         "socialbiz-c.nhndata.com": 1,
         "direct": 14,
-        "페이스북": 6
+        "페이스북": 6,
+        "www.seekfu.com": 1
       },
       "hourly": [
         18,
@@ -8986,10 +8988,10 @@
         0,
         0,
         0,
-        0,
+        1,
         0
       ]
     }
   },
-  "updated_at": "2026-08-21T16:00:28.518Z"
+  "updated_at": "2026-08-21T23:00:27.596Z"
 }
