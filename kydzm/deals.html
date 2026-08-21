@@ -84,6 +84,20 @@
     border-bottom:1px solid currentColor;padding-bottom:1px;
   }
 
+  .lab{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+  .lab button{
+    padding:5px 10px;font-size:11px;font-weight:700;font-family:inherit;
+    border:1px solid var(--line);border-radius:16px;
+    background:var(--bg);color:var(--muted);cursor:pointer;transition:.12s;
+  }
+  .lab button:hover{border-color:var(--muted)}
+  .lab button.on[data-l=good]{background:var(--success);color:#fff;border-color:var(--success)}
+  .lab button.on[data-l=bad]{background:var(--danger);color:#fff;border-color:var(--danger)}
+  .lab button.on[data-l=old]{background:var(--warn);color:#fff;border-color:var(--warn)}
+  .lab button.on[data-l=chat]{background:var(--muted);color:#fff;border-color:var(--muted)}
+  .row.labeled{opacity:.55}
+  .row.labeled:hover{opacity:1}
+
   .empty{text-align:center;padding:60px 20px;color:var(--muted);font-size:14px}
   .loading{text-align:center;padding:50px;color:var(--muted);font-size:13px}
 
@@ -145,6 +159,10 @@
       <button data-v="30" class="on">30+</button>
       <button data-v="0">전체</button>
     </div>
+    <div class="seg" id="lf">
+      <button data-v="todo" class="on">미판정</button>
+      <button data-v="">전체</button>
+    </div>
     <input type="search" id="q" placeholder="검색">
   </div>
 
@@ -175,6 +193,8 @@ if (sessionStorage.getItem('kydz_admin_authed') !== '1') {
 }
 
 let RECORDS = [], PICKED = new Set();
+let LABELS = {}, LABELS_SHA = null, dirty = false, saveTimer = null;
+const LABEL_NAMES = {good:'✓ 좋음', bad:'✗ 아님', old:'⏱ 오래됨', chat:'💤 잡담'};
 const $ = id => document.getElementById(id);
 
 function toast(msg){
@@ -207,8 +227,54 @@ async function getJSON(path){
   return r.json();
 }
 
+async function loadLabels(){
+  try {
+    const r = await fetch(`${GH_API}${GH_PATH}/labels.json?ref=main&t=${Date.now()}`, {
+      headers:{'Accept':'application/vnd.github+json',
+               'Authorization':`Bearer ${getToken()}`,
+               'X-GitHub-Api-Version':'2022-11-28'}
+    });
+    if (r.status === 404) { LABELS = {}; LABELS_SHA = null; return; }
+    const j = await r.json();
+    LABELS_SHA = j.sha;
+    LABELS = JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))));
+  } catch(e){ LABELS = {}; LABELS_SHA = null; }
+}
+
+async function saveLabels(){
+  if (!dirty) return;
+  const body = JSON.stringify({
+    updated_at: new Date().toISOString().slice(0,16).replace('T',' '),
+    count: Object.keys(LABELS).length,
+    labels: LABELS
+  }, null, 1);
+  const content = btoa(unescape(encodeURIComponent(body)));
+  const payload = { message:`label: ${Object.keys(LABELS).length}건 판정`, content, branch:'main' };
+  if (LABELS_SHA) payload.sha = LABELS_SHA;
+  const r = await fetch(`${GH_API}${GH_PATH}/labels.json`, {
+    method:'PUT',
+    headers:{'Accept':'application/vnd.github+json',
+             'Authorization':`Bearer ${getToken()}`,
+             'X-GitHub-Api-Version':'2022-11-28',
+             'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  });
+  if (r.ok){ const j = await r.json(); LABELS_SHA = j.content.sha; dirty = false; toast('판정 저장됨'); }
+  else { toast('저장 실패 ' + r.status); }
+}
+
+function setLabel(link, val, rec){
+  if (LABELS[link] && LABELS[link].v === val) delete LABELS[link];
+  else LABELS[link] = { v: val, t: rec.title, s: rec.score, c: rec.cafe,
+                        at: new Date().toISOString().slice(0,10) };
+  dirty = true;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveLabels, 1500);
+}
+
 async function boot(){
   try {
+    await loadLabels();
     const idx = await getJSON('index.json');
     $('date').innerHTML = idx.dates.slice().reverse()
       .map((d,i)=>`<option value="${d}"${i===0?' selected':''}>${d}</option>`).join('');
@@ -225,15 +291,24 @@ async function loadDate(date){
     const d = await getJSON(`daily/${date}.json`);
     RECORDS = d.records || [];
     const s = d.summary || {};
-    $('meta').textContent =
-      `${date} · 전체 ${s.total||RECORDS.length}건 / 딜후보 ${s.deals||0}건` +
+    META_BASE = `${date} · 전체 ${s.total||RECORDS.length}건 / 딜후보 ${s.deals||0}건` +
       (d.runs ? ` · ${d.runs.length}회 수집 (${d.runs.map(r=>r.at).join(', ')})` : '');
+    updateMeta();
     render();
   } catch(e) {
     RECORDS = [];
     $('list').innerHTML = `<div class="empty">${date} 데이터가 없습니다.</div>`;
     $('meta').textContent = '';
   }
+}
+
+let META_BASE = '';
+function updateMeta(){
+  const c = {good:0,bad:0,old:0,chat:0};
+  RECORDS.forEach(r=>{ const v=LABELS[r.link]?.v; if(v) c[v]++; });
+  const done = c.good+c.bad+c.old+c.chat;
+  $('meta').textContent = META_BASE +
+    (done ? ` · 판정 ${done}건 (✓${c.good} ✗${c.bad} ⏱${c.old} 💤${c.chat})` : '');
 }
 
 function segVal(id){ return $(id).querySelector('.on').dataset.v; }
@@ -243,10 +318,12 @@ function render(){
   const min  = +segVal('min');
   const q    = $('q').value.trim().toLowerCase();
 
+  const lf = segVal('lf');
   const rows = RECORDS.filter(r =>
     r.score >= min &&
     (!cafe || r.cafe === cafe) &&
-    (!q || (r.title+r.desc).toLowerCase().includes(q))
+    (!q || (r.title+r.desc).toLowerCase().includes(q)) &&
+    (lf !== 'todo' || !LABELS[r.link])
   );
 
   if (!rows.length){
@@ -268,7 +345,12 @@ function render(){
     const ext = (r.urls||[]).map((u,i)=>
       `<a href="${u}" target="_blank" rel="noopener">외부링크${i?i+1:''} ↗</a>`).join('');
 
-    return `<label class="row" data-link="${esc(r.link)}">
+    const cur = LABELS[r.link]?.v;
+    const labBtns = Object.entries(LABEL_NAMES).map(([k,v])=>
+      `<button data-l="${k}" data-link="${esc(r.link)}" class="${cur===k?'on':''}">${v}</button>`
+    ).join('');
+
+    return `<div class="row${cur?' labeled':''}" data-link="${esc(r.link)}">
       <input type="checkbox" class="chk" data-link="${esc(r.link)}">
       <div class="body">
         <div class="tagline">${b.join('')}</div>
@@ -277,9 +359,23 @@ function render(){
         <div class="links">
           <a href="${r.link}" target="_blank" rel="noopener">카페 원문 ↗</a>${ext}
         </div>
+        <div class="lab">${labBtns}</div>
       </div>
-    </label>`;
+    </div>`;
   }).join('');
+
+  document.querySelectorAll('.lab button').forEach(b=>{
+    b.addEventListener('click', e=>{
+      e.preventDefault(); e.stopPropagation();
+      const link = b.dataset.link;
+      const rec = RECORDS.find(x=>x.link===link);
+      setLabel(link, b.dataset.l, rec);
+      render();
+      const n = Object.keys(LABELS).length;
+      $('meta').dataset.labels = n;
+      updateMeta();
+    });
+  });
 
   document.querySelectorAll('.chk').forEach(c=>{
     c.checked = PICKED.has(c.dataset.link);
@@ -330,7 +426,9 @@ $('date').addEventListener('change', e=>loadDate(e.target.value));
 $('q').addEventListener('input', render);
 $('reload').addEventListener('click', ()=>loadDate($('date').value));
 
-['cafe','min'].forEach(id=>{
+window.addEventListener('beforeunload', e=>{ if(dirty){ saveLabels(); e.preventDefault(); e.returnValue=''; } });
+
+['cafe','min','lf'].forEach(id=>{
   $(id).addEventListener('click', e=>{
     if (e.target.tagName !== 'BUTTON') return;
     $(id).querySelectorAll('button').forEach(b=>b.classList.remove('on'));
