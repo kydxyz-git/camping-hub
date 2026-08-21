@@ -1,13 +1,13 @@
 {
   "total": {
-    "pv": 9274,
+    "pv": 9281,
     "click": 3233,
     "search": 0
   },
   "pages": {
-    "/": 1614,
+    "/": 1615,
     "/series/series_ba7cc89468/ep_ad505df37d": 337,
-    "/series/series_304565fb77/ep_c2e684a351": 222,
+    "/series/series_304565fb77/ep_c2e684a351": 223,
     "/series/series_873cdcaf61/ep_7dd208fe26": 118,
     "/series/series_e8c17ad5da/ep_e46450a717": 110,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 120,
@@ -27,7 +27,7 @@
     "/camps/camp_e5a202316d": 41,
     "/camps/camp_8e1adf57aa": 61,
     "/camps/camp_e06cb829df": 28,
-    "/foods/food_48d51f3296": 29,
+    "/foods/food_48d51f3296": 30,
     "/foods/food_b7f447dd02": 34,
     "/series/series_e8c17ad5da/ep_ff868ac30c": 94,
     "/foods/food_464525ea11": 24,
@@ -111,13 +111,13 @@
     "/items/item_75f77862cd": 33,
     "/series/series_873cdcaf61/ep_08c284c148": 53,
     "/series/series_ba7cc89468/ep_97e39a4499": 233,
-    "/series/series_873cdcaf61/ep_14cbfb6b11": 47,
+    "/series/series_873cdcaf61/ep_14cbfb6b11": 48,
     "/series/series_873cdcaf61/ep_eb18e20c30": 46,
     "/camps/camp_bcd074ef33": 4,
     "/camps/camp_0760ee65ba": 3,
     "/series/series_ba7cc89468/ep_860867be0e": 184,
     "/series/series_873cdcaf61/ep_3def2c1289": 56,
-    "/items/item_32e1cc5f58": 32,
+    "/items/item_32e1cc5f58": 33,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 143,
     "/series/series_4f27a6d489/ep_9873ededda": 143,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 144,
@@ -155,7 +155,7 @@
     "/v3.html#about": 2,
     "/index.html": 4,
     "/items/item_a4b57441e0": 26,
-    "/items/item_0e5652bb69": 13,
+    "/items/item_0e5652bb69": 14,
     "/items/item_76917ffdfa": 11,
     "/items/item_8c39b51888": 9,
     "/items/item_6e0210eba9": 4,
@@ -216,7 +216,7 @@
     "/camps/camp_02c72e06a3/video": 1,
     "/series/series_c0b82ea145/ep_cc21192ea2": 5,
     "/items/item_fedcb5008b": 2,
-    "/foods/food_872f7a766d": 1
+    "/foods/food_872f7a766d": 2
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 266,
@@ -358,12 +358,12 @@
   "searches": {},
   "devices": {
     "desktop": 559,
-    "mobile": 11938,
+    "mobile": 11945,
     "tablet": 10
   },
   "referrers": {
     "direct": 1143,
-    "인스타그램": 7127,
+    "인스타그램": 7134,
     "페이스북": 357,
     "구글": 20,
     "네이버": 26,
@@ -8880,18 +8880,18 @@
       ]
     },
     "2026-08-21": {
-      "pv": 36,
+      "pv": 43,
       "click": 20,
       "search": 0,
       "pages": {
-        "/": 6,
+        "/": 7,
         "/series/series_304565fb77/ep_67c3e626c9": 2,
         "/series/series_304565fb77/ep_a8b40077ca": 1,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 2,
         "/foods/food_9945533a15": 1,
         "/foods/food_673fc958f6": 1,
         "/foods/food_790525d8a8": 1,
-        "/foods/food_48d51f3296": 2,
+        "/foods/food_48d51f3296": 3,
         "/#foods": 3,
         "/series/series_e8c17ad5da/ep_ff868ac30c": 1,
         "/series/series_e8c17ad5da/ep_e383972ec6": 1,
@@ -8899,7 +8899,7 @@
         "/foods/food_464525ea11": 1,
         "/foods/food_6b6f5c2711": 1,
         "/foods/food_592752e317": 1,
-        "/series/series_304565fb77/ep_c2e684a351": 1,
+        "/series/series_304565fb77/ep_c2e684a351": 2,
         "/series/series_304565fb77/ep_17f905660e": 1,
         "/series/series_304565fb77/ep_9032e63bcd": 1,
         "/series/series_304565fb77/ep_d7955f38a0": 1,
@@ -8909,7 +8909,11 @@
         "/#stories": 1,
         "/#camps": 1,
         "/#items": 1,
-        "/collab.html": 1
+        "/collab.html": 1,
+        "/series/series_873cdcaf61/ep_14cbfb6b11": 1,
+        "/foods/food_872f7a766d": 1,
+        "/items/item_0e5652bb69": 1,
+        "/items/item_32e1cc5f58": 1
       },
       "clicks": {
         "/foods/food_48d51f3296::컬리": 1,
@@ -8921,11 +8925,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 49,
+        "mobile": 56,
         "desktop": 7
       },
       "referrers": {
-        "인스타그램": 25,
+        "인스타그램": 32,
         "socialbiz-c.nhndata.com": 1,
         "direct": 7,
         "페이스북": 2
@@ -8936,8 +8940,8 @@
         6,
         0,
         0,
-        0,
-        0,
+        4,
+        3,
         0,
         0,
         0,
@@ -8958,5 +8962,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-21T03:00:28.795Z"
+  "updated_at": "2026-08-21T06:00:28.730Z"
 }
