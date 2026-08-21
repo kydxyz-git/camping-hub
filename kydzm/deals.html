@@ -75,6 +75,9 @@
   .badge.price{background:#fff4e5;color:#a35b00;border-color:#ffe0b2}
   .badge.disc{background:#ffeaec;color:#c2273a;border-color:#ffd0d5}
   .badge.coupon{background:#f3ecff;color:#5b32a8;border-color:#e2d5ff}
+  .badge.dpast{background:#f0f0f0;color:#8a8a8a;border-color:#ddd;text-decoration:line-through}
+  .badge.dlive{background:#e8f8ef;color:#00824a;border-color:#c8ecd8}
+  .badge.dfuture{background:#fff8e1;color:#8a6d00;border-color:#ffe9a8}
 
   .ttl{font-size:14px;font-weight:700;line-height:1.4;margin-bottom:4px;word-break:break-all}
   .dsc{font-size:12px;color:var(--muted);line-height:1.5;word-break:break-all}
@@ -341,6 +344,11 @@ function render(){
     (r.prices||[]).slice(0,2).forEach(p=>b.push(`<span class="badge price">${p}</span>`));
     (r.discounts||[]).slice(0,1).forEach(p=>b.push(`<span class="badge disc">${p}</span>`));
     if (r.coupon) b.push(`<span class="badge coupon">코드 ${r.coupon}</span>`);
+    if (r.date_text) {
+      const dm = {past:'dpast', live:'dlive', future:'dfuture'}[r.date_status] || '';
+      const dl = {past:'지남', live:'진행', future:'예정'}[r.date_status] || '';
+      b.push(`<span class="badge ${dm}">${dl} ${r.date_text}</span>`);
+    }
 
     const ext = (r.urls||[]).map((u,i)=>
       `<a href="${u}" target="_blank" rel="noopener">외부링크${i?i+1:''} ↗</a>`).join('');
