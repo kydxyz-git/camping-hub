@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 9440,
-    "click": 3247,
+    "pv": 9446,
+    "click": 3248,
     "search": 0
   },
   "pages": {
@@ -19,9 +19,9 @@
     "/series/series_873cdcaf61/ep_cf2282cf4e": 111,
     "/series/series_e8c17ad5da/ep_7a390bade9": 97,
     "/#camps": 26,
-    "/#foods": 25,
+    "/#foods": 26,
     "/series/series_304565fb77/ep_d7955f38a0": 232,
-    "/foods/food_592752e317": 30,
+    "/foods/food_592752e317": 31,
     "/foods/food_790525d8a8": 32,
     "/series/series_e8c17ad5da/ep_e383972ec6": 86,
     "/camps/camp_e5a202316d": 42,
@@ -34,7 +34,7 @@
     "/foods/food_6b6f5c2711": 37,
     "/#items": 36,
     "/foods/food_9945533a15": 19,
-    "/foods/food_9966103a5b": 26,
+    "/foods/food_9966103a5b": 27,
     "/series/series_ba7cc89468/ep_b953456d73": 182,
     "/camps/camp_e1e0dde7b3": 35,
     "/camps/camp_357cccb118": 25,
@@ -77,7 +77,7 @@
     "/camps/camp_7ce3fbcc39": 12,
     "/camps/camp_f0ee7dd769": 2,
     "/camps/camp_9bcf85928e": 4,
-    "/camps/camp_b205723404": 5,
+    "/camps/camp_b205723404": 6,
     "/camps/camp_f5b616b34c": 2,
     "/camps/camp_6f2737e954": 5,
     "/camps/camp_50b5aafda9": 4,
@@ -106,7 +106,7 @@
     "/series/series_ba7cc89468/ep_00a18099de": 273,
     "/camps/camp_43b6759cd3": 5,
     "/series/series_304565fb77/ep_17f905660e": 148,
-    "/foods/food_8924631470": 31,
+    "/foods/food_8924631470": 32,
     "/foods/food_673fc958f6": 20,
     "/items/item_75f77862cd": 33,
     "/series/series_873cdcaf61/ep_08c284c148": 54,
@@ -154,7 +154,7 @@
     "/v3.html#series/series_e8c17ad5da": 1,
     "/v3.html#about": 2,
     "/index.html": 4,
-    "/items/item_a4b57441e0": 27,
+    "/items/item_a4b57441e0": 28,
     "/items/item_0e5652bb69": 14,
     "/items/item_76917ffdfa": 11,
     "/items/item_8c39b51888": 9,
@@ -355,17 +355,18 @@
     "/camps/camp_6f9fbf5abd::camfit.co.kr": 1,
     "/camps/camp_51082836b6::camfit.co.kr": 1,
     "/series/series_c0b82ea145/ep_cc21192ea2::인스타DM": 5,
-    "/series/series_304565fb77/ep_2e981e7834::인스타DM": 2
+    "/series/series_304565fb77/ep_2e981e7834::인스타DM": 2,
+    "/camps/camp_b205723404::www.narohealing.kr": 1
   },
   "searches": {},
   "devices": {
     "desktop": 563,
-    "mobile": 12114,
+    "mobile": 12121,
     "tablet": 10
   },
   "referrers": {
     "direct": 1180,
-    "인스타그램": 7207,
+    "인스타그램": 7213,
     "페이스북": 363,
     "구글": 20,
     "네이버": 26,
@@ -9153,11 +9154,11 @@
       ]
     },
     "2026-08-24": {
-      "pv": 16,
-      "click": 2,
+      "pv": 22,
+      "click": 3,
       "search": 0,
       "pages": {
-        "/#foods": 1,
+        "/#foods": 2,
         "/foods/food_6b6f5c2711": 1,
         "/foods/food_9945533a15": 1,
         "/": 1,
@@ -9172,18 +9173,24 @@
         "/camps/camp_c6d9da8748": 1,
         "/camps/camp_75ee389015": 1,
         "/camps/camp_7fafd07d0a": 1,
-        "/camps/camp_43b6759cd3": 1
+        "/camps/camp_43b6759cd3": 1,
+        "/foods/food_9966103a5b": 1,
+        "/foods/food_8924631470": 1,
+        "/foods/food_592752e317": 1,
+        "/items/item_a4b57441e0": 1,
+        "/camps/camp_b205723404": 1
       },
       "clicks": {
         "/camps/camp_a9bbd60ec3::그래가": 1,
-        "/camps/camp_02c72e06a3::네이버예약": 1
+        "/camps/camp_02c72e06a3::네이버예약": 1,
+        "/camps/camp_b205723404::www.narohealing.kr": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 18
+        "mobile": 25
       },
       "referrers": {
-        "인스타그램": 4,
+        "인스타그램": 10,
         "direct": 12
       },
       "hourly": [
@@ -9195,7 +9202,7 @@
         12,
         0,
         0,
-        0,
+        6,
         0,
         0,
         0,
@@ -9214,5 +9221,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-24T06:00:59.404Z"
+  "updated_at": "2026-08-24T09:00:58.139Z"
 }
