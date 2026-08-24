@@ -91,6 +91,17 @@
     "sort": "created_desc",
     "eps": [
       {
+        "id": "ep_7cd56002e0",
+        "ep": 0,
+        "title": "가을이면 단풍으로 물드는 곳",
+        "url": "https://www.instagram.com/reel/DccE26ezqA5/?igsi=YTQzcnIycHVsZGYz",
+        "thumb": "./images/series/spring-fall-mt7ufyps.jpg",
+        "published": true,
+        "created_at": "2026-08-24T23:04:54.400Z",
+        "updated_at": "2026-08-24T23:04:54.400Z",
+        "camp_id": "camp_2dee32afa2"
+      },
+      {
         "id": "ep_cc21192ea2",
         "ep": 0,
         "title": "비가 와도 좋은 곳",
