@@ -1,6 +1,6 @@
 {
   "total": {
-    "pv": 9638,
+    "pv": 9647,
     "click": 3283,
     "search": 0
   },
@@ -24,8 +24,8 @@
     "/foods/food_592752e317": 33,
     "/foods/food_790525d8a8": 33,
     "/series/series_e8c17ad5da/ep_e383972ec6": 89,
-    "/camps/camp_e5a202316d": 44,
-    "/camps/camp_8e1adf57aa": 64,
+    "/camps/camp_e5a202316d": 45,
+    "/camps/camp_8e1adf57aa": 65,
     "/camps/camp_e06cb829df": 28,
     "/foods/food_48d51f3296": 30,
     "/foods/food_b7f447dd02": 35,
@@ -37,7 +37,7 @@
     "/foods/food_9966103a5b": 28,
     "/series/series_ba7cc89468/ep_b953456d73": 183,
     "/camps/camp_e1e0dde7b3": 35,
-    "/camps/camp_357cccb118": 26,
+    "/camps/camp_357cccb118": 27,
     "/camps/camp_873dcfe92d": 13,
     "/camps/camp_bb40ee2105": 13,
     "/camps/camp_17e022c947": 13,
@@ -46,7 +46,7 @@
     "/camps/camp_ec631c9ffe": 5,
     "/camps/camp_fd26ab4286": 9,
     "/camps/camp_0741c2c7b7": 27,
-    "/camps/camp_c284aeffe4": 32,
+    "/camps/camp_c284aeffe4": 33,
     "/camps/camp_9ada4f994a": 32,
     "/camps/camp_6cc478b0b1": 7,
     "/camps/camp_ed97486488": 10,
@@ -55,15 +55,15 @@
     "/items/item_960c2ff01c": 47,
     "/items/item_48f6974ac5": 25,
     "/camps/camp_8f72106bcf": 20,
-    "/camps/camp_e220a217fd": 45,
-    "/camps/camp_c47fbddb56": 15,
+    "/camps/camp_e220a217fd": 46,
+    "/camps/camp_c47fbddb56": 16,
     "/camps/camp_82599ba9bf": 15,
     "/camps/camp_b2804ced5e": 23,
     "/camps/camp_133dd5b2c6": 20,
     "/camps/camp_d9699234d4": 40,
-    "/camps/camp_2dee32afa2": 17,
+    "/camps/camp_2dee32afa2": 18,
     "/camps/camp_e7783e56dc": 12,
-    "/camps/camp_922e05eeae": 15,
+    "/camps/camp_922e05eeae": 16,
     "/camps/camp_f0df0a949b": 13,
     "/camps/camp_701884bc18": 10,
     "/camps/camp_6ecd104353": 15,
@@ -91,7 +91,7 @@
     "/camps/camp_7f83d13375": 6,
     "/camps/camp_0380055336": 13,
     "/camps/camp_7fafd07d0a": 8,
-    "/camps/camp_02c72e06a3": 37,
+    "/camps/camp_02c72e06a3": 38,
     "/series/series_ba7cc89468/ep_4da176323e": 333,
     "/camps/camp_f756d38620": 1,
     "/#map": 14,
@@ -371,12 +371,12 @@
   "searches": {},
   "devices": {
     "desktop": 579,
-    "mobile": 12332,
+    "mobile": 12341,
     "tablet": 10
   },
   "referrers": {
     "direct": 1187,
-    "인스타그램": 7359,
+    "인스타그램": 7368,
     "페이스북": 363,
     "구글": 20,
     "네이버": 26,
@@ -9277,7 +9277,7 @@
       ]
     },
     "2026-08-25": {
-      "pv": 133,
+      "pv": 142,
       "click": 32,
       "search": 0,
       "pages": {
@@ -9293,7 +9293,7 @@
         "/series/series_873cdcaf61/ep_3def2c1289": 4,
         "/series/series_e8c17ad5da/ep_e383972ec6": 3,
         "/camps/camp_0741c2c7b7": 2,
-        "/camps/camp_e5a202316d": 1,
+        "/camps/camp_e5a202316d": 2,
         "/camps/camp_9ada4f994a": 2,
         "/camps/camp_8625b4018d": 2,
         "/series/series_304565fb77/ep_67c3e626c9": 2,
@@ -9329,8 +9329,8 @@
         "/items/item_6f79a0aa62": 1,
         "/items/item_75f77862cd": 1,
         "/camps/camp_ed97486488": 1,
-        "/camps/camp_c47fbddb56": 1,
-        "/camps/camp_922e05eeae": 1,
+        "/camps/camp_c47fbddb56": 2,
+        "/camps/camp_922e05eeae": 2,
         "/camps/camp_e2b57e4e5d": 1,
         "/#items": 1,
         "/items/item_200bd59067": 1,
@@ -9346,18 +9346,19 @@
         "/#camps": 2,
         "/#stories": 1,
         "/collab.html": 1,
-        "/camps/camp_e220a217fd": 1,
+        "/camps/camp_e220a217fd": 2,
         "/camps/camp_a9bbd60ec3": 1,
-        "/camps/camp_8e1adf57aa": 1,
-        "/camps/camp_2dee32afa2": 1,
-        "/camps/camp_02c72e06a3": 1,
-        "/camps/camp_357cccb118": 1,
+        "/camps/camp_8e1adf57aa": 2,
+        "/camps/camp_2dee32afa2": 2,
+        "/camps/camp_02c72e06a3": 2,
+        "/camps/camp_357cccb118": 2,
         "/camps/camp_f0df0a949b": 1,
         "/camps/camp_701884bc18": 1,
         "/camps/camp_d69cf442b4": 1,
         "/camps/camp_ec631c9ffe": 1,
         "/camps/camp_c51f85254a": 1,
-        "/series/series_873cdcaf61/ep_eb18e20c30": 1
+        "/series/series_873cdcaf61/ep_eb18e20c30": 1,
+        "/camps/camp_c284aeffe4": 1
       },
       "clicks": {
         "/series/series_873cdcaf61/ep_eff807ca45::인스타DM": 1,
@@ -9378,11 +9379,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 149,
+        "mobile": 158,
         "desktop": 16
       },
       "referrers": {
-        "인스타그램": 87,
+        "인스타그램": 96,
         "socialbiz-c.nhndata.com": 5,
         "direct": 7
       },
@@ -9400,7 +9401,7 @@
         0,
         0,
         5,
-        0,
+        9,
         0,
         0,
         0,
@@ -9414,5 +9415,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-25T13:00:55.854Z"
+  "updated_at": "2026-08-25T14:00:54.730Z"
 }
