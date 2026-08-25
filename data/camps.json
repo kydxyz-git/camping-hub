@@ -788,22 +788,26 @@
     "lng": 127.773826
   },
   {
+    "id": "camp_2dee32afa2",
     "name": "산중오토캠핑장",
     "region": "경남",
     "extras": [],
     "graega": false,
     "url": "https://booking.naver.com/booking/3/bizes/237066",
-    "imgs": [],
+    "imgs": [
+      "./images/camps/3027b6b4bce7.jpg",
+      "./images/camps/3027b6b4bce7-2.jpg",
+      "./images/camps/3027b6b4bce7-3.jpg"
+    ],
     "rating": 0,
     "visits": 4,
     "published": true,
-    "id": "camp_2dee32afa2",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-08-13T00:32:30Z",
+    "updated_at": "2026-08-25T08:06:28.157Z",
     "address": "경남 거창군 북상면 송계사길 63-107",
+    "pick": true,
     "lat": 35.8253455,
-    "lng": 127.8023795,
-    "pick": true
+    "lng": 127.8023795
   },
   {
     "name": "산중오토계곡캠핑장",
