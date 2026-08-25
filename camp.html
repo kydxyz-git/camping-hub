@@ -295,6 +295,13 @@ function orderedImgs(c){
   // ─── 디바이스 감지 (클라이언트 측에서 명시) ─────────────────────
   // Worker가 User-Agent에서 감지하긴 하지만, sendBeacon은 일부 환경에서 UA가
   // minimal로 전송될 수 있어 클라이언트에서 명시적으로 보내는 게 안전
+  const LANG = (function () {
+    try {
+      const l = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+      return String(l).slice(0, 2).toLowerCase() || 'unknown';
+    } catch (e) { return 'unknown'; }
+  })();
+
   function detectDevice() {
     const ua = navigator.userAgent || '';
     if (/iPad|Tablet|tablet/i.test(ua)) return 'tablet';
@@ -332,6 +339,7 @@ function orderedImgs(c){
     try {
       // 모든 이벤트에 device 자동 포함 (Worker가 fallback으로 UA 봄)
       payload.device = DEVICE;
+      payload.lang = LANG;
       // referrer는 페이지뷰에만 (클릭은 페이지뷰 context로 묶임)
       if (payload.type === 'pageview' && REFERRER) {
         payload.referrer = REFERRER;

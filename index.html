@@ -2714,6 +2714,14 @@ if(document.documentElement.classList.contains('is-mo')) init();
   // ─── 디바이스 감지 (클라이언트 측에서 명시) ─────────────────────
   // Worker가 User-Agent에서 감지하긴 하지만, sendBeacon은 일부 환경에서 UA가
   // minimal로 전송될 수 있어 클라이언트에서 명시적으로 보내는 게 안전
+  // 브라우저 언어 — 앞 두 글자만 (ko-KR → ko). 지역까지는 안 남긴다.
+  const LANG = (function () {
+    try {
+      const l = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+      return String(l).slice(0, 2).toLowerCase() || 'unknown';
+    } catch (e) { return 'unknown'; }
+  })();
+
   function detectDevice() {
     const ua = navigator.userAgent || '';
     if (/iPad|Tablet|tablet/i.test(ua)) return 'tablet';
@@ -2751,6 +2759,8 @@ if(document.documentElement.classList.contains('is-mo')) init();
     try {
       // 모든 이벤트에 device 자동 포함 (Worker가 fallback으로 UA 봄)
       payload.device = DEVICE;
+      // 방문자 브라우저 언어 (ko / en / ja ...) — 번역 필요 여부 판단용
+      payload.lang = LANG;
       // referrer는 페이지뷰에만 (클릭은 페이지뷰 context로 묶임)
       if (payload.type === 'pageview' && REFERRER) {
         payload.referrer = REFERRER;
@@ -3654,6 +3664,14 @@ function renderChrome(){
   // ─── 디바이스 감지 (클라이언트 측에서 명시) ─────────────────────
   // Worker가 User-Agent에서 감지하긴 하지만, sendBeacon은 일부 환경에서 UA가
   // minimal로 전송될 수 있어 클라이언트에서 명시적으로 보내는 게 안전
+  // 브라우저 언어 — 앞 두 글자만 (ko-KR → ko). 지역까지는 안 남긴다.
+  const LANG = (function () {
+    try {
+      const l = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+      return String(l).slice(0, 2).toLowerCase() || 'unknown';
+    } catch (e) { return 'unknown'; }
+  })();
+
   function detectDevice() {
     const ua = navigator.userAgent || '';
     if (/iPad|Tablet|tablet/i.test(ua)) return 'tablet';
@@ -3691,6 +3709,8 @@ function renderChrome(){
     try {
       // 모든 이벤트에 device 자동 포함 (Worker가 fallback으로 UA 봄)
       payload.device = DEVICE;
+      // 방문자 브라우저 언어 (ko / en / ja ...) — 번역 필요 여부 판단용
+      payload.lang = LANG;
       // referrer는 페이지뷰에만 (클릭은 페이지뷰 context로 묶임)
       if (payload.type === 'pageview' && REFERRER) {
         payload.referrer = REFERRER;
