@@ -694,6 +694,23 @@
     "updated_at": "2026-08-13T14:26:46.924Z"
   },
   {
+    "id": "item_8249efe8be",
+    "name": "텔레신 HNB-09 SE2.0",
+    "cat": "camera",
+    "video": "",
+    "desc": "넥홀더 스트랩 마운트 블랙",
+    "url": "https://naver.me/GhwBVW6X",
+    "source": "네이버",
+    "thumb": "./images/products/f6f7e0166ef0.jpg",
+    "currency": "KRW",
+    "price_original": 24000,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-08-25T07:23:20.213Z",
+    "updated_at": "2026-08-25T07:23:20.213Z"
+  },
+  {
     "id": "item_32e1cc5f58",
     "name": "마크제트 1.7M 맥세이프 삼각대",
     "cat": "camera",
@@ -799,20 +816,20 @@
     "updated_at": "2026-08-13T14:12:35.458Z"
   },
   {
-    "id": "item_8249efe8be",
-    "name": "텔레신 HNB-09 SE2.0",
+    "id": "item_8eb9a307f9",
+    "name": "울란지 플라스틱 보호 케이스(PK-07)",
     "cat": "camera",
     "video": "",
-    "desc": "넥홀더 스트랩 마운트 블랙",
-    "url": "https://naver.me/GhwBVW6X",
+    "desc": "",
+    "url": "https://naver.me/GP2UT8Q9",
     "source": "네이버",
-    "thumb": "./images/products/f6f7e0166ef0.jpg",
+    "thumb": "./images/products/32a77b1cc1eb.jpg",
     "currency": "KRW",
-    "price_original": 24000,
+    "price_original": 6000,
     "price_sale": null,
     "discount_rate": null,
     "published": true,
-    "created_at": "2026-08-25T07:23:20.213Z",
-    "updated_at": "2026-08-25T07:23:20.213Z"
+    "created_at": "2026-08-25T07:28:16.992Z",
+    "updated_at": "2026-08-25T07:28:16.992Z"
   }
 ]
