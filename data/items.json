@@ -797,5 +797,22 @@
     "published": true,
     "created_at": "2026-07-20T07:59:54.439Z",
     "updated_at": "2026-08-13T14:12:35.458Z"
+  },
+  {
+    "id": "item_8249efe8be",
+    "name": "텔레신 HNB-09 SE2.0",
+    "cat": "camera",
+    "video": "",
+    "desc": "넥홀더 스트랩 마운트 블랙",
+    "url": "https://naver.me/GhwBVW6X",
+    "source": "네이버",
+    "thumb": "./images/products/f6f7e0166ef0.jpg",
+    "currency": "KRW",
+    "price_original": 24000,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-08-25T07:23:20.213Z",
+    "updated_at": "2026-08-25T07:23:20.213Z"
   }
 ]
