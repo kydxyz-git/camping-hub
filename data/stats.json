@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 9689,
-    "click": 3290,
+    "pv": 9695,
+    "click": 3294,
     "search": 0
   },
   "pages": {
-    "/": 1663,
+    "/": 1665,
     "/series/series_ba7cc89468/ep_ad505df37d": 339,
     "/series/series_304565fb77/ep_c2e684a351": 227,
     "/series/series_873cdcaf61/ep_7dd208fe26": 121,
@@ -15,7 +15,7 @@
     "/series/series_ba7cc89468/ep_73bdfba72e": 277,
     "/series/series_ba7cc89468/ep_3acff3998f": 317,
     "/series/series_ba7cc89468/ep_27438d1204": 242,
-    "/series/series_304565fb77/ep_a8b40077ca": 150,
+    "/series/series_304565fb77/ep_a8b40077ca": 151,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 112,
     "/series/series_e8c17ad5da/ep_7a390bade9": 98,
     "/#camps": 29,
@@ -25,7 +25,7 @@
     "/foods/food_790525d8a8": 33,
     "/series/series_e8c17ad5da/ep_e383972ec6": 89,
     "/camps/camp_e5a202316d": 45,
-    "/camps/camp_8e1adf57aa": 65,
+    "/camps/camp_8e1adf57aa": 66,
     "/camps/camp_e06cb829df": 28,
     "/foods/food_48d51f3296": 30,
     "/foods/food_b7f447dd02": 35,
@@ -214,10 +214,10 @@
     "/camps/camp_b8d29b3f00/video": 2,
     "/camps/camp_e06cb829df/video": 1,
     "/camps/camp_02c72e06a3/video": 1,
-    "/series/series_c0b82ea145/ep_cc21192ea2": 19,
+    "/series/series_c0b82ea145/ep_cc21192ea2": 20,
     "/items/item_fedcb5008b": 2,
     "/foods/food_872f7a766d": 3,
-    "/series/series_304565fb77/ep_2e981e7834": 9,
+    "/series/series_304565fb77/ep_2e981e7834": 10,
     "/series/series_c0b82ea145/ep_7cd56002e0": 9,
     "/camps/camp_8625b4018d/video": 1,
     "/items/item_85f4706603": 1,
@@ -360,8 +360,8 @@
     "/camps/camp_117766ff1c::camfit.co.kr": 1,
     "/camps/camp_6f9fbf5abd::camfit.co.kr": 1,
     "/camps/camp_51082836b6::camfit.co.kr": 1,
-    "/series/series_c0b82ea145/ep_cc21192ea2::인스타DM": 13,
-    "/series/series_304565fb77/ep_2e981e7834::인스타DM": 5,
+    "/series/series_c0b82ea145/ep_cc21192ea2::인스타DM": 14,
+    "/series/series_304565fb77/ep_2e981e7834::인스타DM": 8,
     "/camps/camp_b205723404::www.narohealing.kr": 1,
     "/series/series_c0b82ea145/ep_7cd56002e0::인스타DM": 3,
     "/#gear::네이버예약": 1,
@@ -371,12 +371,12 @@
   "searches": {},
   "devices": {
     "desktop": 593,
-    "mobile": 12376,
+    "mobile": 12386,
     "tablet": 10
   },
   "referrers": {
     "direct": 1198,
-    "인스타그램": 7393,
+    "인스타그램": 7399,
     "페이스북": 365,
     "구글": 20,
     "네이버": 26,
@@ -9470,11 +9470,11 @@
       ]
     },
     "2026-08-27": {
-      "pv": 17,
-      "click": 5,
+      "pv": 23,
+      "click": 9,
       "search": 0,
       "pages": {
-        "/": 4,
+        "/": 6,
         "/series/series_c0b82ea145/ep_39cf2ffa99": 1,
         "/series/series_c0b82ea145/ep_7cd56002e0": 2,
         "/#stories": 1,
@@ -9486,22 +9486,29 @@
         "/#camps": 1,
         "/#series/series_c0b82ea145": 1,
         "/#series/series_304565fb77": 1,
-        "/#series/series_4f27a6d489": 1
+        "/#series/series_4f27a6d489": 1,
+        "/series/series_304565fb77/ep_2e981e7834": 1,
+        "/series/series_304565fb77/ep_a8b40077ca": 1,
+        "/series/series_c0b82ea145/ep_cc21192ea2": 1,
+        "/camps/camp_8e1adf57aa": 1
       },
       "clicks": {
         "/series/series_c0b82ea145/ep_7cd56002e0::인스타DM": 2,
         "/series/series_873cdcaf61/ep_9b833c820b::인스타DM": 1,
         "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 1,
-        "/series/series_ba7cc89468/ep_c56ed16c13::인스타DM": 1
+        "/series/series_ba7cc89468/ep_c56ed16c13::인스타DM": 1,
+        "/series/series_304565fb77/ep_2e981e7834::인스타DM": 3,
+        "/series/series_c0b82ea145/ep_cc21192ea2::인스타DM": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 8,
+        "mobile": 18,
         "desktop": 14
       },
       "referrers": {
         "페이스북": 2,
-        "direct": 11
+        "direct": 11,
+        "인스타그램": 6
       },
       "hourly": [
         0,
@@ -9515,8 +9522,8 @@
         0,
         2,
         0,
-        0,
-        0,
+        3,
+        3,
         0,
         0,
         0,
@@ -9531,5 +9538,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-27T10:00:22.824Z"
+  "updated_at": "2026-08-27T12:00:47.209Z"
 }
