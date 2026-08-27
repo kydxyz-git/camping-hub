@@ -49,6 +49,7 @@
     background:var(--bg); color:var(--muted); cursor:pointer; font-family:inherit;
   }
   .seg button.on{background:var(--text);color:var(--bg)}
+  .badge.collected{background:#EEF3FF;color:#3A5BA0;border-color:#D6E0F5}
 
   .meta{font-size:12px;color:var(--muted);margin-bottom:10px;padding:0 2px}
 
@@ -165,6 +166,10 @@
     <div class="seg" id="lf">
       <button data-v="todo" class="on">미판정</button>
       <button data-v="">전체</button>
+    </div>
+    <div class="seg" id="mode">
+      <button data-v="day" class="on">날짜별</button>
+      <button data-v="keep">다시 볼 목록</button>
     </div>
     <input type="search" id="q" placeholder="검색">
   </div>
@@ -326,6 +331,50 @@ function updateMeta(){
 
 function segVal(id){ return $(id).querySelector('.on').dataset.v; }
 
+// ── 다시 볼 목록: ✓좋음 판정 건을 날짜 구분 없이 한 줄로 모아 보여준다 ──
+// 표시 날짜는 '수집한 날' 기준 (daily/*.json 에 그 글이 담긴 날짜)
+let KEEP_ROWS = null;   // 한 번 만들면 재사용
+
+async function loadKeepList(){
+  $('list').innerHTML = '<div class="loading">불러오는 중…</div>';
+  $('meta').textContent = '';
+  try {
+    if (!KEEP_ROWS) {
+      const idx = await getJSON('index.json');
+      const wanted = new Set(Object.entries(LABELS)
+        .filter(([, v]) => v.v === 'good').map(([k]) => k));
+      const found = new Map();          // link → { rec, collectedAt }
+      // 최신 날짜부터 훑어 가장 최근 수집일을 남긴다
+      for (const date of idx.dates.slice().reverse()) {
+        if (found.size >= wanted.size) break;
+        let d;
+        try { d = await getJSON(`daily/${date}.json`); } catch (e) { continue; }
+        for (const r of (d.records || [])) {
+          if (wanted.has(r.link) && !found.has(r.link)) {
+            found.set(r.link, { rec: r, at: date });
+          }
+        }
+      }
+      // 수집 기록에 없는 건(오래된 판정)도 라벨 정보만으로 표시
+      for (const link of wanted) {
+        if (!found.has(link)) {
+          const l = LABELS[link];
+          found.set(link, {
+            rec: { link, title: l.t || '(제목 없음)', desc: '', cafe: l.c || '',
+                   score: l.s || 0, prices: [], discounts: [], urls: [] },
+            at: l.at || '' });
+        }
+      }
+      KEEP_ROWS = [...found.values()].sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+    }
+    RECORDS = KEEP_ROWS.map(x => ({ ...x.rec, _collected: x.at }));
+    $('meta').textContent = `다시 볼 목록 · ✓좋음 ${RECORDS.length}건`;
+    render();
+  } catch (e) {
+    $('list').innerHTML = `<div class="empty">목록을 만들지 못했습니다.<br><small>${e.message}</small></div>`;
+  }
+}
+
 function render(){
   const cafe = segVal('cafe');
   const min  = +segVal('min');
@@ -336,7 +385,7 @@ function render(){
     r.score >= min &&
     (!cafe || r.cafe === cafe) &&
     (!q || (r.title+r.desc).toLowerCase().includes(q)) &&
-    (lf !== 'todo' || !LABELS[r.link])
+    (segVal('mode') === 'keep' || lf !== 'todo' || !LABELS[r.link])
   );
 
   if (!rows.length){
@@ -350,6 +399,7 @@ function render(){
     const b = [];
     b.push(`<span class="badge score${hot}">${r.score}</span>`);
     b.push(`<span class="badge ${cc}">${r.cafe}</span>`);
+    if (r._collected) b.push(`<span class="badge collected">수집 ${r._collected.slice(5)}</span>`);
     if (r.tag) b.push(`<span class="badge">${r.tag}</span>`);
     (r.prices||[]).slice(0,2).forEach(p=>b.push(`<span class="badge price">${p}</span>`));
     (r.discounts||[]).slice(0,1).forEach(p=>b.push(`<span class="badge disc">${p}</span>`));
@@ -440,9 +490,20 @@ $('copy').addEventListener('click', ()=>{
 });
 
 $('clear').addEventListener('click', ()=>{ PICKED.clear(); render(); syncDock(); });
+$('mode').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  [...$('mode').children].forEach(x => x.classList.toggle('on', x === b));
+  const keep = b.dataset.v === 'keep';
+  $('date').style.display = keep ? 'none' : '';
+  if (keep) loadKeepList(); else loadDate($('date').value);
+});
+
 $('date').addEventListener('change', e=>loadDate(e.target.value));
 $('q').addEventListener('input', render);
-$('reload').addEventListener('click', ()=>loadDate($('date').value));
+$('reload').addEventListener('click', ()=>{
+  if (segVal('mode') === 'keep') { KEEP_ROWS = null; loadKeepList(); }
+  else loadDate($('date').value);
+});
 
 window.addEventListener('beforeunload', e=>{ if(dirty){ saveLabels(); e.preventDefault(); e.returnValue=''; } });
 
