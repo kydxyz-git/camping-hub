@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 9742,
-    "click": 3298,
+    "pv": 9749,
+    "click": 3303,
     "search": 0
   },
   "pages": {
@@ -60,7 +60,7 @@
     "/camps/camp_82599ba9bf": 18,
     "/camps/camp_b2804ced5e": 23,
     "/camps/camp_133dd5b2c6": 22,
-    "/camps/camp_d9699234d4": 42,
+    "/camps/camp_d9699234d4": 43,
     "/camps/camp_2dee32afa2": 18,
     "/camps/camp_e7783e56dc": 12,
     "/camps/camp_922e05eeae": 17,
@@ -156,8 +156,8 @@
     "/index.html": 4,
     "/items/item_a4b57441e0": 30,
     "/items/item_0e5652bb69": 14,
-    "/items/item_76917ffdfa": 13,
-    "/items/item_8c39b51888": 9,
+    "/items/item_76917ffdfa": 14,
+    "/items/item_8c39b51888": 10,
     "/items/item_6e0210eba9": 4,
     "/items/item_cc722d51b5": 20,
     "/items/item_2405bff7e5": 20,
@@ -214,17 +214,18 @@
     "/camps/camp_b8d29b3f00/video": 2,
     "/camps/camp_e06cb829df/video": 1,
     "/camps/camp_02c72e06a3/video": 1,
-    "/series/series_c0b82ea145/ep_cc21192ea2": 20,
+    "/series/series_c0b82ea145/ep_cc21192ea2": 21,
     "/items/item_fedcb5008b": 2,
     "/foods/food_872f7a766d": 3,
-    "/series/series_304565fb77/ep_2e981e7834": 10,
+    "/series/series_304565fb77/ep_2e981e7834": 11,
     "/series/series_c0b82ea145/ep_7cd56002e0": 9,
     "/camps/camp_8625b4018d/video": 1,
     "/items/item_85f4706603": 1,
     "/items/item_239d48d277": 1,
     "/items/item_8249efe8be": 1,
     "/items/item_8eb9a307f9": 2,
-    "/items/item_206667db4d": 3
+    "/items/item_206667db4d": 3,
+    "/series/series_304565fb77/ep_03369b1ee7": 2
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 267,
@@ -368,17 +369,20 @@
     "/#gear::네이버예약": 1,
     "/items/item_8eb9a307f9::네이버예약": 1,
     "/#gear::www.insta360.com": 1,
-    "/items/item_206667db4d::쿠팡": 1
+    "/items/item_206667db4d::쿠팡": 1,
+    "/series/series_304565fb77/ep_03369b1ee7::인스타DM": 3,
+    "/collab.html::네이버예약": 1,
+    "/collab.html::www.facebook.com": 1
   },
   "searches": {},
   "devices": {
-    "desktop": 596,
-    "mobile": 12434,
+    "desktop": 601,
+    "mobile": 12441,
     "tablet": 10
   },
   "referrers": {
-    "direct": 1207,
-    "인스타그램": 7433,
+    "direct": 1208,
+    "인스타그램": 7439,
     "페이스북": 365,
     "구글": 20,
     "네이버": 26,
@@ -9546,8 +9550,8 @@
       ]
     },
     "2026-08-28": {
-      "pv": 39,
-      "click": 3,
+      "pv": 46,
+      "click": 8,
       "search": 0,
       "pages": {
         "/#items": 1,
@@ -9572,7 +9576,7 @@
         "/foods/food_790525d8a8": 2,
         "/foods/food_6b6f5c2711": 1,
         "/items/item_d30401a3a0": 1,
-        "/items/item_76917ffdfa": 1,
+        "/items/item_76917ffdfa": 2,
         "/items/item_3e09fe35cb": 1,
         "/camps/camp_b8d29b3f00": 1,
         "/camps/camp_8e1adf57aa": 1,
@@ -9581,28 +9585,36 @@
         "/camps/camp_133dd5b2c6": 1,
         "/camps/camp_8f72106bcf": 1,
         "/camps/camp_82599ba9bf": 1,
-        "/foods/food_8924631470": 1
+        "/foods/food_8924631470": 1,
+        "/items/item_8c39b51888": 1,
+        "/camps/camp_d9699234d4": 1,
+        "/series/series_304565fb77/ep_03369b1ee7": 2,
+        "/series/series_304565fb77/ep_2e981e7834": 1,
+        "/series/series_c0b82ea145/ep_cc21192ea2": 1
       },
       "clicks": {
         "/::협업 문의": 1,
         "/items/item_206667db4d::쿠팡": 1,
-        "/series/series_c0b82ea145/ep_39cf2ffa99::인스타DM": 1
+        "/series/series_c0b82ea145/ep_39cf2ffa99::인스타DM": 1,
+        "/series/series_304565fb77/ep_03369b1ee7::인스타DM": 3,
+        "/collab.html::네이버예약": 1,
+        "/collab.html::www.facebook.com": 1
       },
       "searches": {},
       "devices": {
-        "desktop": 3,
-        "mobile": 39
+        "desktop": 8,
+        "mobile": 46
       },
       "referrers": {
-        "direct": 2,
-        "인스타그램": 33
+        "direct": 3,
+        "인스타그램": 39
       },
       "hourly": [
         0,
         22,
         17,
         0,
-        0,
+        7,
         0,
         0,
         0,
@@ -9625,5 +9637,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-28T03:00:20.192Z"
+  "updated_at": "2026-08-28T04:40:45.380Z"
 }
