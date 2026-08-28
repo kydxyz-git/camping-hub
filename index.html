@@ -229,24 +229,33 @@
       text-align: center;
       word-break: keep-all;
     }
-    /* 최근등록 고정 섹션 */
+    /* 최근등록 고정 섹션 (배경 없이 제목 + 얇은 구분선) */
     .recent-section {
-      background: linear-gradient(135deg, #FFF9E6 0%, #FFF4D6 100%);
-      border: 1px solid #FFE9A8;
-      border-radius: 12px;
-      padding: 14px 14px 6px;
-      margin: 0 16px 18px;
+      padding: 0;
+      margin: 0 16px 20px;
     }
     .recent-head {
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
+      gap: 6px;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--line, #EEE);
     }
     .recent-title {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 800;
-      color: #8A6D1A;
+      color: var(--text, #1a1a1a);
       letter-spacing: -0.3px;
+    }
+    .recent-badge {
+      font-size: 10px;
+      font-weight: 800;
+      color: #fff;
+      background: #E8654A;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
     }
     .recent-section .product-grid {
       margin: 0;
@@ -1401,7 +1410,7 @@ async function loadData() {
     <div class="cat-desc">캠핑에서 먹은 밀키트 중 다시 살 만했던 것들만 정리했습니다.</div>
     <div id="food-pinned"></div>
     <section class="product-section recent-section" id="food-recent-section" style="display:none;">
-      <div class="recent-head"><span class="recent-title">🆕 최근등록 음식</span></div>
+      <div class="recent-head"><span class="recent-badge">NEW</span><span class="recent-title">최근등록 음식</span></div>
       <div class="product-grid" id="food-recent-grid"></div>
     </section>
     <section class="product-section">
@@ -1418,7 +1427,7 @@ async function loadData() {
     <div class="cat-desc">공대남자가 지금 사용 중인 용품들입니다. <span class="desc-note">(<svg class="desc-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg> 추천)</span></div>
     <div id="item-pinned"></div>
     <section class="product-section recent-section" id="item-recent-section" style="display:none;">
-      <div class="recent-head"><span class="recent-title">🆕 최근등록 용품</span></div>
+      <div class="recent-head"><span class="recent-badge">NEW</span><span class="recent-title">최근등록 용품</span></div>
       <div class="product-grid" id="item-recent-grid"></div>
     </section>
     <section class="product-section">
