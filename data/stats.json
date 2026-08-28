@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 9749,
+    "pv": 9753,
     "click": 3303,
     "search": 0
   },
   "pages": {
-    "/": 1668,
+    "/": 1670,
     "/series/series_ba7cc89468/ep_ad505df37d": 339,
     "/series/series_304565fb77/ep_c2e684a351": 227,
     "/series/series_873cdcaf61/ep_7dd208fe26": 121,
@@ -32,7 +32,7 @@
     "/series/series_e8c17ad5da/ep_ff868ac30c": 95,
     "/foods/food_464525ea11": 27,
     "/foods/food_6b6f5c2711": 38,
-    "/#items": 38,
+    "/#items": 39,
     "/foods/food_9945533a15": 20,
     "/foods/food_9966103a5b": 29,
     "/series/series_ba7cc89468/ep_b953456d73": 183,
@@ -159,7 +159,7 @@
     "/items/item_76917ffdfa": 14,
     "/items/item_8c39b51888": 10,
     "/items/item_6e0210eba9": 4,
-    "/items/item_cc722d51b5": 20,
+    "/items/item_cc722d51b5": 21,
     "/items/item_2405bff7e5": 20,
     "/items/item_52bcfa1583": 3,
     "/items/item_b2011a57b1": 7,
@@ -376,15 +376,15 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 601,
+    "desktop": 605,
     "mobile": 12441,
     "tablet": 10
   },
   "referrers": {
-    "direct": 1208,
+    "direct": 1209,
     "인스타그램": 7439,
     "페이스북": 365,
-    "구글": 20,
+    "구글": 23,
     "네이버": 26,
     "link.inpock.co.kr": 4,
     "l.threads.com": 1,
@@ -9550,15 +9550,15 @@
       ]
     },
     "2026-08-28": {
-      "pv": 46,
+      "pv": 50,
       "click": 8,
       "search": 0,
       "pages": {
-        "/#items": 1,
+        "/#items": 2,
         "/#foods": 1,
-        "/": 3,
+        "/": 5,
         "/items/item_a4b57441e0": 1,
-        "/items/item_cc722d51b5": 1,
+        "/items/item_cc722d51b5": 2,
         "/items/item_bf45bb2b31": 1,
         "/items/item_48f6974ac5": 1,
         "/items/item_b85f78de84": 1,
@@ -9602,12 +9602,13 @@
       },
       "searches": {},
       "devices": {
-        "desktop": 8,
+        "desktop": 12,
         "mobile": 46
       },
       "referrers": {
-        "direct": 3,
-        "인스타그램": 39
+        "direct": 4,
+        "인스타그램": 39,
+        "구글": 3
       },
       "hourly": [
         0,
@@ -9617,7 +9618,7 @@
         7,
         0,
         0,
-        0,
+        4,
         0,
         0,
         0,
@@ -9637,5 +9638,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-28T04:40:45.380Z"
+  "updated_at": "2026-08-28T08:00:28.310Z"
 }
