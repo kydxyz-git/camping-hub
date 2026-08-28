@@ -962,6 +962,15 @@
   .order-savebar-msg { flex:1; min-width:150px; font-size:12.5px; font-weight:600; color:#7A5B00; }
   .btn-ghost { background:#fff; color:#555; border:1px solid #ddd; }
   .pick-stars { flex:none; display:inline-flex; margin-right:4px; }
+  .new-btn {
+    flex:none; margin-right:4px; padding:2px 5px;
+    border:1px solid var(--line); border-radius:6px;
+    background:var(--bg); font-size:13px; cursor:pointer;
+    filter:grayscale(1) opacity(0.4); transition:filter 0.15s, border-color 0.15s;
+  }
+  .new-btn.on {
+    filter:none; border-color:#FFC93C; background:#FFF9E6;
+  }
   .pick-btn {
     flex:none; padding:3px 1px; border:0; background:none; cursor:pointer;
     font-size:16px; line-height:1; color:#d8dade; transition:.12s;
@@ -6402,6 +6411,9 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
         data-pick-idx="${item._idx}" data-pick-lv="${n}"
         data-pick-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}"
         title="별 ${n}개${(Number(item.pick)||0) === n ? ' (다시 누르면 해제)' : ''}">★</button>`).join('')}</span>
+      <button type="button" class="new-btn ${item.is_new ? 'on' : ''}"
+        data-new-idx="${item._idx}" data-new-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}"
+        title="최근등록 섹션에 고정">🆕</button>
       ${item.id ? `<button type="button" class="link-copy-btn" data-copy-id="${item.id}"
         data-copy-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}" title="DM용 링크 복사">🔗</button>` : ''}
       <button type="button" class="src-btn ${srcClass(item)}" data-src-idx="${item._idx}"
@@ -6568,6 +6580,36 @@ function renderProductList(dataArr, searchVar, opts) {
       } catch (err) {
         btn.closest('.pick-stars').querySelectorAll('.pick-btn')
           .forEach((b, i) => b.classList.toggle('on', i < cur));   // 실패 시 되돌림
+        showToast('저장 실패: ' + err.message, 'error', 4000);
+      } finally { delete btn.dataset.busy; }
+    };
+  });
+
+  // 최근등록(🆕) 토글
+  document.querySelectorAll('.new-btn').forEach(btn => {
+    btn.onclick = async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      if (btn.dataset.busy) return;
+      btn.dataset.busy = '1';
+      const kind = btn.dataset.newKind;
+      const idx = +btn.dataset.newIdx;
+      const arr = cache[kind] || [];
+      const it = arr[idx];
+      if (!it) { delete btn.dataset.busy; return; }
+      const on = !it.is_new;
+      const next = arr.map((x, i) => i === idx ? { ...x, is_new: on } : x);
+      btn.classList.toggle('on', on);   // 먼저 화면 반영
+      const label = kind === 'foods' ? '음식' : '용품';
+      try {
+        await ghCommitMultipleFiles(
+          [{ path: `data/${kind}.json`, content: JSON.stringify(next, null, 2) + '\n', encoding: 'utf-8' }],
+          `update(admin): ${label} '${it.name}' 최근등록 ${on ? '설정' : '해제'}`
+        );
+        cache[kind] = next;
+        showToast(on ? '🆕 최근등록 고정됨' : '최근등록 해제됨', 'success', 1500);
+        if (kind === 'foods') renderFoodList(); else renderItemList();
+      } catch (err) {
+        btn.classList.toggle('on', !on);   // 실패 시 되돌림
         showToast('저장 실패: ' + err.message, 'error', 4000);
       } finally { delete btn.dataset.busy; }
     };

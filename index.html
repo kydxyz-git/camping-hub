@@ -229,6 +229,28 @@
       text-align: center;
       word-break: keep-all;
     }
+    /* 최근등록 고정 섹션 */
+    .recent-section {
+      background: linear-gradient(135deg, #FFF9E6 0%, #FFF4D6 100%);
+      border: 1px solid #FFE9A8;
+      border-radius: 12px;
+      padding: 14px 14px 6px;
+      margin: 0 16px 18px;
+    }
+    .recent-head {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .recent-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #8A6D1A;
+      letter-spacing: -0.3px;
+    }
+    .recent-section .product-grid {
+      margin: 0;
+    }
     /* 추천 음식/템 최종 업데이트 일자 (배너 아래 작은 텍스트) */
     .update-date {
       margin: 8px 20px 0;
@@ -1378,6 +1400,10 @@ async function loadData() {
     </div>
     <div class="cat-desc">캠핑에서 먹은 밀키트 중 다시 살 만했던 것들만 정리했습니다.</div>
     <div id="food-pinned"></div>
+    <section class="product-section recent-section" id="food-recent-section" style="display:none;">
+      <div class="recent-head"><span class="recent-title">🆕 최근등록 음식</span></div>
+      <div class="product-grid" id="food-recent-grid"></div>
+    </section>
     <section class="product-section">
       <div class="product-grid" id="food-grid"></div>
     </section>
@@ -1391,6 +1417,10 @@ async function loadData() {
     </div>
     <div class="cat-desc">공대남자가 지금 사용 중인 용품들입니다. <span class="desc-note">(<svg class="desc-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg> 추천)</span></div>
     <div id="item-pinned"></div>
+    <section class="product-section recent-section" id="item-recent-section" style="display:none;">
+      <div class="recent-head"><span class="recent-title">🆕 최근등록 용품</span></div>
+      <div class="product-grid" id="item-recent-grid"></div>
+    </section>
     <section class="product-section">
       <div id="item-grid"></div>
     </section>
@@ -1802,6 +1832,41 @@ function renderItemGroups(containerId, dataArr) {
   });
 }
 
+// 상품 카드 HTML 1개 생성 (재사용: 일반 그리드 + 최근등록 섹션 공용)
+function productCardHtml(item, trackCategory) {
+  const _s = (item.source||'').toLowerCase();
+  const SRC_MAP = { '쿠팡':['badge-coupang','쿠팡'], 'coupang':['badge-coupang','쿠팡'],
+                    '컬리':['badge-kurly','컬리'], 'kurly':['badge-kurly','컬리'],
+                    '네이버':['badge-naver','네이버'], 'naver':['badge-naver','네이버'],
+                    '알리':['badge-ali','알리'], 'ali':['badge-ali','알리'],
+                    '테무':['badge-temu','테무'], 'temu':['badge-temu','테무'] };
+  const _empty0 = !item.url || item.url === '#';
+  const _showSrc = trackCategory !== 'items';
+  const [bc, bl] = (_empty0 || !_showSrc) ? ['',''] : (SRC_MAP[_s] || ['badge-etc','기타']);
+  const empty = !item.url || item.url==='#';
+  const trackId = item.id || encodeURIComponent(item.name);
+  const trackPath = `/${trackCategory}/${trackId}`;
+  const trackTitle = (item.name || '').replace(/"/g, '&quot;');
+  const trackAttrs = `data-track-path="${trackPath}" data-track-title="${trackTitle}"`;
+  const _isUsd = item.currency === 'USD';
+  const _fmtPrice = (n) => _isUsd
+    ? '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : Number(n).toLocaleString() + '원';
+  return `<${empty?'div':'a'} class="product-card${empty?' empty':''}" ${empty?`role="button" tabindex="0" data-nolink="${trackTitle}"`:`href="${item.url}" target="_blank" rel="noopener"`} ${trackAttrs}>
+      <div class="product-thumb${item.thumb?'':' ph'}">
+        ${item.thumb ? `<img src="${item.thumb}${item.updated_at ? '?v=' + new Date(item.updated_at).getTime() : ''}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
+        ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : ''}
+        ${item.pick ? `<span class="pick-badge" title="공대남자 PICK">${
+          Array.from({length: Math.min(3, Math.max(1, Number(item.pick) || 1))}, () =>
+            `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg>`
+          ).join('')}</span>` : ''}
+      </div>
+      <div class="product-info">
+        <div class="product-name">${item.name}</div>
+      </div>
+    </${empty?'div':'a'}>`;
+}
+
 function renderProducts(containerId, dataArr, keepOrder) {
   const grid = document.getElementById(containerId);
   // 통계 추적 카테고리 (food-grid → foods, item-grid → items)
@@ -1816,42 +1881,18 @@ function renderProducts(containerId, dataArr, keepOrder) {
     grid.innerHTML = `<div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--text-sub);font-size:13px;">아직 등록된 항목이 없어요</div>`;
     return;
   }
-  grid.innerHTML = shuffled.map(item => {
-    const _s = (item.source||'').toLowerCase();
-    const SRC_MAP = { '쿠팡':['badge-coupang','쿠팡'], 'coupang':['badge-coupang','쿠팡'],
-                      '컬리':['badge-kurly','컬리'], 'kurly':['badge-kurly','컬리'],
-                      '네이버':['badge-naver','네이버'], 'naver':['badge-naver','네이버'],
-                      '알리':['badge-ali','알리'], 'ali':['badge-ali','알리'],
-                      '테무':['badge-temu','테무'], 'temu':['badge-temu','테무'] };
-    const _empty0 = !item.url || item.url === '#';
-    // 캠핑용품은 판매처 배지를 표시하지 않는다 (수가 많아지면 광고처럼 보임)
-    const _showSrc = trackCategory !== 'items';
-    const [bc, bl] = (_empty0 || !_showSrc) ? ['',''] : (SRC_MAP[_s] || ['badge-etc','기타']);
-    const empty = !item.url || item.url==='#';
-    // 통계 추적 path/title — ID 기반
-    const trackId = item.id || encodeURIComponent(item.name);
-    const trackPath = `/${trackCategory}/${trackId}`;
-    const trackTitle = (item.name || '').replace(/"/g, '&quot;');
-    const trackAttrs = `data-track-path="${trackPath}" data-track-title="${trackTitle}"`;
-    // 가격 포맷 (currency: 'USD'면 $, 아니면 원)
-    const _isUsd = item.currency === 'USD';
-    const _fmtPrice = (n) => _isUsd
-      ? '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-      : Number(n).toLocaleString() + '원';
-    return `<${empty?'div':'a'} class="product-card${empty?' empty':''}" ${empty?`role="button" tabindex="0" data-nolink="${trackTitle}"`:`href="${item.url}" target="_blank" rel="noopener"`} ${trackAttrs}>
-      <div class="product-thumb${item.thumb?'':' ph'}">
-        ${item.thumb ? `<img src="${item.thumb}${item.updated_at ? '?v=' + new Date(item.updated_at).getTime() : ''}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
-        ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : ''}
-        ${item.pick ? `<span class="pick-badge" title="공대남자 PICK">${
-          Array.from({length: Math.min(3, Math.max(1, Number(item.pick) || 1))}, () =>
-            `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg>`
-          ).join('')}</span>` : ''}
-      </div>
-      <div class="product-info">
-        <div class="product-name">${item.name}</div>
-      </div>
-    </${empty?'div':'a'}>`;
-  }).join('');
+  grid.innerHTML = shuffled.map(item => productCardHtml(item, trackCategory)).join('');
+}
+
+// 최근등록 고정 섹션 렌더 (is_new 체크된 항목만, 각 탭 최상단)
+function renderRecentSection(sectionId, gridId, dataArr, trackCategory, title) {
+  const section = document.getElementById(sectionId);
+  const grid = document.getElementById(gridId);
+  if (!section || !grid) return;
+  const news = (dataArr || []).filter(x => x.published !== false && x.is_new);
+  if (!news.length) { section.style.display = 'none'; return; }
+  section.style.display = '';
+  grid.innerHTML = news.map(item => productCardHtml(item, trackCategory)).join('');
 }
 
 /* ─── Landscape + 캠핑장 ─── */
@@ -2683,7 +2724,9 @@ async function init() {
     renderEnv();
     renderChips('extra-chips',  autoExtras,  state.extras, 'ecnt');
     renderGrid();
+    renderRecentSection('food-recent-section', 'food-recent-grid', foods, 'foods', '최근등록 음식');
     renderProducts('food-grid', foods);
+    renderRecentSection('item-recent-section', 'item-recent-grid', items, 'items', '최근등록 용품');
     renderItemGroups('item-grid', items);
     // 데이터 로드가 끝난 뒤에 다시 한 번 — 첫 호출 시점엔 items가 비어 있어 그려지지 않는다
     applyHashTab();
