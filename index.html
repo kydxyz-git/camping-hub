@@ -232,14 +232,17 @@
     /* 최근등록 고정 섹션 (배경 없이 제목 + 얇은 구분선) */
     .recent-section {
       padding: 0;
-      margin: 0 16px 20px;
+      margin: 0 16px 8px;
+    }
+    .recent-section.product-section {
+      padding: 0;
     }
     .recent-head {
       display: flex;
       align-items: center;
       gap: 6px;
       padding-bottom: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       border-bottom: 1px solid var(--line, #EEE);
     }
     .recent-title {
@@ -258,7 +261,7 @@
       letter-spacing: 0.3px;
     }
     .recent-section .product-grid {
-      margin: 0;
+      margin-top: 0;
     }
     /* 추천 음식/템 최종 업데이트 일자 (배너 아래 작은 텍스트) */
     .update-date {
@@ -1095,6 +1098,10 @@ html.is-pc .pc-chip.feat:hover{border-color:#BFC7BC}
 html.is-pc .pc-chip.feat.on{background:#3F5346;border-color:#3F5346;color:#fff}
 html.is-pc .pc-grid{display:grid;gap:clamp(16px,2.2vw,26px) clamp(10px,1.6vw,18px);grid-template-columns:repeat(4,1fr)}
 html.is-pc .pc-grid.five{grid-template-columns:repeat(5,1fr)}
+html.is-pc .pc-recent{margin-bottom:28px}
+html.is-pc .pc-recent-head{display:flex;align-items:center;gap:8px;padding-bottom:10px;margin-bottom:16px;border-bottom:1px solid #EEE}
+html.is-pc .pc-recent-title{font-size:17px;font-weight:800;letter-spacing:-.3px;color:#1a1a1a}
+html.is-pc .pc-recent-badge{font-size:11px;font-weight:800;color:#fff;background:#E8654A;padding:2px 7px;border-radius:4px;letter-spacing:.3px}
 html.is-pc .card{display:block}
 html.is-pc .shot{position:relative;aspect-ratio:4/5;overflow:hidden;border-radius:3px;background:#EDEDE7}
 html.is-pc .shot img{transition:transform .5s cubic-bezier(.2,.7,.3,1)}
@@ -3181,6 +3188,7 @@ if(document.documentElement.classList.contains('is-mo')) init();
       <span class="count" id="food-count"></span>
     </div>
     <p class="notice top" id="food-notice"></p>
+    <div class="pc-recent" id="pc-food-recent" style="display:none;"></div>
     <div class="pc-grid five prod" id="pc-food-grid"></div>
   </section>
 
@@ -3193,6 +3201,7 @@ if(document.documentElement.classList.contains('is-mo')) init();
       <span class="count" id="gear-count"></span>
     </div>
     <p class="notice top" id="gear-notice"></p>
+    <div class="pc-recent" id="pc-gear-recent" style="display:none;"></div>
     <div id="gear-sections"></div>
   </section>
 
@@ -3304,7 +3313,9 @@ addEventListener('hashchange',route);
   renderMenu();
   renderCamps();
   renderSeriesList();
+  renderPcRecent('#pc-food-recent',DATA.foods,'foods','최근등록 음식');
   renderProducts('#pc-food-grid',DATA.foods,'#food-count',null,(DATA.config||{}).foodsSort||'random','foods');
+  renderPcRecent('#pc-gear-recent',DATA.items,'items','최근등록 용품');
   renderGear();
   renderChrome();
   route();
@@ -3611,13 +3622,11 @@ function sortProducts(list,mode){
     (b.created_at?new Date(b.created_at).getTime():0)-(a.created_at?new Date(a.created_at).getTime():0));
   return sortRecentFirst(list,7);
 }
-function renderProducts(sel,rows,countSel,emptyMsg,mode,cat){
-  const list=sortProducts(pub(rows), mode||'random');
-  if(countSel) $(countSel).textContent=list.length+'개';
-  $(sel).innerHTML=list.length?list.map(p=>{
-    const hasV=!!(p.video||'').trim();
-    const dead=!(p.url||'').trim() && !hasV;
-    return `<${dead?'div':'a'} class="pcard${dead?' dead':''}" ${dead?`data-nm="${esc(p.name)}"`:`href="${esc(p.url||'#')}"`}
+// PC 카드 HTML 1개 생성 (일반 그리드 + 최근등록 공용)
+function pcardHtml(p, cat){
+  const hasV=!!(p.video||'').trim();
+  const dead=!(p.url||'').trim() && !hasV;
+  return `<${dead?'div':'a'} class="pcard${dead?' dead':''}" ${dead?`data-nm="${esc(p.name)}"`:`href="${esc(p.url||'#')}"`}
       ${dead?'':`data-t="${esc(p.name)}" data-v="${esc(p.video||'')}" data-b="${esc(p.url||'')}" data-s="${esc(p.source||'')}"`}
       data-track-path="/${cat}/${esc(p.id||'')}" data-track-title="${esc(p.name)}">
       ${p.thumb?`<img src="${esc(abs(p.thumb))}${p.updated_at?'?v='+new Date(p.updated_at).getTime():''}" alt="${esc(p.name)}" loading="lazy">`:''}
@@ -3632,7 +3641,21 @@ function renderProducts(sel,rows,countSel,emptyMsg,mode,cat){
         <circle cx="17.2" cy="6.8" r="1.3" fill="#962FBF" stroke="none"/></svg></span>`:''}
       <span class="pn">${esc(p.name)}</span>
     </${dead?'div':'a'}>`;
-  }).join(''):`<p class="empty">${esc(emptyMsg||'아직 등록된 항목이 없습니다.')}</p>`;
+}
+function renderProducts(sel,rows,countSel,emptyMsg,mode,cat){
+  const list=sortProducts(pub(rows), mode||'random');
+  if(countSel) $(countSel).textContent=list.length+'개';
+  $(sel).innerHTML=list.length?list.map(p=>pcardHtml(p,cat)).join(''):`<p class="empty">${esc(emptyMsg||'아직 등록된 항목이 없습니다.')}</p>`;
+}
+// PC 최근등록 섹션 렌더 (is_new 항목만)
+function renderPcRecent(sel, rows, cat, title){
+  const el=$(sel);
+  if(!el) return;
+  const news=pub(rows).filter(x=>x.is_new);
+  if(!news.length){ el.innerHTML=''; el.style.display='none'; return; }
+  el.style.display='';
+  el.innerHTML=`<div class="pc-recent-head"><span class="pc-recent-badge">NEW</span><span class="pc-recent-title">${esc(title)}</span></div>
+    <div class="pc-grid five prod">${news.map(p=>pcardHtml(p,cat)).join('')}</div>`;
 }
 
 
