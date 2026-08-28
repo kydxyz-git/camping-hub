@@ -848,6 +848,7 @@
     "discount_rate": 44,
     "published": true,
     "created_at": "2026-08-28T01:19:23.776Z",
-    "updated_at": "2026-08-28T01:21:38.574667+00:00"
+    "updated_at": "2026-08-28T01:21:38.574667+00:00",
+    "is_new": true
   }
 ]
