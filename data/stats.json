@@ -1,7 +1,7 @@
 {
   "total": {
     "pv": 9864,
-    "click": 3324,
+    "click": 3325,
     "search": 0
   },
   "pages": {
@@ -330,7 +330,7 @@
     "/series/series_873cdcaf61/ep_9b833c820b::인스타DM": 33,
     "/series/series_ba7cc89468/ep_868813ad26::인스타DM": 45,
     "/camps/camp_873dcfe92d::땡큐캠핑": 2,
-    "__external__::Facebook": 2,
+    "__external__::Facebook": 3,
     "/series/series_ba7cc89468/ep_7727344bb5::인스타DM": 16,
     "/items/item_096f88cf80::sinjimorulab.com": 4,
     "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 45,
@@ -381,7 +381,7 @@
   "searches": {},
   "devices": {
     "desktop": 621,
-    "mobile": 12557,
+    "mobile": 12558,
     "tablet": 10
   },
   "referrers": {
@@ -9787,7 +9787,7 @@
     },
     "2026-08-31": {
       "pv": 48,
-      "click": 9,
+      "click": 10,
       "search": 0,
       "pages": {
         "/": 6,
@@ -9833,12 +9833,13 @@
         "/series/series_873cdcaf61/ep_eff807ca45::인스타DM": 1,
         "/#gear::쿠팡": 1,
         "/items/item_960c2ff01c::네이버예약": 1,
-        "/items/item_8eb9a307f9::네이버예약": 1
+        "/items/item_8eb9a307f9::네이버예약": 1,
+        "__external__::Facebook": 1
       },
       "searches": {},
       "devices": {
         "desktop": 16,
-        "mobile": 41
+        "mobile": 42
       },
       "referrers": {
         "인스타그램": 31,
@@ -9872,5 +9873,5 @@
       ]
     }
   },
-  "updated_at": "2026-08-31T13:01:02.667Z"
+  "updated_at": "2026-08-31T15:00:48.938Z"
 }
