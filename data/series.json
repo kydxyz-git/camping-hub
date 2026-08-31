@@ -145,7 +145,18 @@
     "color": "#F5A623",
     "published": true,
     "sort": "created_desc",
-    "eps": [],
+    "eps": [
+      {
+        "id": "ep_07128b8139",
+        "ep": 0,
+        "title": "금강산펜션",
+        "url": "https://www.instagram.com/reel/DcreLbmTLyH/?igsi=end4djZjdnp0YjZ3",
+        "thumb": "./images/series/series-mtghf0jv.jpg",
+        "published": true,
+        "created_at": "2026-08-31T00:10:10.699Z",
+        "updated_at": "2026-08-31T00:10:10.699Z"
+      }
+    ],
     "created_at": "2026-08-31T00:09:02.777Z",
     "updated_at": "2026-08-31T00:09:02.777Z"
   },
