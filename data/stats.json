@@ -1,16 +1,16 @@
 {
   "total": {
-    "pv": 9864,
+    "pv": 9866,
     "click": 3325,
     "search": 0
   },
   "pages": {
-    "/": 1681,
+    "/": 1682,
     "/series/series_ba7cc89468/ep_ad505df37d": 339,
     "/series/series_304565fb77/ep_c2e684a351": 228,
     "/series/series_873cdcaf61/ep_7dd208fe26": 122,
     "/series/series_e8c17ad5da/ep_e46450a717": 115,
-    "/series/series_c0b82ea145/ep_39cf2ffa99": 135,
+    "/series/series_c0b82ea145/ep_39cf2ffa99": 136,
     "/#stories": 19,
     "/series/series_ba7cc89468/ep_73bdfba72e": 277,
     "/series/series_ba7cc89468/ep_3acff3998f": 318,
@@ -381,12 +381,12 @@
   "searches": {},
   "devices": {
     "desktop": 621,
-    "mobile": 12558,
+    "mobile": 12560,
     "tablet": 10
   },
   "referrers": {
     "direct": 1229,
-    "인스타그램": 7521,
+    "인스타그램": 7523,
     "페이스북": 369,
     "구글": 23,
     "네이버": 26,
@@ -9786,15 +9786,15 @@
       ]
     },
     "2026-08-31": {
-      "pv": 48,
+      "pv": 50,
       "click": 10,
       "search": 0,
       "pages": {
-        "/": 6,
+        "/": 7,
         "/#stories": 2,
         "/#series/series_1a549bbd26": 1,
         "/collab.html": 2,
-        "/series/series_c0b82ea145/ep_39cf2ffa99": 2,
+        "/series/series_c0b82ea145/ep_39cf2ffa99": 3,
         "/series/series_ba7cc89468/ep_00a18099de": 1,
         "/series/series_4f27a6d489/ep_c8dbf171b7": 1,
         "/series/series_873cdcaf61/ep_eff807ca45": 2,
@@ -9839,10 +9839,10 @@
       "searches": {},
       "devices": {
         "desktop": 16,
-        "mobile": 42
+        "mobile": 44
       },
       "referrers": {
-        "인스타그램": 31,
+        "인스타그램": 33,
         "direct": 12
       },
       "hourly": [
@@ -9866,12 +9866,12 @@
         0,
         0,
         0,
-        0,
+        2,
         0,
         0,
         0
       ]
     }
   },
-  "updated_at": "2026-08-31T15:00:48.938Z"
+  "updated_at": "2026-08-31T21:00:53.585Z"
 }
