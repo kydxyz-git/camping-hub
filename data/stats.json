@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 9881,
-    "click": 3325,
+    "pv": 9882,
+    "click": 3326,
     "search": 0
   },
   "pages": {
@@ -216,7 +216,7 @@
     "/camps/camp_02c72e06a3/video": 1,
     "/series/series_c0b82ea145/ep_cc21192ea2": 25,
     "/items/item_fedcb5008b": 2,
-    "/foods/food_872f7a766d": 3,
+    "/foods/food_872f7a766d": 4,
     "/series/series_304565fb77/ep_2e981e7834": 13,
     "/series/series_c0b82ea145/ep_7cd56002e0": 14,
     "/camps/camp_8625b4018d/video": 1,
@@ -376,12 +376,13 @@
     "/collab.html::네이버예약": 1,
     "/collab.html::www.facebook.com": 1,
     "/camps/camp_ed97486488::네이버": 1,
-    "/#gear::쿠팡": 1
+    "/#gear::쿠팡": 1,
+    "/foods/food_872f7a766d::쿠팡": 1
   },
   "searches": {},
   "devices": {
     "desktop": 622,
-    "mobile": 12574,
+    "mobile": 12576,
     "tablet": 10
   },
   "referrers": {
@@ -9873,8 +9874,8 @@
       ]
     },
     "2026-09-01": {
-      "pv": 15,
-      "click": 0,
+      "pv": 16,
+      "click": 1,
       "search": 0,
       "pages": {
         "/": 2,
@@ -9890,12 +9891,15 @@
         "/series/series_e8c17ad5da/ep_e383972ec6": 1,
         "/camps/camp_8e1adf57aa": 1,
         "/camps/camp_02c72e06a3": 1,
-        "/camps/camp_c284aeffe4": 1
+        "/camps/camp_c284aeffe4": 1,
+        "/foods/food_872f7a766d": 1
       },
-      "clicks": {},
+      "clicks": {
+        "/foods/food_872f7a766d::쿠팡": 1
+      },
       "searches": {},
       "devices": {
-        "mobile": 14,
+        "mobile": 16,
         "desktop": 1
       },
       "referrers": {
@@ -9911,7 +9915,7 @@
         0,
         1,
         0,
-        0,
+        1,
         0,
         0,
         0,
@@ -9929,5 +9933,5 @@
       ]
     }
   },
-  "updated_at": "2026-09-01T08:00:52.176Z"
+  "updated_at": "2026-09-01T10:00:57.783Z"
 }
