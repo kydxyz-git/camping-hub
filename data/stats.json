@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 9886,
-    "click": 3327,
+    "pv": 9889,
+    "click": 3328,
     "search": 0
   },
   "pages": {
@@ -45,7 +45,7 @@
     "/camps/camp_51082836b6": 5,
     "/camps/camp_ec631c9ffe": 5,
     "/camps/camp_fd26ab4286": 9,
-    "/camps/camp_0741c2c7b7": 29,
+    "/camps/camp_0741c2c7b7": 30,
     "/camps/camp_c284aeffe4": 35,
     "/camps/camp_9ada4f994a": 36,
     "/camps/camp_6cc478b0b1": 7,
@@ -61,7 +61,7 @@
     "/camps/camp_b2804ced5e": 23,
     "/camps/camp_133dd5b2c6": 22,
     "/camps/camp_d9699234d4": 44,
-    "/camps/camp_2dee32afa2": 19,
+    "/camps/camp_2dee32afa2": 20,
     "/camps/camp_e7783e56dc": 12,
     "/camps/camp_922e05eeae": 17,
     "/camps/camp_f0df0a949b": 13,
@@ -227,7 +227,8 @@
     "/items/item_206667db4d": 6,
     "/series/series_304565fb77/ep_03369b1ee7": 8,
     "/#series/series_1a549bbd26": 1,
-    "/series/series_1a549bbd26/ep_07128b8139": 1
+    "/series/series_1a549bbd26/ep_07128b8139": 1,
+    "/camps/camp_2dee32afa2/video": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 267,
@@ -377,17 +378,18 @@
     "/collab.html::www.facebook.com": 1,
     "/camps/camp_ed97486488::네이버": 1,
     "/#gear::쿠팡": 1,
-    "/foods/food_872f7a766d::쿠팡": 1
+    "/foods/food_872f7a766d::쿠팡": 1,
+    "/camps/camp_2dee32afa2/video::네이버예약": 1
   },
   "searches": {},
   "devices": {
     "desktop": 622,
-    "mobile": 12581,
+    "mobile": 12585,
     "tablet": 10
   },
   "referrers": {
     "direct": 1230,
-    "인스타그램": 7526,
+    "인스타그램": 7529,
     "페이스북": 369,
     "구글": 23,
     "네이버": 26,
@@ -9874,8 +9876,8 @@
       ]
     },
     "2026-09-01": {
-      "pv": 20,
-      "click": 2,
+      "pv": 23,
+      "click": 3,
       "search": 0,
       "pages": {
         "/": 2,
@@ -9895,20 +9897,24 @@
         "/foods/food_872f7a766d": 2,
         "/#foods": 1,
         "/foods/food_790525d8a8": 1,
-        "/foods/food_6b6f5c2711": 1
+        "/foods/food_6b6f5c2711": 1,
+        "/camps/camp_0741c2c7b7": 1,
+        "/camps/camp_2dee32afa2": 1,
+        "/camps/camp_2dee32afa2/video": 1
       },
       "clicks": {
         "/foods/food_872f7a766d::쿠팡": 1,
-        "/foods/food_6b6f5c2711::쿠팡": 1
+        "/foods/food_6b6f5c2711::쿠팡": 1,
+        "/camps/camp_2dee32afa2/video::네이버예약": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 21,
+        "mobile": 25,
         "desktop": 1
       },
       "referrers": {
         "direct": 1,
-        "인스타그램": 3
+        "인스타그램": 6
       },
       "hourly": [
         14,
@@ -9932,11 +9938,11 @@
         0,
         0,
         0,
-        0,
+        3,
         0,
         0
       ]
     }
   },
-  "updated_at": "2026-09-01T15:00:59.047Z"
+  "updated_at": "2026-09-01T22:00:58.066Z"
 }
