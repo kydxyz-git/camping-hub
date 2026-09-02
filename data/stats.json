@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 9907,
-    "click": 3328,
+    "pv": 9910,
+    "click": 3329,
     "search": 0
   },
   "pages": {
-    "/": 1685,
+    "/": 1687,
     "/series/series_ba7cc89468/ep_ad505df37d": 339,
     "/series/series_304565fb77/ep_c2e684a351": 228,
     "/series/series_873cdcaf61/ep_7dd208fe26": 122,
@@ -218,7 +218,7 @@
     "/items/item_fedcb5008b": 2,
     "/foods/food_872f7a766d": 5,
     "/series/series_304565fb77/ep_2e981e7834": 13,
-    "/series/series_c0b82ea145/ep_7cd56002e0": 15,
+    "/series/series_c0b82ea145/ep_7cd56002e0": 16,
     "/camps/camp_8625b4018d/video": 1,
     "/items/item_85f4706603": 1,
     "/items/item_239d48d277": 1,
@@ -368,7 +368,7 @@
     "/series/series_c0b82ea145/ep_cc21192ea2::인스타DM": 16,
     "/series/series_304565fb77/ep_2e981e7834::인스타DM": 9,
     "/camps/camp_b205723404::www.narohealing.kr": 1,
-    "/series/series_c0b82ea145/ep_7cd56002e0::인스타DM": 4,
+    "/series/series_c0b82ea145/ep_7cd56002e0::인스타DM": 5,
     "/#gear::네이버예약": 1,
     "/items/item_8eb9a307f9::네이버예약": 2,
     "/#gear::www.insta360.com": 1,
@@ -384,12 +384,12 @@
   "searches": {},
   "devices": {
     "desktop": 622,
-    "mobile": 12603,
+    "mobile": 12607,
     "tablet": 10
   },
   "referrers": {
     "direct": 1230,
-    "인스타그램": 7544,
+    "인스타그램": 7547,
     "페이스북": 369,
     "구글": 23,
     "네이버": 26,
@@ -9952,7 +9952,52 @@
         0,
         18
       ]
+    },
+    "2026-09-02": {
+      "pv": 3,
+      "click": 1,
+      "search": 0,
+      "pages": {
+        "/": 2,
+        "/series/series_c0b82ea145/ep_7cd56002e0": 1
+      },
+      "clicks": {
+        "/series/series_c0b82ea145/ep_7cd56002e0::인스타DM": 1
+      },
+      "searches": {},
+      "devices": {
+        "mobile": 4
+      },
+      "referrers": {
+        "인스타그램": 3
+      },
+      "hourly": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   },
-  "updated_at": "2026-09-02T00:00:51.556Z"
+  "updated_at": "2026-09-02T01:00:47.963Z"
 }
