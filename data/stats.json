@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 9929,
-    "click": 3329,
+    "pv": 9931,
+    "click": 3330,
     "search": 0
   },
   "pages": {
-    "/": 1691,
+    "/": 1692,
     "/series/series_ba7cc89468/ep_ad505df37d": 339,
     "/series/series_304565fb77/ep_c2e684a351": 229,
     "/series/series_873cdcaf61/ep_7dd208fe26": 123,
@@ -198,7 +198,7 @@
     "/items/item_e9c79cd70d": 5,
     "/#items/item_a4b57441e0,item_edd94b4899,item_f54ab947bf": 1,
     "/#items/item_a4b57441e0,item_edd94b4899": 1,
-    "/collab.html": 11,
+    "/collab.html": 12,
     "/camp.html": 1,
     "/items/item_bf45bb2b31": 9,
     "/items/item_c9c551ed52": 11,
@@ -352,7 +352,7 @@
     "/items/item_f8a16a8e45::쿠팡": 3,
     "/items/item_76917ffdfa::쿠팡": 2,
     "/index.html#stories::협업 문의": 1,
-    "/::협업 문의": 3,
+    "/::협업 문의": 4,
     "/items/item_6e0210eba9::네이버예약": 1,
     "/items/item_e9c79cd70d::쿠팡": 1,
     "/camps/camp_e5a202316d/video::네이버": 12,
@@ -385,12 +385,12 @@
   "searches": {},
   "devices": {
     "desktop": 624,
-    "mobile": 12624,
+    "mobile": 12627,
     "tablet": 10
   },
   "referrers": {
     "direct": 1231,
-    "인스타그램": 7564,
+    "인스타그램": 7565,
     "페이스북": 369,
     "구글": 23,
     "네이버": 26,
@@ -10012,7 +10012,52 @@
         0,
         0
       ]
+    },
+    "2026-09-03": {
+      "pv": 2,
+      "click": 1,
+      "search": 0,
+      "pages": {
+        "/": 1,
+        "/collab.html": 1
+      },
+      "clicks": {
+        "/::협업 문의": 1
+      },
+      "searches": {},
+      "devices": {
+        "mobile": 3
+      },
+      "referrers": {
+        "인스타그램": 1
+      },
+      "hourly": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   },
-  "updated_at": "2026-09-02T16:00:16.833Z"
+  "updated_at": "2026-09-03T01:00:15.626Z"
 }
