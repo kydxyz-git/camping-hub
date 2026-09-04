@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 9945,
-    "click": 3337,
+    "pv": 9951,
+    "click": 3338,
     "search": 0
   },
   "pages": {
-    "/": 1694,
+    "/": 1696,
     "/series/series_ba7cc89468/ep_ad505df37d": 339,
     "/series/series_304565fb77/ep_c2e684a351": 229,
     "/series/series_873cdcaf61/ep_7dd208fe26": 123,
@@ -19,16 +19,16 @@
     "/series/series_873cdcaf61/ep_cf2282cf4e": 113,
     "/series/series_e8c17ad5da/ep_7a390bade9": 100,
     "/#camps": 32,
-    "/#foods": 29,
+    "/#foods": 30,
     "/series/series_304565fb77/ep_d7955f38a0": 235,
-    "/foods/food_592752e317": 34,
-    "/foods/food_790525d8a8": 36,
+    "/foods/food_592752e317": 35,
+    "/foods/food_790525d8a8": 37,
     "/series/series_e8c17ad5da/ep_e383972ec6": 92,
     "/camps/camp_e5a202316d": 45,
     "/camps/camp_8e1adf57aa": 71,
     "/camps/camp_e06cb829df": 29,
     "/foods/food_48d51f3296": 30,
-    "/foods/food_b7f447dd02": 35,
+    "/foods/food_b7f447dd02": 36,
     "/series/series_e8c17ad5da/ep_ff868ac30c": 96,
     "/foods/food_464525ea11": 27,
     "/foods/food_6b6f5c2711": 39,
@@ -346,7 +346,7 @@
     "/items/item_1e78eeb29a::쿠팡": 5,
     "/items/item_6489394674::쿠팡": 5,
     "/#gear::인스타DM": 1,
-    "/::인스타DM": 1,
+    "/::인스타DM": 2,
     "/items/item_b8ba2f7683::네이버예약": 2,
     "/#items::협업 문의": 2,
     "/items/item_f8a16a8e45::쿠팡": 3,
@@ -385,13 +385,13 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 624,
-    "mobile": 12648,
+    "desktop": 627,
+    "mobile": 12652,
     "tablet": 10
   },
   "referrers": {
-    "direct": 1231,
-    "인스타그램": 7572,
+    "direct": 1233,
+    "인스타그램": 7576,
     "페이스북": 376,
     "구글": 23,
     "네이버": 26,
@@ -10072,7 +10072,57 @@
         7,
         0
       ]
+    },
+    "2026-09-04": {
+      "pv": 6,
+      "click": 1,
+      "search": 0,
+      "pages": {
+        "/#foods": 1,
+        "/foods/food_b7f447dd02": 1,
+        "/foods/food_790525d8a8": 1,
+        "/foods/food_592752e317": 1,
+        "/": 2
+      },
+      "clicks": {
+        "/::인스타DM": 1
+      },
+      "searches": {},
+      "devices": {
+        "mobile": 4,
+        "desktop": 3
+      },
+      "referrers": {
+        "인스타그램": 4,
+        "direct": 2
+      },
+      "hourly": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   },
-  "updated_at": "2026-09-03T23:00:26.290Z"
+  "updated_at": "2026-09-04T08:00:13.835Z"
 }
