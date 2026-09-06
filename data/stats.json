@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 9988,
+    "pv": 9998,
     "click": 3346,
     "search": 0
   },
   "pages": {
-    "/": 1705,
+    "/": 1706,
     "/series/series_ba7cc89468/ep_ad505df37d": 339,
     "/series/series_304565fb77/ep_c2e684a351": 230,
     "/series/series_873cdcaf61/ep_7dd208fe26": 123,
@@ -117,7 +117,7 @@
     "/camps/camp_0760ee65ba": 3,
     "/series/series_ba7cc89468/ep_860867be0e": 185,
     "/series/series_873cdcaf61/ep_3def2c1289": 65,
-    "/items/item_32e1cc5f58": 36,
+    "/items/item_32e1cc5f58": 37,
     "/series/series_4f27a6d489/ep_c8dbf171b7": 149,
     "/series/series_4f27a6d489/ep_9873ededda": 149,
     "/series/series_4f27a6d489/ep_eb8b1702fa": 148,
@@ -167,13 +167,13 @@
     "/items/item_7daa20fbb6": 14,
     "/items/item_b8ba2f7683": 20,
     "/items/item_f8a16a8e45": 23,
-    "/items/item_d7822bf823": 5,
+    "/items/item_d7822bf823": 6,
     "/items/item_f94eb6d3e5": 15,
     "/items/item_6f2ecec479": 18,
     "/items/item_90f00d1c73": 5,
-    "/items/item_5c8fae4f26": 13,
+    "/items/item_5c8fae4f26": 14,
     "/items/item_bb89bda383": 3,
-    "/items/item_3bffc91077": 4,
+    "/items/item_3bffc91077": 5,
     "/items/item_7bd1dc6926": 9,
     "/items/item_f54ab947bf": 19,
     "/#home": 1,
@@ -187,11 +187,11 @@
     "/#series/series_4f27a6d489": 3,
     "/#series/series_304565fb77": 3,
     "/#series/series_873cdcaf61": 3,
-    "/items/item_6f79a0aa62": 4,
+    "/items/item_6f79a0aa62": 5,
     "/items/item_9f08f89de4": 17,
-    "/items/item_bbc507958e": 3,
+    "/items/item_bbc507958e": 4,
     "/items/item_d30401a3a0": 12,
-    "/items/item_63c49d8aa7": 2,
+    "/items/item_63c49d8aa7": 3,
     "/items/item_3f43285527": 15,
     "/items/item_3e09fe35cb": 6,
     "/#items/item_a4b57441e0": 1,
@@ -221,7 +221,7 @@
     "/series/series_c0b82ea145/ep_7cd56002e0": 20,
     "/camps/camp_8625b4018d/video": 1,
     "/items/item_85f4706603": 1,
-    "/items/item_239d48d277": 1,
+    "/items/item_239d48d277": 2,
     "/items/item_8249efe8be": 1,
     "/items/item_8eb9a307f9": 3,
     "/items/item_206667db4d": 7,
@@ -229,7 +229,8 @@
     "/#series/series_1a549bbd26": 1,
     "/series/series_1a549bbd26/ep_07128b8139": 5,
     "/camps/camp_2dee32afa2/video": 1,
-    "/series/series_c0b82ea145/ep_4cfa643f42": 4
+    "/series/series_c0b82ea145/ep_4cfa643f42": 4,
+    "/items/item_097f1a0123": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 267,
@@ -386,12 +387,12 @@
   "searches": {},
   "devices": {
     "desktop": 630,
-    "mobile": 12686,
+    "mobile": 12696,
     "tablet": 18
   },
   "referrers": {
     "direct": 1237,
-    "인스타그램": 7609,
+    "인스타그램": 7619,
     "페이스북": 376,
     "구글": 23,
     "네이버": 26,
@@ -10181,11 +10182,11 @@
       ]
     },
     "2026-09-06": {
-      "pv": 19,
+      "pv": 29,
       "click": 3,
       "search": 0,
       "pages": {
-        "/": 4,
+        "/": 5,
         "/series/series_304565fb77/ep_17f905660e": 2,
         "/series/series_304565fb77/ep_a8b40077ca": 1,
         "/series/series_304565fb77/ep_03369b1ee7": 1,
@@ -10199,7 +10200,16 @@
         "/foods/food_8924631470": 1,
         "/foods/food_592752e317": 1,
         "/foods/food_673fc958f6": 1,
-        "/#camps": 1
+        "/#camps": 1,
+        "/items/item_d7822bf823": 1,
+        "/items/item_bbc507958e": 1,
+        "/items/item_3bffc91077": 1,
+        "/items/item_5c8fae4f26": 1,
+        "/items/item_63c49d8aa7": 1,
+        "/items/item_097f1a0123": 1,
+        "/items/item_239d48d277": 1,
+        "/items/item_6f79a0aa62": 1,
+        "/items/item_32e1cc5f58": 1
       },
       "clicks": {
         "/series/series_304565fb77/ep_c2e684a351::인스타DM": 1,
@@ -10208,11 +10218,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 20,
+        "mobile": 30,
         "desktop": 2
       },
       "referrers": {
-        "인스타그램": 17,
+        "인스타그램": 27,
         "direct": 2
       },
       "hourly": [
@@ -10238,10 +10248,10 @@
         0,
         0,
         0,
-        0,
+        10,
         0
       ]
     }
   },
-  "updated_at": "2026-09-06T14:00:59.413Z"
+  "updated_at": "2026-09-06T23:01:10.885Z"
 }
