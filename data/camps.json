@@ -1493,5 +1493,32 @@
     ],
     "pick": true,
     "address": "충북 제천시 백운면 덕동리 292-2"
+  },
+  {
+    "id": "camp_2546846375",
+    "name": "지지밸리 유명산 오토캠핑장",
+    "region": "경기",
+    "extras": [],
+    "graega": true,
+    "url": "https://graega.short.gy/7039kydzm",
+    "imgs": [
+      "./images/camps/cff0308b32f8.jpg",
+      "./images/camps/cff0308b32f8-2.jpg",
+      "./images/camps/cff0308b32f8-3.jpg",
+      "./images/camps/cff0308b32f8-4.jpg",
+      "./images/camps/cff0308b32f8-5.jpg",
+      "./images/camps/cff0308b32f8-6.jpg",
+      "./images/camps/cff0308b32f8-7.jpg",
+      "./images/camps/cff0308b32f8-8.jpg"
+    ],
+    "rating": 0,
+    "visits": 0,
+    "published": true,
+    "created_at": "2026-09-08T13:45:17.366Z",
+    "updated_at": "2026-09-08T13:45:17.366Z",
+    "address": "경기 가평군 설악면 유명로 794-46",
+    "main_img": "./images/camps/cff0308b32f8-7.jpg",
+    "lat": 37.6169283,
+    "lng": 127.4919623
   }
 ]
