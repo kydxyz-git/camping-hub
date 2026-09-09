@@ -287,6 +287,72 @@
     "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
   {
+    "name": "캠핑꿀팁",
+    "emoji": "💡",
+    "color": "#4A90E2",
+    "published": true,
+    "sort": "random",
+    "eps": [
+      {
+        "id": "ep_7a004a6412",
+        "ep": 0,
+        "title": "🔥장박캠핑 필수 조합 템!🔥",
+        "url": "https://www.instagram.com/p/DRrFQDzEwOt/",
+        "thumb": "./images/series/tips-mq0k344g.jpg",
+        "published": true,
+        "created_at": "2026-06-05T06:41:28.480Z",
+        "updated_at": "2026-06-05T06:41:28.480Z"
+      },
+      {
+        "ep": 0,
+        "title": "캠핑고수처럼 타프 치는 방법",
+        "url": "https://www.instagram.com/p/DJ1XyvPT5rq/",
+        "thumb": "./images/series/tips-01.jpg",
+        "page_id": "34a02bbd-cd95-80e7-8c62-dd7ae01d8737",
+        "published": true,
+        "id": "ep_ff868ac30c",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
+      },
+      {
+        "ep": 0,
+        "title": "일산화탄소 경보기 테스트",
+        "url": "https://www.instagram.com/p/DSQvxXlkx5E/",
+        "thumb": "./images/series/tips-02.jpg",
+        "page_id": "34a02bbd-cd95-8010-a774-fa35c5bb8ce2",
+        "published": true,
+        "id": "ep_7a390bade9",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
+      },
+      {
+        "ep": 0,
+        "title": "캠핑박스 수납법",
+        "url": "https://www.instagram.com/p/DKcA-brzRLN/",
+        "thumb": "./images/series/tips-03.jpg",
+        "page_id": "34a02bbd-cd95-80ce-9989-debe96852e1f",
+        "published": true,
+        "id": "ep_e383972ec6",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
+      },
+      {
+        "ep": 0,
+        "title": "우중철수 꿀팁",
+        "url": "https://www.instagram.com/reel/DXxYOT1TeAz/?igsh=OXN2ajlyMmF5d2lj",
+        "thumb": "./images/series/tips-04.jpg",
+        "page_id": "34a02bbd-cd95-8096-9f3e-cb89f0a3e768",
+        "published": true,
+        "id": "ep_e46450a717",
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-21T02:53:18.159759+00:00"
+      }
+    ],
+    "id": "series_e8c17ad5da",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
+  },
+  {
     "name": "여름에 가기 좋은 캠핑장",
     "emoji": "☀️",
     "color": "#F5A623",
@@ -558,71 +624,5 @@
     ],
     "created_at": "2026-08-31T00:09:02.777Z",
     "updated_at": "2026-08-31T00:09:02.777Z"
-  },
-  {
-    "name": "캠핑꿀팁",
-    "emoji": "💡",
-    "color": "#4A90E2",
-    "published": true,
-    "sort": "random",
-    "eps": [
-      {
-        "id": "ep_7a004a6412",
-        "ep": 0,
-        "title": "🔥장박캠핑 필수 조합 템!🔥",
-        "url": "https://www.instagram.com/p/DRrFQDzEwOt/",
-        "thumb": "./images/series/tips-mq0k344g.jpg",
-        "published": true,
-        "created_at": "2026-06-05T06:41:28.480Z",
-        "updated_at": "2026-06-05T06:41:28.480Z"
-      },
-      {
-        "ep": 0,
-        "title": "캠핑고수처럼 타프 치는 방법",
-        "url": "https://www.instagram.com/p/DJ1XyvPT5rq/",
-        "thumb": "./images/series/tips-01.jpg",
-        "page_id": "34a02bbd-cd95-80e7-8c62-dd7ae01d8737",
-        "published": true,
-        "id": "ep_ff868ac30c",
-        "created_at": "2026-05-21T02:53:18.159759+00:00",
-        "updated_at": "2026-05-21T02:53:18.159759+00:00"
-      },
-      {
-        "ep": 0,
-        "title": "일산화탄소 경보기 테스트",
-        "url": "https://www.instagram.com/p/DSQvxXlkx5E/",
-        "thumb": "./images/series/tips-02.jpg",
-        "page_id": "34a02bbd-cd95-8010-a774-fa35c5bb8ce2",
-        "published": true,
-        "id": "ep_7a390bade9",
-        "created_at": "2026-05-21T02:53:18.159759+00:00",
-        "updated_at": "2026-05-21T02:53:18.159759+00:00"
-      },
-      {
-        "ep": 0,
-        "title": "캠핑박스 수납법",
-        "url": "https://www.instagram.com/p/DKcA-brzRLN/",
-        "thumb": "./images/series/tips-03.jpg",
-        "page_id": "34a02bbd-cd95-80ce-9989-debe96852e1f",
-        "published": true,
-        "id": "ep_e383972ec6",
-        "created_at": "2026-05-21T02:53:18.159759+00:00",
-        "updated_at": "2026-05-21T02:53:18.159759+00:00"
-      },
-      {
-        "ep": 0,
-        "title": "우중철수 꿀팁",
-        "url": "https://www.instagram.com/reel/DXxYOT1TeAz/?igsh=OXN2ajlyMmF5d2lj",
-        "thumb": "./images/series/tips-04.jpg",
-        "page_id": "34a02bbd-cd95-8096-9f3e-cb89f0a3e768",
-        "published": true,
-        "id": "ep_e46450a717",
-        "created_at": "2026-05-21T02:53:18.159759+00:00",
-        "updated_at": "2026-05-21T02:53:18.159759+00:00"
-      }
-    ],
-    "id": "series_e8c17ad5da",
-    "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T02:53:18.159759+00:00"
   }
 ]
