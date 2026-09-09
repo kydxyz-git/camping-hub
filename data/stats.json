@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 10083,
-    "click": 3350,
+    "pv": 10096,
+    "click": 3352,
     "search": 0
   },
   "pages": {
-    "/": 1720,
+    "/": 1721,
     "/series/series_ba7cc89468/ep_ad505df37d": 339,
     "/series/series_304565fb77/ep_c2e684a351": 233,
     "/series/series_873cdcaf61/ep_7dd208fe26": 124,
@@ -32,7 +32,7 @@
     "/series/series_e8c17ad5da/ep_ff868ac30c": 96,
     "/foods/food_464525ea11": 27,
     "/foods/food_6b6f5c2711": 39,
-    "/#items": 41,
+    "/#items": 42,
     "/foods/food_9945533a15": 20,
     "/foods/food_9966103a5b": 31,
     "/series/series_ba7cc89468/ep_b953456d73": 184,
@@ -157,7 +157,7 @@
     "/items/item_a4b57441e0": 32,
     "/items/item_0e5652bb69": 14,
     "/items/item_76917ffdfa": 16,
-    "/items/item_8c39b51888": 10,
+    "/items/item_8c39b51888": 12,
     "/items/item_6e0210eba9": 4,
     "/items/item_cc722d51b5": 21,
     "/items/item_2405bff7e5": 20,
@@ -165,17 +165,17 @@
     "/items/item_b2011a57b1": 8,
     "/items/item_07e316531b": 7,
     "/items/item_7daa20fbb6": 14,
-    "/items/item_b8ba2f7683": 20,
-    "/items/item_f8a16a8e45": 23,
-    "/items/item_d7822bf823": 6,
-    "/items/item_f94eb6d3e5": 15,
+    "/items/item_b8ba2f7683": 21,
+    "/items/item_f8a16a8e45": 25,
+    "/items/item_d7822bf823": 7,
+    "/items/item_f94eb6d3e5": 16,
     "/items/item_6f2ecec479": 18,
     "/items/item_90f00d1c73": 5,
     "/items/item_5c8fae4f26": 14,
     "/items/item_bb89bda383": 3,
     "/items/item_3bffc91077": 5,
     "/items/item_7bd1dc6926": 9,
-    "/items/item_f54ab947bf": 19,
+    "/items/item_f54ab947bf": 20,
     "/#home": 1,
     "/#food": 2,
     "/#gear": 2,
@@ -188,7 +188,7 @@
     "/#series/series_304565fb77": 3,
     "/#series/series_873cdcaf61": 3,
     "/items/item_6f79a0aa62": 5,
-    "/items/item_9f08f89de4": 17,
+    "/items/item_9f08f89de4": 18,
     "/items/item_bbc507958e": 4,
     "/items/item_d30401a3a0": 13,
     "/items/item_63c49d8aa7": 3,
@@ -201,7 +201,7 @@
     "/collab.html": 12,
     "/camp.html": 1,
     "/items/item_bf45bb2b31": 9,
-    "/items/item_c9c551ed52": 11,
+    "/items/item_c9c551ed52": 12,
     "/items/item_7e65f604b9": 4,
     "/#series/series_e8c17ad5da": 1,
     "/#series/series_c0b82ea145": 3,
@@ -230,7 +230,7 @@
     "/series/series_1a549bbd26/ep_07128b8139": 5,
     "/camps/camp_2dee32afa2/video": 1,
     "/series/series_c0b82ea145/ep_4cfa643f42": 8,
-    "/items/item_097f1a0123": 1,
+    "/items/item_097f1a0123": 2,
     "/series/series_c0b82ea145/ep_8dea36d989": 3
   },
   "clicks": {
@@ -351,7 +351,7 @@
     "/::인스타DM": 2,
     "/items/item_b8ba2f7683::네이버예약": 2,
     "/#items::협업 문의": 2,
-    "/items/item_f8a16a8e45::쿠팡": 3,
+    "/items/item_f8a16a8e45::쿠팡": 4,
     "/items/item_76917ffdfa::쿠팡": 2,
     "/index.html#stories::협업 문의": 1,
     "/::협업 문의": 4,
@@ -385,17 +385,18 @@
     "/camps/camp_2dee32afa2/video::네이버예약": 1,
     "/series/series_1a549bbd26/ep_07128b8139::인스타DM": 1,
     "/series/series_c0b82ea145/ep_4cfa643f42::인스타DM": 1,
-    "/series/series_c0b82ea145/ep_8dea36d989::인스타DM": 2
+    "/series/series_c0b82ea145/ep_8dea36d989::인스타DM": 2,
+    "/items/item_097f1a0123::쿠팡": 1
   },
   "searches": {},
   "devices": {
     "desktop": 635,
-    "mobile": 12780,
+    "mobile": 12795,
     "tablet": 18
   },
   "referrers": {
     "direct": 1238,
-    "인스타그램": 7698,
+    "인스타그램": 7711,
     "페이스북": 377,
     "구글": 23,
     "네이버": 26,
@@ -10385,11 +10386,11 @@
       ]
     },
     "2026-09-09": {
-      "pv": 22,
-      "click": 0,
+      "pv": 35,
+      "click": 2,
       "search": 0,
       "pages": {
-        "/": 1,
+        "/": 2,
         "/series/series_304565fb77/ep_03369b1ee7": 1,
         "/series/series_304565fb77/ep_67c3e626c9": 1,
         "/series/series_304565fb77/ep_c2e684a351": 1,
@@ -10410,15 +10411,28 @@
         "/series/series_873cdcaf61/ep_4f183af0df": 1,
         "/series/series_873cdcaf61/ep_9b833c820b": 1,
         "/items/item_d30401a3a0": 1,
-        "/items/item_3a7d4dd061": 1
+        "/items/item_3a7d4dd061": 1,
+        "/items/item_8c39b51888": 2,
+        "/items/item_d7822bf823": 1,
+        "/items/item_f8a16a8e45": 2,
+        "/#items": 1,
+        "/items/item_b8ba2f7683": 1,
+        "/items/item_f94eb6d3e5": 1,
+        "/items/item_9f08f89de4": 1,
+        "/items/item_f54ab947bf": 1,
+        "/items/item_c9c551ed52": 1,
+        "/items/item_097f1a0123": 1
       },
-      "clicks": {},
+      "clicks": {
+        "/items/item_f8a16a8e45::쿠팡": 1,
+        "/items/item_097f1a0123::쿠팡": 1
+      },
       "searches": {},
       "devices": {
-        "mobile": 22
+        "mobile": 37
       },
       "referrers": {
-        "인스타그램": 22
+        "인스타그램": 35
       },
       "hourly": [
         0,
@@ -10426,7 +10440,7 @@
         0,
         22,
         0,
-        0,
+        13,
         0,
         0,
         0,
@@ -10448,5 +10462,5 @@
       ]
     }
   },
-  "updated_at": "2026-09-09T03:38:49.106Z"
+  "updated_at": "2026-09-09T06:00:57.896Z"
 }
