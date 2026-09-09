@@ -14,14 +14,20 @@
       "./images/camps/d6c12adf4086-2.jpg",
       "./images/camps/d6c12adf4086-3.jpg",
       "./images/camps/d6c12adf4086-4.jpg",
-      "./images/camps/d6c12adf4086-5.jpg"
+      "./images/camps/d6c12adf4086-5.jpg",
+      "./images/camps/d6c12adf4086-6.jpg",
+      "./images/camps/d6c12adf4086-7.jpg",
+      "./images/camps/d6c12adf4086-8.jpg",
+      "./images/camps/d6c12adf4086-9.jpg",
+      "./images/camps/d6c12adf4086-10.jpg"
     ],
     "rating": 3,
     "visits": 16,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-09-09T00:20:58.509Z",
+    "updated_at": "2026-09-09T00:28:39.275Z",
     "address": "경남 합천군 대병면 합천호수로 262-35",
+    "main_img": "./images/camps/d6c12adf4086-5.jpg",
     "lat": 35.5258436,
     "lng": 128.0382407,
     "videos": [
