@@ -1,5 +1,83 @@
 [
   {
+    "name": "봄·가을에 가기 좋은 캠핑장",
+    "emoji": "🌸",
+    "color": "#E89BB9",
+    "published": true,
+    "sort": "created_desc",
+    "eps": [
+      {
+        "id": "ep_c0bdf24e33",
+        "ep": 0,
+        "title": "작년 겨울 여기서 장박했는데",
+        "url": "https://www.instagram.com/reel/DdCtBTMT0dk/?stkn=MXEzb3c4bWV0MmlmcA==",
+        "thumb": "./images/series/spring-fall-mttcw5f7.jpg",
+        "published": true,
+        "created_at": "2026-09-09T00:24:32.371Z",
+        "updated_at": "2026-09-09T00:24:32.371Z",
+        "camp_id": "camp_e5a202316d"
+      },
+      {
+        "id": "ep_8dea36d989",
+        "ep": 0,
+        "title": "대구 촌놈이 방문한 가평 캠핑장",
+        "url": "https://www.instagram.com/reel/Dc9hbmZTdcE/?stkn=MTRwOWllZGN3OXFwdg==",
+        "thumb": "./images/series/spring-fall-mtsq3o83.jpg",
+        "published": true,
+        "created_at": "2026-09-06T23:58:51.930Z",
+        "updated_at": "2026-09-08T13:46:32.163Z",
+        "camp_id": "camp_2546846375"
+      },
+      {
+        "id": "ep_4cfa643f42",
+        "ep": 0,
+        "title": "산중오토캠핑장 사이트별 영상",
+        "url": "https://www.instagram.com/p/DcwqqWck2GK/?img_index=1",
+        "thumb": "./images/series/spring-fall-mtjswtcf.jpg",
+        "published": true,
+        "created_at": "2026-09-02T07:55:15.471Z",
+        "updated_at": "2026-09-02T07:55:15.471Z",
+        "camp_id": "camp_2dee32afa2"
+      },
+      {
+        "id": "ep_7cd56002e0",
+        "ep": 0,
+        "title": "돌담으로 둘러싸인 아늑한 사이트",
+        "url": "https://www.instagram.com/reel/DccE26ezqA5/?igsi=YTQzcnIycHVsZGYz",
+        "thumb": "./images/series/spring-fall-mt80t53f.jpg",
+        "published": true,
+        "created_at": "2026-08-24T23:04:54.400Z",
+        "updated_at": "2026-08-25T02:03:06.891Z",
+        "camp_id": "camp_2dee32afa2"
+      },
+      {
+        "id": "ep_cc21192ea2",
+        "ep": 0,
+        "title": "비가 와도 좋은 곳",
+        "url": "https://www.instagram.com/reel/DcMlUmCzpQG/?igsh=ZThva2QzY24wMHV1&igsi=ZThva2QzY24wMHV1",
+        "thumb": "./images/series/spring-fall-mszxpqd6.jpg",
+        "published": true,
+        "created_at": "2026-08-19T10:14:19.578Z",
+        "updated_at": "2026-08-19T10:14:19.578Z",
+        "camp_id": "camp_e06cb829df"
+      },
+      {
+        "id": "ep_39cf2ffa99",
+        "ep": 1,
+        "title": "철쭉 명소 바로 옆 캠핑장",
+        "url": "https://www.instagram.com/reel/DXoK6lqk38D/?igsh=MWZhcjEzdGMzNGxiZQ==",
+        "thumb": "./images/series/spring-fall-ep01.jpg",
+        "published": true,
+        "created_at": "2026-05-21T02:53:18.159759+00:00",
+        "updated_at": "2026-05-29T09:56:31.470Z",
+        "camp_id": "camp_82599ba9bf"
+      }
+    ],
+    "id": "series_c0b82ea145",
+    "created_at": "2026-05-21T02:53:18.159759+00:00",
+    "updated_at": "2026-05-21T02:53:18.159759+00:00"
+  },
+  {
     "name": "또 해먹고 싶은 캠핑 음식",
     "emoji": "🍖",
     "color": "#C94A4A",
@@ -90,84 +168,6 @@
       }
     ],
     "id": "series_304565fb77",
-    "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-05-21T02:53:18.159759+00:00"
-  },
-  {
-    "name": "봄·가을에 가기 좋은 캠핑장",
-    "emoji": "🌸",
-    "color": "#E89BB9",
-    "published": true,
-    "sort": "created_desc",
-    "eps": [
-      {
-        "id": "ep_c0bdf24e33",
-        "ep": 0,
-        "title": "작년 겨울 여기서 장박했는데",
-        "url": "https://www.instagram.com/reel/DdCtBTMT0dk/?stkn=MXEzb3c4bWV0MmlmcA==",
-        "thumb": "./images/series/spring-fall-mttcw5f7.jpg",
-        "published": true,
-        "created_at": "2026-09-09T00:24:32.371Z",
-        "updated_at": "2026-09-09T00:24:32.371Z",
-        "camp_id": "camp_e5a202316d"
-      },
-      {
-        "id": "ep_8dea36d989",
-        "ep": 0,
-        "title": "대구 촌놈이 방문한 가평 캠핑장",
-        "url": "https://www.instagram.com/reel/Dc9hbmZTdcE/?stkn=MTRwOWllZGN3OXFwdg==",
-        "thumb": "./images/series/spring-fall-mtsq3o83.jpg",
-        "published": true,
-        "created_at": "2026-09-06T23:58:51.930Z",
-        "updated_at": "2026-09-08T13:46:32.163Z",
-        "camp_id": "camp_2546846375"
-      },
-      {
-        "id": "ep_4cfa643f42",
-        "ep": 0,
-        "title": "산중오토캠핑장 사이트별 영상",
-        "url": "https://www.instagram.com/p/DcwqqWck2GK/?img_index=1",
-        "thumb": "./images/series/spring-fall-mtjswtcf.jpg",
-        "published": true,
-        "created_at": "2026-09-02T07:55:15.471Z",
-        "updated_at": "2026-09-02T07:55:15.471Z",
-        "camp_id": "camp_2dee32afa2"
-      },
-      {
-        "id": "ep_7cd56002e0",
-        "ep": 0,
-        "title": "돌담으로 둘러싸인 아늑한 사이트",
-        "url": "https://www.instagram.com/reel/DccE26ezqA5/?igsi=YTQzcnIycHVsZGYz",
-        "thumb": "./images/series/spring-fall-mt80t53f.jpg",
-        "published": true,
-        "created_at": "2026-08-24T23:04:54.400Z",
-        "updated_at": "2026-08-25T02:03:06.891Z",
-        "camp_id": "camp_2dee32afa2"
-      },
-      {
-        "id": "ep_cc21192ea2",
-        "ep": 0,
-        "title": "비가 와도 좋은 곳",
-        "url": "https://www.instagram.com/reel/DcMlUmCzpQG/?igsh=ZThva2QzY24wMHV1&igsi=ZThva2QzY24wMHV1",
-        "thumb": "./images/series/spring-fall-mszxpqd6.jpg",
-        "published": true,
-        "created_at": "2026-08-19T10:14:19.578Z",
-        "updated_at": "2026-08-19T10:14:19.578Z",
-        "camp_id": "camp_e06cb829df"
-      },
-      {
-        "id": "ep_39cf2ffa99",
-        "ep": 1,
-        "title": "철쭉 명소 바로 옆 캠핑장",
-        "url": "https://www.instagram.com/reel/DXoK6lqk38D/?igsh=MWZhcjEzdGMzNGxiZQ==",
-        "thumb": "./images/series/spring-fall-ep01.jpg",
-        "published": true,
-        "created_at": "2026-05-21T02:53:18.159759+00:00",
-        "updated_at": "2026-05-29T09:56:31.470Z",
-        "camp_id": "camp_82599ba9bf"
-      }
-    ],
-    "id": "series_c0b82ea145",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
     "updated_at": "2026-05-21T02:53:18.159759+00:00"
   },
