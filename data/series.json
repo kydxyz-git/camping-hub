@@ -101,6 +101,17 @@
     "sort": "created_desc",
     "eps": [
       {
+        "id": "ep_c0bdf24e33",
+        "ep": 0,
+        "title": "작년 겨울 여기서 장박했는데",
+        "url": "https://www.instagram.com/reel/DdCtBTMT0dk/?stkn=MXEzb3c4bWV0MmlmcA==",
+        "thumb": "./images/series/spring-fall-mttcw5f7.jpg",
+        "published": true,
+        "created_at": "2026-09-09T00:24:32.371Z",
+        "updated_at": "2026-09-09T00:24:32.371Z",
+        "camp_id": "camp_e5a202316d"
+      },
+      {
         "id": "ep_8dea36d989",
         "ep": 0,
         "title": "대구 촌놈이 방문한 가평 캠핑장",
