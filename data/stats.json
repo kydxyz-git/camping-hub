@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 10422,
-    "click": 3381,
+    "pv": 10424,
+    "click": 3382,
     "search": 0
   },
   "pages": {
@@ -32,7 +32,7 @@
     "/series/series_e8c17ad5da/ep_ff868ac30c": 99,
     "/foods/food_464525ea11": 28,
     "/foods/food_6b6f5c2711": 40,
-    "/#items": 53,
+    "/#items": 54,
     "/foods/food_9945533a15": 21,
     "/foods/food_9966103a5b": 33,
     "/series/series_ba7cc89468/ep_b953456d73": 186,
@@ -166,7 +166,7 @@
     "/items/item_07e316531b": 12,
     "/items/item_7daa20fbb6": 18,
     "/items/item_b8ba2f7683": 22,
-    "/items/item_f8a16a8e45": 35,
+    "/items/item_f8a16a8e45": 36,
     "/items/item_d7822bf823": 9,
     "/items/item_f94eb6d3e5": 19,
     "/items/item_6f2ecec479": 20,
@@ -353,7 +353,7 @@
     "/::인스타DM": 2,
     "/items/item_b8ba2f7683::네이버예약": 2,
     "/#items::협업 문의": 2,
-    "/items/item_f8a16a8e45::쿠팡": 11,
+    "/items/item_f8a16a8e45::쿠팡": 12,
     "/items/item_76917ffdfa::쿠팡": 2,
     "/index.html#stories::협업 문의": 1,
     "/::협업 문의": 4,
@@ -399,12 +399,12 @@
   "searches": {},
   "devices": {
     "desktop": 674,
-    "mobile": 13111,
+    "mobile": 13114,
     "tablet": 18
   },
   "referrers": {
     "direct": 1250,
-    "인스타그램": 8001,
+    "인스타그램": 8003,
     "페이스북": 398,
     "구글": 23,
     "네이버": 26,
@@ -10689,8 +10689,8 @@
       ]
     },
     "2026-09-13": {
-      "pv": 162,
-      "click": 8,
+      "pv": 164,
+      "click": 9,
       "search": 0,
       "pages": {
         "/": 8,
@@ -10705,7 +10705,7 @@
         "/camp.html": 1,
         "/camps/camp_d9699234d4": 1,
         "/#foods": 1,
-        "/#items": 9,
+        "/#items": 10,
         "/items/item_d30401a3a0": 4,
         "/items/item_76917ffdfa": 5,
         "/items/item_3e09fe35cb": 4,
@@ -10715,7 +10715,7 @@
         "/items/item_fedcb5008b": 4,
         "/items/item_7daa20fbb6": 4,
         "/items/item_a4b57441e0": 5,
-        "/items/item_f8a16a8e45": 6,
+        "/items/item_f8a16a8e45": 7,
         "/items/item_f94eb6d3e5": 3,
         "/items/item_cc722d51b5": 3,
         "/items/item_5c8fae4f26": 3,
@@ -10769,7 +10769,7 @@
         "/series/series_4f27a6d489/ep_e8865faeb9": 1
       },
       "clicks": {
-        "/items/item_f8a16a8e45::쿠팡": 3,
+        "/items/item_f8a16a8e45::쿠팡": 4,
         "/items/item_d7822bf823::네이버예약": 1,
         "/items/item_c9c551ed52::네이버예약": 1,
         "/items/item_b85f78de84::네이버예약": 1,
@@ -10778,12 +10778,12 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 165,
+        "mobile": 168,
         "desktop": 5
       },
       "referrers": {
         "페이스북": 21,
-        "인스타그램": 135,
+        "인스타그램": 137,
         "direct": 5
       },
       "hourly": [
@@ -10809,10 +10809,10 @@
         0,
         0,
         11,
-        0,
+        2,
         0
       ]
     }
   },
-  "updated_at": "2026-09-13T22:00:40.179Z"
+  "updated_at": "2026-09-13T23:00:16.824Z"
 }
