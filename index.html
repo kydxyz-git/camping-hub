@@ -2198,7 +2198,9 @@ function applyMarquee() {
 
 /* ─── 탭 전환 + 해시 라우팅 ─── */
 const TAB_HASH_MAP = { 't1': 'stories', 't2': 'camps', 't3': 'foods', 't4': 'items', 't5': 'map' };
-const HASH_TAB_MAP = { 'stories': 't1', 'camps': 't2', 'foods': 't3', 'items': 't4', 'map': 't5' };
+const HASH_TAB_MAP = { 'stories': 't1', 'camps': 't2', 'foods': 't3', 'items': 't4', 'map': 't5',
+  // PC 화면에서 쓰는 이름도 받아준다 (PC↔모바일 링크를 하나로 공유하기 위해)
+  'food': 't3', 'gear': 't4', 'series': 't1', 'home': 't1' };
 
 function activateTab(tabId, updateHash) {
   const btn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
@@ -2668,8 +2670,10 @@ function applyHashTab() {
   if (targetTab) activateTab(targetTab, false);
   // #items/{장비id} → 해당 장비를 분류 목록 위에 한 칸으로 고정 노출
   const b = (base || '').toLowerCase();
-  renderPinned('items', b === 'items' ? decodeURIComponent(arg || '') : '');
-  renderPinned('foods', b === 'foods' ? decodeURIComponent(arg || '') : '');
+  const isItems = (b === 'items' || b === 'gear');
+  const isFoods = (b === 'foods' || b === 'food');
+  renderPinned('items', isItems ? decodeURIComponent(arg || '') : '');
+  renderPinned('foods', isFoods ? decodeURIComponent(arg || '') : '');
 }
 
 // DM 링크로 들어온 제품/음식을 맨 위에 보여준다
