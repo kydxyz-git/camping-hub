@@ -1,6 +1,6 @@
 {
   "total": {
-    "pv": 10424,
+    "pv": 10427,
     "click": 3382,
     "search": 0
   },
@@ -55,12 +55,12 @@
     "/items/item_960c2ff01c": 49,
     "/items/item_48f6974ac5": 27,
     "/camps/camp_8f72106bcf": 24,
-    "/camps/camp_e220a217fd": 52,
+    "/camps/camp_e220a217fd": 53,
     "/camps/camp_c47fbddb56": 20,
     "/camps/camp_82599ba9bf": 23,
     "/camps/camp_b2804ced5e": 26,
     "/camps/camp_133dd5b2c6": 22,
-    "/camps/camp_d9699234d4": 49,
+    "/camps/camp_d9699234d4": 50,
     "/camps/camp_2dee32afa2": 21,
     "/camps/camp_e7783e56dc": 14,
     "/camps/camp_922e05eeae": 18,
@@ -199,7 +199,7 @@
     "/#items/item_a4b57441e0,item_edd94b4899,item_f54ab947bf": 1,
     "/#items/item_a4b57441e0,item_edd94b4899": 1,
     "/collab.html": 13,
-    "/camp.html": 3,
+    "/camp.html": 4,
     "/items/item_bf45bb2b31": 10,
     "/items/item_c9c551ed52": 15,
     "/items/item_7e65f604b9": 5,
@@ -398,12 +398,12 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 674,
+    "desktop": 677,
     "mobile": 13114,
     "tablet": 18
   },
   "referrers": {
-    "direct": 1250,
+    "direct": 1252,
     "인스타그램": 8003,
     "페이스북": 398,
     "구글": 23,
@@ -10689,7 +10689,7 @@
       ]
     },
     "2026-09-13": {
-      "pv": 164,
+      "pv": 167,
       "click": 9,
       "search": 0,
       "pages": {
@@ -10702,8 +10702,8 @@
         "/camps/camp_b2804ced5e": 1,
         "/camps/camp_e1e0dde7b3": 1,
         "/camps/camp_c284aeffe4": 1,
-        "/camp.html": 1,
-        "/camps/camp_d9699234d4": 1,
+        "/camp.html": 2,
+        "/camps/camp_d9699234d4": 2,
         "/#foods": 1,
         "/#items": 10,
         "/items/item_d30401a3a0": 4,
@@ -10748,7 +10748,7 @@
         "/camps/camp_2546846375": 1,
         "/camps/camp_a9bbd60ec3": 1,
         "/camps/camp_82599ba9bf": 2,
-        "/camps/camp_e220a217fd": 2,
+        "/camps/camp_e220a217fd": 3,
         "/items/item_63c49d8aa7": 1,
         "/items/item_097f1a0123": 1,
         "/series/series_c0b82ea145/ep_4cfa643f42": 2,
@@ -10779,12 +10779,12 @@
       "searches": {},
       "devices": {
         "mobile": 168,
-        "desktop": 5
+        "desktop": 8
       },
       "referrers": {
         "페이스북": 21,
         "인스타그램": 137,
-        "direct": 5
+        "direct": 7
       },
       "hourly": [
         0,
@@ -10810,9 +10810,9 @@
         0,
         11,
         2,
-        0
+        3
       ]
     }
   },
-  "updated_at": "2026-09-13T23:00:16.824Z"
+  "updated_at": "2026-09-14T00:00:13.614Z"
 }
