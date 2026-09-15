@@ -1,6 +1,6 @@
 {
   "total": {
-    "pv": 10536,
+    "pv": 10539,
     "click": 3414,
     "search": 0
   },
@@ -38,7 +38,7 @@
     "/series/series_ba7cc89468/ep_b953456d73": 186,
     "/camps/camp_e1e0dde7b3": 38,
     "/camps/camp_357cccb118": 29,
-    "/camps/camp_873dcfe92d": 17,
+    "/camps/camp_873dcfe92d": 18,
     "/camps/camp_bb40ee2105": 15,
     "/camps/camp_17e022c947": 13,
     "/camps/camp_7b58bb3d0e": 5,
@@ -83,7 +83,7 @@
     "/camps/camp_50b5aafda9": 4,
     "/camps/camp_24560122c2": 6,
     "/camps/camp_c51f85254a": 6,
-    "/camps/camp_c0830df6de": 5,
+    "/camps/camp_c0830df6de": 6,
     "/camps/camp_58cc50d43a": 5,
     "/camps/camp_117766ff1c": 14,
     "/camps/camp_6f9fbf5abd": 13,
@@ -95,7 +95,7 @@
     "/series/series_ba7cc89468/ep_4da176323e": 336,
     "/camps/camp_f756d38620": 1,
     "/#map": 14,
-    "/camps/camp_b8d29b3f00": 43,
+    "/camps/camp_b8d29b3f00": 44,
     "/camps/camp_e2b57e4e5d": 10,
     "/series/series_ba7cc89468/ep_c56ed16c13": 275,
     "/camps/camp_a9bbd60ec3": 42,
@@ -402,12 +402,12 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 701,
+    "desktop": 704,
     "mobile": 13231,
     "tablet": 18
   },
   "referrers": {
-    "direct": 1266,
+    "direct": 1269,
     "인스타그램": 8075,
     "페이스북": 398,
     "구글": 23,
@@ -10911,7 +10911,7 @@
       ]
     },
     "2026-09-15": {
-      "pv": 52,
+      "pv": 55,
       "click": 17,
       "search": 0,
       "pages": {
@@ -10944,7 +10944,10 @@
         "/camps/camp_82599ba9bf": 1,
         "/items/item_3e09fe35cb": 1,
         "/items/item_7bd1dc6926": 1,
-        "/#camps": 1
+        "/#camps": 1,
+        "/camps/camp_c0830df6de": 1,
+        "/camps/camp_873dcfe92d": 1,
+        "/camps/camp_b8d29b3f00": 1
       },
       "clicks": {
         "/series/series_873cdcaf61/ep_9291e6a71d::www.insta360.com": 1,
@@ -10956,11 +10959,11 @@
       "searches": {},
       "devices": {
         "mobile": 58,
-        "desktop": 11
+        "desktop": 14
       },
       "referrers": {
         "인스타그램": 35,
-        "direct": 4
+        "direct": 7
       },
       "hourly": [
         5,
@@ -10978,7 +10981,7 @@
         0,
         0,
         0,
-        0,
+        3,
         0,
         0,
         0,
@@ -10990,5 +10993,5 @@
       ]
     }
   },
-  "updated_at": "2026-09-15T10:00:33.307Z"
+  "updated_at": "2026-09-15T16:00:59.660Z"
 }
