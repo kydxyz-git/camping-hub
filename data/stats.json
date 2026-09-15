@@ -1,11 +1,11 @@
 {
   "total": {
-    "pv": 10534,
+    "pv": 10536,
     "click": 3414,
     "search": 0
   },
   "pages": {
-    "/": 1758,
+    "/": 1759,
     "/series/series_ba7cc89468/ep_ad505df37d": 339,
     "/series/series_304565fb77/ep_c2e684a351": 236,
     "/series/series_873cdcaf61/ep_7dd208fe26": 128,
@@ -18,7 +18,7 @@
     "/series/series_304565fb77/ep_a8b40077ca": 159,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 116,
     "/series/series_e8c17ad5da/ep_7a390bade9": 108,
-    "/#camps": 39,
+    "/#camps": 40,
     "/#foods": 31,
     "/series/series_304565fb77/ep_d7955f38a0": 240,
     "/foods/food_592752e317": 39,
@@ -402,12 +402,12 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 699,
+    "desktop": 701,
     "mobile": 13231,
     "tablet": 18
   },
   "referrers": {
-    "direct": 1264,
+    "direct": 1266,
     "인스타그램": 8075,
     "페이스북": 398,
     "구글": 23,
@@ -10911,11 +10911,11 @@
       ]
     },
     "2026-09-15": {
-      "pv": 50,
+      "pv": 52,
       "click": 17,
       "search": 0,
       "pages": {
-        "/": 8,
+        "/": 9,
         "/series/series_304565fb77/ep_9032e63bcd": 1,
         "/series/series_873cdcaf61/ep_9291e6a71d": 2,
         "/items/item_edd94b4899": 6,
@@ -10943,7 +10943,8 @@
         "/camps/camp_8e1adf57aa": 1,
         "/camps/camp_82599ba9bf": 1,
         "/items/item_3e09fe35cb": 1,
-        "/items/item_7bd1dc6926": 1
+        "/items/item_7bd1dc6926": 1,
+        "/#camps": 1
       },
       "clicks": {
         "/series/series_873cdcaf61/ep_9291e6a71d::www.insta360.com": 1,
@@ -10955,11 +10956,11 @@
       "searches": {},
       "devices": {
         "mobile": 58,
-        "desktop": 9
+        "desktop": 11
       },
       "referrers": {
         "인스타그램": 35,
-        "direct": 2
+        "direct": 4
       },
       "hourly": [
         5,
@@ -10971,7 +10972,7 @@
         9,
         21,
         0,
-        0,
+        2,
         0,
         0,
         0,
@@ -10989,5 +10990,5 @@
       ]
     }
   },
-  "updated_at": "2026-09-15T08:00:33.019Z"
+  "updated_at": "2026-09-15T10:00:33.307Z"
 }
