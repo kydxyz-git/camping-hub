@@ -1,13 +1,13 @@
 {
   "total": {
-    "pv": 10539,
-    "click": 3414,
+    "pv": 10542,
+    "click": 3415,
     "search": 0
   },
   "pages": {
-    "/": 1759,
+    "/": 1760,
     "/series/series_ba7cc89468/ep_ad505df37d": 339,
-    "/series/series_304565fb77/ep_c2e684a351": 236,
+    "/series/series_304565fb77/ep_c2e684a351": 237,
     "/series/series_873cdcaf61/ep_7dd208fe26": 128,
     "/series/series_e8c17ad5da/ep_e46450a717": 119,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 136,
@@ -234,7 +234,7 @@
     "/series/series_c0b82ea145/ep_8dea36d989": 7,
     "/series/series_c0b82ea145/ep_c0bdf24e33": 9,
     "/camps/camp_2546846375": 2,
-    "/series/series_873cdcaf61/ep_9291e6a71d": 2
+    "/series/series_873cdcaf61/ep_9291e6a71d": 3
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 267,
@@ -398,17 +398,17 @@
     "/items/item_c9c551ed52::네이버예약": 1,
     "/camp.html::그래가": 1,
     "/series/series_c0b82ea145/ep_c0bdf24e33::인스타DM": 1,
-    "/series/series_873cdcaf61/ep_9291e6a71d::www.insta360.com": 1
+    "/series/series_873cdcaf61/ep_9291e6a71d::www.insta360.com": 2
   },
   "searches": {},
   "devices": {
     "desktop": 704,
-    "mobile": 13231,
+    "mobile": 13235,
     "tablet": 18
   },
   "referrers": {
     "direct": 1269,
-    "인스타그램": 8075,
+    "인스타그램": 8078,
     "페이스북": 398,
     "구글": 23,
     "네이버": 26,
@@ -10911,18 +10911,18 @@
       ]
     },
     "2026-09-15": {
-      "pv": 55,
-      "click": 17,
+      "pv": 58,
+      "click": 18,
       "search": 0,
       "pages": {
-        "/": 9,
+        "/": 10,
         "/series/series_304565fb77/ep_9032e63bcd": 1,
-        "/series/series_873cdcaf61/ep_9291e6a71d": 2,
+        "/series/series_873cdcaf61/ep_9291e6a71d": 3,
         "/items/item_edd94b4899": 6,
         "/camps/camp_0741c2c7b7": 1,
         "/camp.html": 1,
         "/#items": 3,
-        "/series/series_304565fb77/ep_c2e684a351": 1,
+        "/series/series_304565fb77/ep_c2e684a351": 2,
         "/series/series_304565fb77/ep_a8b40077ca": 2,
         "/items/item_d30401a3a0": 2,
         "/items/item_f8a16a8e45": 1,
@@ -10950,7 +10950,7 @@
         "/camps/camp_b8d29b3f00": 1
       },
       "clicks": {
-        "/series/series_873cdcaf61/ep_9291e6a71d::www.insta360.com": 1,
+        "/series/series_873cdcaf61/ep_9291e6a71d::www.insta360.com": 2,
         "/items/item_edd94b4899::www.insta360.com": 6,
         "/#gear::www.insta360.com": 1,
         "/series/series_304565fb77/ep_2e981e7834::인스타DM": 8,
@@ -10958,11 +10958,11 @@
       },
       "searches": {},
       "devices": {
-        "mobile": 58,
+        "mobile": 62,
         "desktop": 14
       },
       "referrers": {
-        "인스타그램": 35,
+        "인스타그램": 38,
         "direct": 7
       },
       "hourly": [
@@ -10986,12 +10986,12 @@
         0,
         0,
         0,
-        0,
+        3,
         0,
         0,
         0
       ]
     }
   },
-  "updated_at": "2026-09-15T16:00:59.660Z"
+  "updated_at": "2026-09-15T21:00:40.548Z"
 }
