@@ -1,17 +1,17 @@
 {
   "total": {
-    "pv": 10615,
-    "click": 3418,
+    "pv": 10635,
+    "click": 3419,
     "search": 0
   },
   "pages": {
-    "/": 1765,
+    "/": 1766,
     "/series/series_ba7cc89468/ep_ad505df37d": 340,
     "/series/series_304565fb77/ep_c2e684a351": 237,
     "/series/series_873cdcaf61/ep_7dd208fe26": 128,
     "/series/series_e8c17ad5da/ep_e46450a717": 120,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 136,
-    "/#stories": 23,
+    "/#stories": 24,
     "/series/series_ba7cc89468/ep_73bdfba72e": 280,
     "/series/series_ba7cc89468/ep_3acff3998f": 322,
     "/series/series_ba7cc89468/ep_27438d1204": 245,
@@ -32,7 +32,7 @@
     "/series/series_e8c17ad5da/ep_ff868ac30c": 101,
     "/foods/food_464525ea11": 28,
     "/foods/food_6b6f5c2711": 40,
-    "/#items": 59,
+    "/#items": 60,
     "/foods/food_9945533a15": 21,
     "/foods/food_9966103a5b": 33,
     "/series/series_ba7cc89468/ep_b953456d73": 186,
@@ -53,7 +53,7 @@
     "/camps/camp_c6d9da8748": 15,
     "/camps/camp_8625b4018d": 33,
     "/items/item_960c2ff01c": 49,
-    "/items/item_48f6974ac5": 28,
+    "/items/item_48f6974ac5": 30,
     "/camps/camp_8f72106bcf": 24,
     "/camps/camp_e220a217fd": 53,
     "/camps/camp_c47fbddb56": 20,
@@ -136,7 +136,7 @@
     "/series/series_ba7cc89468/ep_7727344bb5": 57,
     "/series/series_304565fb77/ep_67c3e626c9": 48,
     "/series/series_ba7cc89468/ep_996b471cb5": 59,
-    "/items/item_edd94b4899": 30,
+    "/items/item_edd94b4899": 31,
     "/series/series_4f27a6d489/ep_e8865faeb9": 37,
     "/series/series_873cdcaf61/ep_eff807ca45": 36,
     "/items/item_b85f78de84": 30,
@@ -154,13 +154,13 @@
     "/v3.html#series/series_e8c17ad5da": 1,
     "/v3.html#about": 2,
     "/index.html": 4,
-    "/items/item_a4b57441e0": 42,
+    "/items/item_a4b57441e0": 43,
     "/items/item_0e5652bb69": 14,
     "/items/item_76917ffdfa": 22,
     "/items/item_8c39b51888": 16,
     "/items/item_6e0210eba9": 5,
-    "/items/item_cc722d51b5": 26,
-    "/items/item_2405bff7e5": 23,
+    "/items/item_cc722d51b5": 27,
+    "/items/item_2405bff7e5": 24,
     "/items/item_52bcfa1583": 3,
     "/items/item_b2011a57b1": 13,
     "/items/item_07e316531b": 13,
@@ -168,14 +168,14 @@
     "/items/item_b8ba2f7683": 23,
     "/items/item_f8a16a8e45": 40,
     "/items/item_d7822bf823": 11,
-    "/items/item_f94eb6d3e5": 21,
-    "/items/item_6f2ecec479": 20,
+    "/items/item_f94eb6d3e5": 23,
+    "/items/item_6f2ecec479": 21,
     "/items/item_90f00d1c73": 11,
     "/items/item_5c8fae4f26": 19,
     "/items/item_bb89bda383": 3,
     "/items/item_3bffc91077": 5,
     "/items/item_7bd1dc6926": 16,
-    "/items/item_f54ab947bf": 23,
+    "/items/item_f54ab947bf": 24,
     "/#home": 1,
     "/#food": 2,
     "/#gear": 2,
@@ -192,7 +192,7 @@
     "/items/item_bbc507958e": 5,
     "/items/item_d30401a3a0": 20,
     "/items/item_63c49d8aa7": 5,
-    "/items/item_3f43285527": 16,
+    "/items/item_3f43285527": 17,
     "/items/item_3e09fe35cb": 15,
     "/#items/item_a4b57441e0": 1,
     "/items/item_e9c79cd70d": 9,
@@ -222,7 +222,7 @@
     "/camps/camp_8625b4018d/video": 1,
     "/items/item_85f4706603": 1,
     "/items/item_239d48d277": 3,
-    "/items/item_8249efe8be": 5,
+    "/items/item_8249efe8be": 6,
     "/items/item_8eb9a307f9": 6,
     "/items/item_206667db4d": 12,
     "/series/series_304565fb77/ep_03369b1ee7": 15,
@@ -236,7 +236,10 @@
     "/camps/camp_2546846375": 2,
     "/series/series_873cdcaf61/ep_9291e6a71d": 4,
     "/series/series_c0b82ea145/ep_94bc7bf1f3": 1,
-    "/items/item_fce7a53564": 1
+    "/items/item_fce7a53564": 2,
+    "/items/item_2128e45952": 2,
+    "/items/item_9e4f5a405e": 1,
+    "/items/item_ad75e94998": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 267,
@@ -401,17 +404,18 @@
     "/camp.html::그래가": 1,
     "/series/series_c0b82ea145/ep_c0bdf24e33::인스타DM": 1,
     "/series/series_873cdcaf61/ep_9291e6a71d::www.insta360.com": 2,
-    "/items/item_9f08f89de4::쿠팡": 1
+    "/items/item_9f08f89de4::쿠팡": 1,
+    "/items/item_ad75e94998::쿠팡": 1
   },
   "searches": {},
   "devices": {
-    "desktop": 718,
-    "mobile": 13297,
+    "desktop": 724,
+    "mobile": 13312,
     "tablet": 18
   },
   "referrers": {
     "direct": 1271,
-    "인스타그램": 8147,
+    "인스타그램": 8162,
     "페이스북": 398,
     "구글": 23,
     "네이버": 26,
@@ -11079,8 +11083,8 @@
       ]
     },
     "2026-09-17": {
-      "pv": 29,
-      "click": 1,
+      "pv": 49,
+      "click": 2,
       "search": 0,
       "pages": {
         "/series/series_c0b82ea145/ep_94bc7bf1f3": 1,
@@ -11089,37 +11093,47 @@
         "/series/series_c0b82ea145/ep_4cfa643f42": 1,
         "/series/series_c0b82ea145/ep_7cd56002e0": 1,
         "/items/item_f8a16a8e45": 2,
-        "/items/item_f94eb6d3e5": 2,
-        "/items/item_cc722d51b5": 2,
+        "/items/item_f94eb6d3e5": 4,
+        "/items/item_cc722d51b5": 3,
         "/items/item_5c8fae4f26": 2,
         "/items/item_bf45bb2b31": 2,
         "/items/item_c9c551ed52": 2,
         "/items/item_7e65f604b9": 1,
-        "/items/item_48f6974ac5": 1,
+        "/items/item_48f6974ac5": 3,
         "/items/item_b85f78de84": 1,
-        "/items/item_edd94b4899": 1,
-        "/items/item_8249efe8be": 1,
+        "/items/item_edd94b4899": 2,
+        "/items/item_8249efe8be": 2,
         "/items/item_8eb9a307f9": 1,
         "/items/item_1e78eeb29a": 1,
         "/items/item_9f08f89de4": 1,
-        "/items/item_2405bff7e5": 1,
-        "/items/item_fce7a53564": 1,
-        "/items/item_f54ab947bf": 1,
-        "/items/item_a4b57441e0": 1
+        "/items/item_2405bff7e5": 2,
+        "/items/item_fce7a53564": 2,
+        "/items/item_f54ab947bf": 2,
+        "/items/item_a4b57441e0": 2,
+        "/items/item_2128e45952": 2,
+        "/items/item_3f43285527": 1,
+        "/items/item_6f2ecec479": 1,
+        "/": 1,
+        "/#items": 1,
+        "/#stories": 1,
+        "/items/item_9e4f5a405e": 1,
+        "/items/item_ad75e94998": 1
       },
       "clicks": {
-        "/items/item_9f08f89de4::쿠팡": 1
+        "/items/item_9f08f89de4::쿠팡": 1,
+        "/items/item_ad75e94998::쿠팡": 1
       },
       "searches": {},
       "devices": {
-        "mobile": 30
+        "mobile": 45,
+        "desktop": 6
       },
       "referrers": {
-        "인스타그램": 29
+        "인스타그램": 44
       },
       "hourly": [
         29,
-        0,
+        20,
         0,
         0,
         0,
@@ -11145,5 +11159,5 @@
       ]
     }
   },
-  "updated_at": "2026-09-17T01:00:16.612Z"
+  "updated_at": "2026-09-17T01:56:09.026Z"
 }
