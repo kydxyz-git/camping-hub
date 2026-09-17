@@ -1526,5 +1526,29 @@
     "main_img": "./images/camps/cff0308b32f8-7.jpg",
     "lat": 37.6169283,
     "lng": 127.4919623
+  },
+  {
+    "id": "camp_f60efbd4c7",
+    "name": "밀양 알프스캠핑",
+    "region": "경남",
+    "extras": [
+      "벚꽃",
+      "강뷰",
+      "애견동반",
+      "방갈"
+    ],
+    "graega": true,
+    "url": "https://graega.short.gy/7143kydzm",
+    "imgs": [],
+    "rating": 4,
+    "visits": 1,
+    "published": true,
+    "created_at": "2026-09-17T00:20:32.016Z",
+    "updated_at": "2026-09-17T00:20:32.016Z",
+    "checkin": "14:00",
+    "checkout": "12:00",
+    "address": "경남 밀양시 산외면 밀양대로 3468-7",
+    "lat": 35.506106,
+    "lng": 128.8298286
   }
 ]
