@@ -920,5 +920,22 @@
     "published": true,
     "created_at": "2026-09-17T00:54:02.544Z",
     "updated_at": "2026-09-17T00:54:02.544Z"
+  },
+  {
+    "id": "item_ad75e94998",
+    "name": "깃든 이불침낭(헤비)",
+    "cat": "sleep",
+    "video": "",
+    "desc": "",
+    "url": "https://link.coupang.com/a/g6IN89e6i4",
+    "source": "쿠팡",
+    "thumb": "./images/products/9c07682786c5.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-09-17T00:56:09.804Z",
+    "updated_at": "2026-09-17T00:56:09.804Z"
   }
 ]
