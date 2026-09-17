@@ -1,6 +1,6 @@
 {
   "total": {
-    "pv": 10701,
+    "pv": 10702,
     "click": 3424,
     "search": 0
   },
@@ -18,7 +18,7 @@
     "/series/series_304565fb77/ep_a8b40077ca": 161,
     "/series/series_873cdcaf61/ep_cf2282cf4e": 117,
     "/series/series_e8c17ad5da/ep_7a390bade9": 108,
-    "/#camps": 42,
+    "/#camps": 43,
     "/#foods": 33,
     "/series/series_304565fb77/ep_d7955f38a0": 242,
     "/foods/food_592752e317": 39,
@@ -411,12 +411,12 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 731,
+    "desktop": 732,
     "mobile": 13376,
     "tablet": 18
   },
   "referrers": {
-    "direct": 1275,
+    "direct": 1276,
     "인스타그램": 8224,
     "페이스북": 398,
     "구글": 23,
@@ -11085,7 +11085,7 @@
       ]
     },
     "2026-09-17": {
-      "pv": 115,
+      "pv": 116,
       "click": 7,
       "search": 0,
       "pages": {
@@ -11150,7 +11150,8 @@
         "/series/series_304565fb77/ep_c2e684a351": 1,
         "/series/series_304565fb77/ep_9032e63bcd": 1,
         "/series/series_e8c17ad5da/ep_e383972ec6": 1,
-        "/series/series_ba7cc89468/ep_aa0e809292": 1
+        "/series/series_ba7cc89468/ep_aa0e809292": 1,
+        "/#camps": 1
       },
       "clicks": {
         "/items/item_9f08f89de4::쿠팡": 1,
@@ -11163,11 +11164,11 @@
       "searches": {},
       "devices": {
         "mobile": 109,
-        "desktop": 13
+        "desktop": 14
       },
       "referrers": {
         "인스타그램": 106,
-        "direct": 4
+        "direct": 5
       },
       "hourly": [
         29,
@@ -11182,7 +11183,7 @@
         0,
         8,
         0,
-        0,
+        1,
         0,
         0,
         0,
@@ -11197,5 +11198,5 @@
       ]
     }
   },
-  "updated_at": "2026-09-17T11:00:17.352Z"
+  "updated_at": "2026-09-17T12:00:18.398Z"
 }
