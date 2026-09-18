@@ -1,7 +1,7 @@
 {
   "total": {
-    "pv": 10752,
-    "click": 3426,
+    "pv": 10759,
+    "click": 3427,
     "search": 0
   },
   "pages": {
@@ -11,7 +11,7 @@
     "/series/series_873cdcaf61/ep_7dd208fe26": 129,
     "/series/series_e8c17ad5da/ep_e46450a717": 121,
     "/series/series_c0b82ea145/ep_39cf2ffa99": 136,
-    "/#stories": 25,
+    "/#stories": 26,
     "/series/series_ba7cc89468/ep_73bdfba72e": 280,
     "/series/series_ba7cc89468/ep_3acff3998f": 323,
     "/series/series_ba7cc89468/ep_27438d1204": 245,
@@ -19,7 +19,7 @@
     "/series/series_873cdcaf61/ep_cf2282cf4e": 117,
     "/series/series_e8c17ad5da/ep_7a390bade9": 108,
     "/#camps": 43,
-    "/#foods": 34,
+    "/#foods": 35,
     "/series/series_304565fb77/ep_d7955f38a0": 242,
     "/foods/food_592752e317": 40,
     "/foods/food_790525d8a8": 39,
@@ -32,7 +32,7 @@
     "/series/series_e8c17ad5da/ep_ff868ac30c": 101,
     "/foods/food_464525ea11": 28,
     "/foods/food_6b6f5c2711": 43,
-    "/#items": 60,
+    "/#items": 61,
     "/foods/food_9945533a15": 22,
     "/foods/food_9966103a5b": 34,
     "/series/series_ba7cc89468/ep_b953456d73": 186,
@@ -134,7 +134,7 @@
     "/series/series_873cdcaf61/ep_9b833c820b": 45,
     "/series/series_ba7cc89468/ep_868813ad26": 71,
     "/series/series_ba7cc89468/ep_7727344bb5": 57,
-    "/series/series_304565fb77/ep_67c3e626c9": 51,
+    "/series/series_304565fb77/ep_67c3e626c9": 52,
     "/series/series_ba7cc89468/ep_996b471cb5": 59,
     "/items/item_edd94b4899": 33,
     "/series/series_4f27a6d489/ep_e8865faeb9": 37,
@@ -185,7 +185,7 @@
     "/index.html#series/series_4f27a6d489": 1,
     "/#series/series_ba7cc89468": 2,
     "/#series/series_4f27a6d489": 4,
-    "/#series/series_304565fb77": 4,
+    "/#series/series_304565fb77": 5,
     "/#series/series_873cdcaf61": 3,
     "/items/item_6f79a0aa62": 5,
     "/items/item_9f08f89de4": 22,
@@ -199,7 +199,7 @@
     "/#items/item_a4b57441e0,item_edd94b4899,item_f54ab947bf": 1,
     "/#items/item_a4b57441e0,item_edd94b4899": 1,
     "/collab.html": 16,
-    "/camp.html": 6,
+    "/camp.html": 7,
     "/items/item_bf45bb2b31": 14,
     "/items/item_c9c551ed52": 19,
     "/items/item_7e65f604b9": 8,
@@ -240,7 +240,8 @@
     "/items/item_2128e45952": 5,
     "/items/item_9e4f5a405e": 3,
     "/items/item_ad75e94998": 1,
-    "/items/item_a0c5483c94": 2
+    "/items/item_a0c5483c94": 2,
+    "/camps/camp_f60efbd4c7": 1
   },
   "clicks": {
     "/series/series_ba7cc89468/ep_ad505df37d::인스타DM": 267,
@@ -348,7 +349,7 @@
     "/items/item_096f88cf80::sinjimorulab.com": 4,
     "/series/series_ba7cc89468/ep_996b471cb5::인스타DM": 45,
     "/items/item_edd94b4899::www.insta360.com": 19,
-    "/series/series_304565fb77/ep_67c3e626c9::인스타DM": 2,
+    "/series/series_304565fb77/ep_67c3e626c9::인스타DM": 3,
     "/series/series_4f27a6d489/ep_e8865faeb9::인스타DM": 11,
     "/series/series_873cdcaf61/ep_eff807ca45::인스타DM": 4,
     "/items/item_b85f78de84::네이버예약": 3,
@@ -411,12 +412,12 @@
   },
   "searches": {},
   "devices": {
-    "desktop": 733,
+    "desktop": 741,
     "mobile": 13427,
     "tablet": 18
   },
   "referrers": {
-    "direct": 1277,
+    "direct": 1278,
     "인스타그램": 8239,
     "페이스북": 398,
     "구글": 23,
@@ -11210,7 +11211,57 @@
         0,
         0
       ]
+    },
+    "2026-09-18": {
+      "pv": 7,
+      "click": 1,
+      "search": 0,
+      "pages": {
+        "/camps/camp_f60efbd4c7": 1,
+        "/camp.html": 1,
+        "/#foods": 1,
+        "/#items": 1,
+        "/#stories": 1,
+        "/#series/series_304565fb77": 1,
+        "/series/series_304565fb77/ep_67c3e626c9": 1
+      },
+      "clicks": {
+        "/series/series_304565fb77/ep_67c3e626c9::인스타DM": 1
+      },
+      "searches": {},
+      "devices": {
+        "desktop": 8
+      },
+      "referrers": {
+        "direct": 1
+      },
+      "hourly": [
+        0,
+        7,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   },
-  "updated_at": "2026-09-17T22:00:18.120Z"
+  "updated_at": "2026-09-18T02:00:18.934Z"
 }
