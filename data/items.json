@@ -698,7 +698,8 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-04T08:43:53.283Z",
-    "updated_at": "2026-09-16T15:10:18.624Z"
+    "updated_at": "2026-09-16T15:10:18.624Z",
+    "is_new": true
   },
   {
     "id": "item_6f79a0aa62",
