@@ -8,6 +8,16 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_f6efe2586d",
+        "ep": 3,
+        "title": "해루질 아무 때나 가면 안 돼요",
+        "url": "https://www.instagram.com/reel/DdkKw74zg4i/?stkn=amRodHh5M2FtdHp5",
+        "thumb": "./images/series/series-ep03.jpg",
+        "published": true,
+        "created_at": "2026-09-22T01:28:28.395Z",
+        "updated_at": "2026-09-22T01:28:28.395Z"
+      },
+      {
         "id": "ep_94bc7bf1f3",
         "ep": 1,
         "title": "가을에도 낮엔 그늘이 필요합니다.",
