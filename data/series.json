@@ -17,6 +17,16 @@
         "created_at": "2026-09-17T00:09:27.785Z",
         "updated_at": "2026-09-22T01:26:50.458Z",
         "camp_id": "camp_f60efbd4c7"
+      },
+      {
+        "id": "ep_870b997216",
+        "ep": 2,
+        "title": "난로 챙길까 말까 고민된다면",
+        "url": "https://www.instagram.com/reel/DdhgJeMzR-J/?stkn=ajZia21iYWZmZWpp",
+        "thumb": "./images/series/series-ep02.jpg",
+        "published": true,
+        "created_at": "2026-09-20T21:22:56.533Z",
+        "updated_at": "2026-09-22T01:27:35.973Z"
       }
     ],
     "created_at": "2026-09-20T21:26:48.406Z",
@@ -201,16 +211,6 @@
     "published": true,
     "sort": "random",
     "eps": [
-      {
-        "id": "ep_870b997216",
-        "ep": 0,
-        "title": "난로 쓰기 애매할때 쓰는 난방용품",
-        "url": "https://www.instagram.com/reel/DdhgJeMzR-J/?stkn=ajZia21iYWZmZWpp",
-        "thumb": "./images/series/items-muahrn57.jpg",
-        "published": true,
-        "created_at": "2026-09-20T21:22:56.533Z",
-        "updated_at": "2026-09-21T00:13:05.131Z"
-      },
       {
         "id": "ep_eff807ca45",
         "ep": 0,
