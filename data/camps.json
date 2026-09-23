@@ -1559,5 +1559,34 @@
     "address": "경남 밀양시 산외면 밀양대로 3468-7",
     "lat": 35.506106,
     "lng": 128.8298286
+  },
+  {
+    "id": "camp_db69a01534",
+    "name": "곰섬캠핑장",
+    "region": "충남",
+    "extras": [],
+    "graega": false,
+    "url": "https://graega.short.gy/7027kydzm",
+    "imgs": [
+      "./images/camps/924a50d9ef11.jpg",
+      "./images/camps/924a50d9ef11-2.jpg",
+      "./images/camps/924a50d9ef11-3.jpg",
+      "./images/camps/924a50d9ef11-4.jpg",
+      "./images/camps/924a50d9ef11-5.jpg",
+      "./images/camps/924a50d9ef11-6.jpg",
+      "./images/camps/924a50d9ef11-7.jpg",
+      "./images/camps/924a50d9ef11-8.jpg",
+      "./images/camps/924a50d9ef11-9.jpg",
+      "./images/camps/924a50d9ef11-10.jpg"
+    ],
+    "rating": 5,
+    "visits": 1,
+    "published": true,
+    "created_at": "2026-09-23T22:41:27.470Z",
+    "updated_at": "2026-09-23T22:41:27.470Z",
+    "pick": true,
+    "main_img": "./images/camps/924a50d9ef11-4.jpg",
+    "lat": 36.5928099,
+    "lng": 126.2860202
   }
 ]
