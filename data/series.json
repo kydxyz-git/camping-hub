@@ -50,6 +50,16 @@
     "sort": "created_desc",
     "eps": [
       {
+        "id": "ep_7054ce7a4c",
+        "ep": 0,
+        "title": "바다뷰, 일몰, 갯벌 모든게 있는 곳",
+        "url": "https://www.instagram.com/p/DdpVSpckzOx/?stkn=MTBlZ2o0Y3F0MnZ6MA==",
+        "thumb": "./images/series/spring-fall-mueopyjy.jpg",
+        "published": true,
+        "created_at": "2026-09-23T22:38:48.622Z",
+        "updated_at": "2026-09-23T22:38:48.622Z"
+      },
+      {
         "id": "ep_c0bdf24e33",
         "ep": 0,
         "title": "작년 겨울 여기서 장박했는데",
