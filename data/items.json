@@ -978,5 +978,23 @@
     "created_at": "2026-09-20T21:30:14.092Z",
     "updated_at": "2026-09-20T21:30:14.092Z",
     "is_new": true
+  },
+  {
+    "id": "item_1778659979",
+    "name": "키녹스 케틀포트",
+    "cat": "kitchen",
+    "video": "",
+    "pick": true,
+    "desc": "",
+    "url": "https://naver.me/x523i4cu",
+    "source": "네이버",
+    "thumb": "./images/products/074c78bad346.jpg",
+    "currency": "KRW",
+    "price_original": 39000,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-09-23T10:05:07.882Z",
+    "updated_at": "2026-09-23T10:05:07.882Z"
   }
 ]
