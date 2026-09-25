@@ -999,9 +999,9 @@
   },
   {
     "id": "item_6e1cb49823",
-    "name": "키치아트 3단 찜",
+    "name": "키친아트 3단 찜",
     "cat": "kitchen",
-    "video": "",
+    "video": "https://www.instagram.com/reel/DdsSt0RTKh2/?stkn=MWRvbGVtYTJhaTJkNA==",
     "desc": "",
     "url": "https://link.coupang.com/a/hjXP1hyP8e",
     "source": "쿠팡",
@@ -1012,8 +1012,6 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-09-25T00:26:47.975Z",
-    "updated_at": "2026-09-25T00:52:26.000Z",
-    "is_new": true,
-    "pick": 0
+    "updated_at": "2026-09-25T04:44:39.163Z"
   }
 ]
