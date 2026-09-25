@@ -996,5 +996,22 @@
     "published": true,
     "created_at": "2026-09-23T10:05:07.882Z",
     "updated_at": "2026-09-23T10:06:18.921Z"
+  },
+  {
+    "id": "item_6e1cb49823",
+    "name": "키치아트 3단 찜",
+    "cat": "camp",
+    "video": "",
+    "desc": "",
+    "url": "https://link.coupang.com/a/hjXP1hyP8e",
+    "source": "쿠팡",
+    "thumb": "./images/products/04f3b6e2a18d.jpg",
+    "currency": "KRW",
+    "price_original": 49900,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-09-25T00:26:47.975Z",
+    "updated_at": "2026-09-25T00:26:47.975Z"
   }
 ]
