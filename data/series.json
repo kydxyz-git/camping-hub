@@ -8,6 +8,16 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_a703311d54",
+        "ep": 4,
+        "title": "가을에 안 먹으면 손해보는 요리 3가지",
+        "url": "https://www.instagram.com/reel/DdsSt0RTKh2/?stkn=MWRvbGVtYTJhaTJkNA==",
+        "thumb": "./images/series/series-ep04.jpg",
+        "published": true,
+        "created_at": "2026-09-25T01:45:05.355Z",
+        "updated_at": "2026-09-25T01:45:05.355Z"
+      },
+      {
         "id": "ep_f6efe2586d",
         "ep": 3,
         "title": "해루질 아무 때나 가면 안 돼요",
