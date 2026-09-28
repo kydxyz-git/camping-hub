@@ -61,6 +61,17 @@
     "sort": "created_desc",
     "eps": [
       {
+        "id": "ep_b0f29b2724",
+        "ep": 0,
+        "title": "억새와 일출일몰이 아름다운 곳",
+        "url": "https://www.instagram.com/p/DdznbdxkyU4/?img_index=4&stkn=a2Jwcmc1cGpjY3Ix",
+        "thumb": "./images/series/spring-fall-mukjin9l.jpg",
+        "published": true,
+        "created_at": "2026-09-28T00:59:46.377Z",
+        "updated_at": "2026-09-28T00:59:46.377Z",
+        "camp_id": "camp_82599ba9bf"
+      },
+      {
         "id": "ep_7054ce7a4c",
         "ep": 0,
         "title": "바다뷰, 일몰, 갯벌 모든게 있는 곳",
