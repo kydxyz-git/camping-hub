@@ -764,13 +764,16 @@
       "./images/camps/e7dae0d5b774-2.jpg",
       "./images/camps/e7dae0d5b774-3.jpg",
       "./images/camps/e7dae0d5b774-4.jpg",
-      "./images/camps/e7dae0d5b774-5.jpg"
+      "./images/camps/e7dae0d5b774-5.jpg",
+      "./images/camps/e7dae0d5b774-6.jpg",
+      "./images/camps/e7dae0d5b774-7.jpg",
+      "./images/camps/e7dae0d5b774-8.jpg"
     ],
     "rating": 5,
     "visits": 14,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-09-28T00:56:33.758Z",
+    "updated_at": "2026-09-28T00:58:05.215Z",
     "address": "경남 합천군 가회면 황매산공원길 331",
     "pick": true,
     "lat": 35.4818529,
