@@ -207,6 +207,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-09-29T08:39:33.855Z",
-    "updated_at": "2026-09-29T08:39:33.855Z"
+    "updated_at": "2026-09-29T08:39:33.855Z",
+    "is_new": true
   }
 ]
