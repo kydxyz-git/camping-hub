@@ -209,5 +209,20 @@
     "created_at": "2026-09-29T08:39:33.855Z",
     "updated_at": "2026-09-29T08:39:33.855Z",
     "is_new": true
+  },
+  {
+    "id": "food_c74981a2ee",
+    "name": "곰곰 미니 버터크로와상 생지",
+    "desc": "",
+    "url": "https://link.coupang.com/a/hr7rKyATIG",
+    "source": "쿠팡",
+    "thumb": "./images/products/9ab1f95d37a8.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-09-29T22:21:31.231Z",
+    "updated_at": "2026-09-29T22:21:31.231Z"
   }
 ]
