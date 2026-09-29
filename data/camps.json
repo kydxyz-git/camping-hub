@@ -1294,19 +1294,28 @@
     "pick": true
   },
   {
+    "id": "camp_24560122c2",
     "name": "해피단밀오토캠핑장",
     "region": "경북",
     "extras": [],
     "graega": false,
     "url": "https://camfit.co.kr/camp/670f684873e56a001d48c8f6",
-    "imgs": [],
+    "imgs": [
+      "./images/camps/565473a91d98.jpg",
+      "./images/camps/565473a91d98-2.jpg",
+      "./images/camps/565473a91d98-3.jpg",
+      "./images/camps/565473a91d98-4.jpg",
+      "./images/camps/565473a91d98-5.jpg",
+      "./images/camps/565473a91d98-6.jpg",
+      "./images/camps/565473a91d98-7.jpg"
+    ],
     "rating": 0,
     "visits": 1,
     "published": true,
-    "id": "camp_24560122c2",
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-08-12T14:53:09Z",
+    "updated_at": "2026-09-29T06:33:55.839Z",
     "address": "경북 의성군 단밀면 낙정리 475-16",
+    "main_img": "./images/camps/565473a91d98-4.jpg",
     "lat": 36.350322,
     "lng": 128.304708
   },
