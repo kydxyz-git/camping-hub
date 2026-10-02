@@ -61,6 +61,17 @@
     "sort": "created_desc",
     "eps": [
       {
+        "id": "ep_86b9e0bf6c",
+        "ep": 0,
+        "title": "가을에 가기 좋은 곳",
+        "url": "https://www.instagram.com/reel/Dd96q2fTWbN/?stkn=NHlxZW1rM3B2a3Zh",
+        "thumb": "./images/series/spring-fall-muqb33fo.jpg",
+        "published": true,
+        "created_at": "2026-10-02T01:50:20.964Z",
+        "updated_at": "2026-10-02T01:50:20.964Z",
+        "camp_id": "camp_82599ba9bf"
+      },
+      {
         "id": "ep_b0f29b2724",
         "ep": 0,
         "title": "억새와 일출일몰이 아름다운 곳",
