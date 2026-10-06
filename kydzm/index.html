@@ -1888,6 +1888,7 @@ const cache = {
   config: null, series: null, foods: null, items: null, camps: null,
   loaded: false,
   loadedAt: null,
+  base: {},   // 파일별 병합 기준점 — loadAllData / 저장 성공 시 갱신
 };
 
 // 데이터 출처
@@ -1922,6 +1923,8 @@ async function loadAllData(force = false) {
   cache.foods  = results[2];
   cache.items  = results[3];
   cache.camps  = results[4];
+  // 저장 시 3-way 병합 기준점 (이 창이 마지막으로 알고 있는 저장소 상태)
+  files.forEach((name, i) => { cache.base[name] = JSON.parse(JSON.stringify(results[i])); });
   cache.loaded = true;
   cache.loadedAt = Date.now();
   return cache;
@@ -2128,115 +2131,194 @@ async function ghFetch(path, opts = {}) {
   return r.json();
 }
 
-// 단일 커밋으로 여러 파일 변경 — Git Data API
+// ─── 저장 시 3-way 병합 ─────────────────────────────────────────────
+// admin 창은 열 때 읽은 데이터(cache)를 들고 있다가 배열 전체를 저장한다.
+// 그 사이 다른 창/기기에서 저장된 변경이 있으면 통째로 덮어써 사라지므로
+// (예: 미니맥스 MX9 삭제 사고), 저장 직전에 저장소의 최신 파일을 읽어
+//   base(이 창이 알던 상태) → local(이 창이 저장하려는 상태) 의 변경만
+//   remote(저장소 최신)에 얹는다. 항목 배열은 id 기준으로 병합한다.
+const MERGE_DATA_FILES = ['config', 'series', 'foods', 'items', 'camps'];
+
+function deepEqual(a, b) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+function isIdArray(arr) {
+  return Array.isArray(arr) && arr.every(x => x && typeof x === 'object' && !Array.isArray(x) && x.id);
+}
+
+// primary 순서를 따르고, primary에 없는 id는 secondary에서 앞 이웃 뒤에 끼워 넣는다
+function mergeOrder(primary, secondary, keep) {
+  const out = primary.filter(id => keep.has(id));
+  secondary.forEach((id, i) => {
+    if (!keep.has(id) || out.includes(id)) return;
+    let pos = 0;
+    for (let j = i - 1; j >= 0; j--) {
+      const k = out.indexOf(secondary[j]);
+      if (k >= 0) { pos = k + 1; break; }
+    }
+    out.splice(pos, 0, id);
+  });
+  return out;
+}
+
+function mergeIdArrays(base, local, remote) {
+  const ids = a => a.map(x => x.id);
+  const B = new Map(base.map(x => [x.id, x]));
+  const L = new Map(local.map(x => [x.id, x]));
+  const R = new Map(remote.map(x => [x.id, x]));
+  const merged = new Map();
+  for (const id of new Set([...L.keys(), ...R.keys()])) {
+    const b = B.get(id), l = L.get(id), r = R.get(id);
+    if (l && r) merged.set(id, b ? merge3(b, l, r) : l);
+    else if (l) { if (!b || !deepEqual(l, b)) merged.set(id, l); }  // 원격 삭제: 이 창에서 고친 게 없으면 삭제 유지
+    else if (r) { if (!b) merged.set(id, r); }                       // 원격 추가는 유지, 이 창에서 지운 건 삭제
+  }
+  const keep = new Set(merged.keys());
+  // 이 창에서 순서를 바꿨으면(수동 정렬) 그 순서, 아니면 저장소 순서
+  const common = new Set(ids(base).filter(id => L.has(id)));
+  const localReordered = !deepEqual(ids(base).filter(id => common.has(id)), ids(local).filter(id => common.has(id)));
+  const order = localReordered ? mergeOrder(ids(local), ids(remote), keep) : mergeOrder(ids(remote), ids(local), keep);
+  return order.map(id => merged.get(id));
+}
+
+function merge3(base, local, remote) {
+  if (deepEqual(local, base)) return remote;
+  if (deepEqual(remote, base) || deepEqual(remote, local)) return local;
+  if (isIdArray(base) && isIdArray(local) && isIdArray(remote)) return mergeIdArrays(base, local, remote);
+  const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
+  if (isObj(base) && isObj(local) && isObj(remote)) {
+    const out = {};
+    for (const k of new Set([...Object.keys(remote), ...Object.keys(local)])) {
+      const v = merge3(base[k], local[k], remote[k]);
+      if (v !== undefined) out[k] = v;
+    }
+    // 키 순서는 이 창 기준 (diff 최소화)
+    const ordered = {};
+    [...Object.keys(local), ...Object.keys(out)].forEach(k => { if (k in out && !(k in ordered)) ordered[k] = out[k]; });
+    return ordered;
+  }
+  return local;  // 같은 값을 양쪽에서 다르게 고친 경우 이 창 우선
+}
+
+// 특정 commit 시점의 저장소 텍스트 파일 (없으면 null)
+async function ghReadTextAt(path, commitSha) {
+  let r;
+  try {
+    r = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/contents/${path}?ref=${commitSha}`);
+  } catch (e) {
+    if (String(e.message).includes('GitHub API 404')) return null;
+    throw e;
+  }
+  let b64 = r.content;
+  if (!b64 && r.sha) b64 = (await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/blobs/${r.sha}`)).content;  // 1MB 초과
+  return decodeURIComponent(escape(atob(String(b64 || '').replace(/\n/g, ''))));
+}
+
+// data/*.json 저장분을 최신 저장소 내용과 병합. 병합 결과로 files 내용을 교체하고 반환
+async function mergeDataFiles(files, latestCommitSha) {
+  const merged = [];
+  const out = await Promise.all(files.map(async (f) => {
+    const m = /^data\/([a-z]+)\.json$/.exec(f.path);
+    const name = m && m[1];
+    if (!name || !MERGE_DATA_FILES.includes(name) || f.encoding === 'base64' || !cache.base[name]) return f;
+    const local = JSON.parse(f.content);
+    const remoteText = await ghReadTextAt(f.path, latestCommitSha);
+    if (remoteText == null) return f;
+    const remote = JSON.parse(remoteText);
+    const base = cache.base[name];
+    merged.push({ name, local, changed: !deepEqual(remote, base) });
+    if (deepEqual(remote, base)) return f;  // 그 사이 바뀐 것 없음
+    const result = merge3(base, local, remote);
+    console.info(`[admin] ${f.path}: 다른 곳의 변경을 합쳐 저장`);
+    return { ...f, content: JSON.stringify(result, null, 2) + '\n' };
+  }));
+  return { files: out, merged };
+}
+
+// 단일 커밋으로 파일 생성/수정 + 삭제 — Git Data API
+// 저장소가 그 사이 앞서 나가면(non fast-forward) 최신 기준으로 한 번 더 시도
+async function ghCommitTree(files, deletePaths, message) {
+  for (let attempt = 1; ; attempt++) {
+    // 1) 최신 commit + tree SHA
+    const ref = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`);
+    const latestCommitSha = ref.object.sha;
+    const latestCommit = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/commits/${latestCommitSha}`);
+    const baseTreeSha = latestCommit.tree.sha;
+
+    // 2) data/*.json은 최신 저장소 내용과 병합
+    const { files: toWrite, merged } = await mergeDataFiles(files || [], latestCommitSha);
+
+    // 3) 생성/수정 파일의 blob
+    const blobs = await Promise.all(toWrite.map(async (f) => {
+      const blob = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/blobs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: f.content,
+          encoding: f.encoding === 'base64' ? 'base64' : 'utf-8'
+        })
+      });
+      return { path: f.path, sha: blob.sha };
+    }));
+
+    // 4) tree entries 구성
+    // 생성/수정: { path, mode: '100644', type: 'blob', sha: <blob.sha> }
+    // 삭제: { path, mode: '100644', type: 'blob', sha: null }
+    const treeEntries = [
+      ...blobs.map(b => ({ path: b.path, mode: '100644', type: 'blob', sha: b.sha })),
+      ...(deletePaths || []).map(p => ({ path: p, mode: '100644', type: 'blob', sha: null })),
+    ];
+
+    const newTree = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/trees`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ base_tree: baseTreeSha, tree: treeEntries })
+    });
+
+    const newCommit = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/commits`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, tree: newTree.sha, parents: [latestCommitSha] })
+    });
+
+    // 5) 브랜치 ref 업데이트 (force 아님 → 그 사이 다른 커밋이 있으면 422)
+    try {
+      await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sha: newCommit.sha })
+      });
+    } catch (e) {
+      if (attempt < 3 && String(e.message).includes('GitHub API 422')) continue;
+      throw e;
+    }
+
+    // 6) 병합 기준점 갱신: 호출부가 cache에 넣는 값(local)을 기준으로 삼아
+    //    아직 화면에 없는 다른 곳의 변경은 다음 저장 때도 계속 보존되게 한다
+    merged.forEach(({ name, local }) => { cache.base[name] = local; });
+    if (merged.some(m => m.changed) && typeof showToast === 'function') {
+      setTimeout(() => showToast('다른 창/기기의 변경을 합쳐 저장했어요. 새로고침하면 모두 보여요', 'info', 4000), 1600);
+    }
+    return newCommit.sha;
+  }
+}
+
+// 단일 커밋으로 여러 파일 변경
 //
 // files = [
 //   { path: 'data/series.json', content: '...', encoding: 'utf-8' },
 //   { path: 'images/series/summer-ep06.jpg', content: 'BASE64_STRING', encoding: 'base64' }
 // ]
 async function ghCommitMultipleFiles(files, message) {
-  // 1) 현재 브랜치의 최신 commit SHA
-  const ref = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`);
-  const latestCommitSha = ref.object.sha;
-
-  // 2) 최신 commit의 tree SHA
-  const latestCommit = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/commits/${latestCommitSha}`);
-  const baseTreeSha = latestCommit.tree.sha;
-
-  // 3) 각 파일의 blob 생성
-  const blobs = await Promise.all(files.map(async (f) => {
-    const blob = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/blobs`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        content: f.content,
-        encoding: f.encoding === 'base64' ? 'base64' : 'utf-8'
-      })
-    });
-    return { path: f.path, sha: blob.sha };
-  }));
-
-  // 4) 새 tree 생성 (base는 latestCommit의 tree)
-  const newTree = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/trees`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      base_tree: baseTreeSha,
-      tree: blobs.map(b => ({ path: b.path, mode: '100644', type: 'blob', sha: b.sha }))
-    })
-  });
-
-  // 5) 새 commit 생성
-  const newCommit = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/commits`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      message,
-      tree: newTree.sha,
-      parents: [latestCommitSha]
-    })
-  });
-
-  // 6) 브랜치 ref 업데이트
-  await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sha: newCommit.sha })
-  });
-
-  return newCommit.sha;
+  return ghCommitTree(files, [], message);
 }
 
 // 파일 생성/수정 + 삭제를 함께 처리하는 단일 commit
 // files: ghCommitMultipleFiles와 동일 형태 (생성/수정)
 // deletePaths: ['images/series/old-ep01.jpg', ...] (삭제할 경로들)
 async function ghCommitWithDeletions(files, deletePaths, message) {
-  // 1) 최신 commit + tree SHA
-  const ref = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`);
-  const latestCommitSha = ref.object.sha;
-  const latestCommit = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/commits/${latestCommitSha}`);
-  const baseTreeSha = latestCommit.tree.sha;
-
-  // 2) 생성/수정 파일의 blob
-  const blobs = await Promise.all((files || []).map(async (f) => {
-    const blob = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/blobs`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        content: f.content,
-        encoding: f.encoding === 'base64' ? 'base64' : 'utf-8'
-      })
-    });
-    return { path: f.path, sha: blob.sha };
-  }));
-
-  // 3) tree entries 구성
-  // 생성/수정: { path, mode: '100644', type: 'blob', sha: <blob.sha> }
-  // 삭제: { path, mode: '100644', type: 'blob', sha: null }
-  const treeEntries = [
-    ...blobs.map(b => ({ path: b.path, mode: '100644', type: 'blob', sha: b.sha })),
-    ...(deletePaths || []).map(p => ({ path: p, mode: '100644', type: 'blob', sha: null })),
-  ];
-
-  const newTree = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/trees`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ base_tree: baseTreeSha, tree: treeEntries })
-  });
-
-  const newCommit = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/commits`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, tree: newTree.sha, parents: [latestCommitSha] })
-  });
-
-  await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sha: newCommit.sha })
-  });
-
-  return newCommit.sha;
+  return ghCommitTree(files, deletePaths, message);
 }
 
 // ════════════════════════════════════════════════════════════════════

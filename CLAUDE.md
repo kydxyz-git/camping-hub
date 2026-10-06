@@ -26,6 +26,7 @@
 - `index.html` 콘텐츠 CRUD + 통계 대시보드 · `insights.html` 성과 분석 · `deals.html` 딜 보드 · `conti.html` 콘티 보드
 - 인증: GitHub PAT를 브라우저 localStorage에만 저장. **토큰·시크릿은 저장소에 절대 커밋 금지.**
 - 커밋 메시지: 추가 `sync(admin): …` / 수정 `update(admin): …` / 삭제 `delete(admin): …`
+- 저장(`ghCommitTree`)은 직전에 저장소 최신 `data/*.json`을 읽어 `id` 기준 3-way 병합 후 커밋 — 오래 열어 둔 창이 다른 곳의 변경을 덮어쓰지 않게. 저장 로직을 고칠 때 이 경로를 우회하지 말 것.
 - 콘텐츠 ID `{type}_{hash10}` + `created_at`/`updated_at`. 통계 경로도 ID 기반(`/series/{sid}/{epid}`, `/camps/{id}` …).
 - 참고: admin 이미지 업로드는 현재 4:5 센터 크롭 600×750 JPEG(`cropImage4to5`)로 저장됨 → 장비·음식 썸네일 규격과 다르므로, 규격 적용은 수동 교체로 한다.
 
