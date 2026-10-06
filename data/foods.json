@@ -225,6 +225,39 @@
     "published": true,
     "created_at": "2026-09-29T22:21:31.231Z",
     "updated_at": "2026-09-29T22:21:31.231Z",
+    "is_new": false
+  },
+  {
+    "id": "food_b033c6e85b",
+    "name": "카리 토리야 (일본식 카레)",
+    "desc": "",
+    "url": "https://naver.me/5nhroDKF",
+    "source": "네이버",
+    "thumb": "./images/products/e78346185141.jpg",
+    "currency": "KRW",
+    "price_original": 14900,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-06T05:29:14.917Z",
+    "updated_at": "2026-10-06T05:29:14.917Z",
+    "is_new": true,
+    "pick": 1
+  },
+  {
+    "id": "food_bb488094b5",
+    "name": "소바 토리야(전통 야끼소바)",
+    "desc": "",
+    "url": "https://naver.me/xaT2fP8K",
+    "source": "네이버",
+    "thumb": "./images/products/a0faa3af2500.jpg",
+    "currency": "KRW",
+    "price_original": 13900,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-06T05:30:32.241Z",
+    "updated_at": "2026-10-06T05:30:32.241Z",
     "is_new": true
   }
 ]
