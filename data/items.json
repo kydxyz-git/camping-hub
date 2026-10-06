@@ -1036,8 +1036,9 @@
   {
     "id": "item_3285fbf0e7",
     "name": "에코지안 에어로젯제로",
-    "cat": "camp",
+    "cat": "fire",
     "video": "",
+    "pick": true,
     "desc": "",
     "url": "",
     "source": "",
@@ -1048,6 +1049,6 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-06T00:47:15.678Z",
-    "updated_at": "2026-10-06T00:47:15.678Z"
+    "updated_at": "2026-10-06T00:47:56.301Z"
   }
 ]
