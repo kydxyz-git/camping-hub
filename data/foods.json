@@ -241,7 +241,8 @@
     "published": true,
     "created_at": "2026-10-06T05:29:14.917Z",
     "updated_at": "2026-10-06T05:29:14.917Z",
-    "is_new": true
+    "is_new": true,
+    "pick": 1
   },
   {
     "id": "food_bb488094b5",
