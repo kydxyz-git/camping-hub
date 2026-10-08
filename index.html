@@ -1849,7 +1849,9 @@ function renderItemTab() {
     }));
   }
   const rows = itemFilter === 'all' ? items : items.filter(x => itemCatKey(x, keys) === itemFilter);
-  renderRecentSection('item-recent-section', 'item-recent-grid', rows, 'items', '최근등록 용품');
+  // 분류를 고르면 최근등록 칸은 숨김 (전체일 때만 노출)
+  if (itemFilter === 'all') renderRecentSection('item-recent-section', 'item-recent-grid', rows, 'items', '최근등록 용품');
+  else document.getElementById('item-recent-section').style.display = 'none';
   renderItemGroups('item-grid', rows);
 }
 /* 캠핑용품 — 분류별 섹션으로 렌더 */
@@ -3727,7 +3729,9 @@ function renderGearTab(){
     }));
   }
   const rows=gearFilter==='all'?DATA.items:(DATA.items||[]).filter(x=>gearCatKey(x,keys)===gearFilter);
-  renderPcRecent('#pc-gear-recent',rows,'items','최근등록 용품');
+  // 분류를 고르면 최근등록 칸은 숨김 (전체일 때만 노출)
+  if(gearFilter==='all') renderPcRecent('#pc-gear-recent',rows,'items','최근등록 용품');
+  else { const r=$('#pc-gear-recent'); r.innerHTML=''; r.style.display='none'; }
   renderGear(rows);
 }
 function renderGear(rows){
