@@ -1425,5 +1425,22 @@
     "published": true,
     "created_at": "2026-10-08T07:38:48.372Z",
     "updated_at": "2026-10-08T07:38:48.372Z"
+  },
+  {
+    "id": "item_90fb94a4eb",
+    "name": "크레모아 램프 캐빈",
+    "cat": "light",
+    "video": "",
+    "desc": "",
+    "url": "https://link.coupang.com/a/hF2DSZ6fx6",
+    "source": "쿠팡",
+    "thumb": "./images/products/ea8c32cdc62a.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-08T07:39:38.025Z",
+    "updated_at": "2026-10-08T07:39:38.025Z"
   }
 ]
