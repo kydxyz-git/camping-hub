@@ -1111,8 +1111,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-08T01:40:20.600Z",
-    "updated_at": "2026-10-08T01:40:20.600Z",
-    "pick": 1
+    "updated_at": "2026-10-08T01:40:20.600Z"
   },
   {
     "id": "item_a51e32a09f",
@@ -1146,7 +1145,8 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-08T01:54:52.502Z",
-    "updated_at": "2026-10-08T01:54:52.502Z"
+    "updated_at": "2026-10-08T01:54:52.502Z",
+    "pick": 1
   },
   {
     "id": "item_3425e18446",
@@ -1163,7 +1163,8 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-08T01:56:06.398Z",
-    "updated_at": "2026-10-08T01:56:06.398Z"
+    "updated_at": "2026-10-08T01:56:06.398Z",
+    "pick": 1
   },
   {
     "id": "item_e754c4d2eb",
