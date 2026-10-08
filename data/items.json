@@ -1306,5 +1306,22 @@
     "published": true,
     "created_at": "2026-10-08T06:57:05.879Z",
     "updated_at": "2026-10-08T06:57:05.879Z"
+  },
+  {
+    "id": "item_a2fb370d14",
+    "name": "스노우피크 피츠통",
+    "cat": "fire",
+    "video": "",
+    "desc": "",
+    "url": "https://link.coupang.com/a/hF0a4krPvU",
+    "source": "쿠팡",
+    "thumb": "./images/products/a69c8ef19216.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-08T07:05:11.719Z",
+    "updated_at": "2026-10-08T07:05:11.719Z"
   }
 ]
