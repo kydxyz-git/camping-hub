@@ -1215,5 +1215,22 @@
     "published": true,
     "created_at": "2026-10-08T04:11:15.873Z",
     "updated_at": "2026-10-08T04:11:15.873Z"
+  },
+  {
+    "id": "item_2d86924f44",
+    "name": "씨투써밋 텍타월 SM",
+    "cat": "camp",
+    "video": "",
+    "desc": "",
+    "url": "https://naver.me/xcgBTPSL",
+    "source": "네이버",
+    "thumb": "./images/products/622df4a1471d.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-08T04:13:13.008Z",
+    "updated_at": "2026-10-08T04:13:13.008Z"
   }
 ]
