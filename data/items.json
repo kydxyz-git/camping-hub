@@ -1163,5 +1163,22 @@
     "published": true,
     "created_at": "2026-10-08T01:56:06.398Z",
     "updated_at": "2026-10-08T01:56:06.398Z"
+  },
+  {
+    "id": "item_e754c4d2eb",
+    "name": "코오롱 티타늄 패밀러 머그 세트",
+    "cat": "kitchen",
+    "video": "",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/3729e3eabd45.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-08T02:29:41.884Z",
+    "updated_at": "2026-10-08T02:29:41.884Z"
   }
 ]
