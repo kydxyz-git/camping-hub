@@ -6,6 +6,14 @@
 <meta name="color-scheme" content="light only">
 <meta name="supported-color-schemes" content="light">
 <title>캠핑장 기록 · 공대남자</title>
+<meta name="description" content="5년차 부부캠퍼 공대남자가 직접 다녀온 캠핑장 기록 — 주소, 입퇴실, 방문 횟수, 다녀와서 남긴 메모와 영상.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="공대남자의 캠핑이야기">
+<meta property="og:title" content="캠핑장 기록 · 공대남자">
+<meta property="og:description" content="5년차 부부캠퍼 공대남자가 직접 다녀온 캠핑장 기록">
+<meta property="og:image" content="https://kydz.kr/images/refs/og-1278df5b.jpg">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -105,13 +113,42 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 footer{border-top:1px solid var(--line);padding:30px 0;margin-top:20px;font-size:12.5px;color:var(--stone)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<script>
+/* 캠핑장별 검색·공유 정보
+   - 설명/OG/구조화 데이터를 캠핑장에 맞게 채운다 (구글처럼 JS를 실행하는 검색엔진용)
+   - 주소창을 정적 페이지 주소(/camps/{이름}/)로 바꾼다 → 복사해 카톡에 보내면 그 캠핑장 사진·설명으로 미리보기,
+     누르면 정적 페이지가 다시 이 화면으로 보낸다 (tools/build_pages.py 의 camps/slugs.json 사용) */
+function applyCampMeta(c){
+  const set=(sel,attr,key,val)=>{ let m=document.head.querySelector(sel);
+    if(!m){ m=document.createElement('meta'); m.setAttribute(attr,key); document.head.appendChild(m); }
+    m.setAttribute('content',val); };
+  const notes=String(c.notes||'').split('\n').map(s=>s.trim()).filter(Boolean);
+  const v=+c.visits||0;
+  const desc=[c.name, c.region, v?v+'회 방문':'', (c.extras||[]).slice(0,4).join('·')].filter(Boolean).join(' | ')
+    +'. '+(notes[0]||'5년차 부부캠퍼가 직접 다녀온 캠핑장 기록.');
+  const img=(c.main_img||(c.imgs||[])[0]||'').replace(/^\.\//,'');
+  set('meta[name="description"]','name','description',desc.slice(0,150));
+  set('meta[property="og:title"]','property','og:title',c.name+' · 공대남자 캠핑 기록');
+  set('meta[property="og:description"]','property','og:description',desc.slice(0,150));
+  if(img) set('meta[property="og:image"]','property','og:image','https://kydz.kr/'+img);
+  const ld={'@context':'https://schema.org','@type':'Campground','name':c.name,'description':desc.slice(0,150)};
+  if(c.address) ld.address={'@type':'PostalAddress','streetAddress':c.address,'addressRegion':c.region||'','addressCountry':'KR'};
+  if(c.lat&&c.lng) ld.geo={'@type':'GeoCoordinates','latitude':c.lat,'longitude':c.lng};
+  if(img) ld.image='https://kydz.kr/'+img;
+  const sc=document.createElement('script'); sc.type='application/ld+json'; sc.textContent=JSON.stringify(ld); document.head.appendChild(sc);
+  fetch('/camps/slugs.json?v='+Date.now()).then(r=>r.ok?r.json():null).then(m=>{
+    const slug=m&&m[c.id];
+    if(slug && history.replaceState) history.replaceState(history.state,'','/camps/'+encodeURIComponent(slug)+'/'+location.hash);
+  }).catch(()=>{});
+}
+</script>
 </head>
 <body>
 
 <nav class="nav">
   <div class="nav-in">
-    <a class="mark" href="./">공대남자</a>
-    <div class="navrow"><a class="back" href="./#camps">← 다녀온 캠핑장</a></div>
+    <a class="mark" href="/">공대남자</a>
+    <div class="navrow"><a class="back" href="/#camps">← 다녀온 캠핑장</a></div>
   </div>
 </nav>
 
@@ -160,10 +197,11 @@ function orderedImgs(c){
 
   const c=(camps||[]).find(x=>x.id===id);
   if(!c || c.published===false){
-    root.innerHTML='<p class="err">해당 캠핑장을 찾을 수 없습니다. <a href="./#camps" style="text-decoration:underline">목록으로 돌아가기</a></p>'; return;
+    root.innerHTML='<p class="err">해당 캠핑장을 찾을 수 없습니다. <a href="/#camps" style="text-decoration:underline">목록으로 돌아가기</a></p>'; return;
   }
 
   document.title=c.name+' · 공대남자 캠핑 기록';
+  applyCampMeta(c);
   const imgs=orderedImgs(c);
   const v=+c.visits||0;
   const FEATURES=['계곡','바다','벚꽃','수영장','애견동반','개별샤워실','펜션','노키즈'];
@@ -249,7 +287,7 @@ function orderedImgs(c){
       </aside>
     </div>
 
-    <footer>© 2026 공대남자 · <a href="./#camps" style="text-decoration:underline">캠핑장 목록으로</a></footer>
+    <footer>© 2026 공대남자 · <a href="/#camps" style="text-decoration:underline">캠핑장 목록으로</a></footer>
   `;
 
   // 대표 이미지 자동 전환 (랜덤 시작 · 5초 간격) + 썸네일 연동

@@ -16,8 +16,8 @@
 ## 페이지 구성
 
 - `index.html` 메인 (`is-pc`/`is-mo` 클래스로 PC·모바일 레이아웃 분기)
-- `camp.html` 캠핑장 상세 — 메인 캠핑장 카드에서 `camp.html?id=`로 연결됨 (사용 중)
-- `collab.html` 협업 문의 · `preview.html` 모바일 미리보기
+- `camp.html` 캠핑장 상세 — 메인 캠핑장 카드에서 `camp.html?id=`로 연결됨 (사용 중). 로드 후 캠핑장별 설명·OG·JSON-LD를 채우고, 주소창을 `/camps/{이름}/`로 바꿔 복사·공유 시 정적 페이지 미리보기가 나오게 함(`camps/slugs.json`). 그래서 내부 링크는 `/`·`/#camps`처럼 절대 경로로 쓸 것.
+- `collab.html` 협업 문의(공유 이미지 `images/refs/og-collab-*.jpg`) · `preview.html` 모바일 미리보기
 - `v2.html`, `v3.html` 폐기된 실험 — 수정 대상 아님
 - `conti/`, `kydzm/conti/` 릴스 콘티 · `prompts/` 프롬프트 모음
 
@@ -28,7 +28,7 @@
 - 커밋 메시지: 추가 `sync(admin): …` / 수정 `update(admin): …` / 삭제 `delete(admin): …`
 - 저장(`ghCommitTree`)은 직전에 저장소 최신 `data/*.json`을 읽어 `id` 기준 3-way 병합 후 커밋 — 오래 열어 둔 창이 다른 곳의 변경을 덮어쓰지 않게. 저장 로직을 고칠 때 이 경로를 우회하지 말 것.
 - 콘텐츠 ID `{type}_{hash10}` + `created_at`/`updated_at`. 통계 경로도 ID 기반(`/series/{sid}/{epid}`, `/camps/{id}` …).
-- 참고: admin 이미지 업로드는 현재 4:5 센터 크롭 600×750 JPEG(`cropImage4to5`)로 저장됨 → 장비·음식 썸네일 규격과 다르므로, 규격 적용은 수동 교체로 한다.
+- admin 이미지 업로드: 장비·음식은 `fitProductImage`(800×800 흰 배경·여백 7%·잘림 없음, 투명 PNG 흰 합성, 가장자리 흰/연회색 여백 자동 정리)로 저장. 시리즈 EP·캠핑장은 기존 `cropImage4to5`(4:5 600×750) 유지.
 
 ## 콘텐츠 추가
 

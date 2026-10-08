@@ -372,6 +372,8 @@ def main():
         by_region.setdefault(c.get('region') or '기타', []).append(c)
     for c in camps:
         write(f"camps/{cs[c['id']]}/index.html", camp_page(c, cs[c['id']], by_region, cs, eps_by_camp))
+    # camp.html이 주소창을 정적 페이지 주소로 바꿀 때 쓰는 id → 이름 매핑
+    write('camps/slugs.json', json.dumps(cs, ensure_ascii=False, separators=(',', ':')) + '\n')
 
     by_cat = {k: [x for x in items if cat_of(x) == k] for k in keys}
     for x in items:

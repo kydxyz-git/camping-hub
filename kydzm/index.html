@@ -1294,7 +1294,7 @@
     overflow: hidden;
     flex-shrink: 0;
   }
-  .form-image-preview-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .form-image-preview-thumb img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
   .form-image-preview-info { flex: 1; font-size: 12px; }
   .form-image-preview-info b { display: block; font-size: 13px; margin-bottom: 2px; color: var(--text); }
   .form-image-preview-info span { color: var(--muted); }
@@ -2319,6 +2319,74 @@ async function ghCommitMultipleFiles(files, message) {
 // deletePaths: ['images/series/old-ep01.jpg', ...] (삭제할 경로들)
 async function ghCommitWithDeletions(files, deletePaths, message) {
   return ghCommitTree(files, deletePaths, message);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 장비·음식 썸네일 (CLAUDE.md 규격): 800x800 JPEG, 흰 배경, 여백 7%, 원본 비율 유지(잘림 없음)
+//  · 투명 PNG는 흰 배경에 합성
+//  · 사진 가장자리의 흰색/거의 흰색 여백은 잘라낸 뒤 가운데 배치
+// ════════════════════════════════════════════════════════════════════
+async function fitProductImage(file, size = 800, margin = 0.07, quality = 0.85) {
+  const dataUrl = await new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onerror = () => rej(new Error('파일 읽기 실패'));
+    r.onload = () => res(r.result);
+    r.readAsDataURL(file);
+  });
+  const img = await new Promise((res, rej) => {
+    const i = new Image();
+    i.onerror = () => rej(new Error('이미지 로드 실패'));
+    i.onload = () => res(i);
+    i.src = dataUrl;
+  });
+  const w = img.naturalWidth, h = img.naturalHeight;
+  // 1) 원본을 흰 배경에 그려 여백(거의 흰색) 범위 찾기
+  const src = document.createElement('canvas');
+  src.width = w; src.height = h;
+  const sctx = src.getContext('2d');
+  sctx.fillStyle = '#fff'; sctx.fillRect(0, 0, w, h);
+  sctx.drawImage(img, 0, 0);
+  let x0 = 0, y0 = 0, x1 = w - 1, y1 = h - 1;
+  try {
+    // 연회색 배경(쿠팡·네이버 상품 사진에 흔한 240~250)이면 흰색으로 끌어올림
+    const all = sctx.getImageData(0, 0, w, h);
+    const px = all.data;
+    const corner = [[1, 1], [w - 2, 1], [1, h - 2], [w - 2, h - 2]].map(([x, y]) => {
+      const k = (y * w + x) * 4; return Math.min(px[k], px[k + 1], px[k + 2]);
+    });
+    const bg = Math.min(...corner);
+    if (bg >= 228 && bg < 253 && Math.max(...corner) - bg <= 6) {
+      const f = 255 / (bg - 2);
+      for (let k = 0; k < px.length; k += 4) {
+        px[k] = Math.min(255, px[k] * f); px[k + 1] = Math.min(255, px[k + 1] * f); px[k + 2] = Math.min(255, px[k + 2] * f);
+      }
+      sctx.putImageData(all, 0, 0);
+    }
+    const d = sctx.getImageData(0, 0, w, h).data;
+    const ink = (x, y) => { const k = (y * w + x) * 4; return Math.min(d[k], d[k + 1], d[k + 2]) < 240; };
+    const rowHas = (y) => { for (let x = 0; x < w; x += 1) if (ink(x, y)) return true; return false; };
+    const colHas = (x) => { for (let y = y0; y <= y1; y += 1) if (ink(x, y)) return true; return false; };
+    while (y0 < y1 && !rowHas(y0)) y0++;
+    while (y1 > y0 && !rowHas(y1)) y1--;
+    while (x0 < x1 && !colHas(x0)) x0++;
+    while (x1 > x0 && !colHas(x1)) x1--;
+  } catch (e) { x0 = 0; y0 = 0; x1 = w - 1; y1 = h - 1; }
+  const cw = x1 - x0 + 1, ch = y1 - y0 + 1;
+  // 2) 800x800 흰 캔버스에 여백 7%로 비율 유지 배치
+  const box = Math.round(size * (1 - margin * 2));
+  const scale = Math.min(box / cw, box / ch);
+  const dw = Math.round(cw * scale), dh = Math.round(ch * scale);
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, size, size);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(src, x0, y0, cw, ch, Math.round((size - dw) / 2), Math.round((size - dh) / 2), dw, dh);
+  const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', quality));
+  if (!blob) throw new Error('JPEG 변환 실패');
+  const previewUrl = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(blob); });
+  return { base64: previewUrl.split(',')[1], previewUrl, size: blob.size };
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -7021,7 +7089,7 @@ function _renderFoodFormUI() {
             <input type="file" id="ff-image" accept="image/*">
             <div class="form-image-drop-icon">📷</div>
             <div class="form-image-drop-text">${isEdit ? '새 이미지로 교체하려면 선택' : '이미지를 선택하거나 끌어다 놓으세요'}</div>
-            <div class="form-image-drop-sub">자동으로 4:5 크롭 · 📋 Ctrl+V (Cmd+V) 붙여넣기</div>
+            <div class="form-image-drop-sub">자동으로 800×800 흰 배경 (잘림 없음) · 📋 Ctrl+V (Cmd+V) 붙여넣기</div>
           </label>
           <div id="ff-image-preview"></div>
         </div>
@@ -7104,7 +7172,7 @@ function _renderFoodFormUI() {
     }
     try {
       previewEl.innerHTML = '<div class="loading">이미지 처리 중...</div>';
-      const { base64, previewUrl, size } = await cropImage4to5(file);
+      const { base64, previewUrl, size } = await fitProductImage(file);
       _foodForm.imageBase64 = base64;
       _foodForm.imagePreviewUrl = previewUrl;
       _foodForm.imageSize = size;
@@ -7127,7 +7195,7 @@ function _renderFoodFormUI() {
         <div class="form-image-preview-thumb"><img src="${_foodForm.imagePreviewUrl}" alt=""></div>
         <div class="form-image-preview-info">
           <b>${isNew ? '새 이미지' : '기존 이미지'}</b>
-          <span>${isNew ? `4:5 크롭 · 600×750 · ${(_foodForm.imageSize/1024).toFixed(0)}KB` : '교체하려면 위에서 선택'}</span>
+          <span>${isNew ? `800×800 흰 배경 · ${(_foodForm.imageSize/1024).toFixed(0)}KB` : '교체하려면 위에서 선택'}</span>
         </div>
         ${isNew ? `<button class="form-image-preview-remove" id="ff-image-remove">제거</button>` : ''}
       </div>
@@ -7659,7 +7727,7 @@ function _renderItemFormUI() {
             <input type="file" id="if-image" accept="image/*">
             <div class="form-image-drop-icon">📷</div>
             <div class="form-image-drop-text">${isEdit ? '새 이미지로 교체하려면 선택' : '이미지를 선택하거나 끌어다 놓으세요'}</div>
-            <div class="form-image-drop-sub">자동으로 4:5 크롭 · 📋 Ctrl+V (Cmd+V) 붙여넣기</div>
+            <div class="form-image-drop-sub">자동으로 800×800 흰 배경 (잘림 없음) · 📋 Ctrl+V (Cmd+V) 붙여넣기</div>
           </label>
           <div id="if-image-preview"></div>
         </div>
@@ -7759,7 +7827,7 @@ function _renderItemFormUI() {
     }
     try {
       previewEl.innerHTML = '<div class="loading">이미지 처리 중...</div>';
-      const { base64, previewUrl, size } = await cropImage4to5(file);
+      const { base64, previewUrl, size } = await fitProductImage(file);
       _itemForm.imageBase64 = base64;
       _itemForm.imagePreviewUrl = previewUrl;
       _itemForm.imageSize = size;
@@ -7782,7 +7850,7 @@ function _renderItemFormUI() {
         <div class="form-image-preview-thumb"><img src="${_itemForm.imagePreviewUrl}" alt=""></div>
         <div class="form-image-preview-info">
           <b>${isNew ? '새 이미지' : '기존 이미지'}</b>
-          <span>${isNew ? `4:5 크롭 · 600×750 · ${(_itemForm.imageSize/1024).toFixed(0)}KB` : '교체하려면 위에서 선택'}</span>
+          <span>${isNew ? `800×800 흰 배경 · ${(_itemForm.imageSize/1024).toFixed(0)}KB` : '교체하려면 위에서 선택'}</span>
         </div>
         ${isNew ? `<button class="form-image-preview-remove" id="if-image-remove">제거</button>` : ''}
       </div>
