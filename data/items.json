@@ -1272,5 +1272,22 @@
     "published": true,
     "created_at": "2026-10-08T06:36:31.077Z",
     "updated_at": "2026-10-08T06:39:32.000Z"
+  },
+  {
+    "id": "item_a85f326087",
+    "name": "인스타360 넥 마운트",
+    "cat": "camera",
+    "video": "",
+    "desc": "",
+    "url": "https://naver.me/x52u7oL1",
+    "source": "네이버",
+    "thumb": "./images/products/9fc39da2593c.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-08T06:52:11.945Z",
+    "updated_at": "2026-10-08T06:52:11.945Z"
   }
 ]
