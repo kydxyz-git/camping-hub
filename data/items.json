@@ -411,8 +411,8 @@
     "cat": "fire",
     "video": "",
     "desc": "",
-    "url": "",
-    "source": "",
+    "url": "https://link.coupang.com/a/hFBfYx5tNA",
+    "source": "쿠팡",
     "thumb": "./images/products/3994c44d5e57.jpg",
     "currency": "KRW",
     "price_original": 0,
@@ -420,7 +420,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-12T01:29:32.459893+00:00",
-    "updated_at": "2026-08-13T14:10:48.777Z"
+    "updated_at": "2026-10-08T01:15:58.037Z"
   },
   {
     "id": "item_2128e45952",
