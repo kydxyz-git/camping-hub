@@ -1357,5 +1357,22 @@
     "published": true,
     "created_at": "2026-10-08T07:10:37.382Z",
     "updated_at": "2026-10-08T07:10:37.382Z"
+  },
+  {
+    "id": "item_2eb6c36076",
+    "name": "코베아 40주년 에디션 술잔 SET",
+    "cat": "kitchen",
+    "video": "",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/6a9f80f75f81.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-08T07:12:33.075Z",
+    "updated_at": "2026-10-08T07:12:33.075Z"
   }
 ]
