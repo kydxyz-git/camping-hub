@@ -1323,5 +1323,22 @@
     "published": true,
     "created_at": "2026-10-08T07:05:11.719Z",
     "updated_at": "2026-10-08T07:05:11.719Z"
+  },
+  {
+    "id": "item_81f6935124",
+    "name": "유니프레임 유니세라",
+    "cat": "kitchen",
+    "video": "",
+    "desc": "",
+    "url": "https://link.coupang.com/a/hF0hiOTLs4",
+    "source": "쿠팡",
+    "thumb": "./images/products/cbc4f656eb4c.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-08T07:06:21.214Z",
+    "updated_at": "2026-10-08T07:06:21.214Z"
   }
 ]
