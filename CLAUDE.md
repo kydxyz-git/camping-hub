@@ -35,13 +35,20 @@
 - 기본은 admin에서 추가/수정.
 - 직접 추가할 때: 기존 항목 형식 그대로 (`id`, `created_at`, `updated_at` 포함). 장비 `cat`은 `config.itemCats`의 key.
 - 캠핑장 CSV 병합은 `id` 기준. 삭제된 필드(`landscape`/`seasons`/`sites`/`price`)는 되살리지 않기.
-- 콘텐츠가 실제로 바뀌면 `python3 tools/update_sitemap.py`.
+- `sitemap.xml`·정적 페이지는 GitHub Actions가 자동 생성 (아래 '검색 노출' 참고). `tools/update_sitemap.py`는 더 이상 쓰지 않음.
 
 ## 이미지
 
 - **장비·음식 썸네일(`images/products`): 800×800 JPEG, 흰 배경, 여백 7%, 원본 비율 유지(잘림 금지)**
 - 이미지 교체 시 **새 파일명**으로 저장하고 해당 JSON의 `thumb`·`updated_at` 갱신 (캐시 무효화). 참조 없어진 이전 파일은 삭제.
 - 시리즈(`images/series`)·캠핑장(`images/camps`)은 기존 파일 규격을 따른다.
+
+## 검색 노출 (정적 페이지)
+
+- `tools/build_pages.py`가 `data/*.json`으로 `camps/{이름}/` · `gear/{이름}/` · `foods/{이름}/` 상세 페이지와 목록 페이지(`camps/` `gear/` `foods/`), `sitemap.xml`, `index.html`의 `PRERENDER` 블록을 만든다. **생성물은 직접 수정 금지** — 스크립트를 고친다.
+- `.github/workflows/build-pages.yml`: main에 `data/{camps,items,foods,series,config}.json`이 바뀌면 자동 실행해 `chore(build): …`로 커밋.
+- 사람이 열면 자바스크립트로 실제 화면으로 이동: 캠핑장 → `camp.html?id=`, 용품 → `/#items/{id}`, 먹거리 → `/#foods/{id}`, 목록 → 해당 탭. 내용은 HTML에 들어 있어 JS 없이 읽는 검색로봇(네이버 등)이 색인.
+- 페이지 문구는 데이터(주소·방문 횟수·메모·태그·영상)로만 만든다 — 없는 사실을 지어 넣지 않기.
 
 ## UI/UX 규칙
 
