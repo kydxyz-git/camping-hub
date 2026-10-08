@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="naver-site-verification" content="40f00b82c2d36447004128656cf9fb8835dca6c7" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- 캐시 제어: 매번 새 버전 확인 (GitHub Pages 10분 캐시 우회) -->
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
@@ -2722,7 +2723,9 @@ function renderPinned(kind, idsRaw) {
   const picked = ids.map(id => (src || []).find(x => x.id === id && x.published !== false)).filter(Boolean);
   if (!picked.length) { box.innerHTML = ''; return; }
   const gridId = isItems ? 'item-pinned-grid' : 'food-pinned-grid';
-  const label = isItems ? '영상에 소개한 제품' : '영상에 소개한 음식';
+  // ?ref=search: 검색 결과(정적 페이지)에서 넘어온 경우 — 그 외는 인스타 DM 링크
+  const fromSearch = /(^|[?&])ref=search(&|$)/.test(location.search);
+  const label = fromSearch ? (isItems ? '찾으신 제품' : '찾으신 음식') : (isItems ? '영상에 소개한 제품' : '영상에 소개한 음식');
   box.innerHTML = `<div class="pin-wrap" id="${gridId}"></div><div class="pin-label">${label}</div>`;
   renderProducts(gridId, picked, true);
 }
@@ -3228,6 +3231,7 @@ if(document.documentElement.classList.contains('is-mo')) init();
       <span class="count" id="food-count"></span>
     </div>
     <p class="notice top" id="food-notice"></p>
+    <div class="pc-recent" id="pc-food-pin" style="display:none;"></div>
     <div class="pc-recent" id="pc-food-recent" style="display:none;"></div>
     <div class="pc-grid five prod" id="pc-food-grid"></div>
   </section>
@@ -3241,6 +3245,7 @@ if(document.documentElement.classList.contains('is-mo')) init();
       <span class="count" id="gear-count"></span>
     </div>
     <p class="notice top" id="gear-notice"></p>
+    <div class="pc-recent" id="pc-gear-pin" style="display:none;"></div>
     <div class="pc-chips gear-filter" id="gear-filter"></div>
     <div class="pc-recent" id="pc-gear-recent" style="display:none;"></div>
     <div id="gear-sections"></div>
@@ -3335,6 +3340,8 @@ function route(){
     on?t.setAttribute('aria-current','page'):t.removeAttribute('aria-current');
   });
   if(view==='series') paintSeries(decodeURIComponent(arg||''));
+  renderPcPin('#pc-gear-pin', view==='gear'?arg:'', DATA.items, 'items');
+  renderPcPin('#pc-food-pin', view==='food'?arg:'', DATA.foods, 'foods');
   window.scrollTo({top:0,behavior:'auto'});
 }
 addEventListener('hashchange',route);
@@ -3686,6 +3693,20 @@ function renderProducts(sel,rows,countSel,emptyMsg,mode,cat){
   const list=sortProducts(pub(rows), mode||'random');
   if(countSel) $(countSel).textContent=list.length+'개';
   $(sel).innerHTML=list.length?list.map(p=>pcardHtml(p,cat)).join(''):`<p class="empty">${esc(emptyMsg||'아직 등록된 항목이 없습니다.')}</p>`;
+}
+// PC: #items/{id} · #foods/{id} 로 들어온 제품을 맨 위에 고정 (인스타 DM 링크 · 검색 정적 페이지)
+function renderPcPin(sel, idsRaw, rows, cat){
+  const el=$(sel);
+  if(!el) return;
+  const ids=decodeURIComponent(idsRaw||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,3);
+  const picked=ids.map(id=>pub(rows||[]).find(x=>x.id===id)).filter(Boolean);
+  if(!picked.length){ el.innerHTML=''; el.style.display='none'; return; }
+  const fromSearch=/(^|[?&])ref=search(&|$)/.test(location.search);
+  const isItems=cat==='items';
+  const title=fromSearch?(isItems?'찾으신 제품':'찾으신 음식'):(isItems?'영상에 소개한 제품':'영상에 소개한 음식');
+  el.style.display='';
+  el.innerHTML=`<div class="pc-recent-head"><span class="pc-recent-title">${esc(title)}</span></div>
+    <div class="pc-grid five prod">${picked.map(p=>pcardHtml(p,cat)).join('')}</div>`;
 }
 // PC 최근등록 섹션 렌더 (is_new 항목만)
 function renderPcRecent(sel, rows, cat, title){

@@ -283,7 +283,7 @@ def product_page(p, slug, kind, cat_label, siblings, slugs):
     if p.get('source') and p.get('url'):
         rows.append(('판매처', p['source']))
     dl = ''.join(f'<dt>{e(k)}</dt><dd>{e(v)}</dd>' for k, v in rows)
-    target = f"/#{'items' if is_gear else 'foods'}/{p['id']}"
+    target = f"/?ref=search#{'items' if is_gear else 'foods'}/{p['id']}"
     hub = 'gear' if is_gear else 'foods'
     body = [f'<p class="crumb"><a href="{SITE}/{hub}/">{section_name}</a>{(" · " + e(cat_label)) if cat_label else ""}</p>',
             f'<h1>{e(name)}</h1>']
