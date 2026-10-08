@@ -172,6 +172,16 @@
     "sort": "random",
     "eps": [
       {
+        "id": "ep_50ef68e449",
+        "ep": 0,
+        "title": "토리야 꼬치, 소바, 커리",
+        "url": "https://www.instagram.com/p/DeKwSVWk4Cp/?stkn=MXJvODB3NXVzaDVyZw==",
+        "thumb": "./images/series/foods-muzifqxh.jpg",
+        "published": true,
+        "created_at": "2026-10-08T12:26:04.181Z",
+        "updated_at": "2026-10-08T12:26:04.181Z"
+      },
+      {
         "id": "ep_095af5c90f",
         "ep": 0,
         "title": "토리야 꼬치구이, 쇼가야끼",
