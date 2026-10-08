@@ -1315,11 +1315,17 @@
     "visits": 1,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-09-29T06:33:55.839Z",
+    "updated_at": "2026-10-08T12:23:11.875Z",
     "address": "경북 의성군 단밀면 낙정리 475-16",
     "main_img": "./images/camps/565473a91d98-4.jpg",
     "lat": 36.350322,
-    "lng": 128.304708
+    "lng": 128.304708,
+    "videos": [
+      {
+        "url": "https://www.instagram.com/p/DWNpnKjE0Tn/?stkn=cTFva2h4ZTZsMTFu",
+        "title": "해피단밀오토캠핑장 사이트 사진"
+      }
+    ]
   },
   {
     "name": "캠핑느루",
