@@ -425,6 +425,10 @@
     .chips { display:flex; flex-wrap:wrap; gap:6px; }
     .chip { padding:6px 12px; background:transparent; border:1px solid var(--line); border-radius:100px; font-size:12px; color:var(--text); transition:all 0.15s; font-weight:500; cursor:pointer; }
     .chip.active { background:var(--text); color:var(--bg); border-color:var(--text); }
+    /* 캠핑용품 분류 필터 — 한 줄 가로 스크롤 */
+    .item-filter { flex-wrap:nowrap; overflow-x:auto; margin:2px 0 16px; padding-bottom:2px; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+    .item-filter::-webkit-scrollbar { display:none; }
+    .item-filter .chip { flex:0 0 auto; white-space:nowrap; }
     .reset-row { padding:4px 20px 10px; display:flex; justify-content:flex-end; }
     .reset-btn { font-size:11px; color:var(--text-sub); text-decoration:underline; font-weight:500; cursor:pointer; }
     .count-bar { padding:6px 20px 12px; display:flex; justify-content:space-between; align-items:baseline; border-top:1px solid var(--line); }
@@ -1078,6 +1082,8 @@ html.is-pc .pc-chip{border:1px solid var(--line);background:transparent;border-r
   font:inherit;font-size:13px;color:#5D635C;transition:.15s}
 html.is-pc .pc-chip:hover{border-color:#C7CAC3}
 html.is-pc .pc-chip.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+html.is-pc .gear-filter{margin:6px 0 22px}
+html.is-pc .gear-filter:empty{display:none}
 html.is-pc .fbtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 16px;
   cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;color:#3F5346;
   display:inline-flex;align-items:center;gap:6px;transition:.15s}
@@ -1433,6 +1439,7 @@ async function loadData() {
     </div>
     <div class="cat-desc">공대남자가 지금 사용 중인 용품들입니다. <span class="desc-note">(<svg class="desc-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg> 추천)</span></div>
     <div id="item-pinned"></div>
+    <div class="chips item-filter" id="item-filter"></div>
     <section class="product-section recent-section" id="item-recent-section" style="display:none;">
       <div class="recent-head"><span class="recent-badge">NEW</span><span class="recent-title">최근등록 용품</span></div>
       <div class="product-grid" id="item-recent-grid"></div>
@@ -1818,6 +1825,32 @@ function sortProductsByMode(arr, mode) {
 function getItemCats() {
   const c = siteConfig.itemCats;
   return (Array.isArray(c) && c.length) ? c : [{key:'camp',label:'캠핑용품'}];
+}
+/* 캠핑용품 분류 필터 ('all' 또는 itemCats key) */
+let itemFilter = 'all';
+function itemCatKey(x, keys) {
+  const k = x.cat || keys[0];
+  return keys.includes(k) ? k : keys[0];
+}
+function renderItemTab() {
+  const cats = getItemCats();
+  const keys = cats.map(c => c.key);
+  const all = (items || []).filter(x => x.published !== false);
+  const used = cats.filter(c => all.some(x => itemCatKey(x, keys) === c.key));
+  if (itemFilter !== 'all' && !used.some(c => c.key === itemFilter)) itemFilter = 'all';
+  const el = document.getElementById('item-filter');
+  if (el) {
+    const opts = [{ key: 'all', label: '전체' }, ...used];
+    el.innerHTML = opts.map(o => `<button class="chip${o.key === itemFilter ? ' active' : ''}" data-k="${o.key}">${o.label}</button>`).join('');
+    el.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => {
+      if (itemFilter === b.dataset.k) return;
+      itemFilter = b.dataset.k;
+      renderItemTab();
+    }));
+  }
+  const rows = itemFilter === 'all' ? items : items.filter(x => itemCatKey(x, keys) === itemFilter);
+  renderRecentSection('item-recent-section', 'item-recent-grid', rows, 'items', '최근등록 용품');
+  renderItemGroups('item-grid', rows);
 }
 /* 캠핑용품 — 분류별 섹션으로 렌더 */
 function renderItemGroups(containerId, dataArr) {
@@ -2748,8 +2781,7 @@ async function init() {
     renderGrid();
     renderRecentSection('food-recent-section', 'food-recent-grid', foods, 'foods', '최근등록 음식');
     renderProducts('food-grid', foods);
-    renderRecentSection('item-recent-section', 'item-recent-grid', items, 'items', '최근등록 용품');
-    renderItemGroups('item-grid', items);
+    renderItemTab();
     // 데이터 로드가 끝난 뒤에 다시 한 번 — 첫 호출 시점엔 items가 비어 있어 그려지지 않는다
     applyHashTab();
   } catch (e) {
@@ -3207,6 +3239,7 @@ if(document.documentElement.classList.contains('is-mo')) init();
       <span class="count" id="gear-count"></span>
     </div>
     <p class="notice top" id="gear-notice"></p>
+    <div class="pc-chips gear-filter" id="gear-filter"></div>
     <div class="pc-recent" id="pc-gear-recent" style="display:none;"></div>
     <div id="gear-sections"></div>
   </section>
@@ -3321,8 +3354,7 @@ addEventListener('hashchange',route);
   renderSeriesList();
   renderPcRecent('#pc-food-recent',DATA.foods,'foods','최근등록 음식');
   renderProducts('#pc-food-grid',DATA.foods,'#food-count',null,(DATA.config||{}).foodsSort||'random','foods');
-  renderPcRecent('#pc-gear-recent',DATA.items,'items','최근등록 용품');
-  renderGear();
+  renderGearTab();
   renderChrome();
   route();
 })();
@@ -3678,9 +3710,29 @@ function gearRows(all,cats,i){
     return k===cats[i].key || (i===0 && !keys.includes(k));
   });
 }
-function renderGear(){
-  const all=pub(DATA.items), cats=itemCats();
-  $('#gear-count').textContent=all.length+'개';
+/* 캠핑용품 분류 필터 ('all' 또는 itemCats key) — 최근등록·분류 섹션 모두 거름 */
+let gearFilter='all';
+function gearCatKey(x,keys){ const k=x.cat||keys[0]; return keys.includes(k)?k:keys[0]; }
+function renderGearTab(){
+  const cats=itemCats(), keys=cats.map(c=>c.key), all=pub(DATA.items);
+  const used=cats.filter(c=>all.some(x=>gearCatKey(x,keys)===c.key));
+  if(gearFilter!=='all' && !used.some(c=>c.key===gearFilter)) gearFilter='all';
+  const el=$('#gear-filter');
+  if(el){
+    el.innerHTML=[{key:'all',label:'전체'},...used].map(o=>
+      `<button class="pc-chip${o.key===gearFilter?' on':''}" data-k="${esc(o.key)}">${esc(o.label)}</button>`).join('');
+    el.querySelectorAll('.pc-chip').forEach(b=>b.addEventListener('click',()=>{
+      if(gearFilter===b.dataset.k) return;
+      gearFilter=b.dataset.k; renderGearTab();
+    }));
+  }
+  const rows=gearFilter==='all'?DATA.items:(DATA.items||[]).filter(x=>gearCatKey(x,keys)===gearFilter);
+  renderPcRecent('#pc-gear-recent',rows,'items','최근등록 용품');
+  renderGear(rows);
+}
+function renderGear(rows){
+  const all=pub(rows||DATA.items), cats=itemCats();
+  $('#gear-count').textContent=pub(DATA.items).length+'개';
   const html=cats.map((c,i)=>{
     const n=gearRows(all,cats,i).length;
     if(!n) return '';
