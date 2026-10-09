@@ -1511,5 +1511,23 @@
     "published": true,
     "created_at": "2026-10-08T07:50:57.951Z",
     "updated_at": "2026-10-08T07:50:57.951Z"
+  },
+  {
+    "id": "item_4a438a15fc",
+    "name": "캠핑문 2WAY 파일드라이버",
+    "cat": "camp",
+    "video": "",
+    "pick": true,
+    "desc": "",
+    "url": "https://naver.me/Ghwg6YLE",
+    "source": "네이버",
+    "thumb": "./images/products/b51afdf49a7a.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-09T20:38:26.624Z",
+    "updated_at": "2026-10-09T20:38:26.624Z"
   }
 ]
