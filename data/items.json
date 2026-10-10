@@ -1564,5 +1564,22 @@
     "published": true,
     "created_at": "2026-10-10T17:27:17.834Z",
     "updated_at": "2026-10-10T17:27:17.834Z"
+  },
+  {
+    "id": "item_c722fec6c3",
+    "name": "타임모어 나노3 핸드그라인더 15g",
+    "cat": "kitchen",
+    "video": "",
+    "desc": "",
+    "url": "https://link.coupang.com/a/hJ2CEeQpZ6",
+    "source": "쿠팡",
+    "thumb": "./images/products/5b87f9547863.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-10T17:29:49.324Z",
+    "updated_at": "2026-10-10T17:29:49.324Z"
   }
 ]
