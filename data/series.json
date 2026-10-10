@@ -61,6 +61,17 @@
     "sort": "created_desc",
     "eps": [
       {
+        "id": "ep_aae0df7c38",
+        "ep": 0,
+        "title": "역대급 인생뷰 캠핑장 신규사이트",
+        "url": "https://www.instagram.com/reel/DeVN4r2TYP2/?cplk=Ym52aG5xN2xodnhk",
+        "thumb": "./images/series/spring-fall-mv318j8f.jpg",
+        "published": true,
+        "created_at": "2026-10-10T23:35:38.847Z",
+        "updated_at": "2026-10-10T23:35:38.847Z",
+        "camp_id": "camp_922e05eeae"
+      },
+      {
         "id": "ep_86b9e0bf6c",
         "ep": 0,
         "title": "가을에 가기 좋은 곳",
