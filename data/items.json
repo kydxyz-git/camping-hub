@@ -1582,5 +1582,22 @@
     "published": true,
     "created_at": "2026-10-10T17:29:49.324Z",
     "updated_at": "2026-10-10T17:29:49.324Z"
+  },
+  {
+    "id": "item_a52fb6afa1",
+    "name": "타임모어 나노 케이터링 캠핑 커피 세트",
+    "cat": "kitchen",
+    "video": "",
+    "desc": "",
+    "url": "https://link.coupang.com/a/hJ2W0nZV8e",
+    "source": "쿠팡",
+    "thumb": "./images/products/3cd0c750edc5.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-10T17:34:13.355Z",
+    "updated_at": "2026-10-10T17:34:13.355Z"
   }
 ]
