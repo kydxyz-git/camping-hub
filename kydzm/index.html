@@ -2216,17 +2216,17 @@ async function ghReadTextAt(path, commitSha) {
 }
 
 // data/*.json 저장분을 최신 저장소 내용과 병합. 병합 결과로 files 내용을 교체하고 반환
-async function mergeDataFiles(files, latestCommitSha) {
+async function mergeDataFiles(files, latestCommitSha, baseSnap) {
   const merged = [];
   const out = await Promise.all(files.map(async (f) => {
     const m = /^data\/([a-z]+)\.json$/.exec(f.path);
     const name = m && m[1];
-    if (!name || !MERGE_DATA_FILES.includes(name) || f.encoding === 'base64' || !cache.base[name]) return f;
+    if (!name || !MERGE_DATA_FILES.includes(name) || f.encoding === 'base64' || !baseSnap[name]) return f;
     const local = JSON.parse(f.content);
     const remoteText = await ghReadTextAt(f.path, latestCommitSha);
     if (remoteText == null) return f;
     const remote = JSON.parse(remoteText);
-    const base = cache.base[name];
+    const base = baseSnap[name];
     merged.push({ name, local, changed: !deepEqual(remote, base) });
     if (deepEqual(remote, base)) return f;  // 그 사이 바뀐 것 없음
     const result = merge3(base, local, remote);
@@ -2238,7 +2238,18 @@ async function mergeDataFiles(files, latestCommitSha) {
 
 // 단일 커밋으로 파일 생성/수정 + 삭제 — Git Data API
 // 저장소가 그 사이 앞서 나가면(non fast-forward) 최신 기준으로 한 번 더 시도
-async function ghCommitTree(files, deletePaths, message) {
+// 저장은 한 번에 하나씩 순서대로 처리한다. 병합 기준점(base)은 '호출한 순간'의 값으로 고정 —
+// 앞 저장이 끝나기 전에 다음 버튼을 누르면, 앞 저장 완료로 base가 바뀌어 뒤 저장이 앞 변경을
+// 되돌리던 문제(2026-10-14 알루텍 48·68 🆕 해제 되돌아감) 방지.
+let _ghCommitQueue = Promise.resolve();
+function ghCommitTree(files, deletePaths, message) {
+  const baseSnap = JSON.parse(JSON.stringify(cache.base || {}));
+  const run = () => ghCommitTreeNow(files, deletePaths, message, baseSnap);
+  const p = _ghCommitQueue.then(run, run);
+  _ghCommitQueue = p.catch(() => {});
+  return p;
+}
+async function ghCommitTreeNow(files, deletePaths, message, baseSnap) {
   for (let attempt = 1; ; attempt++) {
     // 1) 최신 commit + tree SHA
     const ref = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`);
@@ -2247,7 +2258,7 @@ async function ghCommitTree(files, deletePaths, message) {
     const baseTreeSha = latestCommit.tree.sha;
 
     // 2) data/*.json은 최신 저장소 내용과 병합
-    const { files: toWrite, merged } = await mergeDataFiles(files || [], latestCommitSha);
+    const { files: toWrite, merged } = await mergeDataFiles(files || [], latestCommitSha, baseSnap);
 
     // 3) 생성/수정 파일의 blob
     const blobs = await Promise.all(toWrite.map(async (f) => {
@@ -6719,17 +6730,18 @@ function renderProductList(dataArr, searchVar, opts) {
       btn.closest('.pick-stars').querySelectorAll('.pick-btn')
         .forEach((b, i) => b.classList.toggle('on', i < val));
       const label = kind === 'foods' ? '음식' : '장비';
+      cache[kind] = next;   // 즉시 반영 — 저장이 끝나기 전에 다른 버튼을 눌러도 이 변경이 유지되게
       try {
         await ghCommitMultipleFiles(
           [{ path: `data/${kind}.json`, content: JSON.stringify(next, null, 2) + '\n', encoding: 'utf-8' }],
           `update(admin): ${label} '${it.name}' 추천 ${on ? '설정' : '해제'}`
         );
-        cache[kind] = next;
         showToast(on ? `${'★'.repeat(val)} 추천 ${val}단계` : '추천 해제됨', 'success', 1500);
         if (kind === 'foods') renderFoodList(); else renderItemList();
       } catch (err) {
         btn.closest('.pick-stars').querySelectorAll('.pick-btn')
           .forEach((b, i) => b.classList.toggle('on', i < cur));   // 실패 시 되돌림
+        cache[kind] = (cache[kind] || []).map(x => x.id === it.id ? { ...x, pick: it.pick } : x);
         showToast('저장 실패: ' + err.message, 'error', 4000);
       } finally { delete btn.dataset.busy; }
     };
@@ -6750,16 +6762,17 @@ function renderProductList(dataArr, searchVar, opts) {
       const next = arr.map((x, i) => i === idx ? { ...x, is_new: on } : x);
       btn.classList.toggle('on', on);   // 먼저 화면 반영
       const label = kind === 'foods' ? '음식' : '용품';
+      cache[kind] = next;   // 즉시 반영 — 저장이 끝나기 전에 다른 버튼을 눌러도 이 변경이 유지되게
       try {
         await ghCommitMultipleFiles(
           [{ path: `data/${kind}.json`, content: JSON.stringify(next, null, 2) + '\n', encoding: 'utf-8' }],
           `update(admin): ${label} '${it.name}' 최근등록 ${on ? '설정' : '해제'}`
         );
-        cache[kind] = next;
         showToast(on ? '🆕 최근등록 고정됨' : '최근등록 해제됨', 'success', 1500);
         if (kind === 'foods') renderFoodList(); else renderItemList();
       } catch (err) {
         btn.classList.toggle('on', !on);   // 실패 시 되돌림
+        cache[kind] = (cache[kind] || []).map(x => x.id === it.id ? { ...x, is_new: it.is_new } : x);
         showToast('저장 실패: ' + err.message, 'error', 4000);
       } finally { delete btn.dataset.busy; }
     };
@@ -6795,15 +6808,16 @@ function renderProductList(dataArr, searchVar, opts) {
         : x);
 
       const label = kind === 'foods' ? '음식' : '장비';
+      cache[kind] = next;   // 즉시 반영 — 저장이 끝나기 전에 다른 버튼을 눌러도 이 변경이 유지되게
       try {
         await ghCommitMultipleFiles(
           [{ path: `data/${kind}.json`, content: JSON.stringify(next, null, 2) + '\n', encoding: 'utf-8' }],
           `update(admin): ${label} '${it.name}' 구매처 링크 ${v ? '등록' : '해제'}`
         );
-        cache[kind] = next;
         showToast(v ? '구매처 링크 저장됨' : '구매처 링크 해제됨', 'success');
         if (kind === 'foods') renderFoodList(); else renderItemList();
       } catch (err) {
+        cache[kind] = (cache[kind] || []).map(x => x.id === it.id ? { ...x, url: it.url, source: it.source } : x);
         showToast('저장 실패: ' + err.message, 'error', 4000);
       }
     };
