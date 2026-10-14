@@ -1618,5 +1618,22 @@
     "published": true,
     "created_at": "2026-10-14T06:58:00.170Z",
     "updated_at": "2026-10-14T07:49:43.041Z"
+  },
+  {
+    "id": "item_3c3812808a",
+    "name": "도쿄크래프트 그래프 암",
+    "cat": "light",
+    "video": "",
+    "desc": "",
+    "url": "https://m.brand.naver.com/tokyocraftskorea/products/11137134219",
+    "source": "네이버",
+    "thumb": "./images/products/9fcdd5bb5985.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-10-14T16:01:52.037Z",
+    "updated_at": "2026-10-14T16:01:52.037Z"
   }
 ]
