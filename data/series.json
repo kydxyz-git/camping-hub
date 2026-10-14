@@ -8,6 +8,16 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_b0a64ce37d",
+        "ep": 5,
+        "title": "랜턴 뭐 챙길지 고민될 때",
+        "url": "https://www.instagram.com/reel/Ded6IY_zW3G/?xtok=a2N2OWk3b2psMHEx",
+        "thumb": "./images/series/series-ep05.jpg",
+        "published": true,
+        "created_at": "2026-10-14T08:15:09.338Z",
+        "updated_at": "2026-10-14T08:15:09.338Z"
+      },
+      {
         "id": "ep_a703311d54",
         "ep": 4,
         "title": "가을에 안 먹으면 손해보는 요리 3가지",
