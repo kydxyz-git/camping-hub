@@ -1636,5 +1636,23 @@
     "published": true,
     "created_at": "2026-10-14T16:01:52.037Z",
     "updated_at": "2026-10-17T23:56:35.683Z"
+  },
+  {
+    "id": "item_62da25abbd",
+    "name": "수산홈텍 COB-380V",
+    "cat": "camp",
+    "video": "",
+    "desc": "",
+    "url": "https://link.coupang.com/a/hV6CREQKnA",
+    "source": "쿠팡",
+    "thumb": "./images/products/162230ac2854.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "is_new": true,
+    "created_at": "2026-10-17T23:57:23.024Z",
+    "updated_at": "2026-10-17T23:57:23.024Z"
   }
 ]
