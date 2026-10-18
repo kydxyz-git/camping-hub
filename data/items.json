@@ -1690,5 +1690,23 @@
     "is_new": true,
     "created_at": "2026-10-18T00:10:29.580Z",
     "updated_at": "2026-10-18T00:10:29.580Z"
+  },
+  {
+    "id": "item_f392bfd1b3",
+    "name": "폴라리스 택티컬 프로",
+    "cat": "camp",
+    "video": "",
+    "desc": "",
+    "url": "https://link.coupang.com/a/hV7ZxqZr9U",
+    "source": "쿠팡",
+    "thumb": "./images/products/6058141e5ef9.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "is_new": true,
+    "created_at": "2026-10-18T00:18:10.954Z",
+    "updated_at": "2026-10-18T00:18:10.954Z"
   }
 ]
