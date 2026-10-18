@@ -1638,6 +1638,24 @@
     "updated_at": "2026-10-17T23:56:35.683Z"
   },
   {
+    "id": "item_11070d51cb",
+    "name": "포레스트유 더블체크 일산화탄소 경보기",
+    "cat": "camp",
+    "video": "",
+    "desc": "",
+    "url": "https://naver.me/5K6MAERx",
+    "source": "네이버",
+    "thumb": "./images/products/7854ff9a18a8.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "is_new": true,
+    "created_at": "2026-10-18T00:10:29.580Z",
+    "updated_at": "2026-10-18T00:10:29.580Z"
+  },
+  {
     "id": "item_62da25abbd",
     "name": "수산홈텍 COB-380V",
     "cat": "camp",
@@ -1672,24 +1690,6 @@
     "is_new": true,
     "created_at": "2026-10-18T00:03:11.900Z",
     "updated_at": "2026-10-18T00:03:11.900Z"
-  },
-  {
-    "id": "item_11070d51cb",
-    "name": "포레스트유 더블체크 일산화탄소 경보기",
-    "cat": "camp",
-    "video": "",
-    "desc": "",
-    "url": "https://naver.me/5K6MAERx",
-    "source": "네이버",
-    "thumb": "./images/products/7854ff9a18a8.jpg",
-    "currency": "KRW",
-    "price_original": 0,
-    "price_sale": null,
-    "discount_rate": null,
-    "published": true,
-    "is_new": true,
-    "created_at": "2026-10-18T00:10:29.580Z",
-    "updated_at": "2026-10-18T00:10:29.580Z"
   },
   {
     "id": "item_f392bfd1b3",
