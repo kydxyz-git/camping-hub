@@ -8,6 +8,16 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_f19bd93455",
+        "ep": 6,
+        "title": "경보기, 아직 바닥에 두세요?",
+        "url": "https://www.instagram.com/reel/DenZihtzA7m/?vrfl=MWk5aDQ5czJscjN3Mw==",
+        "thumb": "./images/series/series-ep06.jpg",
+        "published": true,
+        "created_at": "2026-10-18T04:25:05.401Z",
+        "updated_at": "2026-10-18T04:25:05.401Z"
+      },
+      {
         "id": "ep_b0a64ce37d",
         "ep": 5,
         "title": "랜턴 뭐 챙길지 고민될 때",
