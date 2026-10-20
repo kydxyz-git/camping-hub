@@ -403,6 +403,16 @@
     "sort": "random",
     "eps": [
       {
+        "id": "ep_08b234ff59",
+        "ep": 0,
+        "title": "짐 많은 사람에게 추천하는 캐리어",
+        "url": "https://www.instagram.com/reel/DesRWQnTGkh/?srtk=dW5nYXk4c2FxaGV5",
+        "thumb": "./images/series/items-mvg96940.jpg",
+        "published": true,
+        "created_at": "2026-10-20T05:38:49.632Z",
+        "updated_at": "2026-10-20T05:38:49.632Z"
+      },
+      {
         "id": "ep_eff807ca45",
         "ep": 0,
         "title": "Insta360 Ace Pro 2",
