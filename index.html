@@ -3504,16 +3504,16 @@ function renderCamps(){
   $('#camp-feats').innerHTML=FEATURES.filter(f=>featCount[f])
     .map(f=>`<button class="pc-chip feat${feat.has(f)?' on':''}" data-f="${esc(f)}">${esc(f)}</button>`).join('');
   $('#camp-feats').onclick=e=>{
-    const b=e.target.closest('.chip'); if(!b) return;
+    const b=e.target.closest('.pc-chip'); if(!b) return;
     const f=b.dataset.f;
     feat.has(f)?feat.delete(f):feat.add(f);
-    $$('#camp-feats .chip').forEach(x=>x.classList.toggle('on',feat.has(x.dataset.f)));
+    $$('#camp-feats .pc-chip').forEach(x=>x.classList.toggle('on',feat.has(x.dataset.f)));
     paintCamps();
   };
   $('#camp-chips').onclick=e=>{
-    const b=e.target.closest('.chip'); if(!b) return;
+    const b=e.target.closest('.pc-chip'); if(!b) return;
     region=b.dataset.r;
-    $$('#camp-chips .chip').forEach(x=>x.classList.toggle('on',x.dataset.r===region));
+    $$('#camp-chips .pc-chip').forEach(x=>x.classList.toggle('on',x.dataset.r===region));
     paintCamps();
   };
   $('#camp-q').oninput=paintCamps;
@@ -3525,8 +3525,8 @@ function renderCamps(){
   };
   $('#camp-freset').onclick=()=>{
     region='전체'; feat.clear();
-    $$('#camp-chips .chip').forEach(x=>x.classList.toggle('on',x.dataset.r==='전체'));
-    $$('#camp-feats .chip').forEach(x=>x.classList.remove('on'));
+    $$('#camp-chips .pc-chip').forEach(x=>x.classList.toggle('on',x.dataset.r==='전체'));
+    $$('#camp-feats .pc-chip').forEach(x=>x.classList.remove('on'));
     paintCamps();
   };
   paintCamps();
