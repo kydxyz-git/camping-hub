@@ -234,7 +234,7 @@ const COUPANG_MARKERS = ['coupang.com', 'coupa.ng'];
 const PH = '{링크}';
 const WD = ['월', '화', '수', '목', '금', '토', '일'];   // 0=월 (post.py와 동일)
 const STATUSES = ['초안', '대기', '게시중', '게시완료', '댓글실패', '실패', '확인필요'];
-const KINDS = ['일상', '팔로워', '수익화'];
+const KINDS = ['일상', '팔로워', '수익화', '특가'];
 const DEFAULT_CONFIG = { paused: false, weekdays: [0, 1, 2, 3, 4, 5, 6], hours: ['07', '12', '22'] };
 const STATUS_VIEW = {
   초안: ['wait', '초안 · 자동으로 안 올라감'], 대기: ['wait', '대기'], 링크없음: ['warn', '링크 없음 · 건너뜀'], 게시중: ['lock', '게시중'], 확인필요: ['lock', '확인 필요'],
@@ -424,6 +424,7 @@ function buildPost(p) {
     else c = `${DISCLOSURE}\n\n${[DISCLOSURE, ...OLD_DISCLOSURES].reduce((t, d) => t.split(d).join(''), c).trim()}`;
     out.comment = c;
   }
+  if (p.expires_at && new Date(p.expires_at) < new Date()) out.problem = out.problem || '기한 지남';
   if (!out.problem && body.length > MAX_LEN) out.problem = `본문 ${body.length}자 (최대 ${MAX_LEN})`;
   const b2 = String(p.body2 || '').trim(), b3 = String(p.body3 || '').trim();
   if (!out.problem && b3 && !b2) out.problem = '본문 3이 있는데 본문 2가 비어 있어요';
@@ -754,6 +755,8 @@ function postHtml(p, i, n, slotKey) {
     <div class="cmt-line" data-cmtline>${p.with_link === false ? '링크 댓글 없이 본문만 올라가요' : `링크 댓글(맨 마지막): ${esc(b.comment ? '대가성 문구 + ' + b.comment.slice(DISCLOSURE.length).trim().split('\n')[0] : '(링크 없음)')}`}
       ${p.with_link === false ? '' : ` · <button class="cmt-toggle" data-act="cmt">${S.openCmt.has(p.id) || p.comment ? '링크 댓글 문구 접기' : '문구 넣기'}</button>`}</div>
     ${p.with_link !== false && (S.openCmt.has(p.id) || p.comment) ? `<textarea class="input" data-f="comment" rows="2" style="margin-top:6px" placeholder="비우면 링크만. {링크} 쓰면 그 자리에 링크">${esc(p.comment)}</textarea>` : ''}
+    ${(p.images || []).length ? `<div class="row" style="gap:6px;margin-top:8px;overflow-x:auto;flex-wrap:nowrap">${p.images.map(u => `<img src="${esc(u)}" alt="" loading="lazy" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);flex:none">`).join('')}</div>` : ''}
+    ${p.expires_at ? `<div class="small muted" style="margin-top:6px">⏰ ${esc(fmtDT(p.expires_at))}까지만 올라가요 (지나면 가격이 바뀌었을 수 있어 자동으로 건너뜀)</div>` : ''}
   </div>`;
 }
 function doneHtml(p) {
@@ -1064,6 +1067,11 @@ function renderSettings() {
         <div class="small muted" style="margin-top:5px">지금 이 화면에 연결한 토큰에 Secrets 쓰기 권한이 있으면 그대로 써도 돼요 → <a href="#" id="s-pat-same">이 화면 토큰으로 저장</a></div></div>
       <div class="field"><label>ANTHROPIC_API_KEY — 댓글 답글 AI 초안용 (console.anthropic.com → API Keys)</label>
         <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-ak" autocomplete="new-password" data-lpignore="true" data-1p-ignore placeholder="sk-ant-..."><button class="btn small" data-secret="ANTHROPIC_API_KEY">저장</button></div></div>
+      <div class="field"><label>COUPANG_ACCESS_KEY — 쿠팡 파트너스 API Access Key (파트너스 → Tools → 파트너스 API)</label>
+        <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-cak" autocomplete="new-password" data-lpignore="true" data-1p-ignore placeholder="Access Key"><button class="btn small" data-secret="COUPANG_ACCESS_KEY">저장</button></div></div>
+      <div class="field"><label>COUPANG_SECRET_KEY — 쿠팡 파트너스 API Secret Key</label>
+        <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-csk" autocomplete="new-password" data-lpignore="true" data-1p-ignore placeholder="Secret Key"><button class="btn small" data-secret="COUPANG_SECRET_KEY">저장</button></div>
+        <div class="small muted" style="margin-top:5px">두 키를 넣으면 매일 아침 6시 10분에 특가 글이 <b>초안</b>으로 맨 위에 들어와요. 확인하고 '대기'로 바꿔야 올라가요 → <a href="#" id="s-deals">지금 가져오기</a></div></div>
     </div>
 
     <div class="card" style="margin-bottom:14px">
@@ -1082,7 +1090,7 @@ function renderSettings() {
     try {
       const r = await gh(`${RP}/actions/secrets`);
       const have = Object.fromEntries((r.secrets || []).map(s => [s.name, s.updated_at]));
-      $('#s-list').innerHTML = ['THREADS_ACCESS_TOKEN', 'THREADS_USER_ID', 'CUPAS_SECRETS_PAT', 'ANTHROPIC_API_KEY'].map(n =>
+      $('#s-list').innerHTML = ['THREADS_ACCESS_TOKEN', 'THREADS_USER_ID', 'CUPAS_SECRETS_PAT', 'ANTHROPIC_API_KEY', 'COUPANG_ACCESS_KEY', 'COUPANG_SECRET_KEY'].map(n =>
         `<div>${have[n] ? '✅' : '⬜'} <b>${n}</b> ${have[n] ? `· ${esc(fmtDT(kstIso(have[n])))} 저장` : '· 아직 없음'}</div>`).join('');
     } catch (e) { $('#s-list').innerHTML = `<span style="color:var(--danger)">${esc(e.message)}</span>`; }
   };
@@ -1104,13 +1112,14 @@ function renderSettings() {
   };
   loadSecrets(); loadRuns(); loadIssues();
 
-  const inputs = { THREADS_ACCESS_TOKEN: '#s-tt', THREADS_USER_ID: '#s-uid', CUPAS_SECRETS_PAT: '#s-pat', ANTHROPIC_API_KEY: '#s-ak' };
+  const inputs = { THREADS_ACCESS_TOKEN: '#s-tt', THREADS_USER_ID: '#s-uid', CUPAS_SECRETS_PAT: '#s-pat', ANTHROPIC_API_KEY: '#s-ak', COUPANG_ACCESS_KEY: '#s-cak', COUPANG_SECRET_KEY: '#s-csk' };
   document.querySelectorAll('[data-secret]').forEach(b => b.onclick = async () => {
     const name = b.dataset.secret;
     const v = $(inputs[name]).value.trim();
     if (!v) return toast('값을 넣어 주세요', true);
     const looks = { THREADS_ACCESS_TOKEN: x => x.length > 60, THREADS_USER_ID: x => x === 'me' || /^\d+$/.test(x),
-      CUPAS_SECRETS_PAT: x => /^github_pat_|^ghp_/.test(x), ANTHROPIC_API_KEY: x => /^sk-ant-/.test(x) };
+      CUPAS_SECRETS_PAT: x => /^github_pat_|^ghp_/.test(x), ANTHROPIC_API_KEY: x => /^sk-ant-/.test(x),
+      COUPANG_ACCESS_KEY: x => /^[\w-]{20,}$/.test(x), COUPANG_SECRET_KEY: x => /^[\w-]{30,}$/.test(x) };
     if (looks[name] && !looks[name](v) && !confirm(`${name} 값 형식이 예상과 달라요 (브라우저 자동 채우기일 수 있어요). 그래도 저장할까요?`)) return;
     try {
       await withBusy('저장 중...', async () => {
@@ -1142,6 +1151,12 @@ function renderSettings() {
   };
   $('#s-test').onclick = async () => {
     try { await runWorkflow('post.yml', { dry_run: 'true', post_id: '' }); toast('테스트 실행을 요청했어요'); setTimeout(loadRuns, 4000); }
+    catch (err) { toast(err.message, true); }
+  };
+  $('#s-deals').onclick = async e => {
+    e.preventDefault();
+    if (!confirm('쿠팡 특가를 지금 가져와서 초안으로 넣을까요? (오늘 이미 넣었으면 건너뛰어요)')) return;
+    try { await runWorkflow('deals.yml', { dry_run: 'false' }); toast('요청했어요. 1~2분 뒤 글 목록 맨 위를 확인해 주세요.'); setTimeout(loadRuns, 4000); }
     catch (err) { toast(err.message, true); }
   };
   $('#s-runs-reload').onclick = loadRuns;
