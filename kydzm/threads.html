@@ -673,7 +673,7 @@ function postHtml(p, i, n, slotKey) {
       <input class="input link" data-f="link" value="${esc(p.link)}" placeholder="${p.kind === '수익화' ? '쿠팡 파트너스 링크 붙여넣기 https://link.coupang.com/a/...' : '링크 (일상·팔로워 글은 보통 비워 둬요)'}">
       <label class="check"><input type="checkbox" data-f="with_link"${p.with_link !== false ? ' checked' : ''}>첫 댓글에 링크</label>
     </div>
-    <textarea class="input body" data-f="body" placeholder="본문 — ① 훅 ② 숫자·디테일 ③ 반전 ④ 질문 + 정확히 뭔지는 첫 댓글에">${esc(p.body)}</textarea>
+    <textarea class="input body" data-f="body" rows="${Math.max(5, String(p.body || '').split('\n').length + 1)}" placeholder="본문 — ① 훅 ② 숫자·디테일 ③ 반전 ④ 질문 + 정확히 뭔지는 첫 댓글에">${esc(p.body)}</textarea>
     <div class="post-foot"><span data-lint>${lint.map(t => '⚠ ' + esc(t)).join(' · ')}</span><span data-count class="${(p.body || '').trim().length > MAX_LEN ? 'over' : ''}">${(p.body || '').trim().length} / ${MAX_LEN}자</span></div>
     <div class="cmt-line" data-cmtline>${p.with_link === false ? '첫 댓글 없이 본문만 올라가요' : `첫 댓글: ${esc(b.comment ? '대가성 문구 + ' + b.comment.slice(DISCLOSURE.length).trim().split('\n')[0] : '(링크 없음)')}`}
       ${p.with_link === false ? '' : ` · <button class="cmt-toggle" data-act="cmt">${S.openCmt.has(p.id) || p.comment ? '첫 댓글 문구 접기' : '문구 넣기'}</button>`}</div>
@@ -715,6 +715,7 @@ function bindList() {
         if (f === 'status' && p.status === '대기') { p.tries = 0; p.error = ''; p.slot = ''; }
         if (f === 'kind') p.with_link = p.kind === '수익화';
         if (el.type === 'checkbox' || f === 'status' || f === 'kind') { renderList(); updateSaveBar(); return; }
+        if (f === 'body') el.rows = Math.max(5, el.value.split('\n').length + 1);
         refreshCard(card, p);
         updateBadges();
         updateSaveBar();
