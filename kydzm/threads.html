@@ -129,9 +129,11 @@
   .done-row .nm { flex: 1; min-width: 0; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .done-row .tm { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
   .done-row a.go { font-weight: 700; color: var(--info); text-decoration: none; white-space: nowrap; }
-  .savebar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--text); color: var(--bg); padding: 12px 16px; display: flex; justify-content: center; gap: 10px; align-items: center; }
-  .savebar .btn { background: var(--brand); color: var(--text); }
-  .savebar .btn.ghost { background: transparent; color: var(--bg); border-color: #555; }
+  .savebar { position: sticky; top: 50px; z-index: 15; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 13.5px; color: var(--muted); box-shadow: 0 2px 10px rgba(0,0,0,.04); }
+  .savebar.on { background: #fff8d6; border-color: #ffd65a; color: #6b5200; font-weight: 700; }
+  .post-top .save1 { padding: 6px 12px; font-size: 13px; }
+  .post-top .save1:disabled { background: var(--accent-soft); color: var(--muted); opacity: 1; }
   /* 모달 */
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 50; display: flex; align-items: flex-start; justify-content: center; padding: 30px 12px; overflow-y: auto; }
   .modal { background: var(--bg); border-radius: 16px; width: 100%; max-width: 640px; padding: 20px; }
@@ -529,22 +531,64 @@ function bannersHtml() {
   return out.join('');
 }
 function updateSaveBar() {
-  let bar = $('#savebar');
-  const n = dirtyIds().length + (S.orderChanged && !dirtyIds().length ? 1 : 0);
-  if (!getToken() || !hasChanges()) { if (bar) bar.remove(); document.body.style.paddingBottom = ''; return; }
-  if (!bar) {
-    bar = document.createElement('div');
-    bar.id = 'savebar'; bar.className = 'savebar';
-    bar.innerHTML = `<span id="savebar-n"></span><button class="btn ghost small" id="sb-undo">되돌리기</button><button class="btn" id="sb-save">저장</button>`;
-    document.body.appendChild(bar);
-    document.body.style.paddingBottom = '70px';
-    $('#sb-save').onclick = doSave;
-    $('#sb-undo').onclick = () => {
-      if (!confirm('저장하지 않은 변경을 모두 되돌릴까요?')) return;
-      withBusy('불러오는 중...', () => reloadAndRender('되돌렸어요')).catch(e => toast(e.message, true));
-    };
-  }
-  $('#savebar-n').textContent = S.orderChanged && !dirtyIds().length ? '순서 변경' : `변경 ${n}개`;
+  // 글 목록 탭 맨 위에 항상 붙어 있는 '모두 저장' 바 (바뀐 게 없으면 비활성)
+  const bar = $('#savebar');
+  if (!bar) return;
+  const n = dirtyIds().length;
+  const any = hasChanges();
+  $('#savebar-n').textContent = !any ? '저장할 변경 없음' : n ? `저장 안 한 변경 ${n}개${S.orderChanged ? ' · 순서 변경' : ''}` : '순서 변경';
+  $('#sb-save').disabled = !any;
+  $('#sb-undo').classList.toggle('hidden', !any);
+  bar.classList.toggle('on', any);
+  document.querySelectorAll('#pending .post').forEach(card => {
+    const p = S.posts.find(x => x.id === card.dataset.id);
+    const btn = card.querySelector('[data-act="save1"]');
+    if (!p || !btn) return;
+    const dirty = !S.orig[p.id] || Object.keys(changedFields(p, S.orig[p.id])).length > 0;
+    btn.disabled = !dirty;
+    btn.textContent = dirty ? '저장' : '저장됨';
+  });
+}
+function saveBarHtml() {
+  return `<div class="savebar" id="savebar"><span id="savebar-n"></span>
+    <span class="row"><button class="btn ghost small hidden" id="sb-undo">되돌리기</button><button class="btn small" id="sb-save">모두 저장</button></span></div>`;
+}
+function bindSaveBar() {
+  $('#sb-save').onclick = doSave;
+  $('#sb-undo').onclick = () => {
+    if (!confirm('저장하지 않은 변경을 모두 되돌릴까요?')) return;
+    withBusy('불러오는 중...', () => reloadAndRender('되돌렸어요')).catch(e => toast(e.message, true));
+  };
+}
+// 글 하나만 저장 — 다른 글에서 고치던 내용은 그대로 둠
+async function saveOne(p) {
+  if (!String(p.body || '').trim() && !String(p.name || '').trim()) return toast('제목이나 본문을 넣어 주세요', true);
+  const isNew = !S.orig[p.id];
+  const now = kstNowIso();
+  const local = S.posts.filter(x => !S.deleted.has(x.id));
+  try {
+    await withBusy('저장 중...', () => commitFiles({
+      'queue.json': latest => {
+        latest = latest || [];
+        if (isNew) {
+          // 화면에서 바로 앞에 있는 (저장된) 글 뒤에 넣음
+          const li = local.indexOf(p);
+          const prev = local.slice(0, li).reverse().find(x => S.orig[x.id] && latest.some(y => y.id === x.id));
+          const at = prev ? latest.findIndex(y => y.id === prev.id) + 1 : 0;
+          latest.splice(at, 0, { ...p, created_at: now, updated_at: now });
+          return latest;
+        }
+        const cur = latest.find(x => x.id === p.id);
+        if (!cur) throw new Error('이 글이 저장소에서 사라졌어요 (다른 곳에서 삭제). 새로고침해 주세요.');
+        Object.assign(cur, changedFields(p, S.orig[p.id]), { updated_at: now });
+        return latest;
+      },
+    }, `queue(admin): '${p.name || '글'}' 저장`));
+    p.updated_at = now; if (isNew) p.created_at = now;
+    S.orig[p.id] = JSON.stringify(p);
+    toast('저장했어요');
+    renderList(); updateSaveBar();
+  } catch (e) { toast(e.message, true); }
 }
 async function doSave() {
   const bad = livePosts().filter(p => !String(p.body || '').trim() && !String(p.name || '').trim());
@@ -622,7 +666,7 @@ function renderList() {
   const last = ready.length ? ready[ready.length - 1] : null;
   const drafts = pending.filter(p => p.status === '초안').length;
   const needLink = pending.filter(p => p.with_link !== false && !String(p.link || '').trim() && ['초안', '대기'].includes(p.status || '대기')).length;
-  $('#view').innerHTML = `
+  $('#view').innerHTML = `${saveBarHtml()}
     <div class="list-head">
       <div class="sum">대기 <b>${pending.length}</b>개${noLink ? ` · 손볼 글 <b style="color:#8a5a00">${noLink}</b>개` : ''}${last ? ` · ${fmtSlot(last)}까지 예약됨` : ''} · 하루 ${S.config.hours.length}개 (${S.config.hours.map(h => +h + '시').join('·')})</div>
       <span class="row">${drafts ? `<button class="btn small ghost" id="confirm-drafts">초안 ${drafts}개 모두 대기로</button>` : ''}<button class="btn small" id="add-post">+ 글 추가</button></span>
@@ -632,6 +676,8 @@ function renderList() {
     ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center">게시 완료 ${done.length}개 <button class="btn small ghost" id="toggle-done">${S.showDone ? '접기' : '펼치기'}</button></div>
       ${S.showDone ? `<div class="posts">${done.map(doneHtml).join('')}</div>` : ''}` : ''}`;
   bindList();
+  bindSaveBar();
+  updateSaveBar();
 }
 function statusBadge(p, slotKey) {
   const st = p.status || '대기';
@@ -657,6 +703,7 @@ function postHtml(p, i, n, slotKey) {
       <span data-badge style="flex:1;min-width:0;display:flex">${statusBadge(p, slotKey)}</span>
       <button class="icon-btn" data-act="up" ${i === 0 ? 'disabled' : ''} title="위로">↑</button>
       <button class="icon-btn" data-act="down" ${i === n - 1 ? 'disabled' : ''} title="아래로">↓</button>
+      <button class="btn small save1" data-act="save1">저장</button>
       <span class="menu-wrap"><button class="icon-btn" data-act="menu" title="더보기">⋯</button></span>
     </div>
     ${special && p.error ? `<div class="err-box">${esc(p.error)}</div>` : ''}
@@ -727,6 +774,7 @@ function bindList() {
       if (act === 'up' || act === 'down') return move(p, act === 'up' ? -1 : 1);
       if (act === 'cmt') { S.openCmt.has(p.id) || p.comment ? (S.openCmt.delete(p.id), p.comment = '') : S.openCmt.add(p.id); renderList(); updateSaveBar(); return; }
       if (act === 'menu') return openMenu(btn, p);
+      if (act === 'save1') return saveOne(p);
     });
   });
 }
