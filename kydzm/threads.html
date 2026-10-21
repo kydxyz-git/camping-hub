@@ -663,12 +663,13 @@ function renderList() {
   const noLink = pending.filter(p => (p.status || '대기') === '대기' && buildPost(p).problem).length;
   const last = ready.length ? ready[ready.length - 1] : null;
   const drafts = pending.filter(p => p.status === '초안').length;
+  const waitingN = pending.filter(p => (p.status || '대기') === '대기').length;
   const needLink = pending.filter(p => p.with_link !== false && !String(p.link || '').trim() && ['초안', '대기'].includes(p.status || '대기')).length;
   $('#view').innerHTML = `${saveBarHtml()}
     <datalist id="topic-list"><option value="생활정보, 꿀팁"><option value="살림템 추천"><option value="주방템 추천"></datalist>
     <div class="list-head">
       <div class="sum">대기 <b>${pending.length}</b>개${noLink ? ` · 손볼 글 <b style="color:#8a5a00">${noLink}</b>개` : ''}${last ? ` · ${fmtSlot(last)}까지 예약됨` : ''} · 하루 ${S.config.hours.length}개 (${S.config.hours.map(h => +h + '시').join('·')})</div>
-      <span class="row">${drafts ? `<button class="btn small ghost" id="confirm-drafts">초안 ${drafts}개 모두 대기로</button>` : ''}<button class="btn small" id="add-post">+ 글 추가</button></span>
+      <span class="row">${drafts ? `<button class="btn small ghost" id="confirm-drafts">초안 ${drafts}개 모두 대기로</button>` : ''}${waitingN ? `<button class="btn small ghost" id="to-drafts">대기 ${waitingN}개 모두 초안으로</button>` : ''}<button class="btn small" id="add-post">+ 글 추가</button></span>
     </div>
     ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">게시 완료 ${done.length}개
         ${done.length > 3 ? `<button class="btn small ghost" id="toggle-done">${S.showDone ? '최근 3개만' : '모두 보기'}</button>` : ''}</div>
@@ -707,10 +708,10 @@ function postHtml(p, i, n, slotKey) {
       <span class="menu-wrap"><button class="icon-btn" data-act="menu" title="더보기">⋯</button></span>
     </div>
     ${special && p.error ? `<div class="err-box">${esc(p.error)}</div>` : ''}
-    ${special ? `<div class="row small" style="margin-bottom:8px">상태
+    ${`<div class="row small" style="margin-bottom:8px">상태
       <select class="input" data-f="status" style="width:auto;padding:6px 10px">${STATUSES.map(s => `<option${s === st ? ' selected' : ''}>${s}</option>`).join('')}</select>
       ${p.permalink ? `<a href="${esc(p.permalink)}" target="_blank" rel="noopener">스레드에서 보기 ↗</a>` : ''}
-      <span class="muted">${st === '초안' ? '다 쓰면 대기로 바꿔야 순서대로 올라가요.' : '확인필요·게시중은 자동으로 다시 안 올려요. 올라갔으면 게시완료, 아니면 대기로.'}</span></div>` : ''}
+      <span class="muted">${st === '초안' ? '다 쓰면 대기로 바꿔야 순서대로 올라가요.' : st === '대기' ? '초안으로 바꾸면 자동 게시에서 빠져요.' : '확인필요·게시중은 자동으로 다시 안 올려요. 올라갔으면 게시완료, 아니면 대기로.'}</span></div>`}
     <div class="pgrid3">
       <select class="input" data-f="kind">${KINDS.map(k => `<option${k === (p.kind || '') ? ' selected' : ''}>${k}</option>`).join('')}${p.kind && !KINDS.includes(p.kind) ? `<option selected>${esc(p.kind)}</option>` : ''}${p.kind ? '' : '<option value="" selected>종류</option>'}</select>
       <input class="input topic" data-f="topic" list="topic-list" value="${esc(p.topic || '')}" placeholder="# 주제 태그" title="주제 태그 (커뮤니티 이름, 글당 1개)">
@@ -748,6 +749,13 @@ function bindList() {
     renderList(); updateSaveBar();
     const el = document.querySelector(`.post[data-id="${p.id}"] [data-f="name"]`);
     if (el) { el.scrollIntoView({ block: 'center' }); el.focus(); }
+  };
+  const td2 = $('#to-drafts');
+  if (td2) td2.onclick = () => {
+    const ws = livePosts().filter(p => (p.status || '대기') === '대기');
+    if (!confirm(`대기 ${ws.length}개를 모두 초안으로 바꿀까요?\n저장하면 자동 게시가 멈춰요. (게시 완료된 글은 그대로)`)) return;
+    ws.forEach(p => { p.status = '초안'; });
+    renderList(); updateSaveBar();
   };
   const cd = $('#confirm-drafts');
   if (cd) cd.onclick = () => {
@@ -832,7 +840,7 @@ function openMenu(btn, p) {
   const m = document.createElement('div');
   m.className = 'menu';
   const saved = !!S.orig[p.id] && !Object.keys(changedFields(p, S.orig[p.id])).length;
-  m.innerHTML = `<button data-m="top">맨 위로</button><button data-m="bottom">맨 아래로</button><button data-m="dup">같은 상품으로 글 하나 더</button>
+  m.innerHTML = `${(p.status || '대기') === '대기' ? '<button data-m="todraft">초안으로 되돌리기</button>' : ''}<button data-m="top">맨 위로</button><button data-m="bottom">맨 아래로</button><button data-m="dup">같은 상품으로 글 하나 더</button>
     <button data-m="test">테스트 (실제로 안 올림)</button><button data-m="now">지금 게시</button><button data-m="del" class="red">삭제</button>`;
   btn.parentElement.appendChild(m);
   const close = () => { m.remove(); document.removeEventListener('click', close); };
@@ -846,6 +854,7 @@ function openMenu(btn, p) {
       else S.posts.push(p);
       S.orderChanged = true; renderList(); updateSaveBar(); return;
     }
+    if (k === 'todraft') { p.status = '초안'; renderList(); updateSaveBar(); toast('초안으로 바꿨어요. 저장하면 반영돼요.'); return; }
     if (k === 'dup') {
       const c = newPost({ name: p.name, price: p.price, size: p.size, used: p.used, link: p.link, with_link: p.with_link });
       S.posts.splice(S.posts.indexOf(p) + 1, 0, c);
