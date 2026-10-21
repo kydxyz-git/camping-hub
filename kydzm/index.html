@@ -3037,12 +3037,15 @@ function renderStats(container, data) {
   // 요일: 0=일, 1=월, ..., 6=토
   const heatmap = Array.from({length: 7}, () => new Array(24).fill(0));
   let heatmapMax = 0;
+  // Worker가 hourly를 안 쓴 날(2026-09-23~) → 렌더 후 events 원본으로 채움 (fillHeatmapFromEvents)
+  const heatmapMissing = new Set();
   for (const [date, d] of dailyEntries) {
     const dt = kstDateFromStr(date);
     if (dt < monthAgo) continue;
     // KST 요일: date 문자열이 이미 KST 기준이므로 그날의 요일 계산
     const dayOfWeek = dt.getDay();
     const hourly = d.hourly || [];
+    if (!Array.isArray(d.hourly) && d.pv > 0) { heatmapMissing.add(date); continue; }
     for (let h = 0; h < 24; h++) {
       heatmap[dayOfWeek][h] += (hourly[h] || 0);
       if (heatmap[dayOfWeek][h] > heatmapMax) heatmapMax = heatmap[dayOfWeek][h];
@@ -3282,9 +3285,11 @@ function renderStats(container, data) {
     <!-- 시간대 히트맵 (요일×24시간, 최근 30일) -->
     <div class="card">
       <div class="stats-section-title">🕐 시간대 히트맵 <span style="font-size:11px;font-weight:400;color:var(--muted);">(최근 30일)</span></div>
-      ${heatmapMax === 0
+      <div id="stats-heatmap">${heatmapMissing.size
+        ? '<div class="ca-loading">히트맵 불러오는 중...</div>'
+        : heatmapMax === 0
         ? '<div class="stats-empty">아직 충분한 데이터가 없어요</div>'
-        : renderHeatmap(heatmap, heatmapMax)}
+        : renderHeatmap(heatmap, heatmapMax)}</div>
     </div>
 
     <!-- 📊 콘텐츠별 분석 (신규) -->
@@ -3362,6 +3367,7 @@ function renderStats(container, data) {
 
   // 📊 콘텐츠별 분석 초기화 (innerHTML 후 DOM 준비됨)
   initContentAnalysis(data);
+  if (heatmapMissing.size) fillHeatmapFromEvents(heatmap, heatmapMissing);
 
   // 동적 렌더된 인스타 anchor (인기 콘텐츠 TOP 등) href 정규화
   if (typeof window.normalizeAllInstagramAnchors === 'function') {
@@ -3778,18 +3784,33 @@ function buildContentHeatmap(events, mode, target) {
   return { heatmap, max };
 }
 
+// hourly 없는 날짜의 페이지뷰를 events 원본(KST)으로 히트맵에 더함
+async function fillHeatmapFromEvents(heatmap, missingDates) {
+  const el = () => document.getElementById('stats-heatmap');
+  try {
+    const events = await loadEventsForAnalysis(30);
+    for (const e of events) {
+      if (e.type !== 'pageview' || !e.ts) continue;
+      const kst = new Date(e.ts + KST_OFFSET_MS);
+      if (!missingDates.has(kst.toISOString().slice(0, 10))) continue;
+      heatmap[kst.getUTCDay()][kst.getUTCHours()]++;
+    }
+  } catch (err) { console.warn('heatmap events', err); }
+  const max = Math.max(0, ...heatmap.flat());
+  if (el()) el().innerHTML = max === 0
+    ? '<div class="stats-empty">아직 충분한 데이터가 없어요</div>'
+    : renderHeatmap(heatmap, max);
+}
+
 // 최근 N일치 events 모두 fetch (5분 캐시)
 async function loadEventsForAnalysis(days = 30) {
   const now = Date.now();
   if (_eventsCache && _eventsCacheDays >= days && (now - _eventsCacheAt < 5 * 60 * 1000)) {
     return _eventsCache;
   }
-  const today = new Date();
   const dates = [];
   for (let i = 0; i < days; i++) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    dates.push(d.toISOString().slice(0, 10));
+    dates.push(kstDateStr(now - i * 86400000));   // KST 날짜 키
   }
   const results = await Promise.all(dates.map(async (date) => {
     try {
