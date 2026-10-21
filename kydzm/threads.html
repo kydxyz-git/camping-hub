@@ -248,7 +248,8 @@ const S = {
   deleted: new Set(), // 저장 전 삭제 표시
   orderChanged: false,
   openCmt: new Set(), // 첫 댓글 문구 칸을 펼친 글
-  open2: new Set(),   // 이어지는 글 칸을 펼친 글
+  open2: new Set(),   // 본문 2 칸을 펼친 글
+  open3: new Set(),   // 본문 3 칸을 펼친 글
   showDone: false,
   config: null, token: null,
   tab: 'list',
@@ -423,10 +424,13 @@ function buildPost(p) {
     out.comment = c;
   }
   if (!out.problem && body.length > MAX_LEN) out.problem = `본문 ${body.length}자 (최대 ${MAX_LEN})`;
-  const b2 = String(p.body2 || '').trim();
-  if (!out.problem && b2.includes(PH)) out.problem = '이어지는 글에 {링크}가 있어요';
-  if (!out.problem && b2.length > MAX_LEN) out.problem = `이어지는 글 ${b2.length}자 (최대 ${MAX_LEN})`;
-  if (!out.problem && out.comment.length > MAX_LEN) out.problem = `첫 댓글 ${out.comment.length}자 (최대 ${MAX_LEN})`;
+  const b2 = String(p.body2 || '').trim(), b3 = String(p.body3 || '').trim();
+  if (!out.problem && b3 && !b2) out.problem = '본문 3이 있는데 본문 2가 비어 있어요';
+  for (const [n, t] of [[2, b2], [3, b3]]) {
+    if (!out.problem && t.includes(PH)) out.problem = `본문 ${n}에 {링크}가 있어요`;
+    if (!out.problem && t.length > MAX_LEN) out.problem = `본문 ${n} ${t.length}자 (최대 ${MAX_LEN})`;
+  }
+  if (!out.problem && out.comment.length > MAX_LEN) out.problem = `링크 댓글 ${out.comment.length}자 (최대 ${MAX_LEN})`;
   return out;
 }
 
@@ -703,6 +707,7 @@ function statusBadge(p, slotKey) {
 }
 function postHtml(p, i, n, slotKey) {
   const b = buildPost(p);
+  const show2 = !!(p.body2 || S.open2.has(p.id)), show3 = !!(p.body3 || S.open3.has(p.id));
   const st = p.status || '대기';
   const special = st !== '대기';
   const cls = ['post', S.orig[p.id] && !Object.keys(changedFields(p, S.orig[p.id])).length ? '' : 'dirty',
@@ -731,14 +736,17 @@ function postHtml(p, i, n, slotKey) {
       <a class="btn small ghost" data-act="partners" data-q="${esc(p.search || p.name || '')}" href="https://partners.coupang.com/#affiliate/ws/link/0/${encodeURIComponent(p.search || p.name || '')}" target="_blank" rel="noopener">파트너스에서 찾기 ↗</a></div>` : ''}
     <div class="pgrid2" style="grid-template-columns:1fr auto">
       <input class="input link" data-f="link" value="${esc(p.link)}" placeholder="${p.kind === '수익화' ? '쿠팡 파트너스 링크 붙여넣기 https://link.coupang.com/a/...' : '링크 (일상·팔로워 글은 보통 비워 둬요)'}">
-      <label class="check"><input type="checkbox" data-f="with_link"${p.with_link !== false ? ' checked' : ''}>첫 댓글에 링크</label>
+      <label class="check"><input type="checkbox" data-f="with_link"${p.with_link !== false ? ' checked' : ''}>링크 댓글</label>
     </div>
-    <textarea class="input body" data-f="body" rows="1" placeholder="본문 — ① 훅 ② 숫자·디테일 ③ 반전 ④ 질문 + 정확히 뭔지는 첫 댓글에">${esc(p.body)}</textarea>
-    <div class="post-foot"><span>${p.body2 || S.open2.has(p.id) ? '' : '<button class="cmt-toggle" data-act="part2">+ 이어지는 글(2/2) 추가</button>'}</span><span data-count class="${(p.body || '').trim().length > MAX_LEN ? 'over' : ''}">${(p.body || '').trim().length} / ${MAX_LEN}자</span></div>
-    ${p.body2 || S.open2.has(p.id) ? `<div class="part2-label">↳ 이어지는 글 (2/2) — 본문 바로 아래 답글로 붙어요</div>
-      <textarea class="input body" data-f="body2" rows="1" placeholder="본문에서 다 말하지 않고 남겨둔 뒷이야기 (비우면 안 올라가요)">${esc(p.body2 || '')}</textarea>` : ''}
-    <div class="cmt-line" data-cmtline>${p.with_link === false ? '첫 댓글 없이 본문만 올라가요' : `첫 댓글: ${esc(b.comment ? '대가성 문구 + ' + b.comment.slice(DISCLOSURE.length).trim().split('\n')[0] : '(링크 없음)')}`}
-      ${p.with_link === false ? '' : ` · <button class="cmt-toggle" data-act="cmt">${S.openCmt.has(p.id) || p.comment ? '첫 댓글 문구 접기' : '문구 넣기'}</button>`}</div>
+    <textarea class="input body" data-f="body" rows="1" placeholder="본문 — ① 훅 ② 숫자·디테일 ③ 반전 ④ 질문 + 정확히 뭔지는 댓글에">${esc(p.body)}</textarea>
+    <div class="post-foot"><span>${show2 ? '' : '<button class="cmt-toggle" data-act="part2">+ 본문 2 추가 (500자 넘는 긴 글만)</button>'}</span><span data-count class="${(p.body || '').trim().length > MAX_LEN ? 'over' : ''}">${(p.body || '').trim().length} / ${MAX_LEN}자</span></div>
+    ${show2 ? `<div class="part2-label">↳ 본문 2 — 본문 아래 답글로 이어져요 (짧은 꼬리 말고 제대로 된 분량으로)</div>
+      <textarea class="input body" data-f="body2" rows="1" placeholder="본문에 다 안 들어가는 뒷부분 (비우면 안 올라가요)">${esc(p.body2 || '')}</textarea>
+      ${show3 ? '' : '<button class="cmt-toggle" data-act="part3">+ 본문 3 추가</button>'}` : ''}
+    ${show3 ? `<div class="part2-label">↳ 본문 3 — 본문 2 아래로 이어져요</div>
+      <textarea class="input body" data-f="body3" rows="1" placeholder="더 긴 글의 마지막 부분 (비우면 안 올라가요)">${esc(p.body3 || '')}</textarea>` : ''}
+    <div class="cmt-line" data-cmtline>${p.with_link === false ? '링크 댓글 없이 본문만 올라가요' : `링크 댓글(맨 마지막): ${esc(b.comment ? '대가성 문구 + ' + b.comment.slice(DISCLOSURE.length).trim().split('\n')[0] : '(링크 없음)')}`}
+      ${p.with_link === false ? '' : ` · <button class="cmt-toggle" data-act="cmt">${S.openCmt.has(p.id) || p.comment ? '링크 댓글 문구 접기' : '문구 넣기'}</button>`}</div>
     ${p.with_link !== false && (S.openCmt.has(p.id) || p.comment) ? `<textarea class="input" data-f="comment" rows="2" style="margin-top:6px" placeholder="비우면 링크만. {링크} 쓰면 그 자리에 링크">${esc(p.comment)}</textarea>` : ''}
   </div>`;
 }
@@ -782,7 +790,7 @@ function bindList() {
     const src = S.posts.find(x => x.id === b.dataset.repost);
     if (!src) return;
     const c = newPost({ kind: src.kind, topic: src.topic || '', name: src.name, link: src.link, with_link: src.with_link,
-      body: src.body, body2: src.body2 || '', comment: src.comment || '', search: src.search || '', status: '초안',
+      body: src.body, body2: src.body2 || '', body3: src.body3 || '', comment: src.comment || '', search: src.search || '', status: '초안',
       memo: `다시 올림 (원래 ${fmtDT(src.posted_at).slice(5, 10) || ''}) · ${src.memo || ''}`.slice(0, 200) });
     const first = S.posts.findIndex(x => !S.deleted.has(x.id) && isPending(x));
     S.posts.splice(first < 0 ? S.posts.length : first, 0, c);
@@ -806,7 +814,7 @@ function bindList() {
           if (!p.topic || ['생활정보, 꿀팁', '살림템 추천'].includes(p.topic)) p.topic = p.kind === '수익화' ? '살림템 추천' : '생활정보, 꿀팁';
         }
         if (el.type === 'checkbox' || f === 'status' || f === 'kind') { renderList(); updateSaveBar(); return; }
-        if (f === 'body' || f === 'body2' || f === 'comment') fitHeight(el);
+        if (f === 'body' || f === 'body2' || f === 'body3' || f === 'comment') fitHeight(el);
         refreshCard(card, p);
         updateBadges();
         updateSaveBar();
@@ -819,7 +827,7 @@ function bindList() {
       if (act === 'cmt') { S.openCmt.has(p.id) || p.comment ? (S.openCmt.delete(p.id), p.comment = '') : S.openCmt.add(p.id); renderList(); updateSaveBar(); return; }
       if (act === 'menu') return openMenu(btn, p);
       if (act === 'save1') return saveOne(p);
-      if (act === 'part2') { S.open2.add(p.id); renderList(); const t = document.querySelector(`.post[data-id="${p.id}"] [data-f="body2"]`); if (t) t.focus(); return; }
+      if (act === 'part2' || act === 'part3') { const f = act === 'part2' ? 'body2' : 'body3'; (act === 'part2' ? S.open2 : S.open3).add(p.id); renderList(); const t = document.querySelector(`.post[data-id="${p.id}"] [data-f="${f}"]`); if (t) t.focus(); return; }
       if (act === 'partners') {
         // 파트너스 화면이 검색어를 못 받아도 바로 붙여넣을 수 있게 복사 (링크 열기는 그대로 진행)
         try { navigator.clipboard.writeText(btn.dataset.q); toast(`검색어 복사됨: ${btn.dataset.q} — 파트너스 검색창에 붙여넣기`); } catch (err) {}
@@ -848,7 +856,7 @@ function refreshCard(card, p) {
   const line = card.querySelector('[data-cmtline]');
   if (line && p.with_link !== false) {
     const first = line.firstChild;
-    if (first && first.nodeType === 3) first.textContent = `첫 댓글: ${b.comment ? '대가성 문구 + ' + b.comment.slice(DISCLOSURE.length).trim().split('\n')[0] : '(링크 없음)'}`;
+    if (first && first.nodeType === 3) first.textContent = `링크 댓글(맨 마지막): ${b.comment ? '대가성 문구 + ' + b.comment.slice(DISCLOSURE.length).trim().split('\n')[0] : '(링크 없음)'}`;
   }
 }
 function move(p, dir) {
