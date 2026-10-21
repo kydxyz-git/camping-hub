@@ -222,7 +222,7 @@ const PH = '{링크}';
 const WD = ['월', '화', '수', '목', '금', '토', '일'];   // 0=월 (post.py와 동일)
 const STATUSES = ['초안', '대기', '게시중', '게시완료', '댓글실패', '실패', '확인필요'];
 const KINDS = ['일상', '팔로워', '수익화'];
-const DEFAULT_CONFIG = { paused: false, weekdays: [0, 1, 2, 3, 4, 5, 6], hours: ['07', '12', '19'] };
+const DEFAULT_CONFIG = { paused: false, weekdays: [0, 1, 2, 3, 4, 5, 6], hours: ['07', '12', '22'] };
 const STATUS_VIEW = {
   초안: ['wait', '초안 · 자동으로 안 올라감'], 대기: ['wait', '대기'], 링크없음: ['warn', '링크 없음 · 건너뜀'], 게시중: ['lock', '게시중'], 확인필요: ['lock', '확인 필요'],
   댓글실패: ['bad', '댓글 실패'], 실패: ['bad', '실패'], 게시완료: ['ok', '게시 완료'],
@@ -412,7 +412,7 @@ function buildPost(p) {
 // 예정 시각 — post.py upcoming_slots()와 같은 계산. 문제 있는 글은 건너뛰고 다음 글이 그 시각을 씀
 function currentSlotKey(now) {
   const h = now.getUTCHours();   // now는 KST로 옮긴 Date
-  const due = S.config.hours.filter(x => +x <= h);
+  const due = S.config.hours.filter(x => h - +x >= 0 && h - +x < 3);   // post.py DUE_WINDOW_HOURS와 같게
   return due.length ? `${now.toISOString().slice(0, 10)} ${due[due.length - 1]}` : null;
 }
 function upcomingSlots(n) {
@@ -822,7 +822,7 @@ function renderCycle() {
       <div class="wd-row">${WD.map((w, i) => `<label><input type="checkbox" data-wd="${i}"${c.weekdays.includes(i) ? ' checked' : ''}>${w}</label>`).join('')}</div>
 
       <div class="section-title">하루 게시 시각 (${c.hours.length}개)</div>
-      <div class="small muted" style="margin-bottom:10px">시각마다 글 목록 위에서부터 하나씩 올라가요. 실제 게시는 그 시각 5분쯤 시작하고, 깃허브 사정으로 최대 1시간 정도 늦을 수 있어요.</div>
+      <div class="small muted" style="margin-bottom:10px">시각마다 글 목록 위에서부터 하나씩 올라가요. 실제 게시는 그 시각 5분쯤 시작하고, 깃허브 사정으로 최대 1시간 정도 늦을 수 있어요. 3시간 넘게 지난 몫은 건너뛰어요(몰아서 올라가지 않게).</div>
       <div class="row" id="c-hours">${c.hours.map((h, i) => `<span class="row" style="gap:4px;flex-wrap:nowrap"><select class="input" data-h="${i}" style="width:auto">${hourOpts(h)}</select><button class="icon-btn" data-rm="${i}" title="삭제">×</button></span>`).join('')}
         <button class="btn ghost small" id="c-add">+ 시각 추가</button></div>
       <div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn" id="c-save">저장</button></div>
