@@ -119,6 +119,9 @@
   .pgrid3 { display: grid; grid-template-columns: 100px 150px 1fr 1.4fr; gap: 8px; margin-bottom: 8px; }
   @media (max-width: 760px) { .pgrid3 { grid-template-columns: 100px 1fr; } .pgrid3 .name, .pgrid3 .memo { grid-column: 1 / -1; } }
   .post textarea.body { min-height: 0; overflow: hidden; resize: none; }
+  .part2-label { font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 8px 0 4px; }
+  .done-row .stat2 { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .done-row .btn { padding: 5px 9px; font-size: 12px; }
   .search-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; background: #fff6e0; border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; }
   .search-line b { color: var(--text); }
   .search-line .btn { margin-left: auto; text-decoration: none; }
@@ -245,6 +248,7 @@ const S = {
   deleted: new Set(), // 저장 전 삭제 표시
   orderChanged: false,
   openCmt: new Set(), // 첫 댓글 문구 칸을 펼친 글
+  open2: new Set(),   // 이어지는 글 칸을 펼친 글
   showDone: false,
   config: null, token: null,
   tab: 'list',
@@ -376,13 +380,15 @@ async function commitFiles(mutators, message) {
 async function loadAll() {
   const head = await headCommit();
   const files = await readTree(head.tree);
-  const [queue, config, token, replies] = await Promise.all([
+  const [queue, config, token, replies, insights] = await Promise.all([
     files['queue.json'] ? readBlobJson(files['queue.json']) : [],
     files['config.json'] ? readBlobJson(files['config.json']) : null,
     files['state/token.json'] ? readBlobJson(files['state/token.json']) : null,
     files['replies.json'] ? readBlobJson(files['replies.json']) : [],
+    files['state/insights.json'] ? readBlobJson(files['state/insights.json']) : {},
   ]);
   S.replies = (replies || []).filter(r => r && r.id);
+  S.insights = insights || {};
   S.posts = (queue || []).filter(p => p && p.id);
   S.orig = {}; S.posts.forEach(p => S.orig[p.id] = JSON.stringify(p));
   S.deleted = new Set(); S.orderChanged = false;
@@ -417,6 +423,9 @@ function buildPost(p) {
     out.comment = c;
   }
   if (!out.problem && body.length > MAX_LEN) out.problem = `본문 ${body.length}자 (최대 ${MAX_LEN})`;
+  const b2 = String(p.body2 || '').trim();
+  if (!out.problem && b2.includes(PH)) out.problem = '이어지는 글에 {링크}가 있어요';
+  if (!out.problem && b2.length > MAX_LEN) out.problem = `이어지는 글 ${b2.length}자 (최대 ${MAX_LEN})`;
   if (!out.problem && out.comment.length > MAX_LEN) out.problem = `첫 댓글 ${out.comment.length}자 (최대 ${MAX_LEN})`;
   return out;
 }
@@ -725,7 +734,9 @@ function postHtml(p, i, n, slotKey) {
       <label class="check"><input type="checkbox" data-f="with_link"${p.with_link !== false ? ' checked' : ''}>첫 댓글에 링크</label>
     </div>
     <textarea class="input body" data-f="body" rows="1" placeholder="본문 — ① 훅 ② 숫자·디테일 ③ 반전 ④ 질문 + 정확히 뭔지는 첫 댓글에">${esc(p.body)}</textarea>
-    <div class="post-foot"><span></span><span data-count class="${(p.body || '').trim().length > MAX_LEN ? 'over' : ''}">${(p.body || '').trim().length} / ${MAX_LEN}자</span></div>
+    <div class="post-foot"><span>${p.body2 || S.open2.has(p.id) ? '' : '<button class="cmt-toggle" data-act="part2">+ 이어지는 글(2/2) 추가</button>'}</span><span data-count class="${(p.body || '').trim().length > MAX_LEN ? 'over' : ''}">${(p.body || '').trim().length} / ${MAX_LEN}자</span></div>
+    ${p.body2 || S.open2.has(p.id) ? `<div class="part2-label">↳ 이어지는 글 (2/2) — 본문 바로 아래 답글로 붙어요</div>
+      <textarea class="input body" data-f="body2" rows="1" placeholder="본문에서 다 말하지 않고 남겨둔 뒷이야기 (비우면 안 올라가요)">${esc(p.body2 || '')}</textarea>` : ''}
     <div class="cmt-line" data-cmtline>${p.with_link === false ? '첫 댓글 없이 본문만 올라가요' : `첫 댓글: ${esc(b.comment ? '대가성 문구 + ' + b.comment.slice(DISCLOSURE.length).trim().split('\n')[0] : '(링크 없음)')}`}
       ${p.with_link === false ? '' : ` · <button class="cmt-toggle" data-act="cmt">${S.openCmt.has(p.id) || p.comment ? '첫 댓글 문구 접기' : '문구 넣기'}</button>`}</div>
     ${p.with_link !== false && (S.openCmt.has(p.id) || p.comment) ? `<textarea class="input" data-f="comment" rows="2" style="margin-top:6px" placeholder="비우면 링크만. {링크} 쓰면 그 자리에 링크">${esc(p.comment)}</textarea>` : ''}
@@ -733,11 +744,14 @@ function postHtml(p, i, n, slotKey) {
 }
 function doneHtml(p) {
   const first = String(p.body || '').trim().split('\n')[0];
+  const st = (S.insights || {})[p.id];
+  const nums = st ? `<span class="stat2" title="${esc(fmtDT(st.at))} 기준">👁 ${st.views ?? '-'} · ❤ ${st.likes ?? '-'} · 💬 ${st.replies ?? '-'} · 🔁 ${st.reposts ?? '-'}</span>` : '';
   return `<div class="done-row" data-id="${esc(p.id)}">
     <span class="st ok" style="font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap">게시 완료</span>
     <span class="nm">${esc(first || p.name || '')}</span>
-    <span class="tm">${esc(fmtDT(p.posted_at))}</span>
+    ${nums || `<span class="tm">${esc(fmtDT(p.posted_at))}</span>`}
     ${p.permalink ? `<a class="go" href="${esc(p.permalink)}" target="_blank" rel="noopener">스레드에서 보기 ↗</a>` : '<span class="tm">링크 없음</span>'}
+    <button class="btn small ghost" data-repost="${esc(p.id)}" title="같은 글을 초안으로 복사해서 목록 맨 위에 넣어요">다시 올리기</button>
   </div>`;
 }
 function fitHeight(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight + 2) + 'px'; }
@@ -764,6 +778,18 @@ function bindList() {
     ds.forEach(p => { p.status = '대기'; });
     renderList(); updateSaveBar();
   };
+  document.querySelectorAll('[data-repost]').forEach(b => b.onclick = () => {
+    const src = S.posts.find(x => x.id === b.dataset.repost);
+    if (!src) return;
+    const c = newPost({ kind: src.kind, topic: src.topic || '', name: src.name, link: src.link, with_link: src.with_link,
+      body: src.body, body2: src.body2 || '', comment: src.comment || '', search: src.search || '', status: '초안',
+      memo: `다시 올림 (원래 ${fmtDT(src.posted_at).slice(5, 10) || ''}) · ${src.memo || ''}`.slice(0, 200) });
+    const first = S.posts.findIndex(x => !S.deleted.has(x.id) && isPending(x));
+    S.posts.splice(first < 0 ? S.posts.length : first, 0, c);
+    renderList(); updateSaveBar();
+    toast('초안으로 복사했어요. 조금 고친 뒤 대기로 바꾸고 저장하세요. (똑같은 글을 바로 다시 올리면 노출이 줄 수 있어요)');
+    const el = document.querySelector(`.post[data-id="${c.id}"]`); if (el) el.scrollIntoView({ block: 'center' });
+  });
   const td = $('#toggle-done');
   if (td) td.onclick = () => { S.showDone = !S.showDone; renderList(); };
   document.querySelectorAll('#pending .post').forEach(card => {
@@ -780,7 +806,7 @@ function bindList() {
           if (!p.topic || ['생활정보, 꿀팁', '살림템 추천'].includes(p.topic)) p.topic = p.kind === '수익화' ? '살림템 추천' : '생활정보, 꿀팁';
         }
         if (el.type === 'checkbox' || f === 'status' || f === 'kind') { renderList(); updateSaveBar(); return; }
-        if (f === 'body' || f === 'comment') fitHeight(el);
+        if (f === 'body' || f === 'body2' || f === 'comment') fitHeight(el);
         refreshCard(card, p);
         updateBadges();
         updateSaveBar();
@@ -793,6 +819,7 @@ function bindList() {
       if (act === 'cmt') { S.openCmt.has(p.id) || p.comment ? (S.openCmt.delete(p.id), p.comment = '') : S.openCmt.add(p.id); renderList(); updateSaveBar(); return; }
       if (act === 'menu') return openMenu(btn, p);
       if (act === 'save1') return saveOne(p);
+      if (act === 'part2') { S.open2.add(p.id); renderList(); const t = document.querySelector(`.post[data-id="${p.id}"] [data-f="body2"]`); if (t) t.focus(); return; }
       if (act === 'partners') {
         // 파트너스 화면이 검색어를 못 받아도 바로 붙여넣을 수 있게 복사 (링크 열기는 그대로 진행)
         try { navigator.clipboard.writeText(btn.dataset.q); toast(`검색어 복사됨: ${btn.dataset.q} — 파트너스 검색창에 붙여넣기`); } catch (err) {}
