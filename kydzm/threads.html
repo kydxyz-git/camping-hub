@@ -1005,14 +1005,14 @@ function renderSettings() {
       <p class="small muted" style="margin-bottom:10px">값은 암호화돼서 저장되고 다시 볼 수 없어요. 바꿀 때만 새로 넣으면 돼요.</p>
       <div id="s-list" class="small muted" style="margin-bottom:12px">불러오는 중...</div>
       <div class="field"><label>THREADS_ACCESS_TOKEN — 스레드 장기 토큰 (60일)</label>
-        <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-tt" autocomplete="off" placeholder="새 토큰 붙여넣기"><button class="btn small" data-secret="THREADS_ACCESS_TOKEN">저장</button></div></div>
+        <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-tt" autocomplete="new-password" data-lpignore="true" data-1p-ignore placeholder="새 토큰 붙여넣기"><button class="btn small" data-secret="THREADS_ACCESS_TOKEN">저장</button></div></div>
       <div class="field"><label>THREADS_USER_ID — 스레드 숫자 ID (모르면 me)</label>
-        <div class="row" style="flex-wrap:nowrap"><input class="input" id="s-uid" autocomplete="off" placeholder="me"><button class="btn small" data-secret="THREADS_USER_ID">저장</button></div></div>
+        <div class="row" style="flex-wrap:nowrap"><input class="input" id="s-uid" autocomplete="off" name="threads-user-id-field" placeholder="me"><button class="btn small" data-secret="THREADS_USER_ID">저장</button></div></div>
       <div class="field"><label>CUPAS_SECRETS_PAT — 토큰 자동 갱신용 깃허브 토큰 (Secrets 읽기·쓰기)</label>
-        <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-pat" autocomplete="off" placeholder="github_pat_..."><button class="btn small" data-secret="CUPAS_SECRETS_PAT">저장</button></div>
+        <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-pat" autocomplete="new-password" data-lpignore="true" data-1p-ignore placeholder="github_pat_..."><button class="btn small" data-secret="CUPAS_SECRETS_PAT">저장</button></div>
         <div class="small muted" style="margin-top:5px">지금 이 화면에 연결한 토큰에 Secrets 쓰기 권한이 있으면 그대로 써도 돼요 → <a href="#" id="s-pat-same">이 화면 토큰으로 저장</a></div></div>
       <div class="field"><label>ANTHROPIC_API_KEY — 댓글 답글 AI 초안용 (console.anthropic.com → API Keys)</label>
-        <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-ak" autocomplete="off" placeholder="sk-ant-..."><button class="btn small" data-secret="ANTHROPIC_API_KEY">저장</button></div></div>
+        <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-ak" autocomplete="new-password" data-lpignore="true" data-1p-ignore placeholder="sk-ant-..."><button class="btn small" data-secret="ANTHROPIC_API_KEY">저장</button></div></div>
     </div>
 
     <div class="card" style="margin-bottom:14px">
@@ -1058,6 +1058,9 @@ function renderSettings() {
     const name = b.dataset.secret;
     const v = $(inputs[name]).value.trim();
     if (!v) return toast('값을 넣어 주세요', true);
+    const looks = { THREADS_ACCESS_TOKEN: x => x.length > 60, THREADS_USER_ID: x => x === 'me' || /^\d+$/.test(x),
+      CUPAS_SECRETS_PAT: x => /^github_pat_|^ghp_/.test(x), ANTHROPIC_API_KEY: x => /^sk-ant-/.test(x) };
+    if (looks[name] && !looks[name](v) && !confirm(`${name} 값 형식이 예상과 달라요 (브라우저 자동 채우기일 수 있어요). 그래도 저장할까요?`)) return;
     try {
       await withBusy('저장 중...', async () => {
         await putSecret(name, v);
