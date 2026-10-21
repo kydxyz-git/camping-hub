@@ -118,7 +118,7 @@
   }
   .pgrid3 { display: grid; grid-template-columns: 110px 1fr 1.4fr; gap: 8px; margin-bottom: 8px; }
   @media (max-width: 600px) { .pgrid3 { grid-template-columns: 100px 1fr; } .pgrid3 .memo { grid-column: 1 / -1; } }
-  .post textarea.body { min-height: 120px; }
+  .post textarea.body { min-height: 0; overflow: hidden; resize: none; }
   .search-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; background: #fff6e0; border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; }
   .search-line b { color: var(--text); }
   .search-line .btn { margin-left: auto; text-decoration: none; }
@@ -650,19 +650,6 @@ function bindTokenSetup() {
 }
 
 // ── 글 목록 ──
-function lintBody(body, name) {
-  const out = [];
-  const words = ['정말', '너무', '완전'].filter(w => body.includes(w));
-  if (words.length) out.push(`꾸밈말: ${words.join(', ')}`);
-  if (name) {
-    const hit = name.split(/[\s/()·,]+/).filter(t => t.length >= 2 && body.includes(t));
-    if (hit.length) out.push(`본문에 상품명이 들어간 것 같아요: ${hit.join(', ')}`);
-  }
-  if (/답글|댓글\s*달|댓글\s*남기/.test(body.replace(/첫\s*댓글에/g, ''))) out.push('참여 유도 문구는 스레드 랭킹 벌점이에요');
-  const lines = body.split('\n').filter(l => l.trim()).length;
-  if (lines > 7) out.push(`${lines}줄 (7줄 이내 권장)`);
-  return out;
-}
 function newPost(extra) {
   return { id: rid('p_'), kind: '수익화', memo: '', name: '', price: '', size: '', used: false, link: '', with_link: true, body: '', comment: '',
     status: '대기', slot: '', post_id: '', permalink: '', error: '', tries: 0, posted_at: '', created_at: '', ...extra };
@@ -682,10 +669,12 @@ function renderList() {
       <div class="sum">대기 <b>${pending.length}</b>개${noLink ? ` · 손볼 글 <b style="color:#8a5a00">${noLink}</b>개` : ''}${last ? ` · ${fmtSlot(last)}까지 예약됨` : ''} · 하루 ${S.config.hours.length}개 (${S.config.hours.map(h => +h + '시').join('·')})</div>
       <span class="row">${drafts ? `<button class="btn small ghost" id="confirm-drafts">초안 ${drafts}개 모두 대기로</button>` : ''}<button class="btn small" id="add-post">+ 글 추가</button></span>
     </div>
+    ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">게시 완료 ${done.length}개
+        ${done.length > 3 ? `<button class="btn small ghost" id="toggle-done">${S.showDone ? '최근 3개만' : '모두 보기'}</button>` : ''}</div>
+      <div class="posts" style="margin-bottom:16px">${(S.showDone ? done : done.slice(0, 3)).map(doneHtml).join('')}</div>` : ''}
     ${needLink ? `<div class="banner warn small">링크 넣어야 하는 수익화 글 ${needLink}개 — 링크가 비어 있으면 그 글은 건너뛰고 다음 글이 먼저 올라가요.</div>` : ''}
     <div class="posts" id="pending">${pending.map((p, i) => postHtml(p, i, pending.length, sched[p.id])).join('') || '<div class="card small muted">대기 중인 글이 없어요. 상품 이미지와 링크를 채팅으로 보내주시면 글을 만들어 넣어 드려요.</div>'}</div>
-    ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center">게시 완료 ${done.length}개 <button class="btn small ghost" id="toggle-done">${S.showDone ? '접기' : '펼치기'}</button></div>
-      ${S.showDone ? `<div class="posts">${done.map(doneHtml).join('')}</div>` : ''}` : ''}`;
+`;
   bindList();
   bindSaveBar();
   updateSaveBar();
@@ -705,7 +694,6 @@ function postHtml(p, i, n, slotKey) {
   const b = buildPost(p);
   const st = p.status || '대기';
   const special = st !== '대기';
-  const lint = lintBody(p.body || '', p.name || '');
   const cls = ['post', S.orig[p.id] && !Object.keys(changedFields(p, S.orig[p.id])).length ? '' : 'dirty',
     special && ['실패', '댓글실패'].includes(st) ? 'bad' : (st === '대기' && b.problem) || ['확인필요', '게시중'].includes(st) ? 'warn' : ''].join(' ');
   return `<div class="${cls}" data-id="${esc(p.id)}">
@@ -733,21 +721,25 @@ function postHtml(p, i, n, slotKey) {
       <input class="input link" data-f="link" value="${esc(p.link)}" placeholder="${p.kind === '수익화' ? '쿠팡 파트너스 링크 붙여넣기 https://link.coupang.com/a/...' : '링크 (일상·팔로워 글은 보통 비워 둬요)'}">
       <label class="check"><input type="checkbox" data-f="with_link"${p.with_link !== false ? ' checked' : ''}>첫 댓글에 링크</label>
     </div>
-    <textarea class="input body" data-f="body" rows="${Math.max(5, String(p.body || '').split('\n').length + 1)}" placeholder="본문 — ① 훅 ② 숫자·디테일 ③ 반전 ④ 질문 + 정확히 뭔지는 첫 댓글에">${esc(p.body)}</textarea>
-    <div class="post-foot"><span data-lint>${lint.map(t => '⚠ ' + esc(t)).join(' · ')}</span><span data-count class="${(p.body || '').trim().length > MAX_LEN ? 'over' : ''}">${(p.body || '').trim().length} / ${MAX_LEN}자</span></div>
+    <textarea class="input body" data-f="body" rows="1" placeholder="본문 — ① 훅 ② 숫자·디테일 ③ 반전 ④ 질문 + 정확히 뭔지는 첫 댓글에">${esc(p.body)}</textarea>
+    <div class="post-foot"><span></span><span data-count class="${(p.body || '').trim().length > MAX_LEN ? 'over' : ''}">${(p.body || '').trim().length} / ${MAX_LEN}자</span></div>
     <div class="cmt-line" data-cmtline>${p.with_link === false ? '첫 댓글 없이 본문만 올라가요' : `첫 댓글: ${esc(b.comment ? '대가성 문구 + ' + b.comment.slice(DISCLOSURE.length).trim().split('\n')[0] : '(링크 없음)')}`}
       ${p.with_link === false ? '' : ` · <button class="cmt-toggle" data-act="cmt">${S.openCmt.has(p.id) || p.comment ? '첫 댓글 문구 접기' : '문구 넣기'}</button>`}</div>
     ${p.with_link !== false && (S.openCmt.has(p.id) || p.comment) ? `<textarea class="input" data-f="comment" rows="2" style="margin-top:6px" placeholder="비우면 링크만. {링크} 쓰면 그 자리에 링크">${esc(p.comment)}</textarea>` : ''}
   </div>`;
 }
 function doneHtml(p) {
+  const first = String(p.body || '').trim().split('\n')[0];
   return `<div class="done-row" data-id="${esc(p.id)}">
-    <span class="nm">${esc(p.name || '(상품명 없음)')}</span>
+    <span class="st ok" style="font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap">게시 완료</span>
+    <span class="nm">${esc(first || p.name || '')}</span>
     <span class="tm">${esc(fmtDT(p.posted_at))}</span>
     ${p.permalink ? `<a class="go" href="${esc(p.permalink)}" target="_blank" rel="noopener">스레드에서 보기 ↗</a>` : '<span class="tm">링크 없음</span>'}
   </div>`;
 }
+function fitHeight(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight + 2) + 'px'; }
 function bindList() {
+  document.querySelectorAll('#pending textarea').forEach(fitHeight);
   $('#add-post').onclick = () => {
     const p = newPost();
     S.posts.push(p);
@@ -775,7 +767,7 @@ function bindList() {
         if (f === 'status' && p.status === '대기') { p.tries = 0; p.error = ''; p.slot = ''; }
         if (f === 'kind') p.with_link = p.kind === '수익화';
         if (el.type === 'checkbox' || f === 'status' || f === 'kind') { renderList(); updateSaveBar(); return; }
-        if (f === 'body') el.rows = Math.max(5, el.value.split('\n').length + 1);
+        if (f === 'body' || f === 'comment') fitHeight(el);
         refreshCard(card, p);
         updateBadges();
         updateSaveBar();
@@ -812,7 +804,6 @@ function refreshCard(card, p) {
   const len = String(p.body || '').trim().length;
   const c = card.querySelector('[data-count]');
   c.textContent = `${len} / ${MAX_LEN}자`; c.classList.toggle('over', len > MAX_LEN);
-  card.querySelector('[data-lint]').innerHTML = lintBody(p.body || '', p.name || '').map(t => '⚠ ' + esc(t)).join(' · ');
   card.classList.toggle('dirty', !S.orig[p.id] || Object.keys(changedFields(p, S.orig[p.id])).length > 0);
   const line = card.querySelector('[data-cmtline]');
   if (line && p.with_link !== false) {
