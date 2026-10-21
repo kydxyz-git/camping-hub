@@ -116,8 +116,8 @@
     .pgrid2 { grid-template-columns: 1fr 1fr; }
     .pgrid2 .link { grid-column: 1 / -1; }
   }
-  .pgrid3 { display: grid; grid-template-columns: 110px 1fr 1.4fr; gap: 8px; margin-bottom: 8px; }
-  @media (max-width: 600px) { .pgrid3 { grid-template-columns: 100px 1fr; } .pgrid3 .memo { grid-column: 1 / -1; } }
+  .pgrid3 { display: grid; grid-template-columns: 100px 150px 1fr 1.4fr; gap: 8px; margin-bottom: 8px; }
+  @media (max-width: 760px) { .pgrid3 { grid-template-columns: 100px 1fr; } .pgrid3 .name, .pgrid3 .memo { grid-column: 1 / -1; } }
   .post textarea.body { min-height: 0; overflow: hidden; resize: none; }
   .search-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; background: #fff6e0; border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; }
   .search-line b { color: var(--text); }
@@ -651,7 +651,7 @@ function bindTokenSetup() {
 
 // ── 글 목록 ──
 function newPost(extra) {
-  return { id: rid('p_'), kind: '수익화', memo: '', name: '', price: '', size: '', used: false, link: '', with_link: true, body: '', comment: '',
+  return { id: rid('p_'), kind: '수익화', topic: '살림템 추천', memo: '', name: '', price: '', size: '', used: false, link: '', with_link: true, body: '', comment: '',
     status: '대기', slot: '', post_id: '', permalink: '', error: '', tries: 0, posted_at: '', created_at: '', ...extra };
 }
 function renderList() {
@@ -665,6 +665,7 @@ function renderList() {
   const drafts = pending.filter(p => p.status === '초안').length;
   const needLink = pending.filter(p => p.with_link !== false && !String(p.link || '').trim() && ['초안', '대기'].includes(p.status || '대기')).length;
   $('#view').innerHTML = `${saveBarHtml()}
+    <datalist id="topic-list"><option value="생활정보, 꿀팁"><option value="살림템 추천"><option value="주방템 추천"></datalist>
     <div class="list-head">
       <div class="sum">대기 <b>${pending.length}</b>개${noLink ? ` · 손볼 글 <b style="color:#8a5a00">${noLink}</b>개` : ''}${last ? ` · ${fmtSlot(last)}까지 예약됨` : ''} · 하루 ${S.config.hours.length}개 (${S.config.hours.map(h => +h + '시').join('·')})</div>
       <span class="row">${drafts ? `<button class="btn small ghost" id="confirm-drafts">초안 ${drafts}개 모두 대기로</button>` : ''}<button class="btn small" id="add-post">+ 글 추가</button></span>
@@ -712,6 +713,7 @@ function postHtml(p, i, n, slotKey) {
       <span class="muted">${st === '초안' ? '다 쓰면 대기로 바꿔야 순서대로 올라가요.' : '확인필요·게시중은 자동으로 다시 안 올려요. 올라갔으면 게시완료, 아니면 대기로.'}</span></div>` : ''}
     <div class="pgrid3">
       <select class="input" data-f="kind">${KINDS.map(k => `<option${k === (p.kind || '') ? ' selected' : ''}>${k}</option>`).join('')}${p.kind && !KINDS.includes(p.kind) ? `<option selected>${esc(p.kind)}</option>` : ''}${p.kind ? '' : '<option value="" selected>종류</option>'}</select>
+      <input class="input topic" data-f="topic" list="topic-list" value="${esc(p.topic || '')}" placeholder="# 주제 태그" title="주제 태그 (커뮤니티 이름, 글당 1개)">
       <input class="input name" data-f="name" value="${esc(p.name)}" placeholder="제목 (목록에서 알아보기용)">
       <input class="input memo" data-f="memo" value="${esc(p.memo || '')}" placeholder="메모 (상황 · 붙일 상품)">
     </div>
@@ -765,7 +767,10 @@ function bindList() {
       el.addEventListener(ev, () => {
         p[f] = el.type === 'checkbox' ? el.checked : f === 'body' ? el.value.replace(/\s+$/, '') : el.value.trim();
         if (f === 'status' && p.status === '대기') { p.tries = 0; p.error = ''; p.slot = ''; }
-        if (f === 'kind') p.with_link = p.kind === '수익화';
+        if (f === 'kind') {
+          p.with_link = p.kind === '수익화';
+          if (!p.topic || ['생활정보, 꿀팁', '살림템 추천'].includes(p.topic)) p.topic = p.kind === '수익화' ? '살림템 추천' : '생활정보, 꿀팁';
+        }
         if (el.type === 'checkbox' || f === 'status' || f === 'kind') { renderList(); updateSaveBar(); return; }
         if (f === 'body' || f === 'comment') fitHeight(el);
         refreshCard(card, p);
