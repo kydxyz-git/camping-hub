@@ -261,16 +261,21 @@
     "updated_at": "2026-08-13T14:10:48.777Z"
   },
   {
-    "name": "팀버리지 캠핑 롤링 테이블",
-    "desc": "",
-    "url": "https://link.coupang.com/a/gbveT8iMai",
-    "source": "쿠팡",
-    "thumb": "./images/products/4e60da86a65a.jpg",
-    "published": true,
     "id": "item_3bffc91077",
+    "name": "팀버리지 캠핑 롤링 테이블",
+    "cat": "table",
+    "video": "",
+    "desc": "",
+    "url": "",
+    "source": "",
+    "thumb": "./images/products/4e60da86a65a.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
     "created_at": "2026-08-12T00:43:12.051091+00:00",
-    "updated_at": "2026-08-13T14:10:48.777Z",
-    "cat": "table"
+    "updated_at": "2026-10-21T23:58:13.568Z"
   },
   {
     "id": "item_7bd1dc6926",
