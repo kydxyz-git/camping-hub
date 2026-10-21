@@ -116,6 +116,8 @@
     .pgrid2 { grid-template-columns: 1fr 1fr; }
     .pgrid2 .link { grid-column: 1 / -1; }
   }
+  .pgrid3 { display: grid; grid-template-columns: 110px 1fr 1.4fr; gap: 8px; margin-bottom: 8px; }
+  @media (max-width: 600px) { .pgrid3 { grid-template-columns: 100px 1fr; } .pgrid3 .memo { grid-column: 1 / -1; } }
   .post textarea.body { min-height: 120px; }
   .post-foot { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 4px; flex-wrap: wrap; }
   .post-foot .over { color: var(--danger); font-weight: 700; }
@@ -618,11 +620,14 @@ function renderList() {
   const ready = Object.values(sched).filter(Boolean);
   const noLink = pending.filter(p => (p.status || '대기') === '대기' && buildPost(p).problem).length;
   const last = ready.length ? ready[ready.length - 1] : null;
+  const drafts = pending.filter(p => p.status === '초안').length;
+  const needLink = pending.filter(p => p.with_link !== false && !String(p.link || '').trim() && ['초안', '대기'].includes(p.status || '대기')).length;
   $('#view').innerHTML = `
     <div class="list-head">
       <div class="sum">대기 <b>${pending.length}</b>개${noLink ? ` · 손볼 글 <b style="color:#8a5a00">${noLink}</b>개` : ''}${last ? ` · ${fmtSlot(last)}까지 예약됨` : ''} · 하루 ${S.config.hours.length}개 (${S.config.hours.map(h => +h + '시').join('·')})</div>
-      <button class="btn small" id="add-post">+ 글 추가</button>
+      <span class="row">${drafts ? `<button class="btn small ghost" id="confirm-drafts">초안 ${drafts}개 모두 대기로</button>` : ''}<button class="btn small" id="add-post">+ 글 추가</button></span>
     </div>
+    ${needLink ? `<div class="banner warn small">링크 넣어야 하는 수익화 글 ${needLink}개 — 링크가 비어 있으면 그 글은 건너뛰고 다음 글이 먼저 올라가요.</div>` : ''}
     <div class="posts" id="pending">${pending.map((p, i) => postHtml(p, i, pending.length, sched[p.id])).join('') || '<div class="card small muted">대기 중인 글이 없어요. 상품 이미지와 링크를 채팅으로 보내주시면 글을 만들어 넣어 드려요.</div>'}</div>
     ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center">게시 완료 ${done.length}개 <button class="btn small ghost" id="toggle-done">${S.showDone ? '접기' : '펼치기'}</button></div>
       ${S.showDone ? `<div class="posts">${done.map(doneHtml).join('')}</div>` : ''}` : ''}`;
@@ -659,19 +664,14 @@ function postHtml(p, i, n, slotKey) {
       <select class="input" data-f="status" style="width:auto;padding:6px 10px">${STATUSES.map(s => `<option${s === st ? ' selected' : ''}>${s}</option>`).join('')}</select>
       ${p.permalink ? `<a href="${esc(p.permalink)}" target="_blank" rel="noopener">스레드에서 보기 ↗</a>` : ''}
       <span class="muted">${st === '초안' ? '다 쓰면 대기로 바꿔야 순서대로 올라가요.' : '확인필요·게시중은 자동으로 다시 안 올려요. 올라갔으면 게시완료, 아니면 대기로.'}</span></div>` : ''}
-    <div class="pgrid" style="grid-template-columns:110px 1fr">
+    <div class="pgrid3">
       <select class="input" data-f="kind">${KINDS.map(k => `<option${k === (p.kind || '') ? ' selected' : ''}>${k}</option>`).join('')}${p.kind && !KINDS.includes(p.kind) ? `<option selected>${esc(p.kind)}</option>` : ''}${p.kind ? '' : '<option value="" selected>종류</option>'}</select>
-      <input class="input" data-f="memo" value="${esc(p.memo || '')}" placeholder="메모 (어떤 상황 · 붙일 상품군)">
+      <input class="input name" data-f="name" value="${esc(p.name)}" placeholder="제목 (목록에서 알아보기용)">
+      <input class="input memo" data-f="memo" value="${esc(p.memo || '')}" placeholder="메모 (상황 · 붙일 상품)">
     </div>
-    <div class="pgrid">
-      <input class="input name" data-f="name" value="${esc(p.name)}" placeholder="상품명">
-      <input class="input" data-f="price" value="${esc(p.price)}" placeholder="가격">
-      <input class="input" data-f="size" value="${esc(p.size)}" placeholder="용량·수량">
-    </div>
-    <div class="pgrid2">
-      <input class="input link" data-f="link" value="${esc(p.link)}" placeholder="쿠팡 파트너스 링크 https://link.coupang.com/a/...">
-      <label class="check"><input type="checkbox" data-f="with_link"${p.with_link !== false ? ' checked' : ''}>링크 넣기</label>
-      <label class="check"><input type="checkbox" data-f="used"${p.used ? ' checked' : ''}>써봄</label>
+    <div class="pgrid2" style="grid-template-columns:1fr auto">
+      <input class="input link" data-f="link" value="${esc(p.link)}" placeholder="${p.kind === '수익화' ? '쿠팡 파트너스 링크 붙여넣기 https://link.coupang.com/a/...' : '링크 (일상·팔로워 글은 보통 비워 둬요)'}">
+      <label class="check"><input type="checkbox" data-f="with_link"${p.with_link !== false ? ' checked' : ''}>첫 댓글에 링크</label>
     </div>
     <textarea class="input body" data-f="body" placeholder="본문 — ① 훅 ② 숫자·디테일 ③ 반전 ④ 질문 + 정확히 뭔지는 첫 댓글에">${esc(p.body)}</textarea>
     <div class="post-foot"><span data-lint>${lint.map(t => '⚠ ' + esc(t)).join(' · ')}</span><span data-count class="${(p.body || '').trim().length > MAX_LEN ? 'over' : ''}">${(p.body || '').trim().length} / ${MAX_LEN}자</span></div>
@@ -695,6 +695,13 @@ function bindList() {
     const el = document.querySelector(`.post[data-id="${p.id}"] [data-f="name"]`);
     if (el) { el.scrollIntoView({ block: 'center' }); el.focus(); }
   };
+  const cd = $('#confirm-drafts');
+  if (cd) cd.onclick = () => {
+    const ds = livePosts().filter(p => p.status === '초안');
+    if (!confirm(`초안 ${ds.length}개를 모두 '대기'로 바꿀까요?\n저장하면 목록 순서대로 자동으로 올라가기 시작해요. (링크 없는 수익화 글은 건너뜀)`)) return;
+    ds.forEach(p => { p.status = '대기'; });
+    renderList(); updateSaveBar();
+  };
   const td = $('#toggle-done');
   if (td) td.onclick = () => { S.showDone = !S.showDone; renderList(); };
   document.querySelectorAll('#pending .post').forEach(card => {
@@ -706,7 +713,8 @@ function bindList() {
       el.addEventListener(ev, () => {
         p[f] = el.type === 'checkbox' ? el.checked : f === 'body' ? el.value.replace(/\s+$/, '') : el.value.trim();
         if (f === 'status' && p.status === '대기') { p.tries = 0; p.error = ''; p.slot = ''; }
-        if (el.type === 'checkbox' || f === 'status') { renderList(); updateSaveBar(); return; }
+        if (f === 'kind') p.with_link = p.kind === '수익화';
+        if (el.type === 'checkbox' || f === 'status' || f === 'kind') { renderList(); updateSaveBar(); return; }
         refreshCard(card, p);
         updateBadges();
         updateSaveBar();
