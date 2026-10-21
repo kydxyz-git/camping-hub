@@ -728,7 +728,7 @@ function postHtml(p, i, n, slotKey) {
       <input class="input memo" data-f="memo" value="${esc(p.memo || '')}" placeholder="메모 (상황 · 붙일 상품)">
     </div>
     ${p.kind === '수익화' ? `<div class="search-line">🔍 쿠팡 검색어 <b>${esc(p.search || p.name || '')}</b>
-      <a class="btn small ghost" href="https://www.coupang.com/np/search?q=${encodeURIComponent(p.search || p.name || '')}" target="_blank" rel="noopener">쿠팡에서 찾기 ↗</a></div>` : ''}
+      <a class="btn small ghost" data-act="partners" data-q="${esc(p.search || p.name || '')}" href="https://partners.coupang.com/#affiliate/ws/link/0/${encodeURIComponent(p.search || p.name || '')}" target="_blank" rel="noopener">파트너스에서 찾기 ↗</a></div>` : ''}
     <div class="pgrid2" style="grid-template-columns:1fr auto">
       <input class="input link" data-f="link" value="${esc(p.link)}" placeholder="${p.kind === '수익화' ? '쿠팡 파트너스 링크 붙여넣기 https://link.coupang.com/a/...' : '링크 (일상·팔로워 글은 보통 비워 둬요)'}">
       <label class="check"><input type="checkbox" data-f="with_link"${p.with_link !== false ? ' checked' : ''}>첫 댓글에 링크</label>
@@ -788,6 +788,11 @@ function bindList() {
       if (act === 'cmt') { S.openCmt.has(p.id) || p.comment ? (S.openCmt.delete(p.id), p.comment = '') : S.openCmt.add(p.id); renderList(); updateSaveBar(); return; }
       if (act === 'menu') return openMenu(btn, p);
       if (act === 'save1') return saveOne(p);
+      if (act === 'partners') {
+        // 파트너스 화면이 검색어를 못 받아도 바로 붙여넣을 수 있게 복사 (링크 열기는 그대로 진행)
+        try { navigator.clipboard.writeText(btn.dataset.q); toast(`검색어 복사됨: ${btn.dataset.q} — 파트너스 검색창에 붙여넣기`); } catch (err) {}
+        return;
+      }
     });
   });
 }
