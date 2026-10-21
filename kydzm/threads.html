@@ -119,6 +119,14 @@
   .pgrid3 { display: grid; grid-template-columns: 110px 1fr 1.4fr; gap: 8px; margin-bottom: 8px; }
   @media (max-width: 600px) { .pgrid3 { grid-template-columns: 100px 1fr; } .pgrid3 .memo { grid-column: 1 / -1; } }
   .post textarea.body { min-height: 120px; }
+  .search-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; background: #fff6e0; border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; }
+  .search-line b { color: var(--text); }
+  .search-line .btn { margin-left: auto; text-decoration: none; }
+  .cmt { background: var(--bg); border-radius: 14px; padding: 14px; }
+  .cmt .src { font-size: 12.5px; color: var(--muted); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cmt .who { font-weight: 800; font-size: 14px; }
+  .cmt .said { font-size: 14.5px; margin: 4px 0 10px; white-space: pre-wrap; word-break: break-all; }
+  .cmt .parent { font-size: 12.5px; color: var(--muted); border-left: 3px solid var(--line); padding-left: 8px; margin-bottom: 6px; white-space: pre-wrap; }
   .post-foot { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 4px; flex-wrap: wrap; }
   .post-foot .over { color: var(--danger); font-weight: 700; }
   .post .lint { margin-top: 4px; }
@@ -368,11 +376,13 @@ async function commitFiles(mutators, message) {
 async function loadAll() {
   const head = await headCommit();
   const files = await readTree(head.tree);
-  const [queue, config, token] = await Promise.all([
+  const [queue, config, token, replies] = await Promise.all([
     files['queue.json'] ? readBlobJson(files['queue.json']) : [],
     files['config.json'] ? readBlobJson(files['config.json']) : null,
     files['state/token.json'] ? readBlobJson(files['state/token.json']) : null,
+    files['replies.json'] ? readBlobJson(files['replies.json']) : [],
   ]);
+  S.replies = (replies || []).filter(r => r && r.id);
   S.posts = (queue || []).filter(p => p && p.id);
   S.orig = {}; S.posts.forEach(p => S.orig[p.id] = JSON.stringify(p));
   S.deleted = new Set(); S.orderChanged = false;
@@ -500,7 +510,8 @@ async function reloadAndRender(msg) {
 function render() {
   const main = $('#main');
   if (!getToken()) { main.innerHTML = tokenSetupHtml(); bindTokenSetup(); return; }
-  const tabs = [['list', '글 목록'], ['cycle', '게시주기'], ['settings', '토큰·실행']];
+  const newC = (S.replies || []).filter(r => r.status === '새댓글').length;
+  const tabs = [['list', '글 목록'], ['comments', `댓글${newC ? ' ' + newC : ''}`], ['cycle', '게시주기'], ['settings', '토큰·실행']];
   let html = `<div class="tabs">${tabs.map(([k, t]) => `<button class="tab${S.tab === k ? ' on' : ''}" data-tab="${k}">${esc(t)}</button>`).join('')}
     <button class="tab" id="reload" title="저장소에서 다시 불러오기">새로고침</button></div>`;
   html += bannersHtml();
@@ -516,7 +527,7 @@ function render() {
     if (hasChanges() && !confirm('저장하지 않은 변경이 사라져요. 다시 불러올까요?')) return;
     withBusy('불러오는 중...', () => reloadAndRender('최신 내용으로 불러왔어요')).catch(e => toast(e.message, true));
   };
-  ({ list: renderList, cycle: renderCycle, settings: renderSettings }[S.tab] || renderList)();
+  ({ list: renderList, comments: renderComments, cycle: renderCycle, settings: renderSettings }[S.tab] || renderList)();
   updateSaveBar();
 }
 function bannersHtml() {
@@ -716,6 +727,8 @@ function postHtml(p, i, n, slotKey) {
       <input class="input name" data-f="name" value="${esc(p.name)}" placeholder="제목 (목록에서 알아보기용)">
       <input class="input memo" data-f="memo" value="${esc(p.memo || '')}" placeholder="메모 (상황 · 붙일 상품)">
     </div>
+    ${p.kind === '수익화' ? `<div class="search-line">🔍 쿠팡 검색어 <b>${esc(p.search || p.name || '')}</b>
+      <a class="btn small ghost" href="https://www.coupang.com/np/search?q=${encodeURIComponent(p.search || p.name || '')}" target="_blank" rel="noopener">쿠팡에서 찾기 ↗</a></div>` : ''}
     <div class="pgrid2" style="grid-template-columns:1fr auto">
       <input class="input link" data-f="link" value="${esc(p.link)}" placeholder="${p.kind === '수익화' ? '쿠팡 파트너스 링크 붙여넣기 https://link.coupang.com/a/...' : '링크 (일상·팔로워 글은 보통 비워 둬요)'}">
       <label class="check"><input type="checkbox" data-f="with_link"${p.with_link !== false ? ' checked' : ''}>첫 댓글에 링크</label>
@@ -857,6 +870,71 @@ function openMenu(btn, p) {
   };
 }
 
+// ── 댓글 (AI 초안 → 확인 후 보내기) ──
+function renderComments() {
+  const rows = (S.replies || []).slice().sort((a, b) => String(b.timestamp || b.created_at || '').localeCompare(String(a.timestamp || a.created_at || '')));
+  const fresh = rows.filter(r => r.status === '새댓글' || r.status === '실패');
+  const queued = rows.filter(r => r.status === '보낼것');
+  const done = rows.filter(r => r.status === '보냄' || r.status === '건너뜀');
+  const postOf = r => S.posts.find(p => p.id === r.post_qid) || {};
+  const card = r => {
+    const p = postOf(r);
+    return `<div class="cmt" data-rid="${esc(r.id)}">
+      <div class="src">내 글: ${esc(String(p.body || '').trim().split('\n')[0] || p.name || '')} ${p.permalink ? `· <a href="${esc(p.permalink)}" target="_blank" rel="noopener">스레드에서 보기 ↗</a>` : ''}</div>
+      ${r.parent_text ? `<div class="parent">내 답글: ${esc(r.parent_text)}</div>` : ''}
+      <div class="who">@${esc(r.username)} <span class="small muted">${esc(fmtDT(r.timestamp ? kstIso(r.timestamp) : r.created_at))}</span></div>
+      <div class="said">${esc(r.text)}</div>
+      ${r.status === '실패' ? `<div class="err-box">보내기 실패: ${esc(r.error || '')}</div>` : r.error ? `<div class="small muted" style="margin-bottom:6px">${esc(r.error)}</div>` : ''}
+      <textarea class="input" data-draft rows="2" placeholder="답글을 써 주세요">${esc(r.reply_text || r.draft || '')}</textarea>
+      <div class="row" style="justify-content:flex-end;margin-top:8px">
+        <button class="btn small ghost" data-c="skip">건너뛰기</button>
+        <button class="btn small" data-c="send">보내기</button>
+      </div>
+    </div>`;
+  };
+  $('#view').innerHTML = `
+    <div class="banner warn small">매시 35분쯤 새 댓글을 모아 AI가 답글 초안을 달아 둬요. 고칠 건 고치고 '보내기'를 누르면 1~2분 안에 올라가요.
+      처음엔 메타 앱에 <b>threads_read_replies</b> 권한을 추가하고 토큰을 새로 받아 '토큰·실행'에 넣어야 댓글이 보여요.</div>
+    <div class="list-head"><div class="sum">답할 댓글 <b>${fresh.length}</b>개${queued.length ? ` · 보내는 중 ${queued.length}개` : ''}</div>
+      <button class="btn small ghost" id="c-fetch">지금 댓글 확인</button></div>
+    <div class="posts">${fresh.map(card).join('') || '<div class="card small muted">새 댓글이 없어요.</div>'}</div>
+    ${queued.length ? `<div class="section-title">보내는 중</div><div class="posts">${queued.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)} ← ${esc(r.reply_text)}</span><span class="tm">대기</span></div>`).join('')}</div>` : ''}
+    ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center">지난 댓글 ${done.length}개 <button class="btn small ghost" id="c-toggle">${S.showDoneC ? '접기' : '펼치기'}</button></div>
+      ${S.showDoneC ? `<div class="posts">${done.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)}: ${esc(r.text)}</span><span class="tm">${r.status === '보냄' ? '↳ ' + esc(r.reply_text) : '건너뜀'}</span></div>`).join('')}</div>` : ''}` : ''}`;
+  const t = $('#c-toggle'); if (t) t.onclick = () => { S.showDoneC = !S.showDoneC; renderComments(); };
+  $('#c-fetch').onclick = async () => {
+    try { await runWorkflow('replies.yml', { mode: 'all' }); toast('댓글 확인을 요청했어요. 2~3분 뒤 새로고침해 주세요.'); }
+    catch (e) { toast(e.message, true); }
+  };
+  document.querySelectorAll('.cmt').forEach(el => {
+    const r = S.replies.find(x => x.id === el.dataset.rid);
+    el.querySelectorAll('[data-c]').forEach(b => b.onclick = async () => {
+      const send = b.dataset.c === 'send';
+      const text = el.querySelector('[data-draft]').value.trim();
+      if (send && !text) return toast('답글을 써 주세요', true);
+      if (send && text.length > MAX_LEN) return toast(`${text.length}자예요. ${MAX_LEN}자까지만 돼요.`, true);
+      try {
+        await withBusy(send ? '보내는 중...' : '저장 중...', async () => {
+          await commitFiles({
+            'replies.json': rows => {
+              rows = rows || [];
+              const cur = rows.find(x => x.id === r.id);
+              if (!cur) throw new Error('이 댓글을 저장소에서 못 찾았어요. 새로고침해 주세요.');
+              if (cur.status === '보냄') throw new Error('이미 보낸 댓글이에요.');
+              Object.assign(cur, send ? { status: '보낼것', reply_text: text, error: '' } : { status: '건너뜀' }, { updated_at: kstNowIso() });
+              return rows;
+            },
+          }, send ? `replies(admin): @${r.username} 답글 보내기` : `replies(admin): @${r.username} 건너뜀`);
+          if (send) await runWorkflow('replies.yml', { mode: 'send' });
+          await loadAll();
+        });
+        toast(send ? '보내기 요청했어요. 1~2분 안에 올라가요.' : '건너뛰었어요');
+        render();
+      } catch (e) { toast(e.message, true); }
+    });
+  });
+}
+
 // ── 게시주기 ──
 function renderCycle() {
   const c = JSON.parse(JSON.stringify(S.config));
@@ -933,6 +1011,8 @@ function renderSettings() {
       <div class="field"><label>CUPAS_SECRETS_PAT — 토큰 자동 갱신용 깃허브 토큰 (Secrets 읽기·쓰기)</label>
         <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-pat" autocomplete="off" placeholder="github_pat_..."><button class="btn small" data-secret="CUPAS_SECRETS_PAT">저장</button></div>
         <div class="small muted" style="margin-top:5px">지금 이 화면에 연결한 토큰에 Secrets 쓰기 권한이 있으면 그대로 써도 돼요 → <a href="#" id="s-pat-same">이 화면 토큰으로 저장</a></div></div>
+      <div class="field"><label>ANTHROPIC_API_KEY — 댓글 답글 AI 초안용 (console.anthropic.com → API Keys)</label>
+        <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-ak" autocomplete="off" placeholder="sk-ant-..."><button class="btn small" data-secret="ANTHROPIC_API_KEY">저장</button></div></div>
     </div>
 
     <div class="card" style="margin-bottom:14px">
@@ -951,7 +1031,7 @@ function renderSettings() {
     try {
       const r = await gh(`${RP}/actions/secrets`);
       const have = Object.fromEntries((r.secrets || []).map(s => [s.name, s.updated_at]));
-      $('#s-list').innerHTML = ['THREADS_ACCESS_TOKEN', 'THREADS_USER_ID', 'CUPAS_SECRETS_PAT'].map(n =>
+      $('#s-list').innerHTML = ['THREADS_ACCESS_TOKEN', 'THREADS_USER_ID', 'CUPAS_SECRETS_PAT', 'ANTHROPIC_API_KEY'].map(n =>
         `<div>${have[n] ? '✅' : '⬜'} <b>${n}</b> ${have[n] ? `· ${esc(fmtDT(kstIso(have[n])))} 저장` : '· 아직 없음'}</div>`).join('');
     } catch (e) { $('#s-list').innerHTML = `<span style="color:var(--danger)">${esc(e.message)}</span>`; }
   };
@@ -973,7 +1053,7 @@ function renderSettings() {
   };
   loadSecrets(); loadRuns(); loadIssues();
 
-  const inputs = { THREADS_ACCESS_TOKEN: '#s-tt', THREADS_USER_ID: '#s-uid', CUPAS_SECRETS_PAT: '#s-pat' };
+  const inputs = { THREADS_ACCESS_TOKEN: '#s-tt', THREADS_USER_ID: '#s-uid', CUPAS_SECRETS_PAT: '#s-pat', ANTHROPIC_API_KEY: '#s-ak' };
   document.querySelectorAll('[data-secret]').forEach(b => b.onclick = async () => {
     const name = b.dataset.secret;
     const v = $(inputs[name]).value.trim();
