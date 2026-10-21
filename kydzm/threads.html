@@ -250,6 +250,7 @@ const S = {
   openCmt: new Set(), // 첫 댓글 문구 칸을 펼친 글
   open2: new Set(),   // 본문 2 칸을 펼친 글
   open3: new Set(),   // 본문 3 칸을 펼친 글
+  onlyNeedLink: false, // 링크 필요한 글만 보기
   showDone: false,
   config: null, token: null,
   tab: 'list',
@@ -677,7 +678,10 @@ function renderList() {
   const last = ready.length ? ready[ready.length - 1] : null;
   const drafts = pending.filter(p => p.status === '초안').length;
   const waitingN = pending.filter(p => (p.status || '대기') === '대기').length;
-  const needLink = pending.filter(p => p.with_link !== false && !String(p.link || '').trim() && ['초안', '대기'].includes(p.status || '대기')).length;
+  const needsLink = p => p.with_link !== false && !String(p.link || '').trim() && ['초안', '대기'].includes(p.status || '대기');
+  const needLink = pending.filter(needsLink).length;
+  if (!needLink) S.onlyNeedLink = false;
+  const shown = pending.map((p, i) => [p, i]).filter(([p]) => !S.onlyNeedLink || needsLink(p));
   $('#view').innerHTML = `${saveBarHtml()}
     <datalist id="topic-list"><option value="생활정보, 꿀팁"><option value="살림템 추천"><option value="주방템 추천"></datalist>
     <div class="list-head">
@@ -687,9 +691,11 @@ function renderList() {
     ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">게시 완료 ${done.length}개
         ${done.length > 3 ? `<button class="btn small ghost" id="toggle-done">${S.showDone ? '최근 3개만' : '모두 보기'}</button>` : ''}</div>
       <div class="posts" style="margin-bottom:16px">${(S.showDone ? done : done.slice(0, 3)).map(doneHtml).join('')}</div>` : ''}
-    ${needLink ? `<div class="banner warn small">링크 넣어야 하는 수익화 글 ${needLink}개 — 링크가 비어 있으면 그 글은 건너뛰고 다음 글이 먼저 올라가요.</div>` : ''}
-    <div class="posts" id="pending">${pending.map((p, i) => postHtml(p, i, pending.length, sched[p.id])).join('') || '<div class="card small muted">대기 중인 글이 없어요. 상품 이미지와 링크를 채팅으로 보내주시면 글을 만들어 넣어 드려요.</div>'}</div>
+    ${needLink ? `<div class="banner warn small" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><span>링크 넣어야 하는 수익화 글 ${needLink}개 — 링크가 비어 있으면 그 글은 건너뛰고 다음 글이 먼저 올라가요.</span>
+      <span class="row"><button class="btn small ${S.onlyNeedLink ? 'ghost' : ''}" data-filter="all">전체 ${pending.length}</button><button class="btn small ${S.onlyNeedLink ? '' : 'ghost'}" data-filter="needlink">링크 필요 ${needLink}</button></span></div>` : ''}
+    <div class="posts" id="pending">${shown.map(([p, i]) => postHtml(p, i, pending.length, sched[p.id])).join('') || '<div class="card small muted">대기 중인 글이 없어요. 상품 이미지와 링크를 채팅으로 보내주시면 글을 만들어 넣어 드려요.</div>'}</div>
 `;
+  document.querySelectorAll('[data-filter]').forEach(b => b.onclick = () => { S.onlyNeedLink = b.dataset.filter === 'needlink'; renderList(); window.scrollTo(0, document.getElementById('pending').offsetTop - 120); });
   bindList();
   bindSaveBar();
   updateSaveBar();
