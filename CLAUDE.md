@@ -24,6 +24,7 @@
 ## admin (kydzm/)
 
 - `index.html` 콘텐츠 CRUD + 통계 대시보드 · `insights.html` 성과 분석 · `deals.html` 딜 보드 · `conti.html` 콘티 보드
+- `threads.html` 스레드 예약 게시 관리(쿠파스). 데이터는 **비공개 저장소 `kydxyz-git/cupas`**(글 `queue/YYYY-MM.json`·`items.json`·`config.json`) — 이 공개 저장소에 예약 글·쿠팡 링크를 넣지 말 것. cupas 전용 PAT를 localStorage `kydz_cupas_gh_token`에만 저장. Secret 암호화는 `kydzm/lib/sealedbox.js`(+`nacl-fast.min.js`)
 - 인증: GitHub PAT를 브라우저 localStorage에만 저장. **토큰·시크릿은 저장소에 절대 커밋 금지.**
 - 커밋 메시지: 추가 `sync(admin): …` / 수정 `update(admin): …` / 삭제 `delete(admin): …`
 - 저장(`ghCommitTree`)은 직전에 저장소 최신 `data/*.json`을 읽어 `id` 기준 3-way 병합 후 커밋 — 오래 열어 둔 창이 다른 곳의 변경을 덮어쓰지 않게. 저장 로직을 고칠 때 이 경로를 우회하지 말 것.

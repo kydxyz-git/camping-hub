@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>스레드 예약 · kydz.kr</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --muted: #6e6e6e;
+    --line: #e5e5e5;
+    --accent-soft: #f5f5f3;
+    --danger: #e63946;
+    --success: #03c75a;
+    --warning: #f59e0b;
+    --info: #4a7ba6;
+    --brand: #FFE873;
+    --purple: #7c5cc4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', sans-serif;
+    background: var(--accent-soft); color: var(--text);
+    line-height: 1.55; min-height: 100vh; -webkit-text-size-adjust: 100%;
+  }
+  a, a:visited { color: inherit; }
+  button { font-family: inherit; }
+  .card { background: var(--bg); border-radius: 14px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 16px; background: var(--text); color: var(--bg);
+    border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;
+  }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn.ghost { background: var(--bg); color: var(--text); border: 1px solid var(--line); }
+  .btn.danger { background: var(--bg); color: var(--danger); border: 1px solid #f3c2c6; }
+  .btn.small { padding: 7px 11px; font-size: 13px; }
+  .input, select.input, textarea.input {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px;
+    font-size: 14px; background: var(--bg); font-family: inherit; color: var(--text);
+  }
+  textarea.input { resize: vertical; line-height: 1.6; }
+  .input:focus { outline: 2px solid var(--text); outline-offset: -1px; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .muted { color: var(--muted); }
+  .small { font-size: 12.5px; }
+  .hidden { display: none !important; }
+
+  /* 로그인 */
+  .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .login-card { max-width: 380px; width: 100%; padding: 32px 24px; }
+  .login-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .login-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+  .login-error { font-size: 13px; color: var(--danger); margin-top: 10px; display: none; }
+
+  /* 앱 */
+  .app { display: none; }
+  .app.is-active { display: block; }
+  .topbar {
+    background: var(--text); color: var(--bg); padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 20;
+  }
+  .topbar-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .topbar-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+  .topbar-link { font-size: 13px; opacity: .75; text-decoration: none; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 18px 16px 80px; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; }
+  .tab {
+    padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg);
+    font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;
+  }
+  .tab.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .banner { padding: 12px 14px; border-radius: 10px; font-size: 13.5px; margin-bottom: 14px; }
+  .banner.warn { background: #fff6e0; color: #7a5200; }
+  .banner.err { background: #fdecee; color: #9b1c27; }
+  .banner.ok { background: #e8f8ef; color: #0b6b37; }
+  .section-title { font-size: 15px; font-weight: 800; margin: 22px 0 10px; }
+  .section-title:first-child { margin-top: 0; }
+
+  /* 달력 */
+  .cal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .cal-month { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+  .cal-month button { border: 1px solid var(--line); background: var(--bg); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+  .stats { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .stat { background: var(--bg); border-radius: 10px; padding: 8px 12px; font-size: 13px; }
+  .stat b { font-size: 15px; margin-left: 4px; }
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .legend span::before { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 4px; background: var(--c); vertical-align: -1px; }
+  .days { display: flex; flex-direction: column; gap: 6px; }
+  .day { background: var(--bg); border-radius: 12px; padding: 10px 12px; display: grid; grid-template-columns: 78px 1fr; gap: 10px; align-items: start; }
+  .day.today { box-shadow: 0 0 0 2px var(--text) inset; }
+  .day.off { opacity: .55; }
+  .day.week-start { margin-top: 8px; }
+  .day-label { font-weight: 800; font-size: 14px; padding-top: 6px; }
+  .day-label .wd { font-weight: 600; color: var(--muted); font-size: 12.5px; margin-left: 2px; }
+  .day-label .wd.sun { color: var(--danger); }
+  .day-label .wd.sat { color: var(--info); }
+  .slots { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 6px; }
+  .cell {
+    border: 1px solid var(--line); border-left: 4px solid var(--c, var(--line)); border-radius: 8px;
+    padding: 6px 8px; min-height: 52px; cursor: pointer; background: var(--bg); text-align: left; font: inherit; color: inherit;
+    overflow: hidden;
+  }
+  .cell:hover { border-color: #c9c9c9; border-left-color: var(--c, #c9c9c9); }
+  .cell .t { font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; gap: 4px; }
+  .cell .t b { color: var(--c, var(--muted)); font-weight: 700; }
+  .cell .n { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cell .b { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cell.empty { border-style: dashed; border-left-width: 1px; color: var(--muted); display: flex; flex-direction: column; justify-content: center; }
+  .cell.empty .plus { font-size: 12.5px; }
+  .extra { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
+  @media (max-width: 640px) {
+    .day { grid-template-columns: 1fr; gap: 6px; }
+    .day-label { padding-top: 0; }
+    .cell { min-height: 46px; padding: 5px 7px; }
+    .cell .b { display: none; }
+  }
+
+  /* 목록 */
+  .list { display: flex; flex-direction: column; gap: 8px; }
+  .item-row { background: var(--bg); border-radius: 12px; padding: 12px 14px; display: flex; gap: 12px; align-items: center; cursor: pointer; }
+  .item-row:hover { box-shadow: 0 0 0 1px var(--line) inset; }
+  .item-main { flex: 1; min-width: 0; }
+  .item-name { font-weight: 700; font-size: 14.5px; }
+  .item-meta { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--muted); margin-left: 4px; vertical-align: 1px; }
+  .pill.used { background: #e8f8ef; color: #0b6b37; }
+  .pill.warn { background: #fff1db; color: #8a5a00; }
+  .pill.cp { background: #fde8ec; color: #c2183a; }
+  .item-count { font-size: 12.5px; color: var(--muted); text-align: right; white-space: nowrap; }
+
+  /* 모달 */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 50; display: flex; align-items: flex-start; justify-content: center; padding: 30px 12px; overflow-y: auto; }
+  .modal { background: var(--bg); border-radius: 16px; width: 100%; max-width: 640px; padding: 20px; }
+  .modal h3 { font-size: 17px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .modal h3 button { border: none; background: none; font-size: 20px; cursor: pointer; color: var(--muted); }
+  .field { margin-bottom: 12px; }
+  .field > label { display: block; font-size: 12.5px; font-weight: 700; color: var(--muted); margin-bottom: 5px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media (max-width: 520px) { .grid3 { grid-template-columns: 1fr 1fr; } }
+  .counter { font-size: 12px; color: var(--muted); text-align: right; margin-top: 3px; }
+  .counter.over { color: var(--danger); font-weight: 700; }
+  .preview { background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; font-size: 13px; white-space: pre-wrap; word-break: break-all; }
+  .lint { font-size: 12.5px; margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+  .lint .w { color: #8a5a00; }
+  .lint .e { color: var(--danger); }
+  .check { display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer; }
+  .check input { width: 17px; height: 17px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .status-box { background: var(--accent-soft); border-radius: 10px; padding: 12px; margin-top: 6px; font-size: 13px; }
+  .status-box .err { color: var(--danger); white-space: pre-wrap; word-break: break-all; margin-top: 4px; }
+
+  /* 설정 */
+  .kv { display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; font-size: 13.5px; }
+  .kv .k { color: var(--muted); }
+  .slot-row { display: grid; grid-template-columns: 90px 1fr auto auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .wd-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .wd-row label { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 14px; display: flex; gap: 5px; align-items: center; }
+  .runs { font-size: 13px; }
+  .runs a { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 80;
+    background: var(--text); color: var(--bg); padding: 11px 16px; border-radius: 10px; font-size: 14px; max-width: 90vw;
+    box-shadow: 0 6px 20px rgba(0,0,0,.2);
+  }
+  .toast.err { background: var(--danger); }
+  .busy { position: fixed; inset: 0; background: rgba(255,255,255,.55); z-index: 70; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+  ol.steps { padding-left: 20px; font-size: 13.5px; display: flex; flex-direction: column; gap: 4px; }
+</style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div class="login-screen" id="login-screen" style="display:none;">
+  <div class="card login-card">
+    <div class="login-title">스레드 예약</div>
+    <div class="login-sub">kydz.kr 관리자 전용</div>
+    <div class="row" style="flex-wrap:nowrap">
+      <input type="password" id="login-password" class="input" placeholder="비밀번호">
+      <button class="btn" id="login-submit">입장</button>
+    </div>
+    <div class="login-error" id="login-error">비밀번호가 올바르지 않습니다</div>
+  </div>
+</div>
+
+<!-- 앱 -->
+<div class="app" id="app">
+  <div class="topbar">
+    <div class="topbar-title"><span class="dot"></span>스레드 예약</div>
+    <a class="topbar-link" href="./">← 관리자 홈</a>
+  </div>
+  <div class="wrap" id="main"></div>
+</div>
+
+<script src="lib/nacl-fast.min.js"></script>
+<script src="lib/sealedbox.js"></script>
+<script>
+// ════════════════════════════════════════════════════════════════════
+// 스레드 × 쿠팡파트너스 예약 게시 관리 — 데이터는 비공개 저장소 kydxyz-git/cupas
+//  · 글: queue/YYYY-MM.json · 아이템: items.json · 게시주기: config.json · 토큰 기록: state/token.json
+//  · 깃허브 토큰(cupas 전용 fine-grained PAT)은 이 브라우저 localStorage에만 저장. 코드에 넣지 말 것.
+//  · 저장은 직전에 최신 커밋을 다시 읽고, 바꾼 필드만 id 기준으로 반영 → 자동 게시가 바꾼 상태를 덮어쓰지 않음
+// ════════════════════════════════════════════════════════════════════
+const PASSWORD_HASH = 'fc0d164e3259b5a28b9b7ac489e95e1638ba1bc37a27c2bb07ac7bdb624f1347';
+const AUTH_KEY = 'kydz_admin_authed';
+const TOKEN_KEY = 'kydz_cupas_gh_token';
+const TAB_KEY = 'kydz_cupas_tab';
+const GH = 'https://api.github.com';
+const OWNER = 'kydxyz-git', REPO = 'cupas', BRANCH = 'main';
+const RP = `/repos/${OWNER}/${REPO}`;
+
+const MAX_LEN = 500;
+const DISCLOSURE = '이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.';
+const COUPANG_MARKERS = ['coupang.com', 'coupa.ng'];
+const PH = '{링크}';
+const KINDS = ['공감형', '해결형', '후회형', '기타'];
+const WD = ['월', '화', '수', '목', '금', '토', '일'];   // 0=월 (post.py와 동일)
+const STATUSES = ['대기', '게시중', '게시완료', '댓글실패', '실패', '확인필요'];
+const DEFAULT_CONFIG = {
+  paused: false, weekdays: [0, 1, 2, 3, 4, 5, 6],
+  slots: [{ hour: '07', kind: '공감형', link: false }, { hour: '12', kind: '해결형', link: true }, { hour: '19', kind: '후회형', link: true }],
+};
+const VIEW = {   // 달력 색
+  대기:   { c: '#8a94a6', t: '대기' },
+  링크없음: { c: '#f59e0b', t: '링크 없음' },
+  게시중:  { c: '#7c5cc4', t: '게시중' },
+  확인필요: { c: '#7c5cc4', t: '확인 필요' },
+  게시완료: { c: '#03c75a', t: '게시 완료' },
+  댓글실패: { c: '#e63946', t: '댓글 실패' },
+  실패:   { c: '#e63946', t: '실패' },
+  지남:   { c: '#b0b0b0', t: '안 올라감' },
+};
+
+// ── 상태 ──
+const S = {
+  posts: [],          // 모든 달 글 (불러온 그대로 + 저장 후 다시 불러옴)
+  orig: {},           // id → 불러온 시점 JSON (필드 단위 병합 기준)
+  items: [], itemsOrig: {},
+  config: null, token: null,
+  months: [],         // queue에 있는 달 목록
+  month: null,        // 달력에서 보는 달 YYYY-MM
+  tab: 'cal',
+  showPast: false,    // 이번 달 지난 날짜도 보기
+  loadedAt: null,
+};
+
+// ════════════════════════════════════════════════════════════════════
+// 유틸
+// ════════════════════════════════════════════════════════════════════
+const $ = s => document.querySelector(s);
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+async function sha256(t) {
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t));
+  return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join('');
+}
+// 날짜는 항상 KST 기준 (toISOString().slice(0,10) 직접 사용 금지)
+function kstDateStr(d) { return new Date(d.getTime() + 9 * 3600e3).toISOString().slice(0, 10); }
+function kstToday() { return kstDateStr(new Date()); }
+function kstNowIso() { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 19) + '+09:00'; }
+function kstHour() { return new Date(Date.now() + 9 * 3600e3).getUTCHours(); }
+function weekdayOf(dateStr) { const d = new Date(dateStr + 'T00:00:00Z'); return (d.getUTCDay() + 6) % 7; }
+function addDays(dateStr, n) { const d = new Date(dateStr + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+function daysInMonth(ym) { const [y, m] = ym.split('-').map(Number); return new Date(Date.UTC(y, m, 0)).getUTCDate(); }
+function shiftMonth(ym, n) { const [y, m] = ym.split('-').map(Number); const d = new Date(Date.UTC(y, m - 1 + n, 1)); return d.toISOString().slice(0, 7); }
+function fmtMD(dateStr) { const [, m, d] = dateStr.split('-'); return `${Number(m)}/${Number(d)}`; }
+function fmtDT(iso) { if (!iso) return ''; return iso.slice(0, 16).replace('T', ' '); }
+function rid(prefix) { const a = new Uint8Array(5); crypto.getRandomValues(a); return prefix + Array.from(a).map(x => x.toString(16).padStart(2, '0')).join(''); }
+function hh(h) { return String(h).padStart(2, '0'); }
+function sourceOf(url) {
+  const u = String(url || '');
+  if (!u) return '';
+  if (COUPANG_MARKERS.some(m => u.includes(m))) return '쿠팡';
+  if (u.includes('naver')) return '네이버';
+  return '기타';
+}
+function toast(msg, isErr) {
+  document.querySelectorAll('.toast').forEach(x => x.remove());
+  const t = document.createElement('div');
+  t.className = 'toast' + (isErr ? ' err' : '');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), isErr ? 6000 : 2600);
+}
+async function withBusy(label, fn) {
+  const b = document.createElement('div');
+  b.className = 'busy'; b.textContent = label;
+  document.body.appendChild(b);
+  try { return await fn(); } finally { b.remove(); }
+}
+function utf8ToB64(str) { const bytes = new TextEncoder().encode(str); let s = ''; bytes.forEach(x => s += String.fromCharCode(x)); return btoa(s); }
+function b64ToUtf8(b64) { const bin = atob(b64.replace(/\n/g, '')); const a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new TextDecoder().decode(a); }
+function jsonText(data) { return JSON.stringify(data, null, 2) + '\n'; }
+
+// ════════════════════════════════════════════════════════════════════
+// GitHub API
+// ════════════════════════════════════════════════════════════════════
+function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
+function setToken(v) { try { v ? localStorage.setItem(TOKEN_KEY, v) : localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+
+class GhError extends Error { constructor(status, msg) { super(msg); this.status = status; } }
+async function gh(path, opts = {}) {
+  const res = await fetch(path.startsWith('http') ? path : GH + path, {
+    method: opts.method || 'GET',
+    headers: {
+      'Authorization': `Bearer ${getToken()}`,
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      ...(opts.body ? { 'Content-Type': 'application/json' } : {}),
+    },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+    cache: 'no-store',
+  });
+  if (res.status === 204) return null;
+  let data = null;
+  try { data = await res.json(); } catch (e) {}
+  if (!res.ok) {
+    const msg = (data && data.message) || res.statusText;
+    if (res.status === 401) throw new GhError(401, '깃허브 토큰이 올바르지 않거나 만료됐어요. 설정 탭에서 다시 넣어 주세요.');
+    if (res.status === 403 || res.status === 404) throw new GhError(res.status, `권한이 없거나 찾을 수 없어요 (${res.status}: ${msg}). 토큰 권한을 확인해 주세요.`);
+    throw new GhError(res.status, `깃허브 오류 ${res.status}: ${msg}`);
+  }
+  return data;
+}
+
+async function headCommit() {
+  const ref = await gh(`${RP}/git/ref/heads/${BRANCH}`);
+  const commit = await gh(`${RP}/git/commits/${ref.object.sha}`);
+  return { sha: ref.object.sha, tree: commit.tree.sha };
+}
+async function readTree(treeSha) {
+  const t = await gh(`${RP}/git/trees/${treeSha}?recursive=1`);
+  const map = {};
+  (t.tree || []).forEach(e => { if (e.type === 'blob') map[e.path] = e.sha; });
+  return map;
+}
+async function readBlobJson(sha) {
+  const b = await gh(`${RP}/git/blobs/${sha}`);
+  return JSON.parse(b64ToUtf8(b.content));
+}
+
+// 여러 파일을 커밋 하나로. mutators: { path: (latestJsonOrNull) => newJson | undefined(그대로) }
+// 최신 커밋 위에서 다시 계산하므로, 그 사이 자동 게시가 바꾼 내용도 살아남는다. 경합(422)이면 다시 시도.
+async function commitFiles(mutators, message) {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const head = await headCommit();
+    const files = await readTree(head.tree);
+    const tree = [];
+    for (const [path, fn] of Object.entries(mutators)) {
+      const cur = files[path] ? await readBlobJson(files[path]) : null;
+      const next = fn(cur === null ? null : JSON.parse(JSON.stringify(cur)));
+      if (next === undefined) continue;
+      if (cur !== null && jsonText(cur) === jsonText(next)) continue;
+      tree.push({ path, mode: '100644', type: 'blob', content: jsonText(next) });
+    }
+    if (!tree.length) return false;
+    const newTree = await gh(`${RP}/git/trees`, { method: 'POST', body: { base_tree: head.tree, tree } });
+    const commit = await gh(`${RP}/git/commits`, { method: 'POST', body: { message, tree: newTree.sha, parents: [head.sha] } });
+    try {
+      await gh(`${RP}/git/refs/heads/${BRANCH}`, { method: 'PATCH', body: { sha: commit.sha, force: false } });
+      return true;
+    } catch (e) {
+      if (e.status !== 422 && e.status !== 409) throw e;
+      await new Promise(r => setTimeout(r, 800 * (attempt + 1)));
+    }
+  }
+  throw new Error('다른 저장과 겹쳐서 저장하지 못했어요. 잠시 뒤 다시 시도해 주세요.');
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 데이터
+// ════════════════════════════════════════════════════════════════════
+async function loadAll() {
+  const head = await headCommit();
+  const files = await readTree(head.tree);
+  const monthPaths = Object.keys(files).filter(p => /^queue\/\d{4}-\d{2}\.json$/.test(p)).sort();
+  const [items, config, token, ...months] = await Promise.all([
+    files['items.json'] ? readBlobJson(files['items.json']) : [],
+    files['config.json'] ? readBlobJson(files['config.json']) : null,
+    files['state/token.json'] ? readBlobJson(files['state/token.json']) : null,
+    ...monthPaths.map(p => readBlobJson(files[p])),
+  ]);
+  S.posts = months.flat().filter(p => p && p.id);
+  S.orig = {}; S.posts.forEach(p => S.orig[p.id] = JSON.stringify(p));
+  S.items = (items || []).filter(x => x && x.id);
+  S.itemsOrig = {}; S.items.forEach(x => S.itemsOrig[x.id] = JSON.stringify(x));
+  S.config = normalizeConfig(config);
+  S.token = token;
+  S.months = monthPaths.map(p => p.slice(6, 13));
+  S.loadedAt = new Date();
+  if (!S.month) {
+    const cur = kstToday().slice(0, 7);
+    const future = S.months.filter(m => m >= cur);
+    S.month = S.posts.some(p => (p.date || '').startsWith(cur)) || !future.length ? cur : future[0];
+  }
+}
+function normalizeConfig(c) {
+  c = c || {};
+  const slots = (Array.isArray(c.slots) && c.slots.length ? c.slots : DEFAULT_CONFIG.slots)
+    .map(s => ({ hour: hh(s.hour), kind: s.kind || '', link: s.link !== false }))
+    .filter((s, i, a) => /^\d\d$/.test(s.hour) && +s.hour <= 23 && a.findIndex(x => x.hour === s.hour) === i)
+    .sort((a, b) => a.hour.localeCompare(b.hour));
+  return {
+    paused: !!c.paused,
+    weekdays: Array.isArray(c.weekdays) ? c.weekdays.map(Number) : [0, 1, 2, 3, 4, 5, 6],
+    slots,
+  };
+}
+const itemById = id => S.items.find(x => x.id === id);
+const monthPath = date => `queue/${date.slice(0, 7)}.json`;
+const sortPosts = arr => arr.sort((a, b) => (a.date + a.slot).localeCompare(b.date + b.slot));
+
+// post.py build()와 같은 규칙 — 첫 댓글 최종본 / 문제
+function buildPost(p) {
+  const body = String(p.body || '').trim();
+  const out = { body, comment: '', problem: '' };
+  if (!body) out.problem = '본문 없음';
+  else if (body.includes(PH)) out.problem = '본문에 {링크}가 있어요';
+  if (p.link !== false) {
+    const it = itemById(p.item_id) || {};
+    const url = String(it.link || '').trim();
+    let c = String(p.comment || '').trim();
+    if (!c) c = url;
+    else if (url) c = c.split(PH).join(url);
+    if (!c || c.includes(PH)) { out.problem = out.problem || '링크 없음'; }
+    else if (COUPANG_MARKERS.some(m => c.includes(m)) && !c.includes(DISCLOSURE)) c = `${c}\n\n${DISCLOSURE}`;
+    out.comment = c;
+  }
+  if (!out.problem && body.length > MAX_LEN) out.problem = `본문 ${body.length}자 (최대 ${MAX_LEN})`;
+  if (!out.problem && out.comment.length > MAX_LEN) out.problem = `첫 댓글 ${out.comment.length}자 (최대 ${MAX_LEN})`;
+  return out;
+}
+function viewKey(p) {
+  const st = p.status || '대기';
+  if (st === '대기' || st === '실패') {
+    if (p.date < kstToday()) return '지남';
+    if (st === '대기' && buildPost(p).problem) return '링크없음';
+  }
+  return VIEW[st] ? st : '대기';
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 저장 — 바꾼 필드만 최신본에 반영
+// ════════════════════════════════════════════════════════════════════
+function changedFields(cur, origJson) {
+  const o = origJson ? JSON.parse(origJson) : {};
+  const out = {};
+  Object.keys(cur).forEach(k => { if (JSON.stringify(cur[k]) !== JSON.stringify(o[k])) out[k] = cur[k]; });
+  return out;
+}
+async function savePost(edited, { isNew }) {
+  const label = `${fmtMD(edited.date)} ${edited.slot}시`;
+  const origJson = isNew ? null : S.orig[edited.id];
+  const origDate = origJson ? JSON.parse(origJson).date : edited.date;
+  const fields = isNew ? edited : changedFields(edited, origJson);
+  if (!isNew && !Object.keys(fields).length) return false;
+  fields.updated_at = kstNowIso();
+  const fromPath = monthPath(origDate), toPath = monthPath(edited.date);
+  const mut = {};
+  let merged = null;
+  const conflict = (arr, date, slot, id) => arr.find(x => x.id !== id && x.date === date && x.slot === slot);
+  if (isNew) {
+    mut[toPath] = arr => {
+      arr = arr || [];
+      if (conflict(arr, edited.date, edited.slot, edited.id)) throw new Error(`${label} 칸에 이미 글이 있어요.`);
+      arr.push(fields);
+      return sortPosts(arr);
+    };
+  } else if (fromPath === toPath) {
+    mut[toPath] = arr => {
+      arr = arr || [];
+      const i = arr.findIndex(x => x.id === edited.id);
+      if (i < 0) throw new Error('이 글이 저장소에서 사라졌어요 (다른 곳에서 삭제). 새로고침해 주세요.');
+      if (conflict(arr, edited.date, edited.slot, edited.id)) throw new Error(`${label} 칸에 이미 글이 있어요.`);
+      Object.assign(arr[i], fields);
+      return sortPosts(arr);
+    };
+  } else {
+    // 다른 달로 이동: 옛 달에서 빼서(최신본 기준) 새 달에 넣음 — 커밋 하나
+    mut[fromPath] = arr => {
+      arr = arr || [];
+      const i = arr.findIndex(x => x.id === edited.id);
+      if (i < 0) throw new Error('이 글이 저장소에서 사라졌어요 (다른 곳에서 삭제). 새로고침해 주세요.');
+      merged = Object.assign(arr[i], fields);
+      arr.splice(i, 1);
+      return arr;
+    };
+    mut[toPath] = arr => {
+      arr = arr || [];
+      if (conflict(arr, edited.date, edited.slot, edited.id)) throw new Error(`${label} 칸에 이미 글이 있어요.`);
+      arr.push(merged);
+      return sortPosts(arr);
+    };
+  }
+  const msg = isNew ? `post(admin): ${label} 글 추가` : `post(admin): ${label} 글 수정`;
+  return commitFiles(mut, msg);
+}
+async function deletePost(p) {
+  return commitFiles({
+    [monthPath(p.date)]: arr => (arr || []).filter(x => x.id !== p.id),
+  }, `post(admin): ${fmtMD(p.date)} ${p.slot}시 글 삭제`);
+}
+async function saveItems(edits, deletes, message) {
+  // edits: [{item, isNew}], deletes: [id]
+  return commitFiles({
+    'items.json': arr => {
+      arr = arr || [];
+      for (const { item, isNew } of edits) {
+        if (isNew) { arr.push({ ...item, created_at: kstNowIso(), updated_at: kstNowIso() }); continue; }
+        const f = changedFields(item, S.itemsOrig[item.id]);
+        if (!Object.keys(f).length) continue;
+        const i = arr.findIndex(x => x.id === item.id);
+        if (i < 0) throw new Error(`아이템 '${item.name}'이(가) 저장소에서 사라졌어요. 새로고침해 주세요.`);
+        Object.assign(arr[i], f, { updated_at: kstNowIso() });
+      }
+      return arr.filter(x => !deletes.includes(x.id));
+    },
+  }, message);
+}
+async function reloadAndRender(msg) {
+  await loadAll();
+  render();
+  if (msg) toast(msg);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 화면
+// ════════════════════════════════════════════════════════════════════
+function render() {
+  const main = $('#main');
+  if (!getToken()) { main.innerHTML = tokenSetupHtml(); bindTokenSetup(); return; }
+  const tabs = [['cal', '달력'], ['items', `아이템 ${S.items.length}`], ['cycle', '게시주기'], ['settings', '토큰·실행']];
+  let html = `<div class="tabs">${tabs.map(([k, t]) => `<button class="tab${S.tab === k ? ' on' : ''}" data-tab="${k}">${esc(t)}</button>`).join('')}
+    <button class="tab" id="reload" title="저장소에서 다시 불러오기">새로고침</button></div>`;
+  html += bannersHtml();
+  html += `<div id="view"></div>`;
+  main.innerHTML = html;
+  main.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => {
+    S.tab = b.dataset.tab;
+    try { localStorage.setItem(TAB_KEY, S.tab); } catch (e) {}
+    render();
+  });
+  $('#reload').onclick = () => withBusy('불러오는 중...', () => reloadAndRender('최신 내용으로 불러왔어요')).catch(e => toast(e.message, true));
+  ({ cal: renderCal, items: renderItems, cycle: renderCycle, settings: renderSettings }[S.tab] || renderCal)();
+}
+function bannersHtml() {
+  const out = [];
+  if (S.config.paused) out.push(`<div class="banner warn">⏸ 자동 게시가 일시정지돼 있어요. <a href="#" data-goto="cycle">게시주기</a>에서 다시 켤 수 있어요.</div>`);
+  const tk = S.token;
+  if (tk && tk.expires_at) {
+    const left = Math.floor((new Date(tk.expires_at) - new Date()) / 86400e3);
+    if (left < 10) out.push(`<div class="banner err">Threads 토큰이 ${Math.max(left, 0)}일 뒤 만료돼요 (${tk.expires_at.slice(0, 10)}). <a href="#" data-goto="settings">토큰·실행</a>에서 확인해 주세요.</div>`);
+  }
+  const today = kstToday();
+  const stuck = S.posts.filter(p => ['확인필요', '게시중', '댓글실패', '실패'].includes(p.status) && p.date >= addDays(today, -7));
+  if (stuck.length) out.push(`<div class="banner err">확인이 필요한 글 ${stuck.length}개: ${stuck.slice(0, 4).map(p => `<a href="#" data-open="${esc(p.id)}">${fmtMD(p.date)} ${p.slot}시(${esc(VIEW[p.status].t)})</a>`).join(', ')}</div>`);
+  setTimeout(() => {
+    document.querySelectorAll('[data-goto]').forEach(a => a.onclick = e => { e.preventDefault(); S.tab = a.dataset.goto; render(); });
+    document.querySelectorAll('[data-open]').forEach(a => a.onclick = e => { e.preventDefault(); openPost(S.posts.find(p => p.id === a.dataset.open)); });
+  });
+  return out.join('');
+}
+
+// ── 토큰 입력 ──
+function tokenSetupHtml() {
+  return `<div class="card">
+    <div class="section-title">깃허브 토큰 연결 (처음 한 번)</div>
+    <p class="small muted" style="margin-bottom:12px">예약 글은 비공개 저장소 <b>${OWNER}/${REPO}</b>에 있어요. 이 저장소 전용 토큰을 만들어 넣어 주세요. 토큰은 이 브라우저에만 저장돼요.</p>
+    <ol class="steps" style="margin-bottom:14px">
+      <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener"><b>github.com/settings/personal-access-tokens/new</b></a> 열기</li>
+      <li>Token name: <code>kydz-threads</code> · Expiration: 최대(1년)</li>
+      <li>Repository access: <b>Only select repositories</b> → <code>cupas</code></li>
+      <li>Permissions → Repository permissions에서 아래 4개 설정
+        <br><code>Contents</code> Read and write · <code>Actions</code> Read and write · <code>Secrets</code> Read and write · <code>Issues</code> Read-only</li>
+      <li>Generate token → 복사해서 아래에 붙여넣기</li>
+    </ol>
+    <div class="row" style="flex-wrap:nowrap">
+      <input class="input" id="tk-input" type="password" placeholder="github_pat_..." autocomplete="off">
+      <button class="btn" id="tk-save">연결</button>
+    </div>
+    <div class="small muted" id="tk-msg" style="margin-top:8px"></div>
+  </div>`;
+}
+function bindTokenSetup() {
+  $('#tk-save').onclick = async () => {
+    const v = $('#tk-input').value.trim();
+    if (!v) return;
+    setToken(v);
+    $('#tk-msg').textContent = '확인 중...';
+    try {
+      const r = await gh(RP);
+      if (!r.private) { setToken(''); $('#tk-msg').textContent = '⚠ cupas 저장소가 공개로 돼 있어요. 비공개(Private)로 바꿔 주세요.'; return; }
+      await loadAll();
+      toast('연결됐어요');
+      render();
+    } catch (e) {
+      setToken('');
+      $('#tk-msg').textContent = e.message;
+    }
+  };
+}
+
+// ── 달력 ──
+function renderCal() {
+  const ym = S.month;
+  const [y, m] = ym.split('-').map(Number);
+  const today = kstToday();
+  const slotHours = S.config.slots.map(s => s.hour);
+  const monthPosts = S.posts.filter(p => (p.date || '').startsWith(ym));
+  const counts = {};
+  monthPosts.forEach(p => { const k = viewKey(p); counts[k] = (counts[k] || 0) + 1; });
+  const nDays = daysInMonth(ym);
+  let empty = 0;
+  for (let d = 1; d <= nDays; d++) {
+    const ds = `${ym}-${String(d).padStart(2, '0')}`;
+    if (ds < today || !S.config.weekdays.includes(weekdayOf(ds))) continue;
+    slotHours.forEach(h => { if (!monthPosts.some(p => p.date === ds && p.slot === h)) empty++; });
+  }
+  let html = `<div class="cal-head">
+      <div class="cal-month"><button id="m-prev">‹</button>${y}년 ${m}월<button id="m-next">›</button></div>
+      <div class="row"><button class="btn small ghost" id="m-today">이번 달</button><button class="btn small" id="new-post">+ 글 추가</button></div>
+    </div>
+    <div class="stats">
+      <div class="stat">글<b>${monthPosts.length}</b></div>
+      <div class="stat">게시 완료<b>${counts['게시완료'] || 0}</b></div>
+      <div class="stat">대기<b>${counts['대기'] || 0}</b></div>
+      <div class="stat" style="color:#8a5a00">링크 없음<b>${counts['링크없음'] || 0}</b></div>
+      <div class="stat">남은 빈 칸<b>${empty}</b></div>
+    </div>
+    <div class="legend">${['대기', '링크없음', '게시완료', '실패', '확인필요', '지남'].map(k => `<span style="--c:${VIEW[k].c}">${VIEW[k].t}</span>`).join('')}</div>
+    ${ym === today.slice(0, 7) && today.slice(8) !== '01' ? `<div class="small" style="margin-bottom:8px"><a href="#" id="m-past">${S.showPast ? '지난 날짜 숨기기' : `지난 날짜도 보기 (1일~${Number(today.slice(8)) - 1}일)`}</a></div>` : ''}
+    <div class="days" style="--n:${slotHours.length || 1}">`;
+  const startDay = ym === today.slice(0, 7) && !S.showPast ? Number(today.slice(8)) : 1;
+  for (let d = startDay; d <= nDays; d++) {
+    const ds = `${ym}-${String(d).padStart(2, '0')}`;
+    const wd = weekdayOf(ds);
+    const on = S.config.weekdays.includes(wd);
+    const dayPosts = monthPosts.filter(p => p.date === ds);
+    const cells = slotHours.map(h => {
+      const p = dayPosts.find(x => x.slot === h);
+      if (!p) return `<button class="cell empty" data-new="${ds}|${h}"><span class="t">${h}시</span><span class="plus">+ 추가</span></button>`;
+      return cellHtml(p);
+    }).join('');
+    const extra = dayPosts.filter(p => !slotHours.includes(p.slot));
+    html += `<div class="day${ds === today ? ' today' : ''}${on ? '' : ' off'}${wd === 0 && d > startDay ? ' week-start' : ''}">
+      <div class="day-label">${m}/${d}<span class="wd${wd === 6 ? ' sun' : wd === 5 ? ' sat' : ''}">(${WD[wd]})</span>${on ? '' : '<div class="small muted">쉬는 날</div>'}</div>
+      <div class="slots">${cells}${extra.length ? `<div class="extra">게시주기에 없는 칸: ${extra.map(p => `<a href="#" data-open="${esc(p.id)}">${p.slot}시 ${esc(itemName(p))}</a>`).join(', ')}</div>` : ''}</div>
+    </div>`;
+  }
+  html += `</div>`;
+  $('#view').innerHTML = html;
+  $('#m-prev').onclick = () => { S.month = shiftMonth(S.month, -1); render(); };
+  $('#m-next').onclick = () => { S.month = shiftMonth(S.month, 1); render(); };
+  $('#m-today').onclick = () => { S.month = today.slice(0, 7); render(); };
+  const past = $('#m-past');
+  if (past) past.onclick = e => { e.preventDefault(); S.showPast = !S.showPast; render(); };
+  $('#new-post').onclick = () => openPost(null, firstEmptySlot());
+  $('#view').querySelectorAll('[data-new]').forEach(b => b.onclick = () => { const [ds, h] = b.dataset.new.split('|'); openPost(null, { date: ds, slot: h }); });
+  $('#view').querySelectorAll('.cell[data-id]').forEach(b => b.onclick = () => openPost(S.posts.find(p => p.id === b.dataset.id)));
+  $('#view').querySelectorAll('[data-open]').forEach(a => a.onclick = e => { e.preventDefault(); openPost(S.posts.find(p => p.id === a.dataset.open)); });
+}
+function itemName(p) { const it = itemById(p.item_id); return (it && it.name) || p.item || '(아이템 없음)'; }
+function cellHtml(p) {
+  const k = viewKey(p), v = VIEW[k];
+  const first = String(p.body || '').trim().split('\n')[0] || '(본문 없음)';
+  return `<button class="cell" data-id="${esc(p.id)}" style="--c:${v.c}">
+    <span class="t"><span>${esc(p.slot)}시 · ${esc(p.kind || '')}${p.link === false ? ' · 링크X' : ''}</span><b>${esc(v.t)}</b></span>
+    <span class="n">${esc(itemName(p))}</span>
+    <span class="b">${esc(first)}</span>
+  </button>`;
+}
+function firstEmptySlot() {
+  const today = kstToday();
+  for (let i = 0; i < 120; i++) {
+    const ds = addDays(today, i);
+    if (!S.config.weekdays.includes(weekdayOf(ds))) continue;
+    for (const s of S.config.slots) {
+      if (ds === today && +s.hour <= kstHour()) continue;
+      if (!S.posts.some(p => p.date === ds && p.slot === s.hour)) return { date: ds, slot: s.hour };
+    }
+  }
+  return { date: today, slot: (S.config.slots[0] || { hour: '07' }).hour };
+}
+
+// ── 글 편집 ──
+function lintBody(body, item) {
+  const out = [];
+  const words = ['정말', '너무', '완전'].filter(w => body.includes(w));
+  if (words.length) out.push(['w', `꾸밈말: ${words.join(', ')}`]);
+  if (item && item.name) {
+    const toks = item.name.split(/[\s/()·,]+/).filter(t => t.length >= 2);
+    const hit = toks.filter(t => body.includes(t));
+    if (hit.length) out.push(['w', `본문에 제품명이 들어간 것 같아요: ${hit.join(', ')}`]);
+  }
+  if (/답글|댓글\s*달|댓글\s*남기/.test(body.replace('첫 댓글에', ''))) out.push(['w', '참여 유도 문구는 스레드 랭킹 벌점이에요']);
+  const lines = body.split('\n').filter(l => l.trim()).length;
+  if (lines > 7) out.push(['w', `${lines}줄이에요 (7줄 이내 권장)`]);
+  return out;
+}
+function openPost(p, preset) {
+  const isNew = !p;
+  const slotCfg = h => S.config.slots.find(s => s.hour === h) || {};
+  const d = isNew ? {
+    id: rid('p_'), date: preset.date, slot: preset.slot, item_id: '', item: '',
+    kind: slotCfg(preset.slot).kind || '', body: '', comment: '', link: slotCfg(preset.slot).link !== false,
+    status: '대기', post_id: '', permalink: '', error: '', tries: 0, posted_at: '', created_at: kstNowIso(),
+  } : JSON.parse(JSON.stringify(p));
+  const slotOpts = [...new Set([...S.config.slots.map(s => s.hour), d.slot])].sort();
+  const posted = ['게시완료', '게시중', '확인필요', '댓글실패'].includes(d.status);
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  bg.innerHTML = `<div class="modal">
+    <h3><span>${isNew ? '새 글' : `${fmtMD(d.date)} ${d.slot}시 글`}</span><button data-x>×</button></h3>
+    ${posted && !isNew ? `<div class="banner warn">이미 게시가 시작된 글이에요. 본문을 고쳐도 스레드에 올라간 글은 바뀌지 않아요.</div>` : ''}
+    <div class="grid3">
+      <div class="field"><label>날짜</label><input class="input" type="date" id="f-date" value="${esc(d.date)}"></div>
+      <div class="field"><label>시간 칸</label><select class="input" id="f-slot">${slotOpts.map(h => `<option value="${h}"${h === d.slot ? ' selected' : ''}>${h}시</option>`).join('')}</select></div>
+      <div class="field"><label>유형</label><select class="input" id="f-kind"><option value="">-</option>${KINDS.map(k => `<option${k === d.kind ? ' selected' : ''}>${k}</option>`).join('')}</select></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>아이템</label><select class="input" id="f-item"><option value="">(없음)</option>${S.items.map(it => `<option value="${esc(it.id)}"${it.id === d.item_id ? ' selected' : ''}>${esc(it.name)}${it.used ? ' ✓' : ''}</option>`).join('')}</select></div>
+      <div class="field"><label>첫 댓글 링크</label><label class="check" style="padding-top:8px"><input type="checkbox" id="f-link"${d.link !== false ? ' checked' : ''}> 링크 넣기 (끄면 본문만)</label></div>
+    </div>
+    <div class="field small muted" id="f-iteminfo"></div>
+    <div class="field"><label>본문</label><textarea class="input" id="f-body" rows="8" placeholder="① 훅  ② 숫자·디테일  ③ 반전  ④ 질문 + 정확히 뭔지는 첫 댓글에">${esc(d.body)}</textarea>
+      <div class="counter" id="f-bcount"></div><div class="lint" id="f-lint"></div></div>
+    <div class="field" id="f-cwrap"><label>첫 댓글 (비우면 아이템 링크 그대로 · <code>{링크}</code> 쓰면 그 자리에 링크)</label>
+      <textarea class="input" id="f-comment" rows="2" placeholder="비워 두면 아이템 링크만 올라가요">${esc(d.comment)}</textarea></div>
+    <div class="field"><label>실제로 올라갈 첫 댓글</label><div class="preview" id="f-preview"></div><div class="lint" id="f-problem"></div></div>
+    ${isNew ? '' : `<div class="field"><label>상태</label>
+      <select class="input" id="f-status">${STATUSES.map(s => `<option${s === (d.status || '대기') ? ' selected' : ''}>${s}</option>`).join('')}</select>
+      <div class="status-box">
+        ${d.permalink ? `게시글: <a href="${esc(d.permalink)}" target="_blank" rel="noopener">${esc(d.permalink)}</a><br>` : ''}
+        ${d.posted_at ? `게시 시각: ${esc(fmtDT(d.posted_at))}<br>` : ''}
+        시도 횟수: ${Number(d.tries) || 0}${d.updated_at ? ` · 마지막 수정 ${esc(fmtDT(d.updated_at))}` : ''}
+        ${d.error ? `<div class="err">${esc(d.error)}</div>` : ''}
+        <div class="small muted" style="margin-top:6px">'확인필요'·'게시중'은 자동으로 다시 올리지 않아요. 스레드에서 확인한 뒤 올라갔으면 '게시완료', 안 올라갔으면 '대기'로 바꿔 주세요.</div>
+      </div></div>`}
+    <div class="modal-actions">
+      <div class="row">${isNew ? '' : `<button class="btn danger small" id="f-del">삭제</button>`}</div>
+      <div class="row">
+        ${isNew ? '' : `<button class="btn ghost small" id="f-test" title="실제로 올리지 않고 액션에서 점검">테스트</button><button class="btn ghost small" id="f-now">지금 게시</button>`}
+        <button class="btn" id="f-save">저장</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.appendChild(bg);
+  const close = () => bg.remove();
+  bg.querySelector('[data-x]').onclick = close;
+  bg.addEventListener('click', e => { if (e.target === bg && !dirty()) close(); });
+
+  const read = () => {
+    const out = { ...d };
+    out.date = $('#f-date').value;
+    out.slot = $('#f-slot').value;
+    out.kind = $('#f-kind').value;
+    out.item_id = $('#f-item').value;
+    out.item = (itemById(out.item_id) || {}).name || '';
+    out.link = $('#f-link').checked;
+    out.body = $('#f-body').value.replace(/\s+$/, '');
+    out.comment = $('#f-comment').value.trim();
+    if (!isNew) {
+      out.status = $('#f-status').value;
+      if (out.status === '대기' && d.status !== '대기') { out.tries = 0; out.error = ''; }
+    }
+    return out;
+  };
+  const snapshot = JSON.stringify(read());
+  const dirty = () => JSON.stringify(read()) !== snapshot;
+  const refresh = () => {
+    const cur = read();
+    const it = itemById(cur.item_id);
+    $('#f-iteminfo').innerHTML = it
+      ? `${esc([it.price, it.size].filter(Boolean).join(' · '))} ${it.used ? '<span class="pill used">써봄 · 경험형 가능</span>' : '<span class="pill warn">안 써봄 · 내 경험으로 단정하지 않기</span>'} ${it.link ? `<span class="pill${sourceOf(it.link) === '쿠팡' ? ' cp' : ''}">${esc(sourceOf(it.link))}</span>` : '<span class="pill warn">링크 없음</span>'}`
+      : '';
+    const len = cur.body.trim().length;
+    $('#f-bcount').textContent = `${len} / ${MAX_LEN}자`;
+    $('#f-bcount').classList.toggle('over', len > MAX_LEN);
+    $('#f-lint').innerHTML = lintBody(cur.body, it).map(([c, t]) => `<div class="${c}">⚠ ${esc(t)}</div>`).join('');
+    $('#f-cwrap').classList.toggle('hidden', !cur.link);
+    const b = buildPost(cur);
+    $('#f-preview').textContent = cur.link ? (b.comment || '(비어 있음)') : '(첫 댓글 없이 본문만 올라가요)';
+    $('#f-problem').innerHTML = b.problem ? `<div class="e">✖ ${esc(b.problem)} — 이대로면 자동 게시 때 건너뛰어요</div>` : '';
+  };
+  bg.querySelectorAll('input,select,textarea').forEach(el => el.addEventListener('input', refresh));
+  $('#f-slot').addEventListener('change', () => {
+    if (!isNew) return;
+    const sc = slotCfg($('#f-slot').value);
+    if (sc.kind) $('#f-kind').value = sc.kind;
+    $('#f-link').checked = sc.link !== false;
+    refresh();
+  });
+  refresh();
+
+  $('#f-save').onclick = async () => {
+    const cur = read();
+    if (!cur.date) return toast('날짜를 넣어 주세요', true);
+    if (!cur.body.trim()) return toast('본문을 넣어 주세요', true);
+    try {
+      const changed = await withBusy('저장 중...', () => savePost(cur, { isNew }));
+      close();
+      S.month = cur.date.slice(0, 7);
+      await withBusy('불러오는 중...', () => reloadAndRender(changed === false ? '바뀐 내용이 없어요' : '저장했어요'));
+    } catch (e) { toast(e.message, true); }
+  };
+  if (!isNew) {
+    $('#f-del').onclick = async () => {
+      if (!confirm(`${fmtMD(d.date)} ${d.slot}시 글을 삭제할까요?`)) return;
+      try {
+        await withBusy('삭제 중...', () => deletePost(d));
+        close();
+        await withBusy('불러오는 중...', () => reloadAndRender('삭제했어요'));
+      } catch (e) { toast(e.message, true); }
+    };
+    const dispatch = async dry => {
+      if (dirty()) return toast('먼저 저장해 주세요', true);
+      const b = buildPost(d);
+      if (b.problem) return toast(`게시할 수 없어요: ${b.problem}`, true);
+      if (!dry) {
+        if (['게시완료', '게시중', '확인필요'].includes(d.status)) return toast(`상태가 '${d.status}'라 다시 올리지 않아요. 상태를 '대기'로 바꾼 뒤 시도해 주세요.`, true);
+        if (!confirm('이 글을 지금 스레드에 올릴까요? (1~2분 걸려요)')) return;
+      }
+      try {
+        await withBusy('실행 요청 중...', () => runWorkflow('post.yml', { post_id: d.id, dry_run: dry ? 'true' : 'false', slot: '' }));
+        toast(dry ? '테스트를 요청했어요. 토큰·실행 탭에서 결과를 볼 수 있어요.' : '게시를 요청했어요. 1~2분 뒤 새로고침하면 상태가 바뀌어요.');
+      } catch (e) { toast(e.message, true); }
+    };
+    $('#f-test').onclick = () => dispatch(true);
+    $('#f-now').onclick = () => dispatch(false);
+  }
+}
+
+// ── 아이템 ──
+function renderItems() {
+  const today = kstToday();
+  const useCount = {};
+  S.posts.forEach(p => { if (p.item_id) (useCount[p.item_id] = useCount[p.item_id] || []).push(p); });
+  const rows = S.items.map(it => {
+    const ps = useCount[it.id] || [];
+    const next = ps.filter(p => p.date >= today && p.status !== '게시완료').sort((a, b) => (a.date + a.slot).localeCompare(b.date + b.slot))[0];
+    const src = sourceOf(it.link);
+    return `<div class="item-row" data-item="${esc(it.id)}">
+      <div class="item-main">
+        <div class="item-name">${esc(it.name)}${it.used ? '<span class="pill used">써봄</span>' : ''}${src ? `<span class="pill${src === '쿠팡' ? ' cp' : ''}">${src}</span>` : '<span class="pill warn">링크 없음</span>'}</div>
+        <div class="item-meta">${esc([it.price, it.size].filter(Boolean).join(' · ') || '-')}${it.memo ? ' · ' + esc(it.memo) : ''}</div>
+      </div>
+      <div class="item-count">글 ${ps.length}개${next ? `<br>다음 ${fmtMD(next.date)} ${next.slot}시` : ''}</div>
+    </div>`;
+  }).join('');
+  $('#view').innerHTML = `
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-title">한 번에 추가</div>
+      <p class="small muted" style="margin-bottom:8px">한 줄에 하나씩 <code>상품명 / 가격 / 용량·수량 / 써봤는지 / 파트너스 링크</code> — 써봤는지는 O·X, 써봄·안써봄 등</p>
+      <textarea class="input" id="bulk" rows="3" placeholder="문풍지 / 8,900원 / 5m 2롤 / X / https://link.coupang.com/a/..."></textarea>
+      <div class="row" style="justify-content:flex-end;margin-top:8px"><button class="btn small ghost" id="add-one">+ 하나씩 입력</button><button class="btn small" id="bulk-add">추가</button></div>
+    </div>
+    <div class="list">${rows || '<div class="card muted small">아직 아이템이 없어요.</div>'}</div>`;
+  $('#add-one').onclick = () => openItem(null);
+  $('#bulk-add').onclick = async () => {
+    const lines = $('#bulk').value.split('\n').map(l => l.trim()).filter(Boolean);
+    if (!lines.length) return;
+    const parsed = [], bad = [];
+    lines.forEach(l => {
+      const parts = l.split('/').map(x => x.trim());
+      // 링크 안의 / 때문에 뒤쪽을 다시 합침
+      const linkIdx = parts.findIndex(x => /^https?:/.test(x));
+      const link = linkIdx >= 0 ? parts.slice(linkIdx).join('/') : '';
+      const head = linkIdx >= 0 ? parts.slice(0, linkIdx) : parts;
+      const [name, price = '', size = '', used = ''] = head;
+      if (!name) { bad.push(l); return; }
+      parsed.push({ id: rid('it_'), name, price, size, used: /^(o|y|yes|써봄|사용|있음|ㅇ|예|네|true|1)/i.test(used), link, memo: '' });
+    });
+    if (bad.length) return toast(`형식이 맞지 않는 줄이 있어요: ${bad[0]}`, true);
+    try {
+      await withBusy('저장 중...', () => saveItems(parsed.map(item => ({ item, isNew: true })), [], `item(admin): 아이템 ${parsed.length}개 추가`));
+      await withBusy('불러오는 중...', () => reloadAndRender(`아이템 ${parsed.length}개를 추가했어요`));
+    } catch (e) { toast(e.message, true); }
+  };
+  $('#view').querySelectorAll('[data-item]').forEach(r => r.onclick = () => openItem(itemById(r.dataset.item)));
+}
+function openItem(it) {
+  const isNew = !it;
+  const d = isNew ? { id: rid('it_'), name: '', price: '', size: '', used: false, link: '', memo: '' } : JSON.parse(JSON.stringify(it));
+  const linked = isNew ? [] : S.posts.filter(p => p.item_id === d.id);
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  bg.innerHTML = `<div class="modal">
+    <h3><span>${isNew ? '새 아이템' : esc(d.name)}</span><button data-x>×</button></h3>
+    <div class="field"><label>상품명</label><input class="input" id="i-name" value="${esc(d.name)}"></div>
+    <div class="grid2">
+      <div class="field"><label>가격</label><input class="input" id="i-price" value="${esc(d.price)}" placeholder="8,900원"></div>
+      <div class="field"><label>용량·수량</label><input class="input" id="i-size" value="${esc(d.size)}" placeholder="5m 2롤"></div>
+    </div>
+    <div class="field"><label class="check"><input type="checkbox" id="i-used"${d.used ? ' checked' : ''}> 써본 상품 (실제 경험형으로 써도 됨)</label></div>
+    <div class="field"><label>파트너스 링크</label><input class="input" id="i-link" value="${esc(d.link)}" placeholder="https://link.coupang.com/a/..."></div>
+    <div class="field"><label>메모</label><input class="input" id="i-memo" value="${esc(d.memo || '')}"></div>
+    ${linked.length ? `<div class="field small muted">연결된 글 ${linked.length}개: ${linked.slice(0, 8).map(p => `${fmtMD(p.date)} ${p.slot}시`).join(', ')}${linked.length > 8 ? ' …' : ''}<br>링크를 바꾸면 아직 안 올라간 글에 모두 적용돼요.</div>` : ''}
+    <div class="modal-actions">
+      <div>${isNew ? '' : '<button class="btn danger small" id="i-del">삭제</button>'}</div>
+      <button class="btn" id="i-save">저장</button>
+    </div>
+  </div>`;
+  document.body.appendChild(bg);
+  const close = () => bg.remove();
+  bg.querySelector('[data-x]').onclick = close;
+  $('#i-save').onclick = async () => {
+    const cur = { ...d, name: $('#i-name').value.trim(), price: $('#i-price').value.trim(), size: $('#i-size').value.trim(),
+      used: $('#i-used').checked, link: $('#i-link').value.trim(), memo: $('#i-memo').value.trim() };
+    if (!cur.name) return toast('상품명을 넣어 주세요', true);
+    try {
+      await withBusy('저장 중...', () => saveItems([{ item: cur, isNew }], [], `item(admin): 아이템 '${cur.name}' ${isNew ? '추가' : '수정'}`));
+      close();
+      await withBusy('불러오는 중...', () => reloadAndRender('저장했어요'));
+    } catch (e) { toast(e.message, true); }
+  };
+  if (!isNew) $('#i-del').onclick = async () => {
+    const pending = linked.filter(p => p.status !== '게시완료');
+    if (!confirm(pending.length ? `아직 안 올라간 연결 글이 ${pending.length}개 있어요. 지우면 그 글들은 '링크 없음'이 돼요. 삭제할까요?` : `'${d.name}'을(를) 삭제할까요?`)) return;
+    try {
+      await withBusy('삭제 중...', () => saveItems([], [d.id], `item(admin): 아이템 '${d.name}' 삭제`));
+      close();
+      await withBusy('불러오는 중...', () => reloadAndRender('삭제했어요'));
+    } catch (e) { toast(e.message, true); }
+  };
+}
+
+// ── 게시주기 ──
+function renderCycle() {
+  const c = JSON.parse(JSON.stringify(S.config));
+  const hourOpts = sel => Array.from({ length: 24 }, (_, i) => hh(i)).map(h => `<option value="${h}"${h === sel ? ' selected' : ''}>${h}시</option>`).join('');
+  const draw = () => {
+    $('#view').innerHTML = `<div class="card">
+      <div class="section-title">자동 게시</div>
+      <label class="check"><input type="checkbox" id="c-on"${c.paused ? '' : ' checked'}> 자동 게시 켜기 (끄면 예약 글이 올라가지 않아요)</label>
+
+      <div class="section-title">게시 요일</div>
+      <div class="wd-row">${WD.map((w, i) => `<label><input type="checkbox" data-wd="${i}"${c.weekdays.includes(i) ? ' checked' : ''}>${w}</label>`).join('')}</div>
+
+      <div class="section-title">하루 게시 시각</div>
+      <div class="small muted" style="margin-bottom:10px">칸마다 기본 유형과 링크 여부는 새 글을 만들 때 미리 채워져요. 실제 게시는 그 시각 5분쯤 시작하고, 깃허브 사정으로 최대 1시간 정도 늦을 수 있어요.</div>
+      <div id="c-slots">${c.slots.map((s, i) => `<div class="slot-row">
+        <select class="input" data-h="${i}">${hourOpts(s.hour)}</select>
+        <select class="input" data-k="${i}"><option value="">-</option>${KINDS.map(k => `<option${k === s.kind ? ' selected' : ''}>${k}</option>`).join('')}</select>
+        <label class="check"><input type="checkbox" data-l="${i}"${s.link ? ' checked' : ''}>링크</label>
+        <button class="btn ghost small" data-rm="${i}">삭제</button>
+      </div>`).join('')}</div>
+      <button class="btn ghost small" id="c-add">+ 시각 추가</button>
+      <div class="banner warn small" style="margin-top:14px">시각을 지우거나 바꾸면 그 시각에 잡혀 있던 글은 자동으로 안 올라가요. 달력에서 다른 칸으로 옮겨 주세요.</div>
+      <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn" id="c-save">저장</button></div>
+    </div>`;
+    $('#c-on').onchange = e => { c.paused = !e.target.checked; };
+    document.querySelectorAll('[data-wd]').forEach(el => el.onchange = () => {
+      const i = +el.dataset.wd;
+      c.weekdays = el.checked ? [...new Set([...c.weekdays, i])].sort() : c.weekdays.filter(x => x !== i);
+    });
+    document.querySelectorAll('[data-h]').forEach(el => el.onchange = () => { c.slots[+el.dataset.h].hour = el.value; });
+    document.querySelectorAll('[data-k]').forEach(el => el.onchange = () => { c.slots[+el.dataset.k].kind = el.value; });
+    document.querySelectorAll('[data-l]').forEach(el => el.onchange = () => { c.slots[+el.dataset.l].link = el.checked; });
+    document.querySelectorAll('[data-rm]').forEach(el => el.onclick = () => { c.slots.splice(+el.dataset.rm, 1); draw(); });
+    $('#c-add').onclick = () => {
+      const used = c.slots.map(s => s.hour);
+      const h = Array.from({ length: 24 }, (_, i) => hh(i)).find(x => !used.includes(x) && +x >= 9) || '21';
+      c.slots.push({ hour: h, kind: '', link: true }); draw();
+    };
+    $('#c-save').onclick = async () => {
+      const hours = c.slots.map(s => s.hour);
+      if (!c.slots.length) return toast('게시 시각을 하나 이상 넣어 주세요', true);
+      if (new Set(hours).size !== hours.length) return toast('같은 시각이 두 번 들어 있어요', true);
+      if (!c.weekdays.length) return toast('게시 요일을 하나 이상 골라 주세요', true);
+      const next = { paused: c.paused, weekdays: [...c.weekdays].sort(), slots: [...c.slots].sort((a, b) => a.hour.localeCompare(b.hour)) };
+      try {
+        const changed = await withBusy('저장 중...', () => commitFiles({ 'config.json': () => next }, 'config(admin): 게시주기 변경'));
+        await withBusy('불러오는 중...', () => reloadAndRender(changed ? '게시주기를 저장했어요' : '바뀐 내용이 없어요'));
+      } catch (e) { toast(e.message, true); }
+    };
+  };
+  draw();
+}
+
+// ── 토큰·실행 ──
+async function runWorkflow(file, inputs) {
+  await gh(`${RP}/actions/workflows/${file}/dispatches`, { method: 'POST', body: { ref: BRANCH, inputs } });
+}
+async function putSecret(name, value) {
+  const key = await gh(`${RP}/actions/secrets/public-key`);
+  await gh(`${RP}/actions/secrets/${name}`, { method: 'PUT', body: { encrypted_value: window.sealSecret(value, key.key), key_id: key.key_id } });
+}
+function renderSettings() {
+  const tk = S.token || {};
+  const left = tk.expires_at ? Math.floor((new Date(tk.expires_at) - new Date()) / 86400e3) : null;
+  $('#view').innerHTML = `
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-title">Threads 토큰</div>
+      <div class="kv">
+        <div class="k">마지막 갱신</div><div>${esc(fmtDT(tk.refreshed_at) || '기록 없음')}${tk.source === 'manual' ? ' (관리 화면에서 입력)' : ''}</div>
+        <div class="k">만료 예정</div><div>${tk.expires_at ? `${esc(tk.expires_at.slice(0, 10))} <b style="color:${left < 10 ? 'var(--danger)' : 'inherit'}">(D-${Math.max(left, 0)})</b>` : '기록 없음'}</div>
+        <div class="k">자동 갱신</div><div>매주 화요일 03:17 · <a href="#" id="s-refresh">지금 갱신</a></div>
+      </div>
+      <div id="s-issues" class="small" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-title">Secrets (깃허브 액션이 쓰는 값)</div>
+      <p class="small muted" style="margin-bottom:10px">값은 암호화돼서 저장되고 다시 볼 수 없어요. 바꿀 때만 새로 넣으면 돼요.</p>
+      <div id="s-list" class="small muted" style="margin-bottom:12px">불러오는 중...</div>
+      <div class="field"><label>THREADS_ACCESS_TOKEN — 스레드 장기 토큰 (60일)</label>
+        <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-tt" autocomplete="off" placeholder="새 토큰 붙여넣기"><button class="btn small" data-secret="THREADS_ACCESS_TOKEN">저장</button></div></div>
+      <div class="field"><label>THREADS_USER_ID — 스레드 숫자 ID (모르면 me)</label>
+        <div class="row" style="flex-wrap:nowrap"><input class="input" id="s-uid" autocomplete="off" placeholder="me"><button class="btn small" data-secret="THREADS_USER_ID">저장</button></div></div>
+      <div class="field"><label>CUPAS_SECRETS_PAT — 토큰 자동 갱신용 깃허브 토큰 (Secrets 읽기·쓰기)</label>
+        <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-pat" autocomplete="off" placeholder="github_pat_..."><button class="btn small" data-secret="CUPAS_SECRETS_PAT">저장</button></div>
+        <div class="small muted" style="margin-top:5px">지금 이 화면에 연결한 토큰에 Secrets 쓰기 권한이 있으면 그대로 써도 돼요 → <a href="#" id="s-pat-same">이 화면 토큰으로 저장</a></div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-title" style="display:flex;justify-content:space-between;align-items:center">최근 실행 <span class="row"><button class="btn small ghost" id="s-test">테스트 실행</button><button class="btn small ghost" id="s-runs-reload">↻</button></span></div>
+      <p class="small muted" style="margin-bottom:6px">테스트 실행은 지금 시각 기준 칸의 글을 실제로 올리지 않고 점검만 해요. 결과는 각 실행을 눌러 깃허브에서 볼 수 있어요.</p>
+      <div class="runs" id="s-runs">불러오는 중...</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">이 화면의 깃허브 토큰</div>
+      <p class="small muted" style="margin-bottom:10px">cupas 전용 토큰 · 이 브라우저에만 저장돼 있어요 (${esc(getToken().slice(0, 14))}…)</p>
+      <div class="row"><button class="btn small ghost" id="s-tk-change">토큰 바꾸기</button><a class="btn small ghost" href="https://github.com/${OWNER}/${REPO}" target="_blank" rel="noopener" style="text-decoration:none">저장소 열기</a></div>
+    </div>`;
+
+  const loadSecrets = async () => {
+    try {
+      const r = await gh(`${RP}/actions/secrets`);
+      const have = Object.fromEntries((r.secrets || []).map(s => [s.name, s.updated_at]));
+      $('#s-list').innerHTML = ['THREADS_ACCESS_TOKEN', 'THREADS_USER_ID', 'CUPAS_SECRETS_PAT'].map(n =>
+        `<div>${have[n] ? '✅' : '⬜'} <b>${n}</b> ${have[n] ? `· ${esc(fmtDT(kstIso(have[n])))} 저장` : '· 아직 없음'}</div>`).join('');
+    } catch (e) { $('#s-list').innerHTML = `<span style="color:var(--danger)">${esc(e.message)}</span>`; }
+  };
+  const loadRuns = async () => {
+    try {
+      const r = await gh(`${RP}/actions/runs?per_page=12`);
+      const icon = x => x.status !== 'completed' ? '⏳' : x.conclusion === 'success' ? '✅' : x.conclusion === 'cancelled' || x.conclusion === 'skipped' ? '⚪' : '❌';
+      $('#s-runs').innerHTML = (r.workflow_runs || []).map(x => `<a href="${esc(x.html_url)}" target="_blank" rel="noopener">
+        <span>${icon(x)}</span><span>${esc(x.name)} · ${x.event === 'schedule' ? '예약' : x.event === 'workflow_dispatch' ? '수동' : esc(x.event)}${x.display_title && x.display_title !== x.name ? ' · ' + esc(x.display_title) : ''}</span>
+        <span class="muted">${esc(fmtDT(kstIso(x.created_at)))}</span></a>`).join('') || '<span class="muted">아직 실행 기록이 없어요.</span>';
+    } catch (e) { $('#s-runs').innerHTML = `<span style="color:var(--danger)">${esc(e.message)}</span>`; }
+  };
+  const loadIssues = async () => {
+    try {
+      const r = await gh(`${RP}/issues?state=open&per_page=20`);
+      const bad = (r || []).filter(i => !i.pull_request && /토큰 갱신 실패/.test(i.title));
+      $('#s-issues').innerHTML = bad.length ? bad.map(i => `<div class="banner err" style="margin:0 0 6px">⚠ <a href="${esc(i.html_url)}" target="_blank" rel="noopener">${esc(i.title)}</a> — 새 토큰을 위에 넣은 뒤 이슈를 닫아 주세요.</div>`).join('') : '';
+    } catch (e) { /* Issues 권한이 없으면 생략 */ }
+  };
+  loadSecrets(); loadRuns(); loadIssues();
+
+  const inputs = { THREADS_ACCESS_TOKEN: '#s-tt', THREADS_USER_ID: '#s-uid', CUPAS_SECRETS_PAT: '#s-pat' };
+  document.querySelectorAll('[data-secret]').forEach(b => b.onclick = async () => {
+    const name = b.dataset.secret;
+    const v = $(inputs[name]).value.trim();
+    if (!v) return toast('값을 넣어 주세요', true);
+    try {
+      await withBusy('저장 중...', async () => {
+        await putSecret(name, v);
+        if (name === 'THREADS_ACCESS_TOKEN') {
+          const now = new Date();
+          const exp = new Date(now.getTime() + 60 * 86400e3);
+          await commitFiles({ 'state/token.json': () => ({ refreshed_at: kstNowIso(), expires_at: kstIso(exp.toISOString()), source: 'manual' }) },
+            'chore(token): Threads 토큰 직접 입력 기록');
+          await loadAll();
+        }
+      });
+      $(inputs[name]).value = '';
+      toast(`${name} 저장했어요`);
+      renderSettings();
+    } catch (e) { toast(e.message, true); }
+  });
+  $('#s-pat-same').onclick = async e => {
+    e.preventDefault();
+    if (!confirm('이 화면에 연결한 토큰을 CUPAS_SECRETS_PAT로도 저장할까요?')) return;
+    try { await withBusy('저장 중...', () => putSecret('CUPAS_SECRETS_PAT', getToken())); toast('저장했어요'); loadSecrets(); }
+    catch (err) { toast(err.message, true); }
+  };
+  $('#s-refresh').onclick = async e => {
+    e.preventDefault();
+    if (!confirm('Threads 토큰 갱신을 지금 실행할까요? (발급 후 24시간이 지나야 돼요)')) return;
+    try { await runWorkflow('refresh-token.yml', {}); toast('갱신을 요청했어요. 잠시 뒤 최근 실행에서 결과를 확인해 주세요.'); setTimeout(loadRuns, 4000); }
+    catch (err) { toast(err.message, true); }
+  };
+  $('#s-test').onclick = async () => {
+    try { await runWorkflow('post.yml', { dry_run: 'true', slot: '', post_id: '' }); toast('테스트 실행을 요청했어요'); setTimeout(loadRuns, 4000); }
+    catch (err) { toast(err.message, true); }
+  };
+  $('#s-runs-reload').onclick = loadRuns;
+  $('#s-tk-change').onclick = () => { if (confirm('이 화면의 깃허브 토큰을 지우고 다시 넣을까요?')) { setToken(''); render(); } };
+}
+function kstIso(utcIso) { return new Date(new Date(utcIso).getTime() + 9 * 3600e3).toISOString().slice(0, 19) + '+09:00'; }
+
+// ════════════════════════════════════════════════════════════════════
+// 시작
+// ════════════════════════════════════════════════════════════════════
+function isAuthed() { try { return sessionStorage.getItem(AUTH_KEY) === '1'; } catch (e) { return false; } }
+async function start() {
+  $('#app').classList.add('is-active');
+  try { S.tab = localStorage.getItem(TAB_KEY) || 'cal'; } catch (e) {}
+  if (!getToken()) { render(); return; }
+  $('#main').innerHTML = '<div class="card muted">불러오는 중...</div>';
+  try { await loadAll(); render(); }
+  catch (e) {
+    $('#main').innerHTML = `<div class="banner err">${esc(e.message)}</div><button class="btn ghost small" id="retk">토큰 다시 넣기</button>`;
+    $('#retk').onclick = () => { setToken(''); render(); };
+  }
+}
+function boot() {
+  if (isAuthed()) { start(); return; }
+  const login = $('#login-screen');
+  login.style.display = 'flex';
+  const pw = $('#login-password');
+  const submit = async () => {
+    if (!pw.value) return;
+    if (await sha256(pw.value) === PASSWORD_HASH) {
+      try { sessionStorage.setItem(AUTH_KEY, '1'); } catch (e) {}
+      login.style.display = 'none';
+      start();
+    } else {
+      $('#login-error').style.display = 'block';
+      pw.value = ''; pw.focus();
+    }
+  };
+  $('#login-submit').onclick = submit;
+  pw.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) submit(); });
+  setTimeout(() => pw.focus(), 100);
+}
+boot();
+</script>
+</body>
+</html>
