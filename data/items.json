@@ -607,15 +607,19 @@
     "id": "item_85f4706603",
     "name": "토리베 가위(KS-203)",
     "cat": "kitchen",
+    "video": "",
+    "pick": true,
     "desc": "분해 세척이 되는 일본산 주방 가위",
-    "url": "https://link.coupang.com/a/gbyRPQ9P52",
+    "url": "https://link.coupang.com/a/h2LDMmGuqq",
     "source": "쿠팡",
     "thumb": "./images/products/fa9db3981a2d.jpg",
     "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
     "published": true,
     "created_at": "2026-08-13T13:47:13.866Z",
-    "updated_at": "2026-08-13T14:10:48.777Z",
-    "pick": 1
+    "updated_at": "2026-10-22T00:16:08.718Z"
   },
   {
     "id": "item_7e65f604b9",
