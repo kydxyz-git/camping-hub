@@ -7333,6 +7333,7 @@ function makeContentId(prefix, name) {
 
 async function submitFoodForm() {
   const isEdit = _foodForm.mode === 'edit';
+  if (!isEdit && _cpFinder.linking) return showToast('파트너스 링크 만드는 중이에요. 잠시 후 저장해 주세요', 'error');
 
   // 검증
   if (!_foodForm.name.trim()) return showToast('이름을 입력해주세요', 'error');
@@ -7674,21 +7675,7 @@ function bindCoupangFinder(kind) {
     _cpFinder = { q, busy: true, msg: '쿠팡에서 찾는 중… (1~2분 걸려요)', items: [] };
     rerender();
     try {
-      if (!cupasToken()) throw new Error('cupas 토큰이 없어요 — 스레드 관리 화면(kydzm/threads.html)에서 먼저 연결해 주세요.');
-      await ghFetchRaw(`/repos/${GH_OWNER}/cupas/actions/workflows/coupang-search.yml/dispatches`, {
-        method: 'POST', body: JSON.stringify({ ref: GH_BRANCH, inputs: { keyword: q, req } }) });
-      const end = Date.now() + 4 * 60e3;
-      let res = null;
-      while (Date.now() < end) {
-        await new Promise(r => setTimeout(r, 6000));
-        try {
-          const r = await ghFetchRaw(`/repos/${GH_OWNER}/cupas/contents/coupang_search.json?ref=coupang-search&t=${Date.now()}`,
-            { headers: { Accept: 'application/vnd.github.raw' } });
-          const j = await r.json();
-          if (j.req === req) { res = j; break; }
-        } catch (e) { /* 아직 없음 */ }
-      }
-      if (!res) throw new Error('결과를 4분 안에 못 받았어요. 깃허브 Actions의 coupang-search 실행 기록을 확인해 주세요.');
+      const res = await runCoupang({ keyword: q, req });
       if (res.error && !(res.items || []).length) throw new Error(res.error);
       _cpFinder = { q, busy: false, msg: `후보 ${res.items.length}개 — 맞는 걸 누르세요`, items: res.items };
       // 링크로 가져온 경우(후보 1개)는 바로 채움
@@ -7711,17 +7698,46 @@ function bindCoupangFinder(kind) {
     const it = _cpFinder.items[+b.dataset.cp];
     if (!it) return;
     const f = kind === 'items' ? _itemForm : _foodForm;
-    f.name = it.name; f.url = it.url; f.source = '쿠팡'; f.currency = 'KRW';
+    f.name = it.name; f.url = it.url || ''; f.source = '쿠팡'; f.currency = 'KRW';
     f.priceOriginal = it.price ? String(it.price) : ''; f.priceSale = ''; f.discountRate = '';
     f.fromCoupang = true;
     if (it.img) {
       f.imageBase64 = it.img; f.imagePreviewUrl = `data:image/jpeg;base64,${it.img}`;
       f.imageSize = Math.round(it.img.length * 0.75); f.imageChanged = true;
     }
-    _cpFinder = { q: _cpFinder.q, busy: false, msg: `'${it.name.slice(0, 30)}' 채웠어요 — 이름 다듬고 ${kind === 'items' ? '구분 고른 뒤 ' : ''}저장하면 비공개로 저장돼요`, items: [] };
+    const doneMsg = `'${it.name.slice(0, 30)}' 채웠어요 — 이름 다듬고 ${kind === 'items' ? '구분 고른 뒤 ' : ''}저장하면 비공개로 저장돼요`;
+    // 검색 후보는 링크가 없음 → 고른 상품 하나만 파트너스 링크를 만든다 (사용자 결정 261022)
+    _cpFinder = { q: _cpFinder.q, busy: false, linking: !it.url, items: [],
+      msg: it.url ? doneMsg : '내 파트너스 링크 만드는 중… (30초~1분, 링크가 들어오면 저장할 수 있어요)' };
     rerender();
     if (!it.img) showToast('이미지를 못 가져왔어요. 직접 올려 주세요', 'error');
+    if (it.url) return;
+    runCoupang({ pid: it.pid, req: Date.now().toString(36) }).then(res => {
+      const url = (res.items || [])[0] && res.items[0].url;
+      if (!url) throw new Error(res.error || '링크를 못 받았어요');
+      if (f.fromCoupang && !f.url) f.url = url;
+      _cpFinder = { ..._cpFinder, linking: false, msg: doneMsg };
+    }).catch(e => {
+      _cpFinder = { ..._cpFinder, linking: false, msg: `링크 만들기 실패: ${e.message} — 파트너스에서 만든 링크를 URL 칸에 직접 넣어 주세요` };
+    }).finally(() => { if (document.getElementById('cp-q')) rerender(); });
   });
+}
+// cupas coupang-search 실행 → 같은 req 결과가 올 때까지 기다림
+async function runCoupang(inputs) {
+  if (!cupasToken()) throw new Error('cupas 토큰이 없어요 — 스레드 관리 화면(kydzm/threads.html)에서 먼저 연결해 주세요.');
+  await ghFetchRaw(`/repos/${GH_OWNER}/cupas/actions/workflows/coupang-search.yml/dispatches`, {
+    method: 'POST', body: JSON.stringify({ ref: GH_BRANCH, inputs }) });
+  const end = Date.now() + 4 * 60e3;
+  while (Date.now() < end) {
+    await new Promise(r => setTimeout(r, 5000));
+    try {
+      const r = await ghFetchRaw(`/repos/${GH_OWNER}/cupas/contents/coupang_search.json?ref=coupang-search&t=${Date.now()}`,
+        { headers: { Accept: 'application/vnd.github.raw' } });
+      const j = await r.json();
+      if (j.req === inputs.req) return j;
+    } catch (e) { /* 아직 없음 */ }
+  }
+  throw new Error('결과를 4분 안에 못 받았어요. cupas 저장소 Actions의 coupang-search 실행 기록을 확인해 주세요.');
 }
 function cupasToken() { try { return localStorage.getItem('kydz_cupas_gh_token') || ''; } catch (e) { return ''; } }
 async function ghFetchRaw(path, opts = {}) {
@@ -8061,6 +8077,7 @@ function resetItemForm() {
 
 async function submitItemForm() {
   const isEdit = _itemForm.mode === 'edit';
+  if (!isEdit && _cpFinder.linking) return showToast('파트너스 링크 만드는 중이에요. 잠시 후 저장해 주세요', 'error');
 
   // 검증
   if (!_itemForm.name.trim()) return showToast('이름을 입력해주세요', 'error');
