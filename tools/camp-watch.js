@@ -95,6 +95,9 @@ function woodStatus() {
     level: budget ? Math.max(0, 1 - used / budget) : null, resetAt: cur ? cur.start + BLOCK_MS : null };
 }
 
+// 지시·말 한 줄로 줄이기 (시스템이 붙이는 태그 제거)
+const short = (t, n) => String(t || '').replace(/<[^>]+>[\s\S]*?<\/[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, n);
+const tasks = new Map();      // 사람(agent) → 지금 맡은 일
 function handleLine(f, info, line, live) {
   let j; try { j = JSON.parse(line); } catch (e) { return; }
   if (j.type === 'assistant') addUsage(j);
@@ -104,17 +107,23 @@ function handleLine(f, info, line, live) {
   const name = side ? '동료' : '공대남자';
   const project = path.basename(path.dirname(side ? path.dirname(path.dirname(f)) : f)).replace(/^-/, '').split('-').slice(-2).join('-');
   info.agent = agent; info.lastAt = Date.now(); info.side = side;
-  const ev = { agent, name, project, side };
+  const ev = { agent, name, project, side, task: tasks.get(agent) || '' };
   if (j.type === 'assistant') {
     const c = (j.message && j.message.content) || [];
-    for (const b of c) if (b.type === 'tool_use') send({ ...ev, kind: 'tool', tool: b.name, text: describe(b.name, b.input) });
+    for (const b of c) {
+      if (b.type === 'tool_use') send({ ...ev, kind: 'tool', tool: b.name, text: describe(b.name, b.input) });
+      else if (b.type === 'text' && short(b.text, 2)) send({ ...ev, kind: 'note', text: short(b.text, 70) });   // 공대남자가 중간에 하는 말 (계획·설명)
+    }
     if (j.message && j.message.stop_reason === 'end_turn' && !c.some(b => b.type === 'tool_use') && !side) send({ ...ev, kind: 'idle', text: '다음 지시 기다리는 중' });
-  } else if (j.type === 'user' && !j.toolUseResult && !side) {
+  } else if (j.type === 'user' && !j.toolUseResult) {
     const c = j.message && j.message.content;
     const txt = typeof c === 'string' ? c : Array.isArray(c) ? (c.find(b => b.type === 'text') || {}).text : '';
-    if (txt && !/^<|^\[Request interrupted/.test(txt)) send({ ...ev, kind: 'think', text: '새 지시 받음 — 계획 세우는 중' });
+    if (!txt || /^\[Request interrupted/.test(txt) || !short(txt, 2)) return;
+    if (side && tasks.has(agent)) return;   // 동료는 처음 받은 일만
+    tasks.set(agent, short(txt, 60));
+    send({ ...ev, task: tasks.get(agent), kind: 'think', text: (side ? '맡은 일: ' : '지시 받음: ') + short(txt, 50) });
   } else if (j.type === 'queue-operation' && j.operation === 'enqueue' && !side) {
-    send({ ...ev, kind: 'think', text: '추가 지시 받음' });
+    send({ ...ev, kind: 'think', text: '추가 지시: ' + short(j.content, 50) });
   }
 }
 function scan(first) {

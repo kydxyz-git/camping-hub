@@ -52,6 +52,7 @@ canvas { display: block; width: 100%; height: 100%; }
 .row .sw { width: 10px; height: 10px; border-radius: 3px; margin-top: 5px; }
 .row b { font-weight: 600; }
 .row .t { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.row .task { color: var(--ink); font-size: 12px; opacity: 0.85; overflow-wrap: anywhere; }
 .row .when { font: 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .row.soon .when { color: var(--ember); }
 .row { cursor: pointer; border-radius: 6px; }
@@ -614,6 +615,12 @@ function log(who, text) {
 const pending = [];   // 장작 나르는 동안 들어온 공대남자 일 (끝나면 마지막 것부터 이어서)
 function handle(ev) {
   const a = agent(ev.agent || 'main', ev.name, ev.color);
+  if (ev.task) a.task = ev.task;
+  if (ev.kind === 'note') {   // 중간에 하는 말: 자리는 그대로, 내용만
+    a.text = ev.text; log(a.name, '💬 ' + ev.text);
+    (a.hist = a.hist || []).unshift({ at: Date.now(), text: '💬 ' + ev.text }); a.hist.length = Math.min(a.hist.length, 8);
+    renderNow(); return;
+  }
   if (refilling && a.id === 'main') { pending.push(ev); log(a.name, ev.text || ''); return; }
   if (ev.kind === 'done') { goTo(a, 'van', '돌아가는 중…', ev.text || '돌아가는 중'); setTimeout(() => { a.leaving = true; renderNow(); }, 2200); }
   else { const z = zoneOf(ev); goTo(a, z, ev.say, ev.text); }
@@ -634,6 +641,7 @@ function renderNow() {
     row.querySelector('.sw').style.background = a.color;
     row.querySelector('b').textContent = a.name;
     row.querySelector('.t').textContent = a.text;
+    if (a.task) { const t = document.createElement('div'); t.className = 'task'; t.textContent = '할 일: ' + a.task; row.children[1].append(t); }
     row.querySelector('.when').textContent = openRows.has(a.id) ? '▴' : '▾';
     if (openRows.has(a.id)) {
       const more = document.createElement('div'); more.className = 'more';
@@ -729,7 +737,7 @@ document.getElementById('tod').onclick = e => { todForce = TODS[(TODS.indexOf(to
 
 // ── 실제 작업 연결: 내 컴퓨터의 camp-watch.js가 Claude Code 기록을 보내 줌 (PC·노트북 합쳐서) ──
 function startLive() {
-  ['pause', 'burst', 'refill'].forEach(id => document.getElementById(id).hidden = true);
+  ['pause', 'burst', 'refill', 'job'].forEach(id => document.getElementById(id).hidden = true);
   document.getElementById('modenote').textContent = '내 컴퓨터의 Claude Code 작업을 실시간으로 보여줘요. 컴퓨터 안에서만 오가고 토큰은 쓰지 않아요. 클라우드(웹) 세션은 안 보여요.';
   const dot = document.getElementById('dot'), mode = document.getElementById('mode');
   const ids = new Map();   // 컴퓨터별 공대남자: 처음 연결된 컴퓨터가 'main'
