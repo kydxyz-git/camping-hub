@@ -2769,6 +2769,8 @@ function renderDashboard() {
   // 토큰 핸들러 바인딩
   if (tokenConnected) {
     document.getElementById('token-edit').onclick = () => {
+      // 누르자마자 지우면 새 토큰이 없을 때 되돌릴 수 없음 → 확인 먼저
+      if (!confirm('토큰을 바꾸면 지금 저장된 토큰은 지워져요. 새 토큰을 준비하셨나요?')) return;
       localStorage.removeItem(STORAGE_KEYS.token);
       _tokenCardExpanded = true; // 입력 받아야 하므로 펼친 상태
       renderDashboard();
