@@ -55,6 +55,17 @@ def get(url, read=False):
         return 0, "", str(e)
 
 
+def decode_page(body):
+    """짧은 링크 페이지(Deeplink Redirect)의 자바스크립트 문자열: \\x3A 같은 이스케이프 + 여러 겹 % 인코딩을 푼다"""
+    t = re.sub(r"\\x([0-9A-Fa-f]{2})", lambda m: chr(int(m[1], 16)), body)
+    for _ in range(4):
+        t2 = urllib.parse.unquote(t)
+        if t2 == t:
+            break
+        t = t2
+    return t
+
+
 def next_url(body, seen):
     """페이지 본문에서 다음 쿠팡 주소 (상품·파트너스 추적 주소 우선)"""
     text = body.replace("\\/", "/").replace("&amp;", "&")
@@ -80,8 +91,10 @@ def check(url):
             chain.append(cur)
             continue
         if status == 200 and not is_product:
-            # 짧은 링크는 HTTP 넘김이 아니라 페이지 안(자바스크립트·meta)에서 다음 주소로 넘김 → 본문에서 찾기
+            # 짧은 링크는 HTTP 넘김이 아니라 페이지 안(자바스크립트)에서 앱·웹으로 넘김 → 본문에서 찾기
             first_body = first_body or body
+            body = decode_page(body)
+            chain.append(body)   # 코드·상품 번호는 본문에서 읽는다
             nxt = next_url(body, chain)
             if nxt:
                 cur = nxt
@@ -90,9 +103,15 @@ def check(url):
         break
     joined = " ".join(urllib.parse.unquote(u) for u in chain)
     af = (re.search(r"lptag=(AF\d+)", joined) or re.search(r"\b(AF\d{5,})\b", joined) or [None, ""])[1]
-    pid = (re.search(r"/vp/products/(\d+)", joined) or re.search(r"pageKey=(\d+)", joined) or [None, ""])[1]
-    final = chain[-1]
+    pid = (re.search(r"/vp/products/(\d+)", joined) or re.search(r"[?&]productId=(\d+)", joined)
+           or re.search(r"pageKey=(\d+)", joined) or [None, ""])[1]
+    final = next((u for u in reversed(chain) if u.startswith("http")), url)
 
+    if pid and not re.search(r"coupang\.com/v[pm]/products/\d+", cur):
+        # 짧은 링크 페이지에서 상품 번호만 얻은 경우 → 상품 페이지를 직접 열어 판매 여부 확인
+        status, _, body = get(f"https://www.coupang.com/vp/products/{pid}", read=True)
+        if status in (301, 302, 303, 307, 308):
+            status, body = 0, ""
     if not pid:
         if status == 200:
             # 페이지는 열리는데 상품 주소를 못 찾음 → 점검 방식 문제일 수 있어 '확인 불가'로
