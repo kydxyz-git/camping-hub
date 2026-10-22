@@ -94,7 +94,7 @@
 
 ## 쿠팡에서 찾기 (새 장비·먹거리)
 
-- admin 새 장비·먹거리 추가 화면 '🛒 쿠팡에서 찾기' → `.github/workflows/coupang-search.yml`(쿠팡 파트너스 API 검색 + 내 파트너스 짧은 링크 + `tools/coupang_search.py`가 썸네일 규격 800×800·흰 배경·여백 7%로 변환) → 결과는 `coupang-search` 브랜치의 `coupang_search.json` 하나(매번 덮어씀, main 기록 안 늘림) → admin이 폼을 채우고 **기존 저장 경로로 비공개 저장** (사용자 결정 261022). 모서리가 흰색이 아닌 연출 사진은 '⚠ 배경 있음' 표시 — 자동 배경 제거는 품질 문제로 쓰지 않음. Secrets `COUPANG_ACCESS_KEY`·`COUPANG_SECRET_KEY` 필요, admin 토큰에 Actions 쓰기 권한 필요.
+- admin 새 장비·먹거리 추가 화면 '🛒 쿠팡에서 찾기' → **비공개 저장소 cupas**의 `coupang-search.yml`을 cupas 토큰(localStorage `kydz_cupas_gh_token`, 스레드 관리 화면에서 넣음)으로 실행 — 쿠팡 키가 cupas Secrets에만 있어서 (쿠팡 파트너스 API 검색 + 내 파트너스 짧은 링크 + cupas `coupang_search.py`가 썸네일 규격 800×800·흰 배경·여백 7%로 변환) → 결과는 cupas `coupang-search` 브랜치의 `coupang_search.json` 하나(매번 덮어씀) → admin이 폼을 채우고 **기존 저장 경로로 비공개 저장** (사용자 결정 261022). 모서리가 흰색이 아닌 연출 사진은 '⚠ 배경 있음' 표시 — 자동 배경 제거는 품질 문제로 쓰지 않음.
 
 ## 메일·외부 발송 (사용자 지시 261021)
 

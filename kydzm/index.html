@@ -7638,8 +7638,9 @@ let _itemForm = {
 };
 
 // ─── 🛒 쿠팡에서 찾기 (새 장비·먹거리) ─────────────────────────────
-// 쿠팡 API는 비밀키가 필요해 브라우저에서 못 부른다 → 깃허브 액션(coupang-search.yml)을 실행하고
-// 결과(coupang-search 브랜치의 coupang_search.json)를 기다렸다가 후보를 보여준다.
+// 쿠팡 API는 비밀키가 필요해 브라우저에서 못 부른다 → 쿠팡 키가 있는 비공개 저장소 cupas의 깃허브 액션
+// (coupang-search.yml)을 스레드 관리 화면에서 넣은 cupas 토큰으로 실행하고, 결과(cupas coupang-search 브랜치의
+// coupang_search.json)를 기다렸다가 후보를 보여준다.
 // 고르면 이름·내 파트너스 링크·가격·800×800 규격 이미지를 폼에 채운다. 저장은 기존 저장 경로, 비공개로.
 let _cpFinder = { q: '', busy: false, msg: '', items: [] };
 function coupangFinderHtml(kind) {
@@ -7670,14 +7671,15 @@ function bindCoupangFinder(kind) {
     _cpFinder = { q, busy: true, msg: '쿠팡에서 찾는 중… (1~2분 걸려요)', items: [] };
     rerender();
     try {
-      await ghFetchRaw(`/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/coupang-search.yml/dispatches`, {
+      if (!cupasToken()) throw new Error('cupas 토큰이 없어요 — 스레드 관리 화면(kydzm/threads.html)에서 먼저 연결해 주세요.');
+      await ghFetchRaw(`/repos/${GH_OWNER}/cupas/actions/workflows/coupang-search.yml/dispatches`, {
         method: 'POST', body: JSON.stringify({ ref: GH_BRANCH, inputs: { keyword: q, req } }) });
       const end = Date.now() + 4 * 60e3;
       let res = null;
       while (Date.now() < end) {
         await new Promise(r => setTimeout(r, 6000));
         try {
-          const r = await ghFetchRaw(`/repos/${GH_OWNER}/${GH_REPO}/contents/coupang_search.json?ref=coupang-search&t=${Date.now()}`,
+          const r = await ghFetchRaw(`/repos/${GH_OWNER}/cupas/contents/coupang_search.json?ref=coupang-search&t=${Date.now()}`,
             { headers: { Accept: 'application/vnd.github.raw' } });
           const j = await r.json();
           if (j.req === req) { res = j; break; }
@@ -7689,7 +7691,7 @@ function bindCoupangFinder(kind) {
     } catch (e) {
       const m = String(e.message || e);
       _cpFinder = { q, busy: false, items: [],
-        msg: /403|404/.test(m) && /dispatches/.test(m) ? '이 화면 토큰에 Actions 쓰기 권한이 필요해요 (깃허브 토큰 설정 → Actions: Read and write).' : m };
+        msg: /403|404/.test(m) && /dispatches/.test(m) ? 'cupas 토큰에 Actions 쓰기 권한이 필요해요 (스레드 관리 화면에서 쓰는 토큰).' : m };
     }
     // 그 사이 다른 화면으로 갔으면 그리지 않음
     if (document.getElementById('cp-q')) rerender();
@@ -7712,9 +7714,10 @@ function bindCoupangFinder(kind) {
     if (!it.img) showToast('이미지를 못 가져왔어요. 직접 올려 주세요', 'error');
   });
 }
+function cupasToken() { try { return localStorage.getItem('kydz_cupas_gh_token') || ''; } catch (e) { return ''; } }
 async function ghFetchRaw(path, opts = {}) {
   const r = await fetch(`${GH_API}${path}`, { ...opts, headers: {
-    'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${getToken()}`,
+    'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${path.includes('/cupas/') ? cupasToken() : getToken()}`,
     'X-GitHub-Api-Version': '2022-11-28', ...(opts.headers || {}) } });
   if (!r.ok) throw new Error(`GitHub API ${r.status} ${path.split('?')[0]}: ${(await r.text()).slice(0, 150)}`);
   return r;
