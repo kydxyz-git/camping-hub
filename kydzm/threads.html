@@ -953,9 +953,9 @@ function renderComments() {
     <div class="list-head"><div class="sum">답할 댓글 <b>${fresh.length}</b>개${queued.length ? ` · 보내는 중 ${queued.length}개` : ''}</div>
       <button class="btn small ghost" id="c-fetch">지금 댓글 확인</button></div>
     <div class="posts">${fresh.map(card).join('') || '<div class="card small muted">새 댓글이 없어요.</div>'}</div>
-    ${queued.length ? `<div class="section-title">보내는 중</div><div class="posts">${queued.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)} ← ${esc(r.reply_text)}</span><span class="tm">대기</span></div>`).join('')}</div>` : ''}
+    ${queued.length ? `<div class="section-title">보내는 중</div><div class="posts">${queued.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)} ← ${esc(r.reply_text)}</span><span class="tm">${r.auto ? '자동 · 곧 보냄' : '대기'}</span></div>`).join('')}</div>` : ''}
     ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center">지난 댓글 ${done.length}개 <button class="btn small ghost" id="c-toggle">${S.showDoneC ? '접기' : '펼치기'}</button></div>
-      ${S.showDoneC ? `<div class="posts">${done.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)}: ${esc(r.text)}</span><span class="tm">${r.status === '보냄' ? '↳ ' + esc(r.reply_text) : '건너뜀'}</span></div>`).join('')}</div>` : ''}` : ''}`;
+      ${S.showDoneC ? `<div class="posts">${done.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)}: ${esc(r.text)}</span><span class="tm">${r.status === '보냄' ? (r.auto ? '🤖 자동 ↳ ' : '↳ ') + esc(r.reply_text) : '건너뜀'}</span></div>`).join('')}</div>` : ''}` : ''}`;
   const t = $('#c-toggle'); if (t) t.onclick = () => { S.showDoneC = !S.showDoneC; renderComments(); };
   $('#c-fetch').onclick = async () => {
     try { await runWorkflow('replies.yml', { mode: 'all' }); toast('댓글 확인을 요청했어요. 2~3분 뒤 새로고침해 주세요.'); }
