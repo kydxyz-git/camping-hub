@@ -234,7 +234,10 @@ const COUPANG_MARKERS = ['coupang.com', 'coupa.ng'];
 const PH = '{링크}';
 const WD = ['월', '화', '수', '목', '금', '토', '일'];   // 0=월 (post.py와 동일)
 const STATUSES = ['초안', '대기', '게시중', '게시완료', '댓글실패', '실패', '확인필요'];
-const KINDS = ['일상', '팔로워', '수익화', '특가'];
+const KINDS = ['일상', '정보', '팔로워', '수익화', '특가'];
+const KIND_LABEL = { 일상: '잡담', 정보: '정보성', 팔로워: '팔로우 모으기', 수익화: '추천템', '': '순서대로' };
+// post.py FALLBACK_KINDS와 같게 — 그 시각 종류의 대기 글이 없으면 이 순서로 대신
+const FALLBACK_KINDS = { 정보: ['일상'], 일상: ['정보'], 팔로워: ['일상', '정보'], 수익화: ['일상', '정보'] };
 const DEFAULT_CONFIG = { paused: false, weekdays: [0, 1, 2, 3, 4, 5, 6], hours: ['07', '12', '22'] };
 const STATUS_VIEW = {
   초안: ['wait', '초안 · 자동으로 안 올라감'], 대기: ['wait', '대기'], 링크없음: ['warn', '링크 없음 · 건너뜀'], 게시중: ['lock', '게시중'], 확인필요: ['lock', '확인 필요'],
@@ -397,6 +400,7 @@ async function loadAll() {
   S.posts = (queue || []).filter(p => p && p.id);
   S.orig = {}; S.posts.forEach(p => S.orig[p.id] = JSON.stringify(p));
   S.deleted = new Set(); S.orderChanged = false;
+  S.rawConfig = config || {};   // 저장할 때 다른 설정(deals 등)을 지우지 않게
   S.config = normalizeConfig(config);
   S.token = token;
   S.loadedAt = new Date();
@@ -406,7 +410,20 @@ function normalizeConfig(c) {
   const src = Array.isArray(c.hours) && c.hours.length ? c.hours
     : Array.isArray(c.slots) && c.slots.length ? c.slots.map(s => s.hour) : DEFAULT_CONFIG.hours;
   const hours = [...new Set(src.map(hh))].filter(h => /^\d\d$/.test(h) && +h <= 23).sort();
-  return { paused: !!c.paused, weekdays: Array.isArray(c.weekdays) ? c.weekdays.map(Number) : [0, 1, 2, 3, 4, 5, 6], hours };
+  const kinds = {};
+  Object.entries(c.kinds || {}).forEach(([h, k]) => { if (k) kinds[hh(h)] = String(k); });
+  return { paused: !!c.paused, weekdays: Array.isArray(c.weekdays) ? c.weekdays.map(Number) : [0, 1, 2, 3, 4, 5, 6], hours,
+    kinds, deal_hour: hh(c.deal_hour || '10'), monetize_from: String(c.monetize_from || '') };
+}
+// post.py want_kind / choose / plan과 같은 계산
+function wantKind(key) {
+  const k = S.config.kinds[key.slice(11, 13)] || '';
+  return k === '수익화' && S.config.monetize_from && key.slice(0, 10) < S.config.monetize_from ? '일상' : k;
+}
+function chooseFor(cands, kind) {
+  if (!kind) return cands[0] || null;
+  for (const k of [kind, ...(FALLBACK_KINDS[kind] || [])]) { const p = cands.find(x => x.kind === k); if (p) return p; }
+  return cands.find(x => x.kind !== '수익화') || null;
 }
 const livePosts = () => S.posts.filter(p => !S.deleted.has(p.id));
 const isPending = p => !['게시완료'].includes(p.status || '대기');
@@ -465,9 +482,14 @@ function upcomingSlots(n) {
 }
 function scheduleMap() {
   const ready = livePosts().filter(p => (p.status || '대기') === '대기' && p.kind !== '특가' && !buildPost(p).problem);
-  const slots = S.config.paused ? [] : upcomingSlots(ready.length);
-  const m = {};
-  ready.forEach((p, i) => m[p.id] = slots[i] || null);
+  const slots = S.config.paused ? [] : upcomingSlots(ready.length * 2);
+  const m = {}, left = [...ready];
+  for (const s of slots) {
+    const p = chooseFor(left, wantKind(s));
+    if (!p) continue;
+    left.splice(left.indexOf(p), 1); m[p.id] = s;
+  }
+  ready.forEach(p => { if (!(p.id in m)) m[p.id] = null; });
   return m;
 }
 function fmtSlot(key) {
@@ -689,7 +711,7 @@ function renderList() {
   $('#view').innerHTML = `${saveBarHtml()}
     <datalist id="topic-list"><option value="생활정보, 꿀팁"><option value="살림템 추천"><option value="주방템 추천"></datalist>
     <div class="list-head">
-      <div class="sum">대기 <b>${pending.length}</b>개${noLink ? ` · 손볼 글 <b style="color:#8a5a00">${noLink}</b>개` : ''}${last ? ` · ${fmtSlot(last)}까지 예약됨` : ''} · 하루 ${S.config.hours.length}개 (${S.config.hours.map(h => +h + '시').join('·')})</div>
+      <div class="sum">대기 <b>${pending.length}</b>개${noLink ? ` · 손볼 글 <b style="color:#8a5a00">${noLink}</b>개` : ''}${last ? ` · ${fmtSlot(last)}까지 예약됨` : ''} · 하루 ${S.config.hours.length + 1}개 (${+S.config.deal_hour}시 특가 · ${S.config.hours.map(h => `${+h}시 ${KIND_LABEL[S.config.kinds[h] || '']}`).join(' · ')})</div>
       <span class="row">${drafts ? `<button class="btn small ghost" id="confirm-drafts">초안 ${drafts}개 모두 대기로</button>` : ''}${waitingN ? `<button class="btn small ghost" id="to-drafts">대기 ${waitingN}개 모두 초안으로</button>` : ''}<button class="btn small" id="add-post">+ 글 추가</button></span>
     </div>
     ${reportHtml()}
@@ -747,7 +769,7 @@ function postHtml(p, i, n, slotKey) {
     ${p.kind === '수익화' ? `<div class="search-line">🔍 쿠팡 검색어 <b>${esc(p.search || p.name || '')}</b>
       <a class="btn small ghost" data-act="partners" data-q="${esc(p.search || p.name || '')}" href="https://partners.coupang.com/#affiliate/ws/link/0/${encodeURIComponent(p.search || p.name || '')}" target="_blank" rel="noopener">파트너스에서 찾기 ↗</a></div>` : ''}
     <div class="pgrid2" style="grid-template-columns:1fr auto">
-      <input class="input link" data-f="link" value="${esc(p.link)}" placeholder="${p.kind === '수익화' ? '쿠팡 파트너스 링크 붙여넣기 https://link.coupang.com/a/...' : '링크 (일상·팔로워 글은 보통 비워 둬요)'}">
+      <input class="input link" data-f="link" value="${esc(p.link)}" placeholder="${p.kind === '수익화' ? '쿠팡 파트너스 링크 붙여넣기 https://link.coupang.com/a/...' : '링크 (잡담·정보성·팔로우 글은 보통 비워 둬요)'}">
       <label class="check"><input type="checkbox" data-f="with_link"${p.with_link !== false ? ' checked' : ''}>링크 댓글</label>
     </div>
     <textarea class="input body" data-f="body" rows="1" placeholder="본문 — ① 훅 ② 숫자·디테일 ③ 반전 ④ 질문 + 정확히 뭔지는 댓글에">${esc(p.body)}</textarea>
@@ -1042,8 +1064,13 @@ function renderCycle() {
 
       <div class="section-title">하루 게시 시각 (${c.hours.length}개)</div>
       <div class="small muted" style="margin-bottom:10px">시각마다 글 목록 위에서부터 하나씩 올라가요. 실제 게시는 그 시각 5분쯤 시작하고, 깃허브 사정으로 최대 1시간 정도 늦을 수 있어요. 3시간 넘게 지난 몫은 건너뛰어요(몰아서 올라가지 않게).</div>
-      <div class="row" id="c-hours">${c.hours.map((h, i) => `<span class="row" style="gap:4px;flex-wrap:nowrap"><select class="input" data-h="${i}" style="width:auto">${hourOpts(h)}</select><button class="icon-btn" data-rm="${i}" title="삭제">×</button></span>`).join('')}
+      <div class="row" id="c-hours">${c.hours.map((h, i) => `<span class="row" style="gap:4px;flex-wrap:nowrap"><select class="input" data-h="${i}" style="width:auto">${hourOpts(h)}</select><select class="input" data-k="${h}" style="width:auto">${['', '일상', '정보', '팔로워', '수익화'].map(k => `<option value="${k}"${(c.kinds[h] || '') === k ? ' selected' : ''}>${KIND_LABEL[k]}</option>`).join('')}</select><button class="icon-btn" data-rm="${i}" title="삭제">×</button></span>`).join('')}
         <button class="btn ghost small" id="c-add">+ 시각 추가</button></div>
+      <div class="small muted" style="margin-top:6px">시각마다 그 종류의 대기 글 중 맨 위 글이 올라가요. 그 종류가 없으면 잡담·정보성 순서로 대신해요.</div>
+      <div class="section-title">특가 글 시각</div>
+      <div class="row"><select class="input" id="c-deal" style="width:auto">${hourOpts(c.deal_hour)}</select><span class="small muted">06:10에 쿠팡 특가 5개로 자동으로 만들어서 이 시각에 올려요</span></div>
+      <div class="section-title">추천템 시작일</div>
+      <div class="row"><input class="input" type="date" id="c-mon" value="${esc(c.monetize_from)}" style="width:auto"><span class="small muted">이 날짜 전엔 추천템 자리에 잡담이 올라가요</span></div>
       <div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn" id="c-save">저장</button></div>
     </div>`;
     $('#c-on').onchange = e => { c.paused = !e.target.checked; };
@@ -1051,7 +1078,14 @@ function renderCycle() {
       const i = +el.dataset.wd;
       c.weekdays = el.checked ? [...new Set([...c.weekdays, i])].sort() : c.weekdays.filter(x => x !== i);
     });
-    document.querySelectorAll('[data-h]').forEach(el => el.onchange = () => { c.hours[+el.dataset.h] = el.value; });
+    document.querySelectorAll('[data-h]').forEach(el => el.onchange = () => {
+      const old = c.hours[+el.dataset.h]; c.hours[+el.dataset.h] = el.value;
+      if (c.kinds[old] !== undefined) { c.kinds[el.value] = c.kinds[old]; delete c.kinds[old]; }
+      draw();
+    });
+    document.querySelectorAll('[data-k]').forEach(el => el.onchange = () => { c.kinds[el.dataset.k] = el.value; });
+    $('#c-deal').onchange = e => { c.deal_hour = e.target.value; };
+    $('#c-mon').onchange = e => { c.monetize_from = e.target.value; };
     document.querySelectorAll('[data-rm]').forEach(el => el.onclick = () => { c.hours.splice(+el.dataset.rm, 1); draw(); });
     $('#c-add').onclick = () => {
       const h = Array.from({ length: 24 }, (_, i) => hh(i)).find(x => !c.hours.includes(x) && +x >= 9) || '21';
@@ -1061,9 +1095,12 @@ function renderCycle() {
       if (!c.hours.length) return toast('게시 시각을 하나 이상 넣어 주세요', true);
       if (new Set(c.hours).size !== c.hours.length) return toast('같은 시각이 두 번 들어 있어요', true);
       if (!c.weekdays.length) return toast('게시 요일을 하나 이상 골라 주세요', true);
-      const next = { paused: c.paused, weekdays: [...c.weekdays].sort(), hours: [...c.hours].sort() };
+      if (c.hours.includes(c.deal_hour)) return toast('특가 시각과 같은 일반 게시 시각이 있어요', true);
+      const kinds = {}; c.hours.forEach(h => { if (c.kinds[h]) kinds[h] = c.kinds[h]; });
+      const next = { paused: c.paused, weekdays: [...c.weekdays].sort(), hours: [...c.hours].sort(), kinds, deal_hour: c.deal_hour, monetize_from: c.monetize_from };
       try {
-        const changed = await withBusy('저장 중...', () => commitFiles({ 'config.json': () => next }, 'config(admin): 게시주기 변경'));
+        // 최신 config.json 위에 게시주기만 덮어씀 (deals 같은 다른 설정은 그대로)
+        const changed = await withBusy('저장 중...', () => commitFiles({ 'config.json': cur => ({ ...(cur || S.rawConfig || {}), ...next }) }, 'config(admin): 게시주기 변경'));
         await withBusy('불러오는 중...', () => reloadAndRender(changed ? '게시주기를 저장했어요' : '바뀐 내용이 없어요'));
       } catch (e) { toast(e.message, true); }
     };
