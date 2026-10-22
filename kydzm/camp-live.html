@@ -54,6 +54,11 @@ canvas { display: block; width: 100%; height: 100%; }
 .row .t { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
 .row .when { font: 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .row.soon .when { color: var(--ember); }
+.row { cursor: pointer; border-radius: 6px; }
+.row:hover { background: rgba(255,255,255,0.03); }
+.more { grid-column: 2 / -1; display: grid; gap: 2px; padding: 4px 0 6px; font-size: 12px; color: var(--muted); }
+.more ol { margin: 0; padding-left: 16px; display: grid; gap: 1px; }
+.more li span { color: var(--ink); }
 .log { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-height: 220px; overflow-y: auto; font: 12px/1.45 var(--mono); }
 .log li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; color: var(--muted); }
 .log li span:last-child { color: var(--ink); overflow-wrap: anywhere; }
@@ -192,13 +197,13 @@ function zoneOf(ev) {
 
 // ── 예약된 작업 (한국 시간) ──
 const JOBS = [
-  { name: '스레드 글 올리기', at: { hours: [7, 12, 22], min: 5 },  zone: 'tipi',    say: '스레드 글 올리는 중…' },
-  { name: '쿠팡 특가 찾기',   at: { hours: [6], min: 10 },         zone: 'tarp',    say: '쿠팡 특가 찾는 중…' },
-  { name: '특가 글 올리기',   at: { hours: [10], min: 5 },         zone: 'tipi',    say: '특가 글 올리는 중…' },
-  { name: '댓글 확인',        at: { every: 60, min: 35 },          zone: 'coffee',  say: '댓글 읽는 중…' },
-  { name: '방문 통계 정리',   at: { every: 60, min: 0 },           zone: 'shelter', say: '통계 정리하는 중…' },
-  { name: '쿠팡 링크 점검',   at: { hours: [9], min: 10, wd: 1 },  zone: 'dome',    say: '링크 점검하는 중…' },
-  { name: '스레드 토큰 갱신', at: { hours: [3], min: 17, wd: 2 },  zone: 'fire',    say: '토큰 갈아끼우는 중…' },
+  { name: '스레드 글 올리기', desc: '쿠파스 대기열에서 다음 글을 스레드에 올려요 (07·12·22시)', at: { hours: [7, 12, 22], min: 5 },  zone: 'tipi',    say: '스레드 글 올리는 중…' },
+  { name: '쿠팡 특가 찾기', desc: '쿠팡 골드박스·생필품을 골라 특가 글을 만들어요',   at: { hours: [6], min: 10 },         zone: 'tarp',    say: '쿠팡 특가 찾는 중…' },
+  { name: '특가 글 올리기', desc: '오늘 특가 글을 사진·링크 댓글과 함께 올려요',   at: { hours: [10], min: 5 },         zone: 'tipi',    say: '특가 글 올리는 중…' },
+  { name: '댓글 확인', desc: '새 댓글을 모아 답글 초안을 만들어요',        at: { every: 60, min: 35 },          zone: 'coffee',  say: '댓글 읽는 중…' },
+  { name: '방문 통계 정리', desc: '홈페이지 방문 기록을 모아 통계 파일에 저장해요',   at: { every: 60, min: 0 },           zone: 'shelter', say: '통계 정리하는 중…' },
+  { name: '쿠팡 링크 점검', desc: '홈페이지 쿠팡 링크 52개를 따라가 확인해요 (매주 월)',   at: { hours: [9], min: 10, wd: 1 },  zone: 'dome',    say: '링크 점검하는 중…' },
+  { name: '스레드 토큰 갱신', desc: '스레드 접속 토큰을 새로 받아 두어요 (매주 화)', at: { hours: [3], min: 17, wd: 2 },  zone: 'fire',    say: '토큰 갈아끼우는 중…' },
 ];
 const KST = 9 * 3600e3;
 function nextRun(job, now) {
@@ -607,6 +612,8 @@ function handle(ev) {
   if (ev.kind === 'done') { goTo(a, 'van', '돌아가는 중…', ev.text || '돌아가는 중'); setTimeout(() => { a.leaving = true; renderNow(); }, 2200); }
   else { const z = zoneOf(ev); goTo(a, z, ev.say, ev.text); }
   log(a.name, ev.text || a.say);
+  (a.hist = a.hist || []).unshift({ at: Date.now(), text: ev.text || a.say }); a.hist.length = Math.min(a.hist.length, 8);
+  if (!a.since || a.zone !== a.lastZone) { a.since = Date.now(); a.lastZone = a.zone; }
   if (demoOn && ev.kind !== 'done') useWood(0.004 + Math.random() * 0.006);
   renderNow();
 }
@@ -616,14 +623,30 @@ function renderNow() {
   nowEl.innerHTML = '';
   for (const a of agents.values()) {
     if (a.leaving) continue;
-    const row = document.createElement('div'); row.className = 'row';
-    row.innerHTML = '<span class="sw"></span><div><b></b> <span class="t"></span></div><span></span>';
+    const row = document.createElement('div'); row.className = 'row'; row.tabIndex = 0; row.setAttribute('role', 'button');
+    row.innerHTML = '<span class="sw"></span><div><b></b> <span class="t"></span></div><span class="when"></span>';
     row.querySelector('.sw').style.background = a.color;
     row.querySelector('b').textContent = a.name;
     row.querySelector('.t').textContent = a.text;
+    row.querySelector('.when').textContent = openRows.has(a.id) ? '▴' : '▾';
+    if (openRows.has(a.id)) {
+      const more = document.createElement('div'); more.className = 'more';
+      more.innerHTML = '<div></div><ol></ol>';
+      const el = Math.round((Date.now() - (a.since || Date.now())) / 60e3);
+      more.firstChild.textContent = `${PLACE[a.zone] || ''}에서 ${a.say.replace(/…$/, '')} · ${el < 1 ? '방금 시작' : el < 60 ? el + '분째' : Math.floor(el / 60) + '시간 ' + (el % 60) + '분째'}`;
+      for (const h of (a.hist || []).slice(0, 5)) {
+        const li = document.createElement('li'); li.innerHTML = '<span></span> '; li.firstChild.textContent = h.text;
+        li.append(document.createTextNode(kstClock(h.at).slice(0, 5))); more.lastChild.append(li);
+      }
+      row.append(more);
+    }
+    row.onclick = () => { openRows.has(a.id) ? openRows.delete(a.id) : openRows.add(a.id); renderNow(); };
+    row.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); row.onclick(); } };
     nowEl.append(row);
   }
 }
+const openRows = new Set();   // 펼친 사람·예약 작업
+const PLACE = { dome: '돔텐트', tipi: '티피텐트', shelter: '거실형 텐트', coffee: '커피 테이블', tarp: '타프 밑', fire: '화로대', bbq: '바베큐 그릴', chair: '캠핑의자', van: '캠핑카', wood: '장작더미' };
 function renderJobs() {
   const now = Date.now();
   const list = JOBS.map(j => ({ j, at: nextRun(j, now) })).filter(x => x.at).sort((a, b) => a.at - b.at);
@@ -636,6 +659,18 @@ function renderJobs() {
     row.querySelector('b').textContent = j.name;
     row.querySelector('.t').textContent = kstClock(at).slice(0, 5);
     row.querySelector('.when').textContent = untilText(at - now);
+    const key = 'job:' + j.name; row.tabIndex = 0; row.setAttribute('role', 'button');
+    if (openRows.has(key)) {
+      const more = document.createElement('div'); more.className = 'more';
+      const next = []; let t0 = now;
+      for (let i = 0; i < 3; i++) { const n = nextRun(j, t0); if (!n) break; next.push(n); t0 = n + 60e3; }
+      more.innerHTML = '<div></div><div></div>';
+      more.firstChild.textContent = j.desc;
+      more.lastChild.textContent = '다음: ' + next.map(n => { const d = new Date(n + KST); return `${d.getUTCMonth() + 1}/${d.getUTCDate()} ${kstClock(n).slice(0, 5)}`; }).join(' · ');
+      row.append(more);
+    }
+    row.onclick = () => { openRows.has(key) ? openRows.delete(key) : openRows.add(key); renderJobs(); };
+    row.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); row.onclick(); } };
     jobsEl.append(row);
   }
 }
@@ -699,6 +734,12 @@ function setFixed(on, fromUser) {
 }
 document.getElementById('fixed').onclick = () => setFixed(true, true);
 document.getElementById('unfix').onclick = () => setFixed(false);
+cv.addEventListener('click', e => {
+  const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+  let best = null, bd = 30 * Math.max(1, S);
+  for (const a of agents.values()) { const p = toScreen(a.x, a.y), d = Math.hypot(p.x - mx, p.y - 18 * S - my); if (d < bd) { bd = d; best = a; } }
+  if (best) { openRows.add(best.id); renderNow(); nowEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+});
 let lastTap = 0;
 cv.addEventListener('pointerup', () => { const n = Date.now(); if (n - lastTap < 350 && document.body.classList.contains('fixed')) setFixed(false); lastTap = n; });
 document.addEventListener('visibilitychange', () => { if (document.body.classList.contains('fixed')) keepAwake(); });
