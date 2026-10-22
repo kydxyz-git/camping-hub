@@ -33,6 +33,7 @@ const sse = (set, ev) => { const line = `data: ${JSON.stringify(ev)}\n\n`; for (
 function send(ev, fromPeer) {
   ev.at = ev.at || Date.now();
   if (!fromPeer) { ev.machine = MACHINE; sse(feeds, ev); }
+  if (ev.kind) console.log(`  ${new Date(ev.at + 9 * 3600e3).toISOString().slice(11, 19)} ${fromPeer ? ev.machine + ' ' : ''}${ev.name} · ${ev.text || ''}  (화면 ${clients.size}개)`);
   recent.push(ev); if (recent.length > 40) recent.shift();
   sse(clients, ev);
 }
@@ -171,7 +172,8 @@ http.createServer(async (req, res) => {
     res.write(`data: ${JSON.stringify(hello())}\n\n`);
     for (const ev of recent.slice(-15)) res.write(`data: ${JSON.stringify(ev)}\n\n`);
     res.write(`data: ${JSON.stringify(woodStatus())}\n\n`);
-    clients.add(res); req.on('close', () => clients.delete(res));
+    clients.add(res); console.log(`  캠핑장 화면 연결됨 (${clients.size}개)`);
+    req.on('close', () => { clients.delete(res); console.log(`  캠핑장 화면 닫힘 (${clients.size}개)`); });
     return;
   }
   try {
@@ -187,6 +189,11 @@ http.createServer(async (req, res) => {
   console.log(`  지켜보는 기록: ${ROOT}`);
   if (!fs.existsSync(ROOT)) console.log(`  ⚠ 기록 폴더가 아직 없어요 — 이 컴퓨터에서 Claude Code를 한 번 쓰면 생기고, 그때부터 자동으로 보여요.\n    (클라우드 세션만 쓰면 이 컴퓨터엔 기록이 안 남아요)`);
   console.log(`  끄려면 이 창에서 Ctrl+C\n`);
+  {
+    const list = [...files.keys()].map(f => { try { return [f, fs.statSync(f).mtimeMs]; } catch (e) { return [f, 0]; } }).sort((a, b) => b[1] - a[1]);
+    console.log(`  찾은 기록 파일 ${list.length}개 (최근 7일)` + (list[0] ? ` · 가장 최근: ${path.relative(ROOT, list[0][0]).slice(0, 70)} (${Math.round((Date.now() - list[0][1]) / 60e3)}분 전)` : ''));
+    console.log('  이제 claude로 일을 시키면 아래에 한 줄씩 찍혀요.\n');
+  }
 });
 
 scan(true);
