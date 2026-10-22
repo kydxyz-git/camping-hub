@@ -140,6 +140,12 @@
   .done-row .nm { flex: 1; min-width: 0; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .done-row .tm { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
   .done-row a.go { font-weight: 700; color: var(--info); text-decoration: none; white-space: nowrap; }
+  /* 폰: 첫 줄 글 제목, 둘째 줄 배지·숫자·링크·버튼 (한 줄에 다 넣으면 제목이 사라지고 오른쪽이 넘침) */
+  @media (max-width: 640px) {
+    .done-row { flex-wrap: wrap; row-gap: 6px; }
+    .done-row .nm { order: -1; flex: 1 0 100%; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .done-row .go { margin-left: auto; }
+  }
   .savebar { position: sticky; top: 50px; z-index: 15; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
     display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 13.5px; color: var(--muted); box-shadow: 0 2px 10px rgba(0,0,0,.04); }
   .savebar.on { background: #fff8d6; border-color: #ffd65a; color: #6b5200; font-weight: 700; }
