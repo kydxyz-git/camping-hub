@@ -1923,6 +1923,8 @@ async function loadAllData(force = false) {
   cache.foods  = results[2];
   cache.items  = results[3];
   cache.camps  = results[4];
+  // 쿠팡 링크 점검 결과 (tools/check_links.py, 없으면 표시 안 함)
+  cache.linkCheck = await fetchDataFile('link_check').catch(() => null);
   // 저장 시 3-way 병합 기준점 (이 창이 마지막으로 알고 있는 저장소 상태)
   files.forEach((name, i) => { cache.base[name] = JSON.parse(JSON.stringify(results[i])); });
   cache.loaded = true;
@@ -6575,8 +6577,18 @@ function srcClass(item) {
   return m[item.source] || 'src-etc';
 }
 
+// 쿠팡 링크 점검 — 지금 등록된 링크가 점검한 링크와 같을 때만 (링크를 바꾸면 다음 점검까지 표시 안 함)
+const LINK_BAD = { no_af: '파트너스 코드 없음', other_af: '다른 파트너스 코드', soldout: '품절·판매종료 의심', broken: '링크 깨짐' };
+const _linkOnly = {};
+function linkIssue(item) {
+  const r = cache.linkCheck && cache.linkCheck.results && cache.linkCheck.results[item.id];
+  if (!r || !LINK_BAD[r.status] || String(item.url || '').trim() !== r.url) return null;
+  return r;
+}
+
 function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
   opts = opts || {};
+  const li = linkIssue(item);
   const thumb = item.thumb
     ? `<img src="../${item.thumb.replace(/^\.\//, '')}" alt="" loading="lazy">`
     : fallbackEmoji;
@@ -6590,7 +6602,7 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
         <div class="list-item-thumb">${thumb}</div>
         <div class="list-item-body">
           <div class="list-item-title">${escapeHtml(item.name)}</div>
-          <div class="list-item-meta">${src}${escapeHtml(item.desc || '')}</div>
+          <div class="list-item-meta">${li ? `<span style="font-size:11px;color:#fff;background:#d93025;border-radius:4px;padding:1px 5px;margin-right:6px;" title="${escapeHtml(li.detail)}">⚠ ${LINK_BAD[li.status]}</span>` : ''}${src}${escapeHtml(item.desc || '')}</div>
         </div>
       </a>
       <span class="pick-stars">${[1,2,3].map(n => `<button type="button"
@@ -6687,9 +6699,14 @@ function renderProductList(dataArr, searchVar, opts) {
   const isSearchActive = q && q.length > 0;
   // 정렬 후 _idx 포함 (원본 인덱스 유지)
   const sortedIndexed = getSortedProductsForAdmin(dataArr, currentSort);
+  const badN = dataArr.filter(linkIssue).length;
+  if (!badN) _linkOnly[opts.type] = false;
+  const linkOnly = !!_linkOnly[opts.type];
   const arr = sortedIndexed
     .map(({ x, idx }) => ({ ...x, _idx: idx }))
-    .filter(x => matchSearch(x, q, ['name', 'desc', 'source']));
+    .filter(x => matchSearch(x, q, ['name', 'desc', 'source']))
+    .filter(x => !linkOnly || linkIssue(x));
+  const lc = cache.linkCheck;
   c.innerHTML = `
     <div class="page-header">
       <button class="page-back" id="back-btn">← 대시보드</button>
@@ -6716,14 +6733,19 @@ function renderProductList(dataArr, searchVar, opts) {
         <button type="button" class="btn btn-sm btn-ghost" id="order-reset-btn">되돌리기</button>
       </div>` : ''}
     ${currentSort === 'manual' && isSearchActive ? `<div class="series-sort-note" style="background:#fff3cd;border-color:#ffe69c;color:#856404;">⚠️ 검색 중에는 드래그 정렬이 비활성화됩니다 (검색을 비우세요)</div>` : ''}
+    ${badN ? `<div class="series-sort-note" style="background:#fdecea;border-color:#f5c2c0;color:#8a1c14;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+        <span>🔎 쿠팡 링크 점검 (${escapeHtml(String(lc.checked_at || '').slice(5, 16).replace('T', ' '))}): 손볼 링크 <b>${badN}</b>개 — 파트너스에서 새 링크를 만들어 바꿔 주세요</span>
+        <button type="button" class="btn btn-sm ${linkOnly ? '' : 'btn-ghost'}" id="link-only-btn">${linkOnly ? '전체 보기' : '문제만 보기'}</button></div>` : ''}
     <div class="list" id="prod-list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>'
-        : (opts.type === 'items' && !isSearchActive)
+        : (opts.type === 'items' && !isSearchActive && !linkOnly)
           ? groupedItemsHtml(arr, opts, isManual)
           : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: isManual && !isSearchActive })).join('')}
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
+  const lob = document.getElementById('link-only-btn');
+  if (lob) lob.onclick = () => { _linkOnly[opts.type] = !linkOnly; renderProductList(dataArr, searchVar, opts); };
   // 세부 분류 접기/펼치기
   document.querySelectorAll('.cat-toggle').forEach(btn => {
     btn.onclick = () => {

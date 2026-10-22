@@ -1,0 +1,41 @@
+# 매주 월요일 09:10(KST) + 수동: 장비·먹거리 쿠팡 링크 점검 → data/link_check.json (링크는 안 고침)
+name: link-check
+
+on:
+  schedule:
+    - cron: '10 0 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: link-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check coupang links
+        run: python3 tools/check_links.py
+      - name: Commit & push
+        run: |
+          git config user.name "kydz-build"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/link_check.json
+          git diff --cached --quiet && exit 0
+          git commit -m "chore(links): 쿠팡 링크 점검"
+          for i in 1 2 3 4; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep $((i * 5))
+          done
+          exit 1
