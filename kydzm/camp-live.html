@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>밤캠핑 작업실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+/* 밤 캠핑장 한 장면: 위는 캔버스(아이소메트릭 캠핑장), 아래(PC는 오른쪽)는 지금 하는 일 + 기록 */
+:root {
+  color-scheme: dark;
+  --night: #0f1a1f;      /* 밤하늘·바탕 */
+  --ground: #16262b;     /* 패널 */
+  --line: #24393f;
+  --ink: #e9e4d6;        /* 본문 (달빛 종이색) */
+  --muted: #8fa3a4;
+  --ember: #ff8a3d;      /* 모닥불 — 강조 */
+  --moss: #7fb069;       /* 정상·완료 */
+  --display: "Gowun Batang", "Nanum Myeongjo", serif;
+  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--night); color: var(--ink); font: 14px/1.55 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: max(12px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-bottom, 0px));
+}
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 14px; }
+header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font: 700 clamp(22px, 4vw, 30px)/1.2 var(--display); margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+h1 small { display: block; font: 400 13px var(--body); color: var(--muted); margin-top: 4px; letter-spacing: 0; }
+@media (min-width: 700px) { h1 small { display: inline; margin: 0 0 0 8px; } }
+.status { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.dot.live { background: var(--moss); box-shadow: 0 0 10px var(--moss); }
+.dot.demo { background: var(--ember); box-shadow: 0 0 10px var(--ember); }
+.main { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1000px) { .main { grid-template-columns: minmax(0, 1fr) 330px; } }
+.stage { position: relative; border-radius: 14px; overflow: hidden; background: #0b1418; border: 1px solid var(--line); aspect-ratio: 16 / 12; max-width: 100%; }
+@media (min-width: 1000px) { .stage { aspect-ratio: 16 / 10; } }
+canvas { display: block; width: 100%; height: 100%; }
+.side { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.panel { background: var(--ground); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+.panel h2 { font: 600 11px var(--body); letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; text-transform: uppercase; }
+.now { display: grid; gap: 6px; }
+.now .row { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 8px; align-items: start; }
+.now .sw { width: 10px; height: 10px; border-radius: 3px; margin-top: 5px; }
+.now b { font-weight: 600; }
+.now .t { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; font-size: 12px; color: var(--muted); }
+.legend span b { color: var(--ink); font-weight: 600; }
+.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-height: 260px; overflow-y: auto; font: 12px/1.45 var(--mono); }
+.log li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 8px; color: var(--muted); }
+.log li span:last-child { color: var(--ink); overflow-wrap: anywhere; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; }
+button { font: 600 12px var(--body); color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+button:hover { border-color: var(--ember); }
+button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+.note { font-size: 12px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .dot { box-shadow: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>밤캠핑 작업실 <small>Claude Code가 지금 캠핑장 어디에 있는지</small></h1>
+    <span class="status"><span class="dot demo" id="dot"></span><span id="mode">데모 중 — 아직 연결 안 됨</span></span>
+  </header>
+  <div class="main">
+    <div class="stage"><canvas id="cv" aria-label="캠핑장 장면: 캐릭터가 하는 일에 따라 텐트·작업대·화로대·전망대·캠핑카·캠핑의자로 이동"></canvas></div>
+    <aside class="side">
+      <section class="panel">
+        <h2>지금</h2>
+        <div class="now" id="now"></div>
+      </section>
+      <section class="panel">
+        <h2>장소</h2>
+        <div class="legend">
+          <span><b>텐트</b> 파일 읽기</span>
+          <span><b>작업대</b> 파일 고치기</span>
+          <span><b>화로대</b> 명령 실행</span>
+          <span><b>전망대</b> 검색·웹</span>
+          <span><b>캠핑카</b> 일 나눠 맡기기</span>
+          <span><b>캠핑의자</b> 생각·기다림</span>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>기록</h2>
+        <ul class="log" id="log"></ul>
+      </section>
+      <div class="controls">
+        <button type="button" id="pause">데모 멈추기</button>
+        <button type="button" id="burst">일 나눠 맡기기 보기</button>
+      </div>
+      <p class="note">지금은 예시 작업을 돌려 보여주는 데모예요. 연결하면 실제 Claude Code 작업이 실시간으로 움직여요.</p>
+    </aside>
+  </div>
+</div>
+<script>
+(() => {
+'use strict';
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let W = 0, H = 0, DPR = 1, S = 1;           // S: 장면 배율
+const TW = 64, TH = 32, N = 12;              // 아이소 타일 크기, 격자 N×N
+
+// ── 장소 (격자 좌표) ──
+const ZONES = {
+  tent:  { x: 3.2, y: 2.6, label: '텐트',     verb: '자료 펼쳐보는 중' },
+  table: { x: 7.6, y: 3.0, label: '작업대',   verb: '고치는 중' },
+  fire:  { x: 6.0, y: 6.2, label: '화로대',   verb: '불 피우는 중' },
+  scope: { x: 9.6, y: 7.4, label: '전망대',   verb: '둘러보는 중' },
+  van:   { x: 2.6, y: 8.6, label: '캠핑카',   verb: '동료 부르는 중' },
+  chair: { x: 4.6, y: 5.4, label: '캠핑의자', verb: '생각 중' },
+};
+const TOOL_ZONE = {
+  Read: 'tent', Glob: 'tent', NotebookRead: 'tent', LS: 'tent',
+  Edit: 'table', Write: 'table', MultiEdit: 'table', NotebookEdit: 'table',
+  Bash: 'fire', BashOutput: 'fire',
+  Grep: 'scope', WebSearch: 'scope', WebFetch: 'scope', ToolSearch: 'scope',
+  Agent: 'van', Task: 'van',
+};
+const zoneOf = t => TOOL_ZONE[t] || (/^mcp__/.test(t || '') ? 'scope' : 'chair');
+
+// ── 아이소 변환 ──
+function iso(x, y) { return { x: (x - y) * TW / 2, y: (x + y) * TH / 2 }; }
+function toScreen(x, y) { const p = iso(x, y); return { x: W / 2 + p.x * S, y: H * 0.5 - (N * TH / 2) * S + p.y * S + H * 0.04 }; }
+
+function resize() {
+  const r = cv.getBoundingClientRect();
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = r.width; H = r.height;
+  cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  // 장면 폭: 격자 대각선 N*TW 를 화면에 맞춤
+  // 폰처럼 좁으면 양옆 숲을 살짝 잘라 장면을 크게
+  S = Math.min(W / (N * TW * (W < 600 ? 0.86 : 1.05)), H / (N * TH * 1.3));
+}
+addEventListener('resize', resize);
+
+// ── 배경: 별, 나무 ──
+const rnd = (a => () => (a = (a * 16807) % 2147483647) / 2147483647)(42);
+const STARS = Array.from({ length: 90 }, () => ({ x: rnd(), y: rnd() * 0.32, r: rnd() * 1.2 + 0.3, p: rnd() * 6 }));
+const TREES = [[0.4, 0.6], [1.4, 0.3], [0.3, 2.2], [0.5, 4.4], [0.4, 6.4], [11.2, 0.5], [10.4, 1.2], [11.4, 3.0],
+  [11.3, 5.2], [11.5, 9.6], [8.6, 11.2], [6.2, 11.4], [4.0, 11.3], [0.6, 10.8], [9.8, 10.6]].map(([x, y]) => ({ x, y, h: 0.8 + rnd() * 0.5 }));
+
+function poly(pts, fill, stroke) {
+  ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath();
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+function tile(x, y, fill) { poly([toScreen(x, y), toScreen(x + 1, y), toScreen(x + 1, y + 1), toScreen(x, y + 1)], fill); }
+
+function drawSky(t) {
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#0a1420'); g.addColorStop(0.55, '#0f1d24'); g.addColorStop(1, '#0b1418');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  for (const s of STARS) {
+    const a = reduce ? 0.7 : 0.45 + 0.4 * Math.sin(t / 900 + s.p);
+    ctx.fillStyle = `rgba(233,228,214,${a})`; ctx.beginPath(); ctx.arc(s.x * W, s.y * H, s.r, 0, 7); ctx.fill();
+  }
+  ctx.fillStyle = 'rgba(240,232,200,0.9)'; ctx.beginPath(); ctx.arc(W * 0.86, H * 0.1, 14 * S + 6, 0, 7); ctx.fill();
+  ctx.fillStyle = '#0a1420'; ctx.beginPath(); ctx.arc(W * 0.86 + 6 * S + 2, H * 0.1 - 3, 13 * S + 5, 0, 7); ctx.fill();
+}
+function drawGround() {
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const path = (Math.abs(x - y) <= 0 && x > 2 && x < 10) || (y === 6 && x > 2 && x < 10) || (x === 5 && y > 2 && y < 9);
+    const base = path ? ((x + y) % 2 ? '#3a3a2e' : '#36362b') : ((x + y) % 2 ? '#1d3a2c' : '#1a3428');
+    tile(x, y, base);
+  }
+  // 가장자리 두께
+  const a = toScreen(0, N), b = toScreen(N, N), c = toScreen(N, 0), d = 10 * S;
+  poly([a, b, { x: b.x, y: b.y + d }, { x: a.x, y: a.y + d }], '#10231b');
+  poly([b, c, { x: c.x, y: c.y + d }, { x: b.x, y: b.y + d }], '#0d1d17');
+  // 작은 호수
+  const lk = toScreen(9.3, 10.2);
+  ctx.save(); ctx.translate(lk.x, lk.y); ctx.scale(1, 0.5);
+  ctx.fillStyle = '#16384a'; ctx.beginPath(); ctx.arc(0, 0, 46 * S, 0, 7); ctx.fill();
+  ctx.fillStyle = 'rgba(240,232,200,0.18)'; ctx.beginPath(); ctx.arc(10 * S, -8 * S, 10 * S, 0, 7); ctx.fill();
+  ctx.restore();
+}
+
+// ── 소품 ──
+function tree(o) {
+  const p = toScreen(o.x + 0.5, o.y + 0.5), h = 56 * o.h * S, w = 20 * S;
+  ctx.fillStyle = '#3b2a1e'; ctx.fillRect(p.x - 2 * S, p.y - 8 * S, 4 * S, 10 * S);
+  for (let i = 0; i < 3; i++) {
+    const yy = p.y - 6 * S - i * h * 0.28, ww = w * (1 - i * 0.22);
+    poly([{ x: p.x, y: yy - h * 0.45 }, { x: p.x + ww, y: yy }, { x: p.x - ww, y: yy }], i % 2 ? '#24543c' : '#1f4a35');
+  }
+}
+function tent() {
+  const z = ZONES.tent, f = toScreen(z.x - 0.9, z.y + 0.6), r = toScreen(z.x + 0.9, z.y + 0.6), back = toScreen(z.x - 0.9, z.y - 0.9), br = toScreen(z.x + 0.9, z.y - 0.9);
+  const top = { x: (f.x + r.x) / 2, y: (f.y + r.y) / 2 - 46 * S }, topB = { x: (back.x + br.x) / 2, y: (back.y + br.y) / 2 - 46 * S };
+  poly([f, top, topB, back], '#8a5a3c'); poly([r, top, topB, br], '#a8734c');
+  poly([f, r, top], '#c78a55');
+  const m = { x: (f.x + r.x) / 2, y: (f.y + r.y) / 2 };
+  poly([{ x: m.x - 9 * S, y: m.y }, { x: m.x + 9 * S, y: m.y }, { x: m.x, y: m.y - 26 * S }], '#3a2416');
+  ctx.fillStyle = 'rgba(255,190,110,0.5)'; ctx.beginPath(); ctx.arc(m.x, m.y - 8 * S, 3 * S, 0, 7); ctx.fill();   // 랜턴
+}
+function table() {
+  const z = ZONES.table, a = toScreen(z.x - 0.7, z.y - 0.4), b = toScreen(z.x + 0.7, z.y - 0.4), c = toScreen(z.x + 0.7, z.y + 0.4), d = toScreen(z.x - 0.7, z.y + 0.4), up = 16 * S;
+  [a, b, c, d].forEach(p => { ctx.fillStyle = '#4a3527'; ctx.fillRect(p.x - 1.5 * S, p.y - up, 3 * S, up); });
+  poly([a, b, c, d].map(p => ({ x: p.x, y: p.y - up })), '#b0875e', '#7a5a3c');
+  const m = toScreen(z.x, z.y);
+  ctx.fillStyle = '#e9e4d6'; ctx.fillRect(m.x - 10 * S, m.y - up - 6 * S, 12 * S, 7 * S);   // 종이
+  ctx.fillStyle = '#c94f3d'; ctx.fillRect(m.x + 4 * S, m.y - up - 4 * S, 6 * S, 3 * S);     // 연필
+}
+function fire(t) {
+  const z = ZONES.fire, p = toScreen(z.x, z.y);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  const glow = ctx.createRadialGradient(p.x, p.y - 8 * S, 2, p.x, p.y - 8 * S, 120 * S);
+  glow.addColorStop(0, 'rgba(255,138,61,0.35)'); glow.addColorStop(1, 'rgba(255,138,61,0)');
+  ctx.fillStyle = glow; ctx.fillRect(p.x - 130 * S, p.y - 130 * S, 260 * S, 260 * S); ctx.restore();
+  ctx.save(); ctx.translate(p.x, p.y); ctx.scale(1, 0.5);
+  ctx.fillStyle = '#5b5b5b'; ctx.beginPath(); ctx.arc(0, 0, 16 * S, 0, 7); ctx.fill();
+  ctx.fillStyle = '#2a1a12'; ctx.beginPath(); ctx.arc(0, 0, 12 * S, 0, 7); ctx.fill(); ctx.restore();
+  const k = reduce ? 0 : t / 120;
+  for (let i = 0; i < 3; i++) {
+    const h = (18 + 6 * Math.sin(k + i * 2)) * S, w = (7 - i * 1.5) * S, c = ['#ff6a2b', '#ff9d3d', '#ffd27a'][i];
+    poly([{ x: p.x - w, y: p.y - 2 * S }, { x: p.x + w, y: p.y - 2 * S }, { x: p.x + Math.sin(k + i) * 2 * S, y: p.y - h }], c);
+  }
+}
+function scope() {
+  const z = ZONES.scope, p = toScreen(z.x, z.y), up = 22 * S;
+  ctx.strokeStyle = '#8fa3a4'; ctx.lineWidth = 2 * S;
+  [[-8, 0], [8, 0], [0, 6]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.moveTo(p.x, p.y - up); ctx.lineTo(p.x + dx * S, p.y + dy * S); ctx.stroke(); });
+  ctx.save(); ctx.translate(p.x, p.y - up); ctx.rotate(-0.5);
+  ctx.fillStyle = '#d8d1bf'; ctx.fillRect(-4 * S, -4 * S, 26 * S, 8 * S); ctx.fillStyle = '#16384a'; ctx.fillRect(20 * S, -5 * S, 4 * S, 10 * S); ctx.restore();
+}
+function van() {
+  const z = ZONES.van, a = toScreen(z.x - 1.1, z.y - 0.5), b = toScreen(z.x + 1.1, z.y - 0.5), c = toScreen(z.x + 1.1, z.y + 0.5), d = toScreen(z.x - 1.1, z.y + 0.5), up = 30 * S;
+  poly([d, c, { x: c.x, y: c.y - up }, { x: d.x, y: d.y - up }], '#d8d1bf');
+  poly([c, b, { x: b.x, y: b.y - up }, { x: c.x, y: c.y - up }], '#bdb5a1');
+  poly([a, b, c, d].map(p => ({ x: p.x, y: p.y - up })), '#ece6d6');
+  ctx.fillStyle = '#7fb069'; const mid = { x: (d.x + c.x) / 2, y: (d.y + c.y) / 2 };
+  poly([{ x: d.x, y: d.y - up * 0.45 }, { x: c.x, y: c.y - up * 0.45 }, { x: c.x, y: c.y - up * 0.6 }, { x: d.x, y: d.y - up * 0.6 }], '#4e8a6a');
+  ctx.fillStyle = '#1f2f36'; ctx.fillRect(mid.x - 6 * S, mid.y - up * 0.9, 12 * S, 8 * S);
+  [d, c].forEach(p => { ctx.fillStyle = '#111'; ctx.beginPath(); ctx.ellipse(p.x + (p === d ? 10 : -10) * S, p.y, 5 * S, 3.5 * S, 0, 0, 7); ctx.fill(); });
+}
+function chair() {
+  const z = ZONES.chair, p = toScreen(z.x, z.y);
+  ctx.strokeStyle = '#3b2a1e'; ctx.lineWidth = 2 * S;
+  ctx.beginPath(); ctx.moveTo(p.x - 8 * S, p.y); ctx.lineTo(p.x + 6 * S, p.y - 12 * S); ctx.moveTo(p.x + 8 * S, p.y); ctx.lineTo(p.x - 6 * S, p.y - 12 * S); ctx.stroke();
+  poly([{ x: p.x - 9 * S, y: p.y - 12 * S }, { x: p.x + 9 * S, y: p.y - 12 * S }, { x: p.x + 7 * S, y: p.y - 26 * S }, { x: p.x - 7 * S, y: p.y - 26 * S }], '#4e8a6a');
+}
+function zoneLabel(k) {
+  const z = ZONES[k], p = toScreen(z.x, z.y + 1.1);
+  ctx.font = `600 ${Math.max(10, 11 * S + 2)}px "IBM Plex Sans KR", sans-serif`; ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(143,163,164,0.85)'; ctx.fillText(z.label, p.x, p.y + 10 * S);
+}
+
+// ── 캐릭터 ──
+const COLORS = ['#ff8a3d', '#7fb069', '#6fb3d2', '#e6c35c', '#d98ab0', '#a99ce0'];
+const agents = new Map();   // id → {x,y,tx,ty,color,name,zone,text,since,leaving}
+function agent(id, name) {
+  if (!agents.has(id)) {
+    const v = ZONES.van, isMain = id === 'main';
+    const a = { id, name: name || (isMain ? 'Claude' : '동료'), x: isMain ? ZONES.chair.x : v.x, y: isMain ? ZONES.chair.y + 0.3 : v.y + 0.7,
+      tx: 0, ty: 0, color: isMain ? COLORS[0] : COLORS[1 + (agents.size % (COLORS.length - 1))], zone: 'chair', text: '생각 중', since: performance.now(), leaving: false, alpha: isMain ? 1 : 0 };
+    a.tx = a.x; a.ty = a.y; agents.set(id, a);
+  }
+  return agents.get(id);
+}
+function goTo(a, zone, text) {
+  const z = ZONES[zone], others = [...agents.values()].filter(o => o !== a && o.zone === zone).length;
+  const off = [[0.55, 0.55], [-0.35, 0.75], [0.75, -0.25], [-0.6, 0.1], [0.2, 0.95]][others % 5];
+  a.zone = zone; a.tx = z.x + off[0]; a.ty = z.y + off[1]; a.text = text; a.since = performance.now();
+}
+function step(dt) {
+  for (const a of agents.values()) {
+    const dx = a.tx - a.x, dy = a.ty - a.y, d = Math.hypot(dx, dy), sp = (reduce ? 20 : 3.6) * dt;
+    if (d > 0.01) { const m = Math.min(1, sp / d); a.x += dx * m; a.y += dy * m; a.moving = true; } else a.moving = false;
+    a.alpha = a.leaving ? Math.max(0, a.alpha - dt * 1.5) : Math.min(1, a.alpha + dt * 2);
+    if (a.leaving && a.alpha === 0) agents.delete(a.id);
+  }
+}
+function person(a, t) {
+  const p = toScreen(a.x, a.y), bob = a.moving && !reduce ? Math.abs(Math.sin(t / 90)) * 3 * S : 0;
+  ctx.globalAlpha = a.alpha;
+  ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(p.x, p.y, 7 * S, 3 * S, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = '#2a3238'; ctx.fillRect(p.x - 4 * S, p.y - 9 * S - bob, 3 * S, 9 * S); ctx.fillRect(p.x + 1 * S, p.y - 9 * S - bob, 3 * S, 9 * S);
+  ctx.fillStyle = a.color; ctx.fillRect(p.x - 6 * S, p.y - 22 * S - bob, 12 * S, 14 * S);
+  ctx.fillStyle = '#f0d2b0'; ctx.beginPath(); ctx.arc(p.x, p.y - 27 * S - bob, 5.5 * S, 0, 7); ctx.fill();
+  ctx.fillStyle = '#2f4b3a'; ctx.fillRect(p.x - 7 * S, p.y - 32 * S - bob, 14 * S, 2.5 * S); ctx.fillRect(p.x - 4 * S, p.y - 36 * S - bob, 8 * S, 4 * S);   // 모자
+  // 말풍선
+  if (a.text) {
+    ctx.font = `${Math.max(10, 10 * S + 2)}px "IBM Plex Sans KR", sans-serif`; ctx.textAlign = 'center';
+    const txt = a.text.length > 22 ? a.text.slice(0, 21) + '…' : a.text, w = ctx.measureText(txt).width + 12, h = 18, bx = p.x, by = p.y - 50 * S - 6;
+    ctx.fillStyle = 'rgba(233,228,214,0.95)'; roundRect(bx - w / 2, by - h, w, h, 6); ctx.fill();
+    poly([{ x: bx - 4, y: by }, { x: bx + 4, y: by }, { x: bx, y: by + 5 }], 'rgba(233,228,214,0.95)');
+    ctx.fillStyle = '#0f1a1f'; ctx.fillText(txt, bx, by - 5);
+  }
+  ctx.font = `600 ${Math.max(9, 9 * S + 2)}px "IBM Plex Sans KR", sans-serif`; ctx.fillStyle = a.color; ctx.textAlign = 'center';
+  ctx.fillText(a.name, p.x, p.y + 12 * S + 4);
+  ctx.globalAlpha = 1;
+}
+function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+
+// ── 그리기 (뒤에서 앞으로) ──
+function frame(t) {
+  const dt = Math.min(0.05, (t - (frame.last || t)) / 1000); frame.last = t;
+  step(dt);
+  drawSky(t); drawGround();
+  const items = [
+    ...TREES.map(o => ({ d: o.x + o.y, f: () => tree(o) })),
+    { d: ZONES.tent.x + ZONES.tent.y, f: tent }, { d: ZONES.table.x + ZONES.table.y, f: table },
+    { d: ZONES.fire.x + ZONES.fire.y, f: () => fire(t) }, { d: ZONES.scope.x + ZONES.scope.y, f: scope },
+    { d: ZONES.van.x + ZONES.van.y, f: van }, { d: ZONES.chair.x + ZONES.chair.y, f: chair },
+    ...[...agents.values()].map(a => ({ d: a.x + a.y + 0.01, f: () => person(a, t) })),
+  ].sort((a, b) => a.d - b.d);
+  Object.keys(ZONES).forEach(zoneLabel);
+  items.forEach(i => i.f());
+  requestAnimationFrame(frame);
+}
+
+// ── 이벤트 처리 ── {agent, name, tool, text, kind: 'tool'|'idle'|'spawn'|'done'}
+const logEl = document.getElementById('log'), nowEl = document.getElementById('now');
+function hhmm(d) { return d.toTimeString().slice(0, 8); }
+function handle(ev) {
+  const a = agent(ev.agent || 'main', ev.name);
+  if (ev.kind === 'done') { goTo(a, 'van', '돌아가는 중'); setTimeout(() => { a.leaving = true; }, 1800); }
+  else if (ev.kind === 'idle') goTo(a, 'chair', ev.text || '다음 지시 기다리는 중');
+  else { const z = zoneOf(ev.tool); goTo(a, z, ev.text || ZONES[z].verb); }
+  const li = document.createElement('li');
+  li.innerHTML = `<span>${hhmm(new Date())}</span><span></span>`;
+  li.lastChild.textContent = `${a.name} · ${ev.text || ev.tool || ''}`;
+  logEl.prepend(li); while (logEl.children.length > 60) logEl.lastChild.remove();
+  renderNow();
+}
+function renderNow() {
+  nowEl.innerHTML = '';
+  for (const a of agents.values()) {
+    if (a.leaving) continue;
+    const row = document.createElement('div'); row.className = 'row';
+    row.innerHTML = `<span class="sw" style="background:${a.color}"></span><div><b></b> <span class="t"></span></div>`;
+    row.querySelector('b').textContent = `${a.name} · ${ZONES[a.zone].label}`;
+    row.querySelector('.t').textContent = a.text;
+    nowEl.append(row);
+  }
+}
+
+// ── 데모: 실제 같은 작업 흐름을 돌림 ──
+const DEMO = [
+  { tool: 'Read', text: 'CLAUDE.md 읽는 중' }, { tool: 'Grep', text: "'heatmap' 찾는 중" },
+  { tool: 'Read', text: 'kydzm/index.html 읽는 중' }, { kind: 'idle', text: '고칠 방법 생각 중' },
+  { tool: 'Edit', text: 'index.html 고치는 중' }, { tool: 'Bash', text: 'node --check 돌리는 중' },
+  { tool: 'Bash', text: 'git push origin main' }, { tool: 'WebSearch', text: '쿠팡 파트너스 API 찾아보는 중' },
+  { kind: 'spawn' }, { tool: 'Write', text: 'deals.py 쓰는 중' }, { tool: 'Bash', text: '테스트 돌리는 중' },
+  { kind: 'idle', text: '사용자 답 기다리는 중' },
+];
+const SUB_TASKS = [[{ tool: 'Glob', text: '파일 목록 훑는 중' }, { tool: 'Read', text: 'queue.json 읽는 중' }, { tool: 'Grep', text: '겨울 문구 찾는 중' }],
+  [{ tool: 'WebFetch', text: '문서 읽는 중' }, { tool: 'Read', text: '응답 정리 중' }]];
+let demoOn = true, di = 0, subN = 0;
+function spawn() {
+  for (const tasks of SUB_TASKS) {
+    const id = 'sub' + (++subN), name = '동료 ' + subN;
+    handle({ agent: 'main', tool: 'Agent', text: `${name}에게 일 맡기는 중` });
+    tasks.forEach((e, i) => setTimeout(() => handle({ ...e, agent: id, name }), 1500 + i * 2600));
+    setTimeout(() => handle({ agent: id, name, kind: 'done', text: '보고하고 퇴근' }), 1500 + tasks.length * 2600);
+  }
+}
+function demoTick() {
+  if (!demoOn) return;
+  const e = DEMO[di++ % DEMO.length];
+  if (e.kind === 'spawn') spawn(); else handle({ agent: 'main', ...e });
+}
+document.getElementById('pause').onclick = e => { demoOn = !demoOn; e.currentTarget.textContent = demoOn ? '데모 멈추기' : '데모 다시 보기'; };
+document.getElementById('burst').onclick = spawn;
+
+resize(); agent('main'); renderNow();
+handle({ agent: 'main', kind: 'idle', text: '캠핑장 도착' });
+setInterval(demoTick, 3200);
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
