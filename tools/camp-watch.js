@@ -185,6 +185,7 @@ http.createServer(async (req, res) => {
   for (const ip of ips) console.log(`  같은 와이파이 폰: http://${ip}:${PORT}`);
   console.log(`  이 컴퓨터 이름: ${MACHINE}   (바꾸려면 node camp-watch.js PC)`);
   console.log(`  지켜보는 기록: ${ROOT}`);
+  if (!fs.existsSync(ROOT)) console.log(`  ⚠ 기록 폴더가 아직 없어요 — 이 컴퓨터에서 Claude Code를 한 번 쓰면 생기고, 그때부터 자동으로 보여요.\n    (클라우드 세션만 쓰면 이 컴퓨터엔 기록이 안 남아요)`);
   console.log(`  끄려면 이 창에서 Ctrl+C\n`);
 });
 
