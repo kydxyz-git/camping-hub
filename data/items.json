@@ -1132,9 +1132,10 @@
     "name": "크레모아 3FACE L",
     "cat": "light",
     "video": "",
+    "pick": true,
     "desc": "",
-    "url": "",
-    "source": "",
+    "url": "https://link.coupang.com/a/h2MeVeo6nc",
+    "source": "쿠팡",
     "thumb": "./images/products/3487584ba160.jpg",
     "currency": "KRW",
     "price_original": 0,
@@ -1142,8 +1143,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-08T01:40:20.600Z",
-    "updated_at": "2026-10-08T01:40:20.600Z",
-    "pick": 1
+    "updated_at": "2026-10-22T00:24:32.027Z"
   },
   {
     "id": "item_a51e32a09f",
