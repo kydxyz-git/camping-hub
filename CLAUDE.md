@@ -49,7 +49,8 @@
 
 - `tools/build_pages.py`가 `data/*.json`으로 `camps/{이름}/` · `gear/{이름}/` · `foods/{이름}/` 상세 페이지와 목록 페이지(`camps/` `gear/` `foods/`), `sitemap.xml`, `index.html`의 `PRERENDER` 블록을 만든다. **생성물은 직접 수정 금지** — 스크립트를 고친다.
 - `.github/workflows/build-pages.yml`: main에 `data/{camps,items,foods,series,config}.json`이 바뀌면 자동 실행해 `chore(build): …`로 커밋.
-- 사람이 열면 자바스크립트로 실제 화면으로 이동: 캠핑장 → `camp.html?id=`, 용품 → `/?ref=search#items/{id}`, 먹거리 → `/?ref=search#foods/{id}` (메인 맨 위에 '찾으신 제품/음식'으로 고정, 모바일·PC 모두), 목록 → 해당 탭. 내용은 HTML에 들어 있어 JS 없이 읽는 검색로봇(네이버 등)이 색인.
+- **자동 이동 없음** (261022 — 구글이 자바스크립트 이동을 '리디렉션'으로 보고 색인에서 뺌): 페이지 자체가 볼 만한 착지 페이지(사진·배지·정보)이고, 본문 큰 버튼 + 화면 아래 고정 버튼으로 실제 화면에 들어간다: 캠핑장 → `camp.html?id=`, 용품 → `/?ref=search#items/{id}`, 먹거리 → `/?ref=search#foods/{id}` (메인 맨 위에 '찾으신 제품/음식'으로 고정), 목록 → 해당 탭. **검색엔진에만 다르게 보여주는 이동(봇 판별 후 이동 등)은 금지** — 구글 스팸 정책(sneaky redirect).
+- 방문 기록: 정적 페이지가 통계 Worker에 `/search/{camps|gear|foods}/{id}`(목록은 `/search/{hub}`)로 pageview + 출처(구글·네이버…) + 주소에 실려 온 검색어(`ctx` '검색어 …', 네이버 일부). admin 통계 '🔎 검색으로 들어온 페이지'. 구글 검색어는 넘어오지 않음 → 서치 콘솔 '실적'.
 - 페이지 문구는 데이터(주소·방문 횟수·메모·태그·영상)로만 만든다 — 없는 사실을 지어 넣지 않기.
 - 검색엔진 등록 완료(2026-10-08): 네이버 서치어드바이저(`naver7a710ec2e81a089dd8a5d993d3ceb9c4.html` + `index.html`의 `naver-site-verification` 메타), 구글 서치 콘솔(가비아 DNS TXT `google-site-verification=…`). **이 파일·메타 태그·DNS 레코드는 지우지 말 것.**
 

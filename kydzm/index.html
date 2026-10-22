@@ -3323,6 +3323,12 @@ function renderStats(container, data) {
           </div>`}
     </div>
 
+    <!-- 검색으로 들어온 페이지 (검색용 정적 페이지 방문: /search/…) -->
+    <div class="card" id="search-landing-card">
+      <div class="stats-section-title">🔎 검색으로 들어온 페이지 <span style="font-size:11px;font-weight:400;color:var(--muted);">(최근 30일 · 구글·네이버 등에서 바로 들어온 페이지)</span></div>
+      <div class="ca-loading">불러오는 중...</div>
+    </div>
+
     <!-- 인기 검색어 -->
     <div class="card">
       <div class="stats-section-title">🔍 인기 검색어</div>
@@ -3837,8 +3843,48 @@ async function loadEventsForAnalysis(days = 30) {
 }
 
 // 콘텐츠 분석 초기화
+// 검색용 정적 페이지(camps/·gear/·foods/) 방문 — tools/build_pages.py가 /search/{camps|gear|foods}/{id} 로 기록
+// 출처(구글·네이버…)와, 네이버가 주소에 검색어를 실어 보낸 경우 '검색어 …'(ctx)
+async function renderSearchLanding() {
+  const card = document.getElementById('search-landing-card');
+  if (!card) return;
+  const box = card.querySelector('.ca-loading') || card.lastElementChild;
+  let events = [];
+  try { events = await loadEventsForAnalysis(30); } catch (e) { /* 아래에서 빈 상태로 */ }
+  const rows = new Map();
+  for (const ev of events) {
+    if (ev.type !== 'pageview' || !/^\/search\//.test(ev.path || '')) continue;
+    const [, kind, id] = ev.path.split('/').slice(1);
+    const r = rows.get(ev.path) || { kind: kind || '', id: id || '', n: 0, refs: {}, qs: {} };
+    r.n++;
+    if (ev.ref) r.refs[ev.ref] = (r.refs[ev.ref] || 0) + 1;
+    const q = String(ev.ctx || '').replace(/^검색어 /, '');
+    if (ev.ctx && /^검색어 /.test(ev.ctx)) r.qs[q] = (r.qs[q] || 0) + 1;
+    rows.set(ev.path, r);
+  }
+  const list = [...rows.values()].sort((a, b) => b.n - a.n).slice(0, 20);
+  const nameOf = r => {
+    const src = r.kind === 'camps' ? cache.camps : r.kind === 'gear' ? cache.items : r.kind === 'foods' ? cache.foods : null;
+    if (!r.id) return { camps: '캠핑장 목록', gear: '캠핑용품 목록', foods: '먹거리 목록' }[r.kind] || r.kind;
+    return ((src || []).find(x => x.id === r.id) || {}).name || r.id;
+  };
+  const kindLabel = { camps: '캠핑장', gear: '장비', foods: '음식' };
+  const top = o => Object.entries(o).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${escapeHtml(k)} ${v}`).join(' · ');
+  const html = list.length === 0
+    ? '<div class="stats-empty">아직 없어요 — 검색용 페이지에 기록을 붙인 뒤(10/22)부터 쌓여요</div>'
+    : `<div class="stats-list">${list.map((r, i) => `
+        <div class="stats-row" style="flex-wrap:wrap">
+          <span class="stats-row-rank">${i + 1}</span>
+          <span class="stats-row-label"><span class="stats-platform-badge bg-etc">${escapeHtml(kindLabel[r.kind] || '목록')}</span> ${escapeHtml(nameOf(r))}
+            <span style="display:block;font-size:11px;color:var(--muted)">${top(r.refs) || '출처 없음'}${Object.keys(r.qs).length ? ' · 검색어: ' + top(r.qs) : ''}</span></span>
+          <span class="stats-row-count">${r.n.toLocaleString()}</span>
+        </div>`).join('')}</div>`;
+  if (box) box.outerHTML = html; else card.insertAdjacentHTML('beforeend', html);
+}
+
 function initContentAnalysis(data) {
   _analysisData = data;
+  renderSearchLanding();
   const candidates = getCandidatesForCategory(_analysisMode, data);
   if (candidates.length === 0) {
     _analysisTarget = null;

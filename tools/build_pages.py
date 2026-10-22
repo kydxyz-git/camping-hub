@@ -7,8 +7,10 @@ data/*.json 을 읽어 캠핑장·캠핑용품·먹거리마다 내용이 들어
   index.html 의 PRERENDER 블록 (자바스크립트 없이도 보이는 목록)
   sitemap.xml (전체 재생성)
 
-사람이 페이지를 열면 자바스크립트로 실제 사이트 화면으로 바로 이동한다.
-  캠핑장 → /camp.html?id=…   용품 → /#items/{id}   먹거리 → /#foods/{id}
+페이지는 그 자체로 보는 페이지다 (자동 이동 없음 — 261022: 구글이 자바스크립트 이동을 '리디렉션'으로 보고
+색인에서 빼서 없앰). 큰 버튼·아래 고정 버튼으로 실제 사이트 화면에 들어간다.
+  캠핑장 → /camp.html?id=…   용품 → /?ref=search#items/{id}   먹거리 → /?ref=search#foods/{id}
+방문은 통계 Worker에 /search/{camps|gear|foods}/{id} 로 기록 (어디서 왔는지 — 구글·네이버 등 — 와 함께).
 
 GitHub Actions(.github/workflows/build-pages.yml)가 data/ 변경 시 자동 실행한다.
 로컬 실행: python3 tools/build_pages.py
@@ -27,6 +29,11 @@ BRAND = '공대남자의 캠핑이야기'
 OG_DEFAULT = SITE + '/images/refs/og-1278df5b.jpg'
 KST = datetime.timezone(datetime.timedelta(hours=9))
 OUT_DIRS = ['camps', 'gear', 'foods']
+STATS_URL = 'https://kyd-stats.kydxyz.workers.dev/log'
+IG = 'https://www.instagram.com/kyd_zm/'
+# 배지 색 (CLAUDE.md UI 규칙과 같게)
+SELLER_COLOR = {'쿠팡': '#ee2c4d', '컬리': '#5f0080', '네이버': '#03C75A', '알리': '#FF4747', '테무': '#FF6A00'}
+BOOK_COLOR = {'그래가 파트너스': '#1a1a1a', '네이버': '#03C75A', '캠핏': '#2D8F4C', '땡큐캠핑': '#FF6B2C'}
 MARK_START = '<!-- PRERENDER:START (tools/build_pages.py 자동 생성 — 직접 수정 금지) -->'
 MARK_END = '<!-- PRERENDER:END -->'
 
@@ -109,35 +116,61 @@ def josa(word, pair):
 
 # ─── 공통 레이아웃 ────────────────────────────────────────────────────
 CSS = """
-:root{--paper:#FBFBF8;--ink:#15181A;--stone:#6F756E;--line:#E4E4DE;--stamp:#FFE873}
+:root{--paper:#FBFBF8;--ink:#15181A;--stone:#6F756E;--line:#E4E4DE;--stamp:#FFE873;--card:#fff}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--paper);color:var(--ink);font-family:'Pretendard Variable','SUIT Variable',-apple-system,system-ui,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
 a{color:inherit}
-.wrap{max-width:760px;margin:0 auto;padding:28px 20px 72px}
-.top{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin-bottom:28px}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 110px}
+.top{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin-bottom:20px}
 .top a{text-decoration:none;font-weight:800}
-.crumb{color:var(--stone);font-size:13px;margin-bottom:8px}
+.top .ig{font-weight:600;color:var(--stone)}
+.crumb{color:var(--stone);font-size:13px;margin-bottom:6px}
 .crumb a{text-decoration:none}
-h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin-bottom:12px}
-h2{font-size:18px;margin:32px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
-.lead{font-size:16px;margin-bottom:18px}
-.go{display:inline-block;margin:6px 0 4px;padding:11px 18px;border-radius:999px;background:var(--ink);color:#fff;text-decoration:none;font-weight:700;font-size:14px}
-dl{display:grid;grid-template-columns:96px 1fr;gap:6px 12px;font-size:15px}
+h1{font-size:28px;line-height:1.3;letter-spacing:-.02em;margin-bottom:10px}
+h2{font-size:17px;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.lead{font-size:16px;margin-bottom:16px}
+.hero{position:relative;margin:0 0 16px;border-radius:14px;overflow:hidden;background:#EDEDE7}
+.hero img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.hero.sq{background:#fff;border:1px solid var(--line);max-width:420px}
+.hero.sq img{aspect-ratio:1/1;object-fit:contain}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;color:#fff;background:#9e9e9e}
+.badge.line{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:600}
+.badge.pick{background:var(--stamp);color:var(--ink)}
+.go{display:block;text-align:center;margin:8px 0 4px;padding:14px 18px;border-radius:14px;background:var(--ink);color:#fff;text-decoration:none;font-weight:800;font-size:15px}
+.sticky{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--paper) 30%)}
+.sticky a{display:block;max-width:728px;margin:0 auto;text-align:center;padding:14px 18px;border-radius:14px;background:var(--ink);color:#fff;text-decoration:none;font-weight:800;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+dl{display:grid;grid-template-columns:96px 1fr;gap:6px 12px;font-size:15px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
 dt{color:var(--stone)}
 ul{padding-left:20px}
 li{margin:3px 0}
-.tags span{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 6px 6px 0;font-size:13px}
+.tags span{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 6px 6px 0;font-size:13px;background:var(--card)}
 .pics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px}
-.pics img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:6px;background:#EDEDE7}
-.thumb{width:100%;max-width:360px;aspect-ratio:1/1;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px;margin:8px 0 4px}
+.pics img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:8px;background:#EDEDE7}
 .cols{columns:2;column-gap:24px}
 .cols li{break-inside:avoid}
-.foot{margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--stone)}
+.foot{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--stone)}
 .foot a{margin-right:12px}
+@media (min-width:720px){h1{font-size:32px}.go{display:inline-block;padding:13px 28px}}
 """
 
 
-def page(*, title, desc, canonical, og_image, redirect, body, jsonld=None, og_type='article'):
+def track_js(path, title):
+    """방문 기록: 바깥(구글·네이버 등)에서 왔으면 어디서 왔는지, 검색어가 주소에 실려 오면 그것도 (네이버 일부)"""
+    return ("<script>(function(){try{var r=document.referrer,h='',q='';try{var u=new URL(r);h=u.hostname.toLowerCase();"
+            "q=u.searchParams.get('query')||u.searchParams.get('q')||''}catch(e){}"
+            "var s=!r?'direct':/kydz\\.kr$/.test(h)?'':/google/.test(h)?'구글':/naver/.test(h)?'네이버':/daum|kakao/.test(h)?'다음/카카오':"
+            "/bing/.test(h)?'빙':/instagram|ig\\.me/.test(h)?'인스타그램':/threads/.test(h)?'스레드':h;"
+            "var ua=navigator.userAgent||'',d=/iPad|Tablet/i.test(ua)?'tablet':/Mobile|Android|iPhone|iPod|Phone/i.test(ua)?'mobile':'desktop';"
+            f"var o={{type:'pageview',path:{json.dumps(path)},title:{json.dumps(title, ensure_ascii=False)},device:d,"
+            "lang:String(navigator.language||'').slice(0,2).toLowerCase()};if(s)o.referrer=s;if(q)o.context=('검색어 '+q).slice(0,100);"
+            "var b=JSON.stringify(o);if(!(navigator.sendBeacon&&navigator.sendBeacon("
+            f"{json.dumps(STATS_URL)},new Blob([b],{{type:'text/plain;charset=UTF-8'}}))))fetch({json.dumps(STATS_URL)},"
+            "{method:'POST',body:b,keepalive:true,mode:'cors',credentials:'omit',headers:{'Content-Type':'text/plain;charset=UTF-8'}})}catch(e){}})();</script>")
+
+
+def page(*, title, desc, canonical, og_image, cta, track, body, jsonld=None, og_type='article'):
+    """cta: (버튼 글자, 사이트 안 주소) — 본문 안 큰 버튼 + 화면 아래 고정 버튼. track: (통계 경로, 이름)"""
     ld = ''
     for obj in (jsonld or []):
         ld += '<script type="application/ld+json">' + json.dumps(obj, ensure_ascii=False) + '</script>\n'
@@ -159,18 +192,19 @@ def page(*, title, desc, canonical, og_image, redirect, body, jsonld=None, og_ty
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="{e(og_image)}">
 <link rel="icon" href="{SITE}/favicon.ico">
-<script>location.replace({json.dumps(redirect)});</script>
 {ld}<style>{CSS}</style>
 </head>
 <body>
 <div class="wrap">
-<div class="top"><a href="{SITE}/">{BRAND}</a><span>@kyd_zm</span></div>
+<div class="top"><a href="{SITE}/">{BRAND}</a><a class="ig" href="{IG}" rel="noopener" target="_blank">@kyd_zm</a></div>
 {body}
 <div class="foot">
 <a href="{SITE}/">홈</a><a href="{SITE}/camps/">다녀온 캠핑장</a><a href="{SITE}/gear/">캠핑용품</a><a href="{SITE}/foods/">먹거리</a>
 <p>5년차 부부캠퍼 공대남자가 직접 다녀오고 써 본 것만 기록합니다.</p>
 </div>
 </div>
+<div class="sticky"><a href="{e(SITE + cta[1])}">{e(cta[0])} →</a></div>
+{track_js(*track)}
 </body>
 </html>
 """
@@ -225,9 +259,21 @@ def camp_page(c, slug, by_region, slugs, eps_by_camp):
         rows.append(('예약', plat))
     dl = ''.join(f'<dt>{e(k)}</dt><dd>{e(v)}</dd>' for k, v in rows)
 
-    body = [f'<p class="crumb"><a href="{SITE}/camps/">다녀온 캠핑장</a> · {e(region)}</p>',
-            f'<h1>{e(name)}</h1>', f'<p class="lead">{e(lead)}</p>',
-            f'<a class="go" href="{e(SITE + "/camp.html?id=" + c["id"])}">캠핑장 기록 보기</a>']
+    badges = []
+    if c.get('pick'):
+        badges.append('<span class="badge pick">★ PICK</span>')
+    if region:
+        badges.append(f'<span class="badge line">{e(region)}</span>')
+    if visits:
+        badges.append(f'<span class="badge line">{visits}회 방문</span>')
+    if plat:
+        badges.append(f'<span class="badge" style="background:{BOOK_COLOR.get(plat, "#9e9e9e")}">{e(plat)}</span>')
+    body = [f'<p class="crumb"><a href="{SITE}/camps/">다녀온 캠핑장</a> · {e(region)}</p>']
+    if imgs:
+        body.append(f'<div class="hero"><img src="{e(abs_img(imgs[0]))}" alt="{e(name)}"></div>')
+    body += [f'<h1>{e(name)}</h1>', f'<div class="badges">{"".join(badges)}</div>' if badges else '',
+             f'<p class="lead">{e(lead)}</p>',
+             f'<a class="go" href="{e(SITE + "/camp.html?id=" + c["id"])}">캠핑장 기록 보기</a>']
     if dl:
         body.append(f'<h2>기본 정보</h2><dl>{dl}</dl>')
     if extras:
@@ -242,7 +288,7 @@ def camp_page(c, slug, by_region, slugs, eps_by_camp):
             f'<li><a href="{e(u)}" rel="nofollow noopener" target="_blank">{e(t)}</a></li>' for t, u in vids) + '</ul>')
     if imgs:
         body.append('<h2>사진</h2><div class="pics">' + ''.join(
-            f'<img src="{e(abs_img(p))}" alt="{e(name)} 사진 {i + 1}" loading="lazy">' for i, p in enumerate(imgs[:4])) + '</div>')
+            f'<img src="{e(abs_img(p))}" alt="{e(name)} 사진 {i + 2}" loading="lazy">' for i, p in enumerate(imgs[1:5])) + '</div>') if len(imgs) > 1 else None
     near = [x for x in by_region.get(region, []) if x['id'] != c['id']][:12]
     if near:
         body.append(f'<h2>{e(region)}의 다른 캠핑장</h2><ul class="cols">' + ''.join(
@@ -259,7 +305,8 @@ def camp_page(c, slug, by_region, slugs, eps_by_camp):
         ld['image'] = [abs_img(p) for p in imgs[:4]]
     return page(title=f"{name} 후기·정보 | {BRAND}", desc=desc, canonical=canonical,
                 og_image=abs_img(imgs[0]) if imgs else OG_DEFAULT,
-                redirect=f"/camp.html?id={c['id']}", body='\n'.join(body),
+                cta=('캠핑장 기록 보기', f"/camp.html?id={c['id']}"), track=(f"/search/camps/{c['id']}", name),
+                body='\n'.join(b for b in body if b),
                 jsonld=[ld, breadcrumb([('홈', SITE + '/'), ('다녀온 캠핑장', SITE + '/camps/'), (name, canonical)])])
 
 
@@ -285,10 +332,19 @@ def product_page(p, slug, kind, cat_label, siblings, slugs):
     dl = ''.join(f'<dt>{e(k)}</dt><dd>{e(v)}</dd>' for k, v in rows)
     target = f"/?ref=search#{'items' if is_gear else 'foods'}/{p['id']}"
     hub = 'gear' if is_gear else 'foods'
-    body = [f'<p class="crumb"><a href="{SITE}/{hub}/">{section_name}</a>{(" · " + e(cat_label)) if cat_label else ""}</p>',
-            f'<h1>{e(name)}</h1>']
+    badges = []
+    if p.get('pick'):
+        badges.append('<span class="badge pick">★ PICK</span>')
+    if cat_label:
+        badges.append(f'<span class="badge line">{e(cat_label)}</span>')
+    if p.get('source') and p.get('url'):
+        badges.append(f'<span class="badge" style="background:{SELLER_COLOR.get(p["source"], "#9e9e9e")}">{e(p["source"])}</span>')
+    body = [f'<p class="crumb"><a href="{SITE}/{hub}/">{section_name}</a>{(" · " + e(cat_label)) if cat_label else ""}</p>']
     if p.get('thumb'):
-        body.append(f'<img class="thumb" src="{e(abs_img(p["thumb"]))}" alt="{e(name)}">')
+        body.append(f'<div class="hero sq"><img src="{e(abs_img(p["thumb"]))}" alt="{e(name)}"></div>')
+    body.append(f'<h1>{e(name)}</h1>')
+    if badges:
+        body.append(f'<div class="badges">{"".join(badges)}</div>')
     body.append(f'<p class="lead">{e(lead)}</p>')
     if p.get('desc'):
         body.append(f'<p>{e(p["desc"])}</p>')
@@ -310,7 +366,8 @@ def product_page(p, slug, kind, cat_label, siblings, slugs):
     if cat_label:
         ld['category'] = cat_label
     return page(title=f"{name} | {BRAND}", desc=desc, canonical=canonical,
-                og_image=abs_img(p.get('thumb')) or OG_DEFAULT, redirect=target, body='\n'.join(body),
+                og_image=abs_img(p.get('thumb')) or OG_DEFAULT, cta=('공대남자의 캠핑이야기에서 보기', target),
+                track=(f"/search/{hub}/{p['id']}", name), body='\n'.join(body),
                 jsonld=[ld, breadcrumb([('홈', SITE + '/'), (section_name, SITE + f'/{hub}/'), (name, canonical)])])
 
 
@@ -325,7 +382,8 @@ def hub_page(*, hub, title, h1, lead, groups, redirect, slugs, extra=lambda x: '
             f'<li><a href="{url_of(hub, slugs[x["id"]])}">{e(x["name"])}</a>{extra(x)}</li>' for x in rows) + '</ul>')
     canonical = f'{SITE}/{hub}/'
     return page(title=f"{title} | {BRAND}", desc=lead[:150], canonical=canonical, og_image=OG_DEFAULT,
-                redirect=redirect, body='\n'.join(body), og_type='website',
+                cta=('공대남자의 캠핑이야기에서 보기', redirect), track=(f"/search/{hub}", h1),
+                body='\n'.join(body), og_type='website',
                 jsonld=[breadcrumb([('홈', SITE + '/'), (h1, canonical)])])
 
 
