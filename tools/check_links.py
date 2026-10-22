@@ -132,15 +132,17 @@ def main():
     # 내 코드 = 가장 많이 쓰인 코드. 코드 없는 링크·다른 코드 링크를 따로 표시
     main_af = (Counter(r["af"] for r in results.values() if r["af"]).most_common(1) or [("", 0)])[0][0]
     for r in results.values():
-        if r["status"] in ("broken",):
-            continue
+        if r["status"] == "broken" or not r["product_id"]:
+            continue   # 상품까지 못 따라간 링크는 코드 판정도 안 함 (확인 불가 그대로)
         if not r["af"]:
             r["status"], r["detail"] = "no_af", "파트너스 코드 없음 — 파트너스에서 만든 링크가 아님 (수익 안 잡힘)" + (f" · {r['detail']}" if r["detail"] else "")
         elif main_af and r["af"] != main_af:
             r["status"], r["detail"] = "other_af", f"다른 파트너스 코드 {r['af']} (대부분은 {main_af})" + (f" · {r['detail']}" if r["detail"] else "")
 
     out = {"checked_at": datetime.now(KST).isoformat(timespec="seconds"), "main_af": main_af,
-           "counts": dict(Counter(r["status"] for r in results.values())), "results": results}
+           "counts": dict(Counter(r["status"] for r in results.values())), "results": results,
+           # 점검 방식 손볼 때 참고 — 넘어가는 주소를 못 찾은 짧은 링크 페이지 앞부분 (쿠팡 공개 페이지)
+           "sample_html": sample[:3000]}
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
         f.write("\n")
