@@ -7650,9 +7650,10 @@ function coupangFinderHtml(kind) {
   return `<div class="cp-finder" style="border:1px solid var(--line, #e5e5e5);border-radius:10px;padding:12px;margin-bottom:16px;background:#fff7f8;">
     <div style="font-weight:700;margin-bottom:8px;">🛒 쿠팡에서 찾기 <span style="font-weight:400;font-size:12px;color:var(--muted);">— 고르면 이름·내 파트너스 링크·이미지가 채워지고 비공개로 저장돼요</span></div>
     <div style="display:flex;gap:6px;">
-      <input class="input" id="cp-q" placeholder="상품명 (예: 헬리녹스 체어원)" value="${escapeHtml(f.q)}" style="flex:1;">
+      <input class="input" id="cp-q" placeholder="상품명 또는 '상품명 + 쿠팡 링크'" value="${escapeHtml(f.q)}" style="flex:1;">
       <button type="button" class="btn btn-sm" id="cp-go" ${f.busy ? 'disabled' : ''}>${f.busy ? '찾는 중…' : '찾기'}</button>
     </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:5px;">파트너스에서 만든 링크를 쓰려면 상품명과 같이 붙여넣으세요 (예: 헬리녹스 체어원 https://link.coupang.com/a/…) — 링크는 그대로 써요</div>
     ${f.msg ? `<div style="font-size:12px;color:var(--muted);margin-top:6px;">${escapeHtml(f.msg)}</div>` : ''}
     ${f.items.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:10px;">
       ${f.items.map((it, i) => `<button type="button" class="cp-pick" data-cp="${i}" style="text-align:left;border:1px solid #ddd;border-radius:8px;background:#fff;padding:6px;cursor:pointer;">
@@ -7690,6 +7691,12 @@ function bindCoupangFinder(kind) {
       if (!res) throw new Error('결과를 4분 안에 못 받았어요. 깃허브 Actions의 coupang-search 실행 기록을 확인해 주세요.');
       if (res.error && !(res.items || []).length) throw new Error(res.error);
       _cpFinder = { q, busy: false, msg: `후보 ${res.items.length}개 — 맞는 걸 누르세요`, items: res.items };
+      // 링크로 가져온 경우(후보 1개)는 바로 채움
+      if (/coupang\.com\//.test(q) && res.items.length === 1 && document.getElementById('cp-q')) {
+        rerender();
+        const one = document.querySelector('.cp-pick[data-cp="0"]');
+        if (one) { one.click(); return; }
+      }
     } catch (e) {
       const m = String(e.message || e);
       _cpFinder = { q, busy: false, items: [],
