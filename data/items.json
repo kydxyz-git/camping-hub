@@ -557,7 +557,7 @@
     "video": "",
     "pick": true,
     "desc": "바람에 강한 원형 버너, 접이식 고아라 지지대",
-    "url": "https://link.coupang.com/a/gbAkcxHqiO",
+    "url": "https://link.coupang.com/a/h2Lv2E9REy",
     "source": "쿠팡",
     "thumb": "./images/products/685f4f23b8ec.jpg",
     "currency": "KRW",
@@ -566,20 +566,24 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-08-13T13:43:33.980Z",
-    "updated_at": "2026-08-13T14:20:05.792Z"
+    "updated_at": "2026-10-22T00:14:22.015Z"
   },
   {
     "id": "item_fedcb5008b",
     "name": "소토 레귤레이터(ST-340)",
     "cat": "kitchen",
+    "video": "",
     "desc": "레귤레이터 내장 버너, 낮은 기온에서도 화력 유지",
-    "url": "https://naver.me/F05U6hqr",
-    "source": "네이버",
+    "url": "https://link.coupang.com/a/h2Lx6MTFRI",
+    "source": "쿠팡",
     "thumb": "./images/products/f6287b2f9899.jpg",
     "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
     "published": true,
     "created_at": "2026-08-13T13:46:21.697Z",
-    "updated_at": "2026-08-13T14:10:48.777Z"
+    "updated_at": "2026-10-22T00:14:54.314Z"
   },
   {
     "id": "item_c9c551ed52",
