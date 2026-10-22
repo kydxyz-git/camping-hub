@@ -125,12 +125,13 @@ body.fixed .row .t, body.fixed .log { font-size: 11px; }
         <button type="button" id="fixed">고정화면</button>
       </div>
       <p class="note">고정화면: 지도와 내용을 화면 가득 보여주고 화면이 꺼지지 않게 해요. 휴대폰을 가로로 눕히면 자동으로 켜지고, 지도를 두 번 톡 치거나 '고정화면 끄기'로 나와요.</p>
-      <p class="note">지금은 예시 작업을 돌려 보여주는 데모예요. 연결하면 공대남자의 실제 Claude Code 작업과 예약된 작업이 실시간으로 움직여요.</p>
+      <p class="note" id="modenote">지금은 예시 작업을 돌려 보여주는 데모예요. 내 컴퓨터(PC·노트북)에서 camp-watch.js를 켜고 그 주소로 열면 실제 Claude Code 작업이 실시간으로 움직여요.</p>
     </aside>
   </div>
 </div>
 <script>
 (() => {
+const LIVE = window.CAMP_LIVE || '';   // camp-watch.js로 열면 실제 작업 연결
 'use strict';
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -477,11 +478,16 @@ function woodpile() {
 }
 function useWood(amount) { wood.level = Math.max(0, wood.level - amount); renderWood(); }
 function renderWood() {
-  const pct = Math.round(wood.level * 100);
+  const pct = Math.round(wood.level * 100), note = document.getElementById('woodnote');
+  if (LIVE && wood.live && wood.live.level == null) {
+    document.getElementById('woodpct').textContent = '-'; note.textContent = '사용 기록이 쌓이면 표시돼요 (5시간 한 번 다 쓰고 나면 기준이 생겨요)'; return;
+  }
   document.getElementById('woodbar').style.width = pct + '%';
   document.getElementById('woodpct').textContent = pct + '%';
   document.getElementById('hud-wood').style.width = pct + '%';
-  document.getElementById('woodnote').textContent = `다음 보충 ${kstClock(wood.resetAt).slice(0, 5)} (${untilText(wood.resetAt - Date.now())}) · ${RESET_H}시간마다 다시 채워져요`;
+  if (LIVE && !wood.resetAt) { note.textContent = '쉬는 중 — 다음 작업을 시작하면 5시간 잼'; return; }
+  note.textContent = `다음 보충 ${kstClock(wood.resetAt).slice(0, 5)} (${untilText(wood.resetAt - Date.now())}) · ${RESET_H}시간마다 다시 채워져요` +
+    (LIVE && wood.live && wood.live.estimated ? ' · 남은 양은 지난 기록 중 가장 많이 쓴 5시간 기준 추정' : '');
 }
 let refilling = false;
 function refill() {
@@ -493,7 +499,7 @@ function refill() {
   setTimeout(() => {
     a.carry = true; a.zone = 'wood'; a.tx = WOODPILE.x + 0.6; a.ty = WOODPILE.y + 0.5; a.say = '장작 쌓는 중…'; a.text = '장작 쌓는 중';
     setTimeout(() => {
-      a.carry = false; wood.level = 1; wood.resetAt = Date.now() + RESET_H * 3600e3; renderWood();
+      a.carry = false; wood.level = LIVE && wood.live ? wood.live.level ?? 1 : 1; wood.resetAt = LIVE && wood.live ? wood.live.resetAt : Date.now() + RESET_H * 3600e3; renderWood();
       log(a.name, '장작 다 채움');
       refilling = false;
       const last = pending.splice(0).pop();
@@ -700,7 +706,7 @@ const DEMO = [
 ];
 const SUB_TASKS = [[{ tool: 'Glob', text: 'queue.json 찾기' }, { tool: 'Read', text: 'queue.json 읽기' }, { tool: 'Grep', text: '겨울 문구 찾기' }],
   [{ tool: 'WebFetch', text: '쿠팡 문서 읽기' }, { kind: 'think', text: '요약 정리' }]];
-let demoOn = true, di = 0, subN = 0;
+let demoOn = !LIVE, di = 0, subN = 0;
 function spawn() {
   SUB_TASKS.forEach(tasks => {
     const id = 'sub' + (++subN), name = '동료 ' + subN;
@@ -720,6 +726,50 @@ document.getElementById('job').onclick = () => runJob(JOBS[Math.floor(Math.rando
 document.getElementById('refill').onclick = refill;
 const TODS = [null, 'dawn', 'day', 'sunset', 'night'];
 document.getElementById('tod').onclick = e => { todForce = TODS[(TODS.indexOf(todForce) + 1) % TODS.length]; e.currentTarget.textContent = '시간대: ' + (todForce ? MOODS[todForce].name : '자동'); };
+
+// ── 실제 작업 연결: 내 컴퓨터의 camp-watch.js가 Claude Code 기록을 보내 줌 (PC·노트북 합쳐서) ──
+function startLive() {
+  ['pause', 'burst', 'refill'].forEach(id => document.getElementById(id).hidden = true);
+  document.getElementById('modenote').textContent = '내 컴퓨터의 Claude Code 작업을 실시간으로 보여줘요. 컴퓨터 안에서만 오가고 토큰은 쓰지 않아요. 클라우드(웹) 세션은 안 보여요.';
+  const dot = document.getElementById('dot'), mode = document.getElementById('mode');
+  const ids = new Map();   // 컴퓨터별 공대남자: 처음 연결된 컴퓨터가 'main'
+  let machines = [];
+  const label = m => machines.length > 1 && m ? `공대남자·${m}` : '공대남자';
+  function charId(ev) {
+    if (ev.side) return ev.agent;
+    const m = ev.machine || '';
+    if (!ids.has(m)) ids.set(m, ids.size ? 'pc:' + m : 'main');
+    return ids.get(m);
+  }
+  function rename() {
+    for (const [m, id] of ids) { const a = agents.get(id); if (a) a.name = label(m); }
+    renderNow();
+  }
+  const es = new EventSource(LIVE);
+  es.onopen = () => { dot.className = 'dot live'; };
+  es.onerror = () => { dot.className = 'dot'; mode.textContent = '연결 끊김 — 다시 연결 중…'; };
+  es.onmessage = e => {
+    let ev; try { ev = JSON.parse(e.data); } catch (er) { return; }
+    if (ev.type === 'hello') {
+      machines = ev.machines || [];
+      dot.className = 'dot live'; mode.textContent = '연결됨 — ' + (machines.length > 1 ? machines.join('·') : '내 컴퓨터');
+      rename(); return;
+    }
+    if (ev.type === 'wood') {
+      const up = wood.live && ev.level != null && wood.live.level != null && ev.level - wood.live.level > 0.3;
+      wood.live = ev;
+      if (up || (ev.level != null && wood.level < 0.05 && ev.level > 0.5)) refill();   // 5시간 지나 초기화 → 장작 나르기
+      else if (!refilling) { if (ev.level != null) wood.level = ev.level; wood.resetAt = ev.resetAt; }
+      renderWood(); return;
+    }
+    if (!ev.kind) return;
+    const id = charId(ev);
+    const name = ev.side ? '동료' : label(ev.machine);
+    if (id !== ev.agent && ev.kind === 'idle') { const a = agents.get(id); if (a && a.zone === 'chair') return; }
+    handle({ ...ev, agent: id, name });
+    const a = agents.get(id); if (a) a.name = name;
+  };
+}
 
 // ── 고정화면 ──
 let wakeLock = null;
@@ -749,9 +799,9 @@ let wasFixed = false; try { wasFixed = localStorage.getItem('kydz_camp_fixed') =
 if (phoneLandscape.matches || wasFixed || location.hash === '#fixed') setFixed(true);
 
 resize(); agent('main'); renderNow(); renderJobs(); renderWood();
-setInterval(() => { renderWood(); if (Date.now() >= wood.resetAt) refill(); }, 30000);
+setInterval(() => { renderWood(); if (!LIVE && Date.now() >= wood.resetAt) refill(); }, 30000);
 handle({ agent: 'main', kind: 'idle', text: '캠핑장 도착' });
-setInterval(demoTick, 3400);
+if (LIVE) startLive(); else setInterval(demoTick, 3400);
 requestAnimationFrame(frame);
 })();
 </script>
