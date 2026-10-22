@@ -382,13 +382,16 @@ async function commitFiles(mutators, message) {
 async function loadAll() {
   const head = await headCommit();
   const files = await readTree(head.tree);
-  const [queue, config, token, replies, insights] = await Promise.all([
+  const [queue, config, token, replies, insights, cpReport, weekly] = await Promise.all([
     files['queue.json'] ? readBlobJson(files['queue.json']) : [],
     files['config.json'] ? readBlobJson(files['config.json']) : null,
     files['state/token.json'] ? readBlobJson(files['state/token.json']) : null,
     files['replies.json'] ? readBlobJson(files['replies.json']) : [],
     files['state/insights.json'] ? readBlobJson(files['state/insights.json']) : {},
+    files['state/coupang_report.json'] ? readBlobJson(files['state/coupang_report.json']) : null,
+    files['state/weekly_report.json'] ? readBlobJson(files['state/weekly_report.json']) : null,
   ]);
+  S.cpReport = cpReport; S.weekly = weekly;
   S.replies = (replies || []).filter(r => r && r.id);
   S.insights = insights || {};
   S.posts = (queue || []).filter(p => p && p.id);
@@ -689,6 +692,7 @@ function renderList() {
       <div class="sum">대기 <b>${pending.length}</b>개${noLink ? ` · 손볼 글 <b style="color:#8a5a00">${noLink}</b>개` : ''}${last ? ` · ${fmtSlot(last)}까지 예약됨` : ''} · 하루 ${S.config.hours.length}개 (${S.config.hours.map(h => +h + '시').join('·')})</div>
       <span class="row">${drafts ? `<button class="btn small ghost" id="confirm-drafts">초안 ${drafts}개 모두 대기로</button>` : ''}${waitingN ? `<button class="btn small ghost" id="to-drafts">대기 ${waitingN}개 모두 초안으로</button>` : ''}<button class="btn small" id="add-post">+ 글 추가</button></span>
     </div>
+    ${reportHtml()}
     ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">게시 완료 ${done.length}개
         ${done.length > 3 ? `<button class="btn small ghost" id="toggle-done">${S.showDone ? '최근 3개만' : '모두 보기'}</button>` : ''}</div>
       <div class="posts" style="margin-bottom:16px">${(S.showDone ? done : done.slice(0, 3)).map(doneHtml).join('')}</div>` : ''}
@@ -760,10 +764,36 @@ function postHtml(p, i, n, slotKey) {
     ${p.expires_at ? `<div class="small muted" style="margin-top:6px">⏰ ${esc(fmtDT(p.expires_at))}까지만 올라가요 (지나면 가격이 바뀌었을 수 있어 자동으로 건너뜀)</div>` : ''}
   </div>`;
 }
+// 성과 리포트: 쿠팡 30일 합계(매일) + 주간 리포트(월요일, 잘된 글·안된 글 공통점)
+function reportHtml() {
+  const r = S.cpReport, w = S.weekly;
+  if (!r && !w) return '';
+  const t = (r || {}).total || {};
+  const li = a => (a || []).map(x => `<li>${esc(x)}</li>`).join('');
+  const row = x => `<div class="done-row"><span class="nm">${esc(x.first || '')}</span><span class="tm">👁 ${x.views} · ❤ ${x.likes} · 🖱 ${x.click}${x.commission ? ` · 💰 ${Number(x.commission).toLocaleString()}원` : ''}</span></div>`;
+  return `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">📊 성과 리포트
+      <button class="btn small ghost" id="toggle-report">${S.showReport ? '접기' : '펼치기'}</button></div>
+    <div class="card" style="padding:12px 14px;margin-bottom:16px">
+      ${r ? `<div><b>쿠팡 최근 30일</b> (${esc(r.from)}~${esc(r.to)}) · 클릭 ${(t.click || 0).toLocaleString()} · 주문 ${t.order || 0} · 수익 ${(t.commission || 0).toLocaleString()}원
+        <span class="small muted">홈페이지 포함 · ${esc(fmtDT(r.checked_at))}</span></div>` : ''}
+      ${S.showReport && w ? `<div class="small muted" style="margin-top:8px">주간 리포트 ${esc(fmtDT(w.at))} · 글 ${w.count}개 기준</div>
+        ${w.good?.length ? `<div style="margin-top:6px"><b>잘된 글 공통점</b><ul style="margin:4px 0 0 18px">${li(w.good)}</ul></div>` : ''}
+        ${w.bad?.length ? `<div style="margin-top:6px"><b>안된 글 공통점</b><ul style="margin:4px 0 0 18px">${li(w.bad)}</ul></div>` : ''}
+        ${w.next?.length ? `<div style="margin-top:6px"><b>다음 주에 해볼 것</b><ul style="margin:4px 0 0 18px">${li(w.next)}</ul></div>` : ''}
+        <div style="margin-top:8px"><b>잘된 글</b></div><div class="posts">${(w.top || []).map(row).join('')}</div>
+        <div style="margin-top:8px"><b>안된 글</b></div><div class="posts">${(w.bottom || []).map(row).join('')}</div>
+        ${(w.reposts || []).length ? `<div style="margin-top:8px"><b>다시 올린 글 비교</b></div><div class="posts">${w.reposts.map(x => `<div class="done-row"><span class="nm">${esc((S.posts.find(p => p.id === x.id) || {}).name || x.id)}${x.hook_idx != null ? ` · 첫 문장 ${x.hook_idx + 1}번 버전` : ''}</span><span class="tm">👁 ${x.views} (원래 ${x.orig_views})</span></div>`).join('')}</div>` : ''}
+        <div class="small muted" style="margin-top:8px">잘된 글엔 다른 첫 문장이 만들어져 있어요 — '다시 올리기'를 누르면 바꿔 끼워 넣어요.</div>`
+      : S.showReport ? '<div class="small muted" style="margin-top:6px">주간 리포트는 월요일 아침에 만들어져요.</div>' : ''}
+    </div>`;
+}
 function doneHtml(p) {
   const first = String(p.body || '').trim().split('\n')[0];
   const st = (S.insights || {})[p.id];
-  const nums = st ? `<span class="stat2" title="${esc(fmtDT(st.at))} 기준">👁 ${st.views ?? '-'} · ❤ ${st.likes ?? '-'} · 💬 ${st.replies ?? '-'} · 🔁 ${st.reposts ?? '-'}</span>` : '';
+  const cp = ((S.cpReport || {}).posts || {})[p.id];
+  // 쿠팡 클릭·수익: 링크 꼬리표로 나눈 건 그대로, 상품 번호로 맞춘 건 ≈(홈페이지 클릭이 섞일 수 있음)
+  const cpTxt = cp ? ` · 🖱 ${cp.by === '추정' ? '≈' : ''}${cp.click}${cp.commission ? ` · 💰 ${cp.commission.toLocaleString()}원` : ''}` : '';
+  const nums = st || cp ? `<span class="stat2" title="${esc(fmtDT((st || {}).at))} 기준${cp ? ` · 쿠팡 ${esc((S.cpReport || {}).from || '')}~${esc((S.cpReport || {}).to || '')}${cp.by === '추정' ? ' (상품 번호로 맞춘 추정치)' : ''}` : ''}">👁 ${st?.views ?? '-'} · ❤ ${st?.likes ?? '-'} · 💬 ${st?.replies ?? '-'}${cpTxt}</span>` : '';
   return `<div class="done-row" data-id="${esc(p.id)}">
     <span class="st ok" style="font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap">게시 완료</span>
     <span class="nm">${esc(first || p.name || '')}</span>
@@ -799,15 +829,23 @@ function bindList() {
   document.querySelectorAll('[data-repost]').forEach(b => b.onclick = () => {
     const src = S.posts.find(x => x.id === b.dataset.repost);
     if (!src) return;
+    // 주간 리포트가 만든 다른 첫 문장(hooks)이 있으면 차례로 바꿔 끼워서 → 다음 주 리포트에서 원래 글과 조회 비교
+    const hooks = (src.hooks || []).filter(Boolean), tries = S.posts.filter(x => x.repost_of === src.id && !S.deleted.has(x.id)).length;
+    const hook_idx = hooks.length ? tries % hooks.length : null;
+    const lines = String(src.body || '').split('\n');
+    if (hook_idx !== null) lines[0] = hooks[hook_idx];
     const c = newPost({ kind: src.kind, topic: src.topic || '', name: src.name, link: src.link, with_link: src.with_link,
-      body: src.body, body2: src.body2 || '', body3: src.body3 || '', comment: src.comment || '', search: src.search || '', status: '초안',
-      memo: `다시 올림 (원래 ${fmtDT(src.posted_at).slice(5, 10) || ''}) · ${src.memo || ''}`.slice(0, 200) });
+      body: lines.join('\n'), body2: src.body2 || '', body3: src.body3 || '', comment: src.comment || '', search: src.search || '', status: '초안',
+      repost_of: src.id, hook_idx,
+      memo: `다시 올림 (원래 ${fmtDT(src.posted_at).slice(5, 10) || ''}${hook_idx !== null ? ` · 첫 문장 ${hook_idx + 1}번째 다른 버전` : ''}) · ${src.memo || ''}`.slice(0, 200) });
     const first = S.posts.findIndex(x => !S.deleted.has(x.id) && isPending(x));
     S.posts.splice(first < 0 ? S.posts.length : first, 0, c);
     renderList(); updateSaveBar();
     toast('초안으로 복사했어요. 조금 고친 뒤 대기로 바꾸고 저장하세요. (똑같은 글을 바로 다시 올리면 노출이 줄 수 있어요)');
     const el = document.querySelector(`.post[data-id="${c.id}"]`); if (el) el.scrollIntoView({ block: 'center' });
   });
+  const tr = $('#toggle-report');
+  if (tr) tr.onclick = () => { S.showReport = !S.showReport; renderList(); };
   const td = $('#toggle-done');
   if (td) td.onclick = () => { S.showDone = !S.showDone; renderList(); };
   document.querySelectorAll('#pending .post').forEach(card => {
