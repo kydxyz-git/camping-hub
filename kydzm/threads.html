@@ -461,7 +461,7 @@ function upcomingSlots(n) {
   return out;
 }
 function scheduleMap() {
-  const ready = livePosts().filter(p => (p.status || '대기') === '대기' && !buildPost(p).problem);
+  const ready = livePosts().filter(p => (p.status || '대기') === '대기' && p.kind !== '특가' && !buildPost(p).problem);
   const slots = S.config.paused ? [] : upcomingSlots(ready.length);
   const m = {};
   ready.forEach((p, i) => m[p.id] = slots[i] || null);
@@ -707,6 +707,7 @@ function statusBadge(p, slotKey) {
   if (st === '대기') {
     if (b.problem) return `<span class="post-when muted"><span class="st warn">${esc(b.problem)} · 건너뜀</span></span>`;
     if (S.config.paused) return `<span class="post-when muted">일시정지 중</span>`;
+    if (p.kind === '특가') return `<span class="post-when">특가 · ${+(S.config.deal_hour || '10')}시 자동</span>`;
     return `<span class="post-when">${esc(fmtSlot(slotKey) || '예정 없음')}</span>`;
   }
   const [cls, t] = STATUS_VIEW[st] || ['wait', st];
@@ -1071,7 +1072,7 @@ function renderSettings() {
         <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-cak" autocomplete="new-password" data-lpignore="true" data-1p-ignore placeholder="Access Key"><button class="btn small" data-secret="COUPANG_ACCESS_KEY">저장</button></div></div>
       <div class="field"><label>COUPANG_SECRET_KEY — 쿠팡 파트너스 API Secret Key</label>
         <div class="row" style="flex-wrap:nowrap"><input class="input" type="password" id="s-csk" autocomplete="new-password" data-lpignore="true" data-1p-ignore placeholder="Secret Key"><button class="btn small" data-secret="COUPANG_SECRET_KEY">저장</button></div>
-        <div class="small muted" style="margin-top:5px">두 키를 넣으면 매일 아침 6시 10분에 특가 글이 <b>초안</b>으로 맨 위에 들어와요. 확인하고 '대기'로 바꿔야 올라가요 → <a href="#" id="s-deals">지금 가져오기</a></div></div>
+        <div class="small muted" style="margin-top:5px">매일 아침 6시 10분에 특가 글을 만들어 <b>10시에 자동으로</b> 올려요 (일반 글 순서와 따로) → <a href="#" id="s-deals">지금 가져오기</a></div></div>
     </div>
 
     <div class="card" style="margin-bottom:14px">
@@ -1155,7 +1156,7 @@ function renderSettings() {
   };
   $('#s-deals').onclick = async e => {
     e.preventDefault();
-    if (!confirm('쿠팡 특가를 지금 가져와서 초안으로 넣을까요? (오늘 이미 넣었으면 건너뛰어요)')) return;
+    if (!confirm('쿠팡 특가를 지금 가져올까요? 특가 시각(10시) 안이면 다음 실행 때 자동으로 올라가요. (오늘 이미 넣었으면 건너뛰어요)')) return;
     try { await runWorkflow('deals.yml', { dry_run: 'false' }); toast('요청했어요. 1~2분 뒤 글 목록 맨 위를 확인해 주세요.'); setTimeout(loadRuns, 4000); }
     catch (err) { toast(err.message, true); }
   };
