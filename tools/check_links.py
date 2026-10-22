@@ -55,16 +55,38 @@ def get(url, read=False):
         return 0, "", str(e)
 
 
+def next_url(body, seen):
+    """페이지 본문에서 다음 쿠팡 주소 (상품·파트너스 추적 주소 우선)"""
+    text = body.replace("\\/", "/").replace("&amp;", "&")
+    cands = re.findall(r"https?://[a-z.]*coupang\.com/[^\"'\s<>\\]+", text)
+    cands += [urllib.parse.unquote(u) for u in re.findall(r"https?%3A%2F%2F[a-z.]*coupang\.com[^\"'\s<>&]+", text)]
+    cands = [u for u in cands if u not in seen and not re.search(r"\.(js|css|png|jpe?g|gif|svg|ico)(\?|$)", u)]
+    for pat in (r"/vp/products/\d+", r"lptag=AF", r"/re/", r"pageKey="):
+        for u in cands:
+            if re.search(pat, u):
+                return u
+    return ""
+
+
 def check(url):
     chain, cur = [url], url
     status, body = 0, ""
+    first_body = ""
     for _ in range(8):
         is_product = re.search(r"coupang\.com/vp/products/\d+", cur)
-        status, loc, body = get(cur, read=bool(is_product))
+        status, loc, body = get(cur, read=True)
         if status in (301, 302, 303, 307, 308) and loc:
             cur = urllib.parse.urljoin(cur, loc)
             chain.append(cur)
             continue
+        if status == 200 and not is_product:
+            # 짧은 링크는 HTTP 넘김이 아니라 페이지 안(자바스크립트·meta)에서 다음 주소로 넘김 → 본문에서 찾기
+            first_body = first_body or body
+            nxt = next_url(body, chain)
+            if nxt:
+                cur = nxt
+                chain.append(cur)
+                continue
         break
     joined = " ".join(urllib.parse.unquote(u) for u in chain)
     af = (re.search(r"lptag=(AF\d+)", joined) or re.search(r"\b(AF\d{5,})\b", joined) or [None, ""])[1]
@@ -72,7 +94,11 @@ def check(url):
     final = chain[-1]
 
     if not pid:
-        detail = f"상품으로 안 감 (마지막 주소 {final[:80]}, 응답 {status})"
+        if status == 200:
+            # 페이지는 열리는데 상품 주소를 못 찾음 → 점검 방식 문제일 수 있어 '확인 불가'로
+            return {"status": "unknown", "af": af, "product_id": "", "detail": "넘어가는 주소를 못 찾음 (확인 불가)",
+                    "_body": first_body[:3000]}
+        detail = f"상품으로 안 감 (마지막 주소 {final[:80]}, 응답 {status or '연결 오류'})"
         return {"status": "broken", "af": af, "product_id": "", "detail": detail}
     if status == 200 and body:
         hit = next((w for w in SOLDOUT if w in body), "")
@@ -93,9 +119,12 @@ def main():
                 url = (it.get("url") or "").strip()
                 if "coupang" in url and it.get("id"):
                     rows.append((kind, it))
-    results = {}
+    results, sample = {}, ""
     for n, (kind, it) in enumerate(rows, 1):
         r = check(it["url"].strip())
+        body = r.pop("_body", "")
+        if body and not sample:
+            sample = body
         results[it["id"]] = {"type": kind, "name": it.get("name", ""), "url": it["url"].strip(), **r}
         print(f"[{n}/{len(rows)}] {r['status']:8} {it.get('name', '')} {r['af']} {r['detail']}")
         time.sleep(1.5)
@@ -125,6 +154,8 @@ def main():
             f.write(f"## 쿠팡 링크 점검 — 문제 {len(bad)}개 / {len(results)}개\n\n")
             for r in bad:
                 f.write(f"- **{r['name']}** ({r['type']}) — {r['detail']}\n")
+            if sample:  # 점검 방식 손볼 때 참고용 (짧은 링크 페이지 앞부분)
+                f.write("\n<details><summary>짧은 링크 페이지 예시</summary>\n\n```html\n" + sample.replace("```", "") + "\n```\n</details>\n")
 
 
 if __name__ == "__main__":
