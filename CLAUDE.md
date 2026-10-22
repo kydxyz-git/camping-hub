@@ -92,6 +92,10 @@
 
 - `tools/check_links.py` + `.github/workflows/link-check.yml` (매주 월 09:10 KST + 수동): 장비·먹거리 쿠팡 링크를 따라가 파트너스 코드(AF…)·판매 여부를 `data/link_check.json`에 기록. admin 장비/먹거리 목록에 ⚠ 배지 + '문제만 보기'. **링크는 자동으로 고치지 않는다** — 사용자가 파트너스에서 직접 새 링크를 만든다 (사용자 결정 261022).
 
+## 쿠팡에서 찾기 (새 장비·먹거리)
+
+- admin 새 장비·먹거리 추가 화면 '🛒 쿠팡에서 찾기' → `.github/workflows/coupang-search.yml`(쿠팡 파트너스 API 검색 + 내 파트너스 짧은 링크 + `tools/coupang_search.py`가 썸네일 규격 800×800·흰 배경·여백 7%로 변환) → 결과는 `coupang-search` 브랜치의 `coupang_search.json` 하나(매번 덮어씀, main 기록 안 늘림) → admin이 폼을 채우고 **기존 저장 경로로 비공개 저장** (사용자 결정 261022). 모서리가 흰색이 아닌 연출 사진은 '⚠ 배경 있음' 표시 — 자동 배경 제거는 품질 문제로 쓰지 않음. Secrets `COUPANG_ACCESS_KEY`·`COUPANG_SECRET_KEY` 필요, admin 토큰에 Actions 쓰기 권한 필요.
+
 ## 메일·외부 발송 (사용자 지시 261021)
 
 - **메일은 절대 직접 보내지 않는다** (답장·새 메일·전달 모두). 회신이 필요하면 내용(초안)만 채팅으로 주고, 사용자가 '보내'라고 명시하면 그때만 보내거나 사용자가 직접 보낸다. '답신줘' 같은 말도 초안 요청으로 본다.

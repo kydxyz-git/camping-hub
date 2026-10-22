@@ -7095,6 +7095,7 @@ function _renderFoodFormUI() {
     <div class="card">
       <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">${isEdit ? '음식 수정' : '새 음식 추가'}</h2>
       ${_formMetaHtml}
+      ${isEdit ? '' : coupangFinderHtml('foods')}
       <div class="form-grid">
 
         <div class="form-field">
@@ -7171,6 +7172,7 @@ function _renderFoodFormUI() {
       </div>
     </div>
   `;
+  if (!isEdit) bindCoupangFinder('foods');
 
   const $ = (id) => document.getElementById(id);
   const backHash = isEdit ? `foods/${_foodForm.editIdx}` : 'foods';
@@ -7394,7 +7396,7 @@ async function submitFoodForm() {
       price_original: priceOriginal,
       price_sale: priceSale,
       discount_rate: discountRate,
-      published: isEdit ? (_oldFood.published !== false) : true,
+      published: isEdit ? (_oldFood.published !== false) : !_foodForm.fromCoupang,
       created_at: isEdit ? (_oldFood.created_at || _nowIsoF) : _nowIsoF,
       updated_at: _nowIsoF,
     };
@@ -7635,6 +7637,89 @@ let _itemForm = {
   imageChanged: false,
 };
 
+// ─── 🛒 쿠팡에서 찾기 (새 장비·먹거리) ─────────────────────────────
+// 쿠팡 API는 비밀키가 필요해 브라우저에서 못 부른다 → 깃허브 액션(coupang-search.yml)을 실행하고
+// 결과(coupang-search 브랜치의 coupang_search.json)를 기다렸다가 후보를 보여준다.
+// 고르면 이름·내 파트너스 링크·가격·800×800 규격 이미지를 폼에 채운다. 저장은 기존 저장 경로, 비공개로.
+let _cpFinder = { q: '', busy: false, msg: '', items: [] };
+function coupangFinderHtml(kind) {
+  const f = _cpFinder;
+  return `<div class="cp-finder" style="border:1px solid var(--line, #e5e5e5);border-radius:10px;padding:12px;margin-bottom:16px;background:#fff7f8;">
+    <div style="font-weight:700;margin-bottom:8px;">🛒 쿠팡에서 찾기 <span style="font-weight:400;font-size:12px;color:var(--muted);">— 고르면 이름·내 파트너스 링크·이미지가 채워지고 비공개로 저장돼요</span></div>
+    <div style="display:flex;gap:6px;">
+      <input class="input" id="cp-q" placeholder="상품명 (예: 헬리녹스 체어원)" value="${escapeHtml(f.q)}" style="flex:1;">
+      <button type="button" class="btn btn-sm" id="cp-go" ${f.busy ? 'disabled' : ''}>${f.busy ? '찾는 중…' : '찾기'}</button>
+    </div>
+    ${f.msg ? `<div style="font-size:12px;color:var(--muted);margin-top:6px;">${escapeHtml(f.msg)}</div>` : ''}
+    ${f.items.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:10px;">
+      ${f.items.map((it, i) => `<button type="button" class="cp-pick" data-cp="${i}" style="text-align:left;border:1px solid #ddd;border-radius:8px;background:#fff;padding:6px;cursor:pointer;">
+        ${it.img ? `<img src="data:image/jpeg;base64,${it.img}" alt="" style="width:100%;aspect-ratio:1;object-fit:contain;border-radius:6px;">` : '<div style="aspect-ratio:1;display:grid;place-items:center;color:#999;font-size:12px;">이미지 없음</div>'}
+        <div style="font-size:12px;line-height:1.35;margin-top:4px;max-height:3.9em;overflow:hidden;">${escapeHtml(it.name)}</div>
+        <div style="font-size:12px;font-weight:700;margin-top:2px;">${it.price ? Number(it.price).toLocaleString('ko-KR') + '원' : ''}${it.rocket ? ' <span style="color:#346aff;">로켓</span>' : ''}</div>
+        ${it.img && it.bg_ok === false ? '<div style="font-size:11px;color:#b3261e;margin-top:2px;">⚠ 배경 있음 — 이미지는 직접 올리는 게 나아요</div>' : ''}
+      </button>`).join('')}</div>` : ''}
+  </div>`;
+}
+function bindCoupangFinder(kind) {
+  const rerender = () => (kind === 'items' ? _renderItemFormUI : _renderFoodFormUI)();
+  const qEl = document.getElementById('cp-q');
+  const go = async () => {
+    const q = qEl.value.trim();
+    if (!q || _cpFinder.busy) return;
+    const req = Date.now().toString(36);
+    _cpFinder = { q, busy: true, msg: '쿠팡에서 찾는 중… (1~2분 걸려요)', items: [] };
+    rerender();
+    try {
+      await ghFetchRaw(`/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/coupang-search.yml/dispatches`, {
+        method: 'POST', body: JSON.stringify({ ref: GH_BRANCH, inputs: { keyword: q, req } }) });
+      const end = Date.now() + 4 * 60e3;
+      let res = null;
+      while (Date.now() < end) {
+        await new Promise(r => setTimeout(r, 6000));
+        try {
+          const r = await ghFetchRaw(`/repos/${GH_OWNER}/${GH_REPO}/contents/coupang_search.json?ref=coupang-search&t=${Date.now()}`,
+            { headers: { Accept: 'application/vnd.github.raw' } });
+          const j = await r.json();
+          if (j.req === req) { res = j; break; }
+        } catch (e) { /* 아직 없음 */ }
+      }
+      if (!res) throw new Error('결과를 4분 안에 못 받았어요. 깃허브 Actions의 coupang-search 실행 기록을 확인해 주세요.');
+      if (res.error && !(res.items || []).length) throw new Error(res.error);
+      _cpFinder = { q, busy: false, msg: `후보 ${res.items.length}개 — 맞는 걸 누르세요`, items: res.items };
+    } catch (e) {
+      const m = String(e.message || e);
+      _cpFinder = { q, busy: false, items: [],
+        msg: /403|404/.test(m) && /dispatches/.test(m) ? '이 화면 토큰에 Actions 쓰기 권한이 필요해요 (깃허브 토큰 설정 → Actions: Read and write).' : m };
+    }
+    // 그 사이 다른 화면으로 갔으면 그리지 않음
+    if (document.getElementById('cp-q')) rerender();
+  };
+  document.getElementById('cp-go').onclick = go;
+  qEl.onkeydown = e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); go(); } };
+  document.querySelectorAll('.cp-pick').forEach(b => b.onclick = () => {
+    const it = _cpFinder.items[+b.dataset.cp];
+    if (!it) return;
+    const f = kind === 'items' ? _itemForm : _foodForm;
+    f.name = it.name; f.url = it.url; f.source = '쿠팡'; f.currency = 'KRW';
+    f.priceOriginal = it.price ? String(it.price) : ''; f.priceSale = ''; f.discountRate = '';
+    f.fromCoupang = true;
+    if (it.img) {
+      f.imageBase64 = it.img; f.imagePreviewUrl = `data:image/jpeg;base64,${it.img}`;
+      f.imageSize = Math.round(it.img.length * 0.75); f.imageChanged = true;
+    }
+    _cpFinder = { q: _cpFinder.q, busy: false, msg: `'${it.name.slice(0, 30)}' 채웠어요 — 이름 다듬고 ${kind === 'items' ? '구분 고른 뒤 ' : ''}저장하면 비공개로 저장돼요`, items: [] };
+    rerender();
+    if (!it.img) showToast('이미지를 못 가져왔어요. 직접 올려 주세요', 'error');
+  });
+}
+async function ghFetchRaw(path, opts = {}) {
+  const r = await fetch(`${GH_API}${path}`, { ...opts, headers: {
+    'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${getToken()}`,
+    'X-GitHub-Api-Version': '2022-11-28', ...(opts.headers || {}) } });
+  if (!r.ok) throw new Error(`GitHub API ${r.status} ${path.split('?')[0]}: ${(await r.text()).slice(0, 150)}`);
+  return r;
+}
+
 function renderItemAddForm() {
   _itemForm = {
     mode: 'add', editIdx: null,
@@ -7697,6 +7782,7 @@ function _renderItemFormUI() {
     <div class="card">
       <h2 style="font-size:17px;font-weight:800;margin-bottom:16px;">${isEdit ? '장비 수정' : '새 장비 추가'}</h2>
       ${_formMetaHtml}
+      ${isEdit ? '' : coupangFinderHtml('items')}
       <div class="form-grid">
 
         <div class="form-field">
@@ -7809,6 +7895,7 @@ function _renderItemFormUI() {
       </div>
     </div>
   `;
+  if (!isEdit) bindCoupangFinder('items');
 
   const $ = (id) => document.getElementById(id);
   const backHash = isEdit ? `items/${_itemForm.editIdx}` : 'items';
@@ -8032,7 +8119,7 @@ async function submitItemForm() {
       price_original: priceOriginal,
       price_sale: priceSale,
       discount_rate: discountRate,
-      published: isEdit ? (_oldItem.published !== false) : true,
+      published: isEdit ? (_oldItem.published !== false) : !_itemForm.fromCoupang,
       created_at: isEdit ? (_oldItem.created_at || _nowIsoI) : _nowIsoI,
       updated_at: _nowIsoI,
     };
