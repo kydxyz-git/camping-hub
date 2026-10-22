@@ -88,9 +88,23 @@ body.fixed .panel { padding: 8px 10px; }
 body.fixed .panel h2 { margin-bottom: 4px; }
 body.fixed .log { max-height: none; }
 body.fixed .row .t, body.fixed .log { font-size: 11px; }
+#gate { position: fixed; inset: 0; z-index: 50; background: var(--night); display: grid; place-items: center; padding: 16px; }
+#gate[hidden] { display: none; }
+#gate form { display: grid; gap: 10px; width: min(320px, 100%); }
+#gate input { font: 16px var(--body); color: var(--ink); background: var(--ground); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+#gate button { padding: 10px; font-size: 14px; }
+#gate .err { color: var(--ember); font-size: 12px; min-height: 1em; margin: 0; }
 </style>
 </head>
 <body>
+<div id="gate" hidden>
+  <form>
+    <h1>공대남자 캠핑사이트</h1>
+    <input type="password" autocomplete="current-password" placeholder="비밀번호 (admin과 같음)" aria-label="비밀번호" required>
+    <button type="submit">들어가기</button>
+    <p class="err" role="alert"></p>
+  </form>
+</div>
 <div class="wrap">
   <header>
     <h1>공대남자 캠핑사이트 <small>공대남자가 지금 캠핑장에서 뭘 하고 있는지</small></h1>
@@ -104,7 +118,7 @@ body.fixed .row .t, body.fixed .log { font-size: 11px; }
         <h2 style="display:flex;justify-content:space-between;align-items:center">지금 <button type="button" class="fixed-only" id="unfix" style="padding:2px 8px;font-size:11px">고정화면 끄기</button></h2>
         <div class="rows" id="now"></div>
       </section>
-      <section class="panel">
+      <section class="panel" id="woodpanel">
         <h2>남은 장작 (사용량)</h2>
         <div class="wood"><div class="bar"><span id="woodbar"></span></div><b id="woodpct">-</b></div>
         <p class="note" id="woodnote"></p>
@@ -132,7 +146,9 @@ body.fixed .row .t, body.fixed .log { font-size: 11px; }
 </div>
 <script>
 (() => {
-const LIVE = window.CAMP_LIVE || '';   // camp-watch.js로 열면 실제 작업 연결
+const LIVE = window.CAMP_LIVE || '';   // camp-watch.js로 열면 내 컴퓨터 작업 연결
+const DEMO_MODE = !LIVE && /[?&]demo\b/.test(location.search);   // ?demo=1: 예시 작업 데모
+const GH_MODE = !LIVE && !DEMO_MODE;   // 기본: GitHub에 올라간 커밋·자동 작업
 'use strict';
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -606,10 +622,10 @@ function frame(t) {
 // ── 이벤트 처리 ── {agent, name, tool, text, kind: 'tool'|'think'|'idle'|'done'}
 const logEl = document.getElementById('log'), nowEl = document.getElementById('now'), jobsEl = document.getElementById('jobs');
 const kstClock = ms => new Date(ms + KST).toISOString().slice(11, 19);
-function log(who, text) {
+function log(who, text, at) {
   const li = document.createElement('li');
   li.innerHTML = '<span></span><span></span>';
-  li.firstChild.textContent = kstClock(Date.now()); li.lastChild.textContent = `${who} · ${text}`;
+  li.firstChild.textContent = at && Date.now() - at > 864e5 ? `${new Date(at + KST).getUTCMonth() + 1}/${new Date(at + KST).getUTCDate()}` : kstClock(at || Date.now()); li.lastChild.textContent = `${who} · ${text}`;
   logEl.prepend(li); while (logEl.children.length > 60) logEl.lastChild.remove();
 }
 const pending = [];   // 장작 나르는 동안 들어온 공대남자 일 (끝나면 마지막 것부터 이어서)
@@ -701,7 +717,7 @@ setInterval(() => {
   renderJobs();
   const now = Date.now(), m = Math.floor(now / 60e3);
   if (m === lastMin) return; lastMin = m;
-  for (const j of JOBS) { const at = nextRun(j, now - 60e3); if (at && Math.floor(at / 60e3) === m) runJob(j); }
+  if (DEMO_MODE) for (const j of JOBS) { const at = nextRun(j, now - 60e3); if (at && Math.floor(at / 60e3) === m) runJob(j); }
 }, 5000);
 
 // ── 데모: 실제 같은 작업 흐름 ──
@@ -714,7 +730,7 @@ const DEMO = [
 ];
 const SUB_TASKS = [[{ tool: 'Glob', text: 'queue.json 찾기' }, { tool: 'Read', text: 'queue.json 읽기' }, { tool: 'Grep', text: '겨울 문구 찾기' }],
   [{ tool: 'WebFetch', text: '쿠팡 문서 읽기' }, { kind: 'think', text: '요약 정리' }]];
-let demoOn = !LIVE, di = 0, subN = 0;
+let demoOn = DEMO_MODE, di = 0, subN = 0;
 function spawn() {
   SUB_TASKS.forEach(tasks => {
     const id = 'sub' + (++subN), name = '동료 ' + subN;
@@ -779,6 +795,123 @@ function startLive() {
   };
 }
 
+// ── GitHub 연결: 올라간 커밋은 공대남자가, 자동 작업(Actions)은 예약봇이 ──
+// 홈페이지 저장소는 공개라 토큰 없이도 보임. 쿠파스(비공개)는 admin 스레드 관리에서 넣은 토큰이 있을 때만.
+const GH_REPOS = [{ repo: 'kydxyz-git/camping-hub', key: 'kydz_admin_gh_token', label: '홈페이지' },
+  { repo: 'kydxyz-git/cupas', key: 'kydz_cupas_gh_token', label: '쿠파스', needToken: true }];
+const WF = {   // 워크플로 → [이름, 장소, 말풍선]
+  'build-pages': ['검색용 페이지 만들기', 'shelter', '페이지 만드는 중…'], 'pages-build-deployment': ['홈페이지 배포', 'fire', '홈페이지 올리는 중…'],
+  'link-check': ['쿠팡 링크 점검', 'dome', '링크 점검하는 중…'], check: ['쿠파스 점검', 'bbq', '점검하는 중…'],
+  'coupang-search': ['쿠팡에서 찾기', 'tarp', '쿠팡 찾아보는 중…'], deals: ['쿠팡 특가', 'tarp', '쿠팡 특가 찾는 중…'],
+  post: ['스레드 글 올리기', 'tipi', '스레드 글 올리는 중…'], 'refresh-token': ['스레드 토큰 갱신', 'fire', '토큰 갈아끼우는 중…'],
+  replies: ['댓글 확인', 'coffee', '댓글 읽는 중…'],
+};
+function commitPlace(msg) {
+  const m = msg.match(/^(\w+)(?:\(([^)]*)\))?:/) || [], type = m[1] || '';
+  if (type === 'docs') return ['coffee', '정리해 적는 중…'];
+  if (type === 'test') return ['bbq', '테스트 굽는 중…'];
+  if (type === 'delete') return ['fire', '치우는 중…'];
+  if (type === 'feat') return ['tipi', '새로 만드는 중…'];
+  if (type === 'fix') return ['tipi', '고치는 중…'];
+  if (type === 'sync' || type === 'update') return ['tipi', '내용 고치는 중…'];
+  return ['shelter', '정리하는 중…'];
+}
+const isBotCommit = c => /bot\]?$|^kydz-build$/.test(c.commit.author.name || '') || /^chore\((stats|build|insights|replies)\)|^(post|replies):/.test(c.commit.message);
+function startGitHub() {
+  ['pause', 'burst', 'refill', 'job'].forEach(id => document.getElementById(id).hidden = true);
+  document.getElementById('woodpanel').hidden = true;   // 사용량은 GitHub에 없음 (내 컴퓨터 연결에서만)
+  wood.level = wood.shown = 1;
+  const dot = document.getElementById('dot'), mode = document.getElementById('mode'), note = document.getElementById('modenote');
+  const tok = r => { try { return localStorage.getItem(r.key) || ''; } catch (e) { return ''; } };
+  const repos = () => GH_REPOS.filter(r => !r.needToken || tok(r));
+  const every = () => repos().some(r => tok(r)) ? 60e3 : 150e3;   // 토큰 없으면 시간당 60번 제한이라 느리게
+  note.textContent = `GitHub에 올라간 커밋은 공대남자가, 자동 작업(스레드 게시·특가·링크 점검 등)은 예약봇이 움직여요. ${every() / 60e3 >= 2 ? '2분 반' : '1분'}마다 확인.` +
+    (repos().length < GH_REPOS.length ? ' 쿠파스는 admin 스레드 관리에서 토큰을 넣은 브라우저에서만 보여요.' : '');
+  const gh = async (r, path) => {
+    const t = tok(r), res = await fetch(`https://api.github.com/repos/${r.repo}/${path}`, { cache: 'no-store',
+      headers: { Accept: 'application/vnd.github+json', ...(t ? { Authorization: 'Bearer ' + t } : {}) } });
+    if (!res.ok) throw new Error(res.status === 403 || res.status === 429 ? '확인 횟수 제한' : '응답 ' + res.status);
+    return res.json();
+  };
+  const seen = new Set(), runs = new Map(); let first = true, queue = [], idleTimer = 0;
+  const main = agent('main');
+  function play() {   // 새 커밋을 3.5초 간격으로 하나씩
+    const c = queue.shift(); if (!c) return;
+    const [zone, say] = commitPlace(c.msg);
+    handle({ agent: 'main', kind: 'tool', text: `${c.label}에 올림`, say, task: c.msg }); goTo(main, zone, say, `${c.label}에 올림`);
+    clearTimeout(idleTimer); idleTimer = setTimeout(() => handle({ agent: 'main', kind: 'idle', text: '쉬는 중' }), 10 * 60e3);
+    if (queue.length) setTimeout(play, 3500);
+  }
+  function botStart(id, w, run) {
+    handle({ agent: id, name: '예약봇', color: '#c9c3b3', kind: 'tool', text: w[0], say: w[2] });
+    const a = agents.get(id); if (a) { goTo(a, w[1], w[2], w[0]); a.task = run.event === 'schedule' ? '예약 실행' : '직접 실행'; }
+  }
+  const botEnd = (id, w, run) => handle({ agent: id, name: '예약봇', kind: 'done', text: `${w[0]} ${run.conclusion === 'success' ? '끝' : run.conclusion === 'cancelled' ? '취소됨' : '실패 ⚠'}` });
+  async function poll() {
+    if (document.hidden && !first) return;
+    const got = [], got2 = [], past = [];   // past: 처음 열 때 기록에 깔아 둘 지난 일
+    try {
+      for (const r of repos()) {
+        const [cs, rs] = await Promise.all([gh(r, 'commits?per_page=10'), gh(r, 'actions/runs?per_page=10')]);
+        cs.forEach(c => got.push({ c, r })); (rs.workflow_runs || []).forEach(run => got2.push({ run, r }));
+      }
+      dot.className = 'dot live'; mode.textContent = 'GitHub 연결됨 — ' + repos().map(r => r.label).join('·');
+    } catch (e) { dot.className = 'dot'; mode.textContent = `GitHub 확인 실패 (${e.message}) — 잠시 뒤 다시`; return; }
+    // 커밋: 오래된 것부터
+    got.sort((a, b) => Date.parse(a.c.commit.author.date) - Date.parse(b.c.commit.author.date));
+    for (const { c, r } of got) {
+      if (seen.has(c.sha)) continue; seen.add(c.sha);
+      const msg = c.commit.message.split('\n')[0].slice(0, 80), at = Date.parse(c.commit.author.date), bot = isBotCommit(c);
+      if (first) { past.push({ at, who: bot ? '예약봇' : '공대남자', text: `${r.label}: ${msg}` }); continue; }
+      if (bot) { log('예약봇', `${r.label}: ${msg}`, at); continue; }
+      queue.push({ msg, label: r.label });
+    }
+    if (first) {   // 마지막 커밋이 20분 안이면 그 일 하는 중으로
+      const last = got.filter(x => !isBotCommit(x.c)).pop();
+      if (last && Date.now() - Date.parse(last.c.commit.author.date) < 20 * 60e3) queue.push({ msg: last.c.commit.message.split('\n')[0].slice(0, 80), label: last.r.label });
+      else handle({ agent: 'main', kind: 'idle', text: last ? `쉬는 중 (마지막: ${last.r.label} ${untilText(Date.now() - Date.parse(last.c.commit.author.date)).replace(/ 뒤$/, '')} 전)` : '쉬는 중' });
+    }
+    if (queue.length) play();
+    // 자동 작업
+    got2.sort((a, b) => Date.parse(a.run.created_at) - Date.parse(b.run.created_at));
+    for (const { run } of got2) {
+      const w = WF[run.path ? run.path.split('/').pop().replace(/\.ya?ml$/, '') : run.name] || WF[run.name] || [run.name, 'fire', '자동 작업 중…'];
+      const id = 'run:' + run.id, was = runs.get(run.id), active = run.status !== 'completed';
+      runs.set(run.id, run.status);
+      if (active && !was) botStart(id, w, run);
+      else if (!active && was && was !== 'completed') botEnd(id, w, run);
+      else if (!active && !was && !first && Date.parse(run.updated_at) > Date.now() - 5 * 60e3) { botStart(id, w, run); setTimeout(() => botEnd(id, w, run), 6000); }   // 확인 사이에 끝난 것
+      else if (!active && !was && first && w !== WF['pages-build-deployment']) past.push({ at: Date.parse(run.updated_at), who: '예약봇', text: `${w[0]} ${run.conclusion === 'success' ? '끝' : '실패 ⚠'}` });
+    }
+    past.sort((a, b) => a.at - b.at).slice(-30).forEach(x => log(x.who, x.text, x.at));
+    first = false;
+  }
+  const loop = async () => { await poll(); setTimeout(loop, every()); };
+  loop();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+}
+
+// ── 비밀번호: admin과 같은 비밀번호. 한 번 들어가면 이 브라우저에선 계속 (비밀번호를 바꾸면 다시 물어봄) ──
+// 바꿀 때: kydzm/index.html의 PASSWORD_HASH와 같이 바꾼다
+const PASSWORD_HASH = 'fc0d164e3259b5a28b9b7ac489e95e1638ba1bc37a27c2bb07ac7bdb624f1347', AUTH_KEY = 'kydz_camp_authed';
+async function sha256(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function gate(start) {
+  // 내 컴퓨터 연결(camp-watch)은 집 와이파이 안에서만 열리고, http라 암호 계산도 안 돼서 묻지 않음
+  let ok = !!LIVE; try { ok = ok || localStorage.getItem(AUTH_KEY) === PASSWORD_HASH; } catch (e) {}
+  if (ok) return start();
+  const g = document.getElementById('gate'), f = g.querySelector('form'), inp = f.querySelector('input'), err = f.querySelector('.err');
+  g.hidden = false; inp.focus();
+  f.onsubmit = async e => {
+    e.preventDefault();
+    if (await sha256(inp.value) !== PASSWORD_HASH) { err.textContent = '비밀번호가 달라요'; inp.select(); return; }
+    try { localStorage.setItem(AUTH_KEY, PASSWORD_HASH); } catch (er) {}
+    g.hidden = true; start();
+  };
+}
+
 // ── 고정화면 ──
 let wakeLock = null;
 async function keepAwake() { try { if ('wakeLock' in navigator && document.visibilityState === 'visible') wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { /* 허용 안 되면 그냥 둠 */ } }
@@ -807,9 +940,9 @@ let wasFixed = false; try { wasFixed = localStorage.getItem('kydz_camp_fixed') =
 if (phoneLandscape.matches || wasFixed || location.hash === '#fixed') setFixed(true);
 
 resize(); agent('main'); renderNow(); renderJobs(); renderWood();
-setInterval(() => { renderWood(); if (!LIVE && Date.now() >= wood.resetAt) refill(); }, 30000);
+setInterval(() => { renderWood(); if (DEMO_MODE && Date.now() >= wood.resetAt) refill(); }, 30000);
 handle({ agent: 'main', kind: 'idle', text: '캠핑장 도착' });
-if (LIVE) startLive(); else setInterval(demoTick, 3400);
+gate(() => { if (LIVE) startLive(); else if (GH_MODE) startGitHub(); else setInterval(demoTick, 3400); });
 requestAnimationFrame(frame);
 })();
 </script>
