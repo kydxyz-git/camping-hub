@@ -694,11 +694,18 @@ function newPost(extra) {
   return { id: rid('p_'), kind: '수익화', topic: '살림템 추천', memo: '', name: '', price: '', size: '', used: false, link: '', with_link: true, body: '', comment: '',
     status: '대기', slot: '', post_id: '', permalink: '', error: '', tries: 0, posted_at: '', created_at: '', ...extra };
 }
+// 화면 순서: 예정 시각 순 → 시각 없는 글(초안·문제·특가)은 목록 순서대로 뒤에
+function displayOrder(sched) {
+  sched = sched || scheduleMap();
+  const pend = livePosts().filter(isPending);
+  const timed = pend.filter(p => sched[p.id]).sort((a, b) => sched[a.id].localeCompare(sched[b.id]));
+  return [...timed, ...pend.filter(p => !sched[p.id])];
+}
 function renderList() {
   const posts = livePosts();
-  const pending = posts.filter(isPending);
-  const done = posts.filter(p => !isPending(p)).sort((a, b) => String(b.posted_at || '').localeCompare(String(a.posted_at || '')));
   const sched = scheduleMap();
+  const pending = displayOrder(sched);
+  const done = posts.filter(p => !isPending(p)).sort((a, b) => String(b.posted_at || '').localeCompare(String(a.posted_at || '')));
   const ready = Object.values(sched).filter(Boolean);
   const noLink = pending.filter(p => (p.status || '대기') === '대기' && buildPost(p).problem).length;
   const last = ready.length ? ready[ready.length - 1] : null;
@@ -750,8 +757,8 @@ function postHtml(p, i, n, slotKey) {
     <div class="post-top">
       <span class="post-no">${i + 1}</span>
       <span data-badge style="flex:1;min-width:0;display:flex">${statusBadge(p, slotKey)}</span>
-      <button class="icon-btn" data-act="up" ${i === 0 ? 'disabled' : ''} title="위로">↑</button>
-      <button class="icon-btn" data-act="down" ${i === n - 1 ? 'disabled' : ''} title="아래로">↓</button>
+      <button class="icon-btn" data-act="up" ${i === 0 ? 'disabled' : ''} title="같은 종류 앞 글과 바꾸기 (시각이 서로 바뀜)">↑</button>
+      <button class="icon-btn" data-act="down" ${i === n - 1 ? 'disabled' : ''} title="같은 종류 뒤 글과 바꾸기 (시각이 서로 바뀜)">↓</button>
       <button class="btn small save1" data-act="save1">저장</button>
       <span class="menu-wrap"><button class="icon-btn" data-act="menu" title="더보기">⋯</button></span>
     </div>
@@ -929,10 +936,14 @@ function refreshCard(card, p) {
     if (first && first.nodeType === 3) first.textContent = `링크 댓글(맨 마지막): ${b.comment ? '대가성 문구 + ' + b.comment.slice(DISCLOSURE.length).trim().split('\n')[0] : '(링크 없음)'}`;
   }
 }
+// 화살표: 같은 종류의 바로 앞/뒤 글과 자리를 바꿈 → 두 글의 예정 시각이 서로 바뀜
+// (시각마다 종류가 정해져 있어서 다른 종류와 바꿔도 시각은 그대로라)
 function move(p, dir) {
-  const pend = livePosts().filter(isPending);
-  const i = pend.indexOf(p), j = i + dir;
-  if (j < 0 || j >= pend.length) return;
+  const sched = scheduleMap(), pend = displayOrder(sched);
+  const same = q => q.kind === p.kind && !!sched[q.id] === !!sched[p.id];
+  let j = pend.indexOf(p) + dir;
+  while (j >= 0 && j < pend.length && !same(pend[j])) j += dir;
+  if (j < 0 || j >= pend.length) return toast(`${dir < 0 ? '앞' : '뒤'}에 같은 종류(${KIND_LABEL[p.kind] || p.kind}) 글이 없어요`);
   const a = S.posts.indexOf(p), b = S.posts.indexOf(pend[j]);
   [S.posts[a], S.posts[b]] = [S.posts[b], S.posts[a]];
   S.orderChanged = true;
