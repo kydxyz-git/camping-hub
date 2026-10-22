@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>밤캠핑 작업실</title>
+<title>공대남자 캠핑사이트</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
 <style>
-/* 밤 캠핑장 한 장면: 위는 캔버스(아이소메트릭 캠핑장), 아래(PC는 오른쪽)는 지금 하는 일 + 기록 */
+/* 밤 캠핑장 한 장면: 위는 캔버스(아이소메트릭 캠핑장), 아래(PC는 오른쪽)는 지금 · 예약된 작업 · 기록 */
 :root {
   color-scheme: dark;
   --night: #0f1a1f;      /* 밤하늘·바탕 */
@@ -40,53 +40,56 @@ h1 small { display: block; font: 400 13px var(--body); color: var(--muted); marg
 .dot.demo { background: var(--ember); box-shadow: 0 0 10px var(--ember); }
 .main { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 1000px) { .main { grid-template-columns: minmax(0, 1fr) 330px; } }
-.stage { position: relative; border-radius: 14px; overflow: hidden; background: #0b1418; border: 1px solid var(--line); aspect-ratio: 16 / 12; max-width: 100%; }
+.stage { position: relative; border-radius: 14px; overflow: hidden; background: #0b1418; border: 1px solid var(--line); aspect-ratio: 3 / 4.4; max-width: 100%; }
+@media (min-width: 700px) { .stage { aspect-ratio: 16 / 12; } }
 @media (min-width: 1000px) { .stage { aspect-ratio: 16 / 10; } }
 canvas { display: block; width: 100%; height: 100%; }
 .side { display: grid; gap: 12px; align-content: start; min-width: 0; }
 .panel { background: var(--ground); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0; }
-.panel h2 { font: 600 11px var(--body); letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; text-transform: uppercase; }
-.now { display: grid; gap: 6px; }
-.now .row { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 8px; align-items: start; }
-.now .sw { width: 10px; height: 10px; border-radius: 3px; margin-top: 5px; }
-.now b { font-weight: 600; }
-.now .t { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
-.legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; font-size: 12px; color: var(--muted); }
-.legend span b { color: var(--ink); font-weight: 600; }
-.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-height: 260px; overflow-y: auto; font: 12px/1.45 var(--mono); }
-.log li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 8px; color: var(--muted); }
+.panel h2 { font: 600 11px var(--body); letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; }
+.rows { display: grid; gap: 6px; }
+.row { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 8px; align-items: start; }
+.row .sw { width: 10px; height: 10px; border-radius: 3px; margin-top: 5px; }
+.row b { font-weight: 600; }
+.row .t { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.row .when { font: 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.row.soon .when { color: var(--ember); }
+.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-height: 220px; overflow-y: auto; font: 12px/1.45 var(--mono); }
+.log li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; color: var(--muted); }
 .log li span:last-child { color: var(--ink); overflow-wrap: anywhere; }
 .controls { display: flex; gap: 8px; flex-wrap: wrap; }
 button { font: 600 12px var(--body); color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
 button:hover { border-color: var(--ember); }
 button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
-.note { font-size: 12px; color: var(--muted); }
+.note { font-size: 12px; color: var(--muted); margin: 0; }
+.wood { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; margin-bottom: 6px; }
+.bar { height: 10px; border-radius: 6px; background: #0f1a1f; border: 1px solid var(--line); overflow: hidden; }
+.bar span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #8a5a3c, var(--ember)); transition: width .8s; }
+.wood b { font: 600 13px var(--mono); font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .dot { box-shadow: none; } }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>밤캠핑 작업실 <small>Claude Code가 지금 캠핑장 어디에 있는지</small></h1>
+    <h1>공대남자 캠핑사이트 <small>공대남자가 지금 캠핑장에서 뭘 하고 있는지</small></h1>
     <span class="status"><span class="dot demo" id="dot"></span><span id="mode">데모 중 — 아직 연결 안 됨</span></span>
   </header>
   <div class="main">
-    <div class="stage"><canvas id="cv" aria-label="캠핑장 장면: 캐릭터가 하는 일에 따라 텐트·작업대·화로대·전망대·캠핑카·캠핑의자로 이동"></canvas></div>
+    <div class="stage"><canvas id="cv" aria-label="공대남자 캠핑장. 캐릭터가 하는 일에 따라 텐트·타프·화로대·바베큐 그릴·커피 테이블·캠핑카·캠핑의자로 옮겨 다님"></canvas></div>
     <aside class="side">
       <section class="panel">
         <h2>지금</h2>
-        <div class="now" id="now"></div>
+        <div class="rows" id="now"></div>
       </section>
       <section class="panel">
-        <h2>장소</h2>
-        <div class="legend">
-          <span><b>텐트</b> 파일 읽기</span>
-          <span><b>작업대</b> 파일 고치기</span>
-          <span><b>화로대</b> 명령 실행</span>
-          <span><b>전망대</b> 검색·웹</span>
-          <span><b>캠핑카</b> 일 나눠 맡기기</span>
-          <span><b>캠핑의자</b> 생각·기다림</span>
-        </div>
+        <h2>남은 장작 (사용량)</h2>
+        <div class="wood"><div class="bar"><span id="woodbar"></span></div><b id="woodpct">-</b></div>
+        <p class="note" id="woodnote"></p>
+      </section>
+      <section class="panel">
+        <h2>예약된 작업</h2>
+        <div class="rows" id="jobs"></div>
       </section>
       <section class="panel">
         <h2>기록</h2>
@@ -94,9 +97,12 @@ button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
       </section>
       <div class="controls">
         <button type="button" id="pause">데모 멈추기</button>
-        <button type="button" id="burst">일 나눠 맡기기 보기</button>
+        <button type="button" id="burst">동료 부르기</button>
+        <button type="button" id="job">예약 작업 돌려보기</button>
+        <button type="button" id="refill">장작 보충 보기</button>
+        <button type="button" id="tod">시간대: 자동</button>
       </div>
-      <p class="note">지금은 예시 작업을 돌려 보여주는 데모예요. 연결하면 실제 Claude Code 작업이 실시간으로 움직여요.</p>
+      <p class="note">지금은 예시 작업을 돌려 보여주는 데모예요. 연결하면 공대남자의 실제 Claude Code 작업과 예약된 작업이 실시간으로 움직여요.</p>
     </aside>
   </div>
 </div>
@@ -106,85 +112,170 @@ button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let W = 0, H = 0, DPR = 1, S = 1;           // S: 장면 배율
-const TW = 64, TH = 32, N = 12;              // 아이소 타일 크기, 격자 N×N
+const TW = 64, TH = 32, N = 12;              // 가로 화면: 아이소 타일 크기, 격자 N×N
+const GX = 8, GY = 14, CW = 64, CH = 44;     // 세로 화면(폰): 위에서 비스듬히 내려다보는 격자 GX×GY
 
-// ── 장소 (격자 좌표) ──
+// ── 장소 (격자 좌표). ax/ay = 캐릭터가 서는 곳, say = 말풍선 ──
 const ZONES = {
-  tent:  { x: 3.2, y: 2.6, label: '텐트',     verb: '자료 펼쳐보는 중' },
-  table: { x: 7.6, y: 3.0, label: '작업대',   verb: '고치는 중' },
-  fire:  { x: 6.0, y: 6.2, label: '화로대',   verb: '불 피우는 중' },
-  scope: { x: 9.6, y: 7.4, label: '전망대',   verb: '둘러보는 중' },
-  van:   { x: 2.6, y: 8.6, label: '캠핑카',   verb: '동료 부르는 중' },
-  chair: { x: 4.6, y: 5.4, label: '캠핑의자', verb: '생각 중' },
+  dome:    { x: 2.6, y: 2.4, ax: 0.2, ay: 1.1, say: '파일 읽는 중…',       act: 'read' },
+  tipi:    { x: 5.6, y: 1.6, ax: 0.1, ay: 1.0, say: '파일 고치는 중…',     act: 'hammer' },
+  shelter: { x: 9.2, y: 2.6, ax: -1.1, ay: 1.0, say: '파일 찾는 중…',      act: 'torch' },
+  coffee:  { x: 10.1, y: 5.6, ax: -0.1, ay: 0.8, say: '계획 세우는 중…',   act: 'pour' },
+  tarp:    { x: 8.3, y: 7.4, ax: 0.2, ay: 0.55, say: '인터넷 찾아보는 중…', act: 'type' },
+  fire:    { x: 5.6, y: 5.8, ax: 0.6, ay: 0.6, say: '명령 돌리는 중…',     act: 'poke' },
+  bbq:     { x: 3.4, y: 7.3, ax: 0.1, ay: 0.75, say: '테스트 굽는 중…',     act: 'flip' },
+  chair:   { x: 3.9, y: 4.6, ax: 0.0, ay: 0.05, say: '기다리는 중…',       act: 'sit' },
+  van:     { x: 1.9, y: 9.3, ax: 1.0, ay: 0.8, say: '동료 부르는 중…',     act: 'wave' },
 };
-const TOOL_ZONE = {
-  Read: 'tent', Glob: 'tent', NotebookRead: 'tent', LS: 'tent',
-  Edit: 'table', Write: 'table', MultiEdit: 'table', NotebookEdit: 'table',
-  Bash: 'fire', BashOutput: 'fire',
-  Grep: 'scope', WebSearch: 'scope', WebFetch: 'scope', ToolSearch: 'scope',
-  Agent: 'van', Task: 'van',
+ZONES.wood = { x: 6.9, y: 4.7, ax: 0.6, ay: 0.5, say: '장작 쌓는 중…', act: 'carry' };
+// 화면 모양마다 배치 — wide: 가로(아이소 마름모), tall: 세로(폰)
+const LAYOUTS = {
+  wide: {
+    zones: { dome: [2.6, 2.4], tipi: [5.6, 1.6], shelter: [9.2, 2.6], coffee: [10.1, 5.6], tarp: [8.3, 7.4], fire: [5.6, 5.8], bbq: [3.4, 7.3], chair: [3.9, 4.6], van: [1.9, 9.3], wood: [6.9, 4.7] },
+    trees: [[0.4, 0.6], [1.4, 0.3], [0.3, 2.2], [0.5, 4.4], [0.4, 6.4], [11.2, 0.5], [10.6, 0.9], [11.4, 3.4], [11.4, 7.4], [11.5, 9.6], [8.6, 11.2], [6.2, 11.4], [4.0, 11.3], [0.6, 11.0], [9.8, 10.6], [7.6, 0.4]],
+    picnic: [6.6, 9.4], lake: [10.1, 10.2],
+    path: (x, y) => (x === y && x > 2 && x < 10) || (y === 6 && x > 2 && x < 10) || (x === 5 && y > 2 && y < 9),
+  },
+  tall: {
+    zones: { dome: [1.9, 2.5], tipi: [6.0, 2.3], shelter: [4.4, 4.6], coffee: [6.8, 6.4], tarp: [4.3, 10.0], fire: [3.5, 7.4], bbq: [1.3, 9.4], chair: [1.4, 6.0], van: [2.0, 12.4], wood: [5.3, 7.7] },
+    trees: [[0.1, 0.2], [1.6, -0.1], [3.4, 0.1], [5.2, -0.1], [7.0, 0.2], [-0.2, 3.9], [7.4, 4.2], [-0.2, 7.9], [7.4, 8.6], [-0.2, 10.9], [7.2, 11.6], [4.6, 13.4], [0.2, 13.5], [6.6, 13.6]],
+    picnic: [6.4, 10.6], lake: [6.1, 12.6],
+    path: (x, y) => (x === 3 && y > 1 && y < 13) || (y === 7 && x > 0 && x < 7) || (y === 4 && x > 1 && x < 6),
+  },
 };
-const zoneOf = t => TOOL_ZONE[t] || (/^mcp__/.test(t || '') ? 'scope' : 'chair');
+let TALL = false, L = LAYOUTS.wide;
+function applyLayout() {
+  L = TALL ? LAYOUTS.tall : LAYOUTS.wide;
+  for (const [k, [x, y]] of Object.entries(L.zones)) { ZONES[k].x = x; ZONES[k].y = y; }
+  if (typeof WOODPILE !== 'undefined') { WOODPILE.x = L.zones.wood[0]; WOODPILE.y = L.zones.wood[1]; }
+  TREES = L.trees.map(([x, y], i) => ({ x, y, h: 0.8 + ((i * 37) % 10) / 20 }));
+  // 이미 있는 캐릭터는 지금 장소로 바로 옮김
+  if (typeof agents !== 'undefined') for (const a of agents.values()) { const z = ZONES[a.zone] || ZONES.chair; a.x = a.tx = z.x + z.ax; a.y = a.ty = z.y + z.ay; }
+}
+const dep = (x, y) => TALL ? y : x + y;   // 그리는 순서 (뒤 → 앞)
+const PLAN_TOOLS = /^(TodoWrite|TaskCreate|TaskUpdate|TaskList|EnterPlanMode|ExitPlanMode)$/;
+function zoneOf(ev) {
+  const t = ev.tool || '';
+  if (ev.kind === 'idle') return 'chair';
+  if (ev.kind === 'think' || PLAN_TOOLS.test(t)) return 'coffee';
+  if (/^(Read|NotebookRead|LS)$/.test(t)) return 'dome';
+  if (/^(Edit|Write|MultiEdit|NotebookEdit)$/.test(t)) return 'tipi';
+  if (/^(Glob|Grep)$/.test(t)) return 'shelter';
+  if (/^(WebSearch|WebFetch|ToolSearch)$/.test(t) || /^mcp__/.test(t)) return 'tarp';
+  if (/^(Agent|Task)$/.test(t)) return 'van';
+  if (/^(Bash|BashOutput)$/.test(t)) return /test|check|build|lint|pytest|jest|vitest|npm run|py_compile/.test(ev.text || '') ? 'bbq' : 'fire';
+  return 'chair';
+}
+
+// ── 예약된 작업 (한국 시간) ──
+const JOBS = [
+  { name: '스레드 글 올리기', at: { hours: [7, 12, 22], min: 5 },  zone: 'tipi',    say: '스레드 글 올리는 중…' },
+  { name: '쿠팡 특가 찾기',   at: { hours: [6], min: 10 },         zone: 'tarp',    say: '쿠팡 특가 찾는 중…' },
+  { name: '특가 글 올리기',   at: { hours: [10], min: 5 },         zone: 'tipi',    say: '특가 글 올리는 중…' },
+  { name: '댓글 확인',        at: { every: 60, min: 35 },          zone: 'coffee',  say: '댓글 읽는 중…' },
+  { name: '방문 통계 정리',   at: { every: 60, min: 0 },           zone: 'shelter', say: '통계 정리하는 중…' },
+  { name: '쿠팡 링크 점검',   at: { hours: [9], min: 10, wd: 1 },  zone: 'dome',    say: '링크 점검하는 중…' },
+  { name: '스레드 토큰 갱신', at: { hours: [3], min: 17, wd: 2 },  zone: 'fire',    say: '토큰 갈아끼우는 중…' },
+];
+const KST = 9 * 3600e3;
+function nextRun(job, now) {
+  // 한국 시간 기준 다음 실행 시각 (분 단위로 앞으로 훑기 — 하루 1,440번이면 충분)
+  const k = new Date(Math.ceil((now + KST) / 60e3) * 60e3);
+  for (let i = 0; i < 8 * 1440; i++) {
+    const d = new Date(k.getTime() + i * 60e3), h = d.getUTCHours(), m = d.getUTCMinutes(), wd = d.getUTCDay();
+    const a = job.at;
+    if (m !== a.min) continue;
+    if (a.wd != null && wd !== a.wd) continue;
+    if (a.every || a.hours.includes(h)) return d.getTime() - KST;
+  }
+  return null;
+}
+function untilText(ms) {
+  const m = Math.round(ms / 60e3);
+  if (m < 1) return '곧';
+  if (m < 60) return `${m}분 뒤`;
+  const h = Math.floor(m / 60);
+  return h < 24 ? `${h}시간 ${m % 60}분 뒤` : `${Math.floor(h / 24)}일 뒤`;
+}
 
 // ── 아이소 변환 ──
 function iso(x, y) { return { x: (x - y) * TW / 2, y: (x + y) * TH / 2 }; }
-function toScreen(x, y) { const p = iso(x, y); return { x: W / 2 + p.x * S, y: H * 0.5 - (N * TH / 2) * S + p.y * S + H * 0.04 }; }
-
+function toScreen(x, y) {
+  if (TALL) return { x: (W - GX * CW * S) / 2 + x * CW * S, y: H - (GY * CH + 12) * S + y * CH * S };   // 땅은 아래에 붙이고 남는 위쪽은 하늘
+  const p = iso(x, y); return { x: W / 2 + p.x * S, y: H * 0.54 - (N * TH / 2) * S + p.y * S };
+}
 function resize() {
   const r = cv.getBoundingClientRect();
   DPR = Math.min(2, window.devicePixelRatio || 1);
   W = r.width; H = r.height;
   cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  // 장면 폭: 격자 대각선 N*TW 를 화면에 맞춤
-  // 폰처럼 좁으면 양옆 숲을 살짝 잘라 장면을 크게
-  S = Math.min(W / (N * TW * (W < 600 ? 0.86 : 1.05)), H / (N * TH * 1.3));
+  const tall = H > W;
+  if (tall !== TALL || !resize.done) { TALL = tall; applyLayout(); resize.done = true; }
+  S = TALL ? Math.min(W / (GX * CW), H * 0.86 / (GY * CH)) : Math.min(W / (N * TW * 1.05), H / (N * TH * 1.3));
 }
 addEventListener('resize', resize);
 
-// ── 배경: 별, 나무 ──
-const rnd = (a => () => (a = (a * 16807) % 2147483647) / 2147483647)(42);
-const STARS = Array.from({ length: 90 }, () => ({ x: rnd(), y: rnd() * 0.32, r: rnd() * 1.2 + 0.3, p: rnd() * 6 }));
-const TREES = [[0.4, 0.6], [1.4, 0.3], [0.3, 2.2], [0.5, 4.4], [0.4, 6.4], [11.2, 0.5], [10.4, 1.2], [11.4, 3.0],
-  [11.3, 5.2], [11.5, 9.6], [8.6, 11.2], [6.2, 11.4], [4.0, 11.3], [0.6, 10.8], [9.8, 10.6]].map(([x, y]) => ({ x, y, h: 0.8 + rnd() * 0.5 }));
-
+// ── 기본 도형 ──
 function poly(pts, fill, stroke) {
   ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath();
   if (fill) { ctx.fillStyle = fill; ctx.fill(); }
   if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
 }
+function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 function tile(x, y, fill) { poly([toScreen(x, y), toScreen(x + 1, y), toScreen(x + 1, y + 1), toScreen(x, y + 1)], fill); }
+function glow(p, r, rgba) {
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  const g = ctx.createRadialGradient(p.x, p.y, 1, p.x, p.y, r); g.addColorStop(0, rgba); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(p.x - r, p.y - r, r * 2, r * 2); ctx.restore();
+}
 
+// ── 시간대 (한국 시간) — 하늘·땅·조명 ──
+const MOODS = {
+  dawn:   { name: '새벽', sky: ['#2b3350', '#c98a7a', '#e9b98f'], grass: ['#2b4a3a', '#284434'], path: ['#5a5446', '#544e41'], edge: ['#1c3328', '#172b22'], stars: 0.35, moon: 0.5, sun: null, fire: 0.6, tint: 'rgba(255,170,140,0.06)' },
+  day:    { name: '낮',   sky: ['#7fb6d9', '#b9dbe9', '#e3f0e6'], grass: ['#4f8a4c', '#4a8247'], path: ['#b7a27a', '#ae9a72'], edge: ['#35603a', '#2d5232'], stars: 0, moon: 0, sun: [0.18, 0.12, '#fff3c4'], fire: 0.25, tint: 'rgba(255,255,255,0)' },
+  sunset: { name: '노을', sky: ['#3c3a62', '#d9775a', '#f2b36d'], grass: ['#3d5f3c', '#385838'], path: ['#8a6f52', '#82684d'], edge: ['#27412b', '#213824'], stars: 0.15, moon: 0, sun: [0.8, 0.3, '#ffb36b'], fire: 0.7, tint: 'rgba(255,120,60,0.07)' },
+  night:  { name: '밤',   sky: ['#0a1420', '#0f1d24', '#0b1418'], grass: ['#1d3a2c', '#1a3428'], path: ['#3a3a2e', '#36362b'], edge: ['#10231b', '#0d1d17'], stars: 1, moon: 1, sun: null, fire: 1, tint: 'rgba(20,40,80,0.10)' },
+};
+let todForce = null;   // 미리 보기로 고른 시간대 (없으면 자동)
+function moodNow() {
+  if (todForce) return MOODS[todForce];
+  const h = new Date(Date.now() + 9 * 3600e3).getUTCHours() + new Date().getUTCMinutes() / 60;
+  return h >= 5 && h < 7 ? MOODS.dawn : h >= 7 && h < 17 ? MOODS.day : h >= 17 && h < 19.5 ? MOODS.sunset : MOODS.night;
+}
+let M = MOODS.night;
+
+// ── 배경 ──
+const rnd = (a => () => (a = (a * 16807) % 2147483647) / 2147483647)(42);
+const STARS = Array.from({ length: 90 }, () => ({ x: rnd(), y: rnd() * 0.3, r: rnd() * 1.2 + 0.3, p: rnd() * 6 }));
+let TREES = [];
 function drawSky(t) {
   const g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0, '#0a1420'); g.addColorStop(0.55, '#0f1d24'); g.addColorStop(1, '#0b1418');
+  g.addColorStop(0, M.sky[0]); g.addColorStop(0.55, M.sky[1]); g.addColorStop(1, M.sky[2]);
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-  for (const s of STARS) {
-    const a = reduce ? 0.7 : 0.45 + 0.4 * Math.sin(t / 900 + s.p);
+  if (M.stars) for (const s of STARS) {
+    const a = (reduce ? 0.7 : 0.45 + 0.4 * Math.sin(t / 900 + s.p)) * M.stars;
     ctx.fillStyle = `rgba(233,228,214,${a})`; ctx.beginPath(); ctx.arc(s.x * W, s.y * H, s.r, 0, 7); ctx.fill();
   }
-  ctx.fillStyle = 'rgba(240,232,200,0.9)'; ctx.beginPath(); ctx.arc(W * 0.86, H * 0.1, 14 * S + 6, 0, 7); ctx.fill();
-  ctx.fillStyle = '#0a1420'; ctx.beginPath(); ctx.arc(W * 0.86 + 6 * S + 2, H * 0.1 - 3, 13 * S + 5, 0, 7); ctx.fill();
+  if (M.moon) {
+    const mx = W * 0.88, my = H * 0.1, mr = 12 * S + 6;
+    ctx.fillStyle = `rgba(240,232,200,${0.9 * M.moon})`; ctx.beginPath(); ctx.arc(mx, my, mr, 0, 7); ctx.fill();
+    ctx.fillStyle = M.sky[0]; ctx.beginPath(); ctx.arc(mx + mr * 0.45, my - mr * 0.2, mr * 0.92, 0, 7); ctx.fill();
+  }
+  if (M.sun) { const [sx, sy, c] = M.sun, p = { x: W * sx, y: H * sy }; glow(p, 60 * S + 30, 'rgba(255,240,190,0.35)'); ctx.fillStyle = c; ctx.beginPath(); ctx.arc(p.x, p.y, 14 * S + 6, 0, 7); ctx.fill(); }
 }
 function drawGround() {
-  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-    const path = (Math.abs(x - y) <= 0 && x > 2 && x < 10) || (y === 6 && x > 2 && x < 10) || (x === 5 && y > 2 && y < 9);
-    const base = path ? ((x + y) % 2 ? '#3a3a2e' : '#36362b') : ((x + y) % 2 ? '#1d3a2c' : '#1a3428');
-    tile(x, y, base);
-  }
-  // 가장자리 두께
-  const a = toScreen(0, N), b = toScreen(N, N), c = toScreen(N, 0), d = 10 * S;
-  poly([a, b, { x: b.x, y: b.y + d }, { x: a.x, y: a.y + d }], '#10231b');
-  poly([b, c, { x: c.x, y: c.y + d }, { x: b.x, y: b.y + d }], '#0d1d17');
-  // 작은 호수
-  const lk = toScreen(9.3, 10.2);
+  const nx = TALL ? GX : N, ny = TALL ? GY : N;
+  for (let y = 0; y < ny; y++) for (let x = 0; x < nx; x++) tile(x, y, L.path(x, y) ? M.path[(x + y) % 2] : M.grass[(x + y) % 2]);
+  const a = toScreen(0, ny), b = toScreen(nx, ny), c = toScreen(nx, 0), d = 10 * S;
+  poly([a, b, { x: b.x, y: b.y + d }, { x: a.x, y: a.y + d }], M.edge[0]);
+  if (!TALL) poly([b, c, { x: c.x, y: c.y + d }, { x: b.x, y: b.y + d }], M.edge[1]);
+  const lk = toScreen(L.lake[0], L.lake[1]);
   ctx.save(); ctx.translate(lk.x, lk.y); ctx.scale(1, 0.5);
-  ctx.fillStyle = '#16384a'; ctx.beginPath(); ctx.arc(0, 0, 46 * S, 0, 7); ctx.fill();
-  ctx.fillStyle = 'rgba(240,232,200,0.18)'; ctx.beginPath(); ctx.arc(10 * S, -8 * S, 10 * S, 0, 7); ctx.fill();
+  ctx.fillStyle = M === MOODS.day ? '#3f86a8' : '#16384a'; ctx.beginPath(); ctx.arc(0, 0, 42 * S, 0, 7); ctx.fill();
+  ctx.fillStyle = 'rgba(240,232,200,0.18)'; ctx.beginPath(); ctx.arc(10 * S, -8 * S, 9 * S, 0, 7); ctx.fill();
   ctx.restore();
 }
-
-// ── 소품 ──
 function tree(o) {
   const p = toScreen(o.x + 0.5, o.y + 0.5), h = 56 * o.h * S, w = 20 * S;
   ctx.fillStyle = '#3b2a1e'; ctx.fillRect(p.x - 2 * S, p.y - 8 * S, 4 * S, 10 * S);
@@ -193,143 +284,302 @@ function tree(o) {
     poly([{ x: p.x, y: yy - h * 0.45 }, { x: p.x + ww, y: yy }, { x: p.x - ww, y: yy }], i % 2 ? '#24543c' : '#1f4a35');
   }
 }
-function tent() {
-  const z = ZONES.tent, f = toScreen(z.x - 0.9, z.y + 0.6), r = toScreen(z.x + 0.9, z.y + 0.6), back = toScreen(z.x - 0.9, z.y - 0.9), br = toScreen(z.x + 0.9, z.y - 0.9);
-  const top = { x: (f.x + r.x) / 2, y: (f.y + r.y) / 2 - 46 * S }, topB = { x: (back.x + br.x) / 2, y: (back.y + br.y) / 2 - 46 * S };
-  poly([f, top, topB, back], '#8a5a3c'); poly([r, top, topB, br], '#a8734c');
-  poly([f, r, top], '#c78a55');
-  const m = { x: (f.x + r.x) / 2, y: (f.y + r.y) / 2 };
-  poly([{ x: m.x - 9 * S, y: m.y }, { x: m.x + 9 * S, y: m.y }, { x: m.x, y: m.y - 26 * S }], '#3a2416');
-  ctx.fillStyle = 'rgba(255,190,110,0.5)'; ctx.beginPath(); ctx.arc(m.x, m.y - 8 * S, 3 * S, 0, 7); ctx.fill();   // 랜턴
+
+// ── 연기·김 ──
+const puffs = [];
+function emit(zone, kind, t) {
+  const z = ZONES[zone], p = toScreen(z.x, z.y);
+  const base = { bbq: [0, -26], fire: [0, -22], coffee: [6, -30] }[zone];
+  puffs.push({ x: p.x + base[0] * S + (Math.random() - 0.5) * 6 * S, y: p.y + base[1] * S, vx: (Math.random() - 0.3) * 6, life: 0, kind });
 }
-function table() {
-  const z = ZONES.table, a = toScreen(z.x - 0.7, z.y - 0.4), b = toScreen(z.x + 0.7, z.y - 0.4), c = toScreen(z.x + 0.7, z.y + 0.4), d = toScreen(z.x - 0.7, z.y + 0.4), up = 16 * S;
-  [a, b, c, d].forEach(p => { ctx.fillStyle = '#4a3527'; ctx.fillRect(p.x - 1.5 * S, p.y - up, 3 * S, up); });
-  poly([a, b, c, d].map(p => ({ x: p.x, y: p.y - up })), '#b0875e', '#7a5a3c');
-  const m = toScreen(z.x, z.y);
-  ctx.fillStyle = '#e9e4d6'; ctx.fillRect(m.x - 10 * S, m.y - up - 6 * S, 12 * S, 7 * S);   // 종이
-  ctx.fillStyle = '#c94f3d'; ctx.fillRect(m.x + 4 * S, m.y - up - 4 * S, 6 * S, 3 * S);     // 연필
+function drawPuffs(dt) {
+  for (let i = puffs.length - 1; i >= 0; i--) {
+    const q = puffs[i]; q.life += dt; q.y -= (q.kind === 'steam' ? 14 : 20) * dt * S; q.x += q.vx * dt * S;
+    const max = q.kind === 'steam' ? 1.6 : 2.6;
+    if (q.life > max) { puffs.splice(i, 1); continue; }
+    const a = (1 - q.life / max) * (q.kind === 'steam' ? 0.35 : 0.28), r = (3 + q.life * 6) * S;
+    ctx.fillStyle = q.kind === 'steam' ? `rgba(233,228,214,${a})` : `rgba(150,160,160,${a})`;
+    ctx.beginPath(); ctx.arc(q.x, q.y, r, 0, 7); ctx.fill();
+  }
+}
+
+// ── 장소 소품 ──
+function domeShape(p, rx, ry, h, color) {
+  ctx.beginPath(); ctx.moveTo(p.x - rx, p.y); ctx.bezierCurveTo(p.x - rx, p.y - h * 1.35, p.x + rx, p.y - h * 1.35, p.x + rx, p.y);
+  ctx.ellipse(p.x, p.y, rx, ry, 0, 0, Math.PI); ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+}
+function dome(t) {
+  const z = ZONES.dome, p = toScreen(z.x, z.y), rx = 36 * S, ry = 18 * S, h = 40 * S;
+  domeShape(p, rx, ry, h, '#3f6f9c');
+  ctx.strokeStyle = 'rgba(233,228,214,0.35)'; ctx.lineWidth = 1.2 * S;
+  [0.55, -0.55].forEach(a => { ctx.beginPath(); ctx.moveTo(p.x + rx * a, p.y + ry * 0.6); ctx.quadraticCurveTo(p.x, p.y - h * 1.25, p.x - rx * a, p.y - ry * 0.4); ctx.stroke(); });
+  ctx.fillStyle = '#26445f'; ctx.beginPath(); ctx.ellipse(p.x + 4 * S, p.y + ry * 0.55, 11 * S, 17 * S, 0, Math.PI, 0); ctx.fill();
+  const l = { x: p.x + 4 * S, y: p.y + ry * 0.2 };
+  glow(l, 22 * S, `rgba(255,190,110,${reduce ? 0.3 : 0.25 + 0.08 * Math.sin(t / 400)})`);
+}
+function tipi() {
+  const z = ZONES.tipi, p = toScreen(z.x, z.y), rx = 28 * S, ry = 14 * S, top = p.y - 78 * S;
+  ctx.strokeStyle = '#6b4a2f'; ctx.lineWidth = 2 * S;
+  [-7, 0, 7].forEach(dx => { ctx.beginPath(); ctx.moveTo(p.x, top + 10 * S); ctx.lineTo(p.x + dx * S, top - 10 * S); ctx.stroke(); });
+  ctx.beginPath(); ctx.moveTo(p.x - rx, p.y); ctx.lineTo(p.x, top); ctx.lineTo(p.x + rx, p.y); ctx.ellipse(p.x, p.y, rx, ry, 0, 0, Math.PI); ctx.closePath();
+  ctx.fillStyle = '#e3d3ae'; ctx.fill();
+  ctx.save(); ctx.clip(); ctx.fillStyle = '#c94f3d'; ctx.fillRect(p.x - rx, p.y - 34 * S, rx * 2, 6 * S); ctx.fillStyle = '#2f4b3a'; ctx.fillRect(p.x - rx, p.y - 26 * S, rx * 2, 3 * S); ctx.restore();
+  poly([{ x: p.x, y: top }, { x: p.x + rx, y: p.y }, { x: p.x + rx * 0.3, y: p.y + ry * 0.95 }], 'rgba(0,0,0,0.12)');
+  poly([{ x: p.x - 8 * S, y: p.y + ry * 0.8 }, { x: p.x + 6 * S, y: p.y + ry * 0.85 }, { x: p.x - 1 * S, y: p.y - 24 * S }], '#3a2416');
+}
+function shelter(t) {
+  const z = ZONES.shelter;
+  for (let i = 0; i < 4; i++) domeShape(toScreen(z.x - 1.1 + i * 0.7, z.y - 0.15 * i), 26 * S, 13 * S, 34 * S, i % 2 ? '#6d8f58' : '#5f7f4c');
+  const f = toScreen(z.x - 1.1, z.y);
+  ctx.fillStyle = '#2f3f28'; ctx.beginPath(); ctx.ellipse(f.x - 2 * S, f.y + 6 * S, 14 * S, 21 * S, 0, Math.PI, 0); ctx.fill();
+  glow({ x: f.x - 2 * S, y: f.y - 4 * S }, 20 * S, 'rgba(255,200,120,0.22)');
+}
+function tableTop(x, y, w, d, up, top, wood) {
+  const a = toScreen(x - w, y - d), b = toScreen(x + w, y - d), c = toScreen(x + w, y + d), e = toScreen(x - w, y + d);
+  [a, b, c, e].forEach(q => { ctx.fillStyle = '#4a3527'; ctx.fillRect(q.x - 1.5 * S, q.y - up, 3 * S, up); });
+  poly([a, b, c, e].map(q => ({ x: q.x, y: q.y - up })), wood || '#b0875e', '#7a5a3c');
+  return { x: toScreen(x, y).x, y: toScreen(x, y).y - up };
+}
+function picnicTable(x, y) {
+  [-0.55, 0.42].forEach(o => {
+    const e = toScreen(x - 0.6, y + o), f = toScreen(x + 0.6, y + o), g = toScreen(x + 0.6, y + o + 0.15), h = toScreen(x - 0.6, y + o + 0.15);
+    poly([e, f, g, h].map(q => ({ x: q.x, y: q.y - 7 * S })), '#7a5a3c');
+  });
+  const m = tableTop(x, y, 0.6, 0.3, 14 * S);
+  ctx.fillStyle = '#e9e4d6'; ctx.fillRect(m.x - 4 * S, m.y - 5 * S, 5 * S, 5 * S);   // 컵
+}
+function coffee(t) {
+  const z = ZONES.coffee, m = tableTop(z.x, z.y, 0.45, 0.3, 14 * S, null, '#9c7650');
+  // 드리퍼 + 서버
+  ctx.fillStyle = '#d8d1bf'; poly([{ x: m.x - 2 * S, y: m.y - 12 * S }, { x: m.x + 10 * S, y: m.y - 12 * S }, { x: m.x + 6 * S, y: m.y - 6 * S }, { x: m.x + 2 * S, y: m.y - 6 * S }], '#d8d1bf');
+  ctx.fillStyle = 'rgba(180,210,220,0.55)'; ctx.fillRect(m.x, m.y - 6 * S, 8 * S, 7 * S);
+  ctx.fillStyle = '#5a3a22'; ctx.fillRect(m.x + 0.5 * S, m.y - 2 * S, 7 * S, 3 * S);
+  // 버너 + 주전자
+  ctx.fillStyle = '#3a3f42'; ctx.fillRect(m.x - 18 * S, m.y - 3 * S, 10 * S, 3 * S);
+  ctx.fillStyle = '#c7ccc9'; ctx.beginPath(); ctx.ellipse(m.x - 13 * S, m.y - 8 * S, 6 * S, 5 * S, 0, 0, 7); ctx.fill();
+  if (!reduce && Math.random() < 0.06) emit('coffee', 'steam', t);
+}
+function tarpUnder() {
+  const z = ZONES.tarp;
+  [-0.55, 0.42].forEach(o => {
+    const e = toScreen(z.x - 0.6, z.y + o), f = toScreen(z.x + 0.6, z.y + o), g = toScreen(z.x + 0.6, z.y + o + 0.15), h = toScreen(z.x - 0.6, z.y + o + 0.15);
+    poly([e, f, g, h].map(q => ({ x: q.x, y: q.y - 7 * S })), '#7a5a3c');
+  });
+  const m = tableTop(z.x, z.y, 0.6, 0.3, 14 * S);
+  ctx.fillStyle = '#2b3a40'; ctx.fillRect(m.x - 9 * S, m.y - 3 * S, 16 * S, 3 * S);
+  poly([{ x: m.x - 8 * S, y: m.y - 3 * S }, { x: m.x + 6 * S, y: m.y - 3 * S }, { x: m.x + 4 * S, y: m.y - 15 * S }, { x: m.x - 10 * S, y: m.y - 15 * S }], '#6fb3d2');
+  glow({ x: m.x - 2 * S, y: m.y - 9 * S }, 18 * S, 'rgba(111,179,210,0.22)');
+}
+function tarpTop(t) {
+  const z = ZONES.tarp, hp = 44 * S, he = 22 * S, sway = reduce ? 0 : Math.sin(t / 700) * 2 * S;
+  const p1 = toScreen(z.x - 1.15, z.y), p2 = toScreen(z.x + 1.15, z.y);
+  const c = [toScreen(z.x - 0.7, z.y - 1.0), toScreen(z.x + 0.7, z.y - 1.0), toScreen(z.x + 0.7, z.y + 1.0), toScreen(z.x - 0.7, z.y + 1.0)];
+  ctx.strokeStyle = '#8fa3a4'; ctx.lineWidth = 2 * S;
+  [p1, p2].forEach(q => { ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.lineTo(q.x, q.y - hp); ctx.stroke(); });
+  ctx.strokeStyle = 'rgba(233,228,214,0.3)'; ctx.lineWidth = 1;
+  [[p1, toScreen(z.x - 1.8, z.y)], [p2, toScreen(z.x + 1.8, z.y)]].forEach(([q, g]) => { ctx.beginPath(); ctx.moveTo(q.x, q.y - hp); ctx.lineTo(g.x, g.y); ctx.stroke(); });
+  const T1 = { x: p1.x, y: p1.y - hp }, T2 = { x: p2.x, y: p2.y - hp }, C = c.map((q, i) => ({ x: q.x, y: q.y - he + (i >= 2 ? sway : 0) }));
+  ctx.globalAlpha = 0.88;
+  poly([T1, C[0], C[1], T2], '#c9a24e'); poly([T1, C[3], C[2], T2], '#e0b85a');
+  ctx.globalAlpha = 1;
 }
 function fire(t) {
   const z = ZONES.fire, p = toScreen(z.x, z.y);
-  ctx.save(); ctx.globalCompositeOperation = 'lighter';
-  const glow = ctx.createRadialGradient(p.x, p.y - 8 * S, 2, p.x, p.y - 8 * S, 120 * S);
-  glow.addColorStop(0, 'rgba(255,138,61,0.35)'); glow.addColorStop(1, 'rgba(255,138,61,0)');
-  ctx.fillStyle = glow; ctx.fillRect(p.x - 130 * S, p.y - 130 * S, 260 * S, 260 * S); ctx.restore();
+  glow({ x: p.x, y: p.y - 8 * S }, 120 * S, `rgba(255,138,61,${0.33 * M.fire})`);
   ctx.save(); ctx.translate(p.x, p.y); ctx.scale(1, 0.5);
   ctx.fillStyle = '#5b5b5b'; ctx.beginPath(); ctx.arc(0, 0, 16 * S, 0, 7); ctx.fill();
   ctx.fillStyle = '#2a1a12'; ctx.beginPath(); ctx.arc(0, 0, 12 * S, 0, 7); ctx.fill(); ctx.restore();
   const k = reduce ? 0 : t / 120;
   for (let i = 0; i < 3; i++) {
-    const h = (18 + 6 * Math.sin(k + i * 2)) * S, w = (7 - i * 1.5) * S, c = ['#ff6a2b', '#ff9d3d', '#ffd27a'][i];
-    poly([{ x: p.x - w, y: p.y - 2 * S }, { x: p.x + w, y: p.y - 2 * S }, { x: p.x + Math.sin(k + i) * 2 * S, y: p.y - h }], c);
+    const h = (18 + 6 * Math.sin(k + i * 2)) * S, w = (7 - i * 1.5) * S;
+    poly([{ x: p.x - w, y: p.y - 2 * S }, { x: p.x + w, y: p.y - 2 * S }, { x: p.x + Math.sin(k + i) * 2 * S, y: p.y - h }], ['#ff6a2b', '#ff9d3d', '#ffd27a'][i]);
   }
+  if (!reduce && Math.random() < 0.05) emit('fire', 'smoke', t);
 }
-function scope() {
-  const z = ZONES.scope, p = toScreen(z.x, z.y), up = 22 * S;
-  ctx.strokeStyle = '#8fa3a4'; ctx.lineWidth = 2 * S;
-  [[-8, 0], [8, 0], [0, 6]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.moveTo(p.x, p.y - up); ctx.lineTo(p.x + dx * S, p.y + dy * S); ctx.stroke(); });
-  ctx.save(); ctx.translate(p.x, p.y - up); ctx.rotate(-0.5);
-  ctx.fillStyle = '#d8d1bf'; ctx.fillRect(-4 * S, -4 * S, 26 * S, 8 * S); ctx.fillStyle = '#16384a'; ctx.fillRect(20 * S, -5 * S, 4 * S, 10 * S); ctx.restore();
+function bbq(t) {
+  const z = ZONES.bbq, p = toScreen(z.x, z.y);
+  ctx.strokeStyle = '#2a2a2a'; ctx.lineWidth = 2 * S;
+  [[-9, 0], [9, 0], [0, 5]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.moveTo(p.x, p.y - 14 * S); ctx.lineTo(p.x + dx * S, p.y + dy * S); ctx.stroke(); });
+  ctx.fillStyle = '#1f1f1f'; ctx.beginPath(); ctx.ellipse(p.x, p.y - 16 * S, 17 * S, 9 * S, 0, 0, Math.PI); ctx.fill();
+  ctx.fillStyle = '#3a3a3a'; ctx.beginPath(); ctx.ellipse(p.x, p.y - 16 * S, 17 * S, 7 * S, 0, 0, 7); ctx.fill();
+  glow({ x: p.x, y: p.y - 17 * S }, 26 * S, `rgba(255,110,50,${reduce ? 0.3 : 0.26 + 0.08 * Math.sin(t / 200)})`);
+  // 고기 두 점 — 하나는 뒤집히는 중
+  const flip = reduce ? 0 : Math.max(0, Math.sin(t / 380)) * 5 * S;
+  ctx.fillStyle = '#9a4a32'; ctx.beginPath(); ctx.ellipse(p.x - 6 * S, p.y - 17 * S, 5 * S, 2.5 * S, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = '#b5604a'; ctx.beginPath(); ctx.ellipse(p.x + 6 * S, p.y - 17 * S - flip, 5 * S, 2.5 * S, 0, 0, 7); ctx.fill();
+  if (!reduce && Math.random() < 0.09) emit('bbq', 'smoke', t);
 }
+function chairAt(x, y, color) {
+  const p = toScreen(x, y);
+  ctx.strokeStyle = '#3b2a1e'; ctx.lineWidth = 2 * S;
+  ctx.beginPath(); ctx.moveTo(p.x - 8 * S, p.y); ctx.lineTo(p.x + 6 * S, p.y - 12 * S); ctx.moveTo(p.x + 8 * S, p.y); ctx.lineTo(p.x - 6 * S, p.y - 12 * S); ctx.stroke();
+  poly([{ x: p.x - 9 * S, y: p.y - 12 * S }, { x: p.x + 9 * S, y: p.y - 12 * S }, { x: p.x + 7 * S, y: p.y - 26 * S }, { x: p.x - 7 * S, y: p.y - 26 * S }], color);
+}
+function chairs() { const z = ZONES.chair; chairAt(z.x, z.y, '#4e8a6a'); chairAt(z.x + 0.9, z.y - 0.5, '#c94f3d'); chairAt(z.x + 0.5, z.y + 0.9, '#6fb3d2'); }
 function van() {
   const z = ZONES.van, a = toScreen(z.x - 1.1, z.y - 0.5), b = toScreen(z.x + 1.1, z.y - 0.5), c = toScreen(z.x + 1.1, z.y + 0.5), d = toScreen(z.x - 1.1, z.y + 0.5), up = 30 * S;
   poly([d, c, { x: c.x, y: c.y - up }, { x: d.x, y: d.y - up }], '#d8d1bf');
   poly([c, b, { x: b.x, y: b.y - up }, { x: c.x, y: c.y - up }], '#bdb5a1');
   poly([a, b, c, d].map(p => ({ x: p.x, y: p.y - up })), '#ece6d6');
-  ctx.fillStyle = '#7fb069'; const mid = { x: (d.x + c.x) / 2, y: (d.y + c.y) / 2 };
   poly([{ x: d.x, y: d.y - up * 0.45 }, { x: c.x, y: c.y - up * 0.45 }, { x: c.x, y: c.y - up * 0.6 }, { x: d.x, y: d.y - up * 0.6 }], '#4e8a6a');
-  ctx.fillStyle = '#1f2f36'; ctx.fillRect(mid.x - 6 * S, mid.y - up * 0.9, 12 * S, 8 * S);
+  const mid = { x: (d.x + c.x) / 2, y: (d.y + c.y) / 2 };
+  ctx.fillStyle = '#ffd27a'; ctx.fillRect(mid.x - 6 * S, mid.y - up * 0.9, 12 * S, 8 * S);   // 불 켜진 창
   [d, c].forEach(p => { ctx.fillStyle = '#111'; ctx.beginPath(); ctx.ellipse(p.x + (p === d ? 10 : -10) * S, p.y, 5 * S, 3.5 * S, 0, 0, 7); ctx.fill(); });
 }
-function chair() {
-  const z = ZONES.chair, p = toScreen(z.x, z.y);
-  ctx.strokeStyle = '#3b2a1e'; ctx.lineWidth = 2 * S;
-  ctx.beginPath(); ctx.moveTo(p.x - 8 * S, p.y); ctx.lineTo(p.x + 6 * S, p.y - 12 * S); ctx.moveTo(p.x + 8 * S, p.y); ctx.lineTo(p.x - 6 * S, p.y - 12 * S); ctx.stroke();
-  poly([{ x: p.x - 9 * S, y: p.y - 12 * S }, { x: p.x + 9 * S, y: p.y - 12 * S }, { x: p.x + 7 * S, y: p.y - 26 * S }, { x: p.x - 7 * S, y: p.y - 26 * S }], '#4e8a6a');
+
+// ── 장작더미 = 남은 사용량. 5시간마다 초기화되면 공대남자가 캠핑카에서 장작을 날라 옴 ──
+const WOODPILE = { x: L.zones.wood[0], y: L.zones.wood[1] }, RESET_H = 5;
+const wood = { level: 0.62, shown: 0.62, resetAt: Date.now() + 2.3 * 3600e3 };
+function woodpile() {
+  const p = toScreen(WOODPILE.x, WOODPILE.y), n = Math.round(wood.shown * 15);
+  const rows = [5, 4, 3, 2, 1];
+  let k = 0;
+  for (let r = 0; r < rows.length && k < n; r++) {
+    for (let i = 0; i < rows[r] && k < n; i++, k++) {
+      const x = p.x + (i - (rows[r] - 1) / 2) * 7 * S, y = p.y - 4 * S - r * 6 * S;
+      ctx.fillStyle = '#7a4e2e'; ctx.fillRect(x - 3.5 * S, y - 3 * S, 7 * S, 6 * S);
+      ctx.fillStyle = '#d9b07a'; ctx.beginPath(); ctx.arc(x + 3.5 * S, y, 3 * S, 0, 7); ctx.fill();   // 나이테 쪽 단면
+    }
+  }
+  if (!n) { ctx.fillStyle = 'rgba(233,228,214,0.4)'; ctx.font = `${10 * S + 3}px "IBM Plex Sans KR", sans-serif`; ctx.textAlign = 'center'; ctx.fillText('장작 없음', p.x, p.y - 4 * S); }
 }
-function zoneLabel(k) {
-  const z = ZONES[k], p = toScreen(z.x, z.y + 1.1);
-  ctx.font = `600 ${Math.max(10, 11 * S + 2)}px "IBM Plex Sans KR", sans-serif`; ctx.textAlign = 'center';
-  ctx.fillStyle = 'rgba(143,163,164,0.85)'; ctx.fillText(z.label, p.x, p.y + 10 * S);
+function useWood(amount) { wood.level = Math.max(0, wood.level - amount); renderWood(); }
+function renderWood() {
+  const pct = Math.round(wood.level * 100);
+  document.getElementById('woodbar').style.width = pct + '%';
+  document.getElementById('woodpct').textContent = pct + '%';
+  document.getElementById('woodnote').textContent = `다음 보충 ${kstClock(wood.resetAt).slice(0, 5)} (${untilText(wood.resetAt - Date.now())}) · ${RESET_H}시간마다 다시 채워져요`;
+}
+let refilling = false;
+function refill() {
+  if (refilling) return; refilling = true;
+  const a = agent('main');
+  const keep = { zone: a.zone, say: a.say, text: a.text };
+  goTo(a, 'van', '장작 가지러 가는 중…', '장작 보충');
+  log(a.name, '장작 보충하러 캠핑카로');
+  setTimeout(() => {
+    a.carry = true; a.zone = 'wood'; a.tx = WOODPILE.x + 0.6; a.ty = WOODPILE.y + 0.5; a.say = '장작 쌓는 중…'; a.text = '장작 쌓는 중';
+    setTimeout(() => {
+      a.carry = false; wood.level = 1; wood.resetAt = Date.now() + RESET_H * 3600e3; renderWood();
+      log(a.name, '장작 다 채움');
+      refilling = false;
+      const last = pending.splice(0).pop();
+      if (last) handle(last); else { goTo(a, keep.zone === 'wood' ? 'chair' : keep.zone, keep.say, keep.text); renderNow(); }
+    }, 3800);
+  }, 3600);
 }
 
 // ── 캐릭터 ──
 const COLORS = ['#ff8a3d', '#7fb069', '#6fb3d2', '#e6c35c', '#d98ab0', '#a99ce0'];
-const agents = new Map();   // id → {x,y,tx,ty,color,name,zone,text,since,leaving}
-function agent(id, name) {
+const agents = new Map();
+function agent(id, name, color) {
   if (!agents.has(id)) {
     const v = ZONES.van, isMain = id === 'main';
-    const a = { id, name: name || (isMain ? 'Claude' : '동료'), x: isMain ? ZONES.chair.x : v.x, y: isMain ? ZONES.chair.y + 0.3 : v.y + 0.7,
-      tx: 0, ty: 0, color: isMain ? COLORS[0] : COLORS[1 + (agents.size % (COLORS.length - 1))], zone: 'chair', text: '생각 중', since: performance.now(), leaving: false, alpha: isMain ? 1 : 0 };
+    const a = { id, name: name || (isMain ? '공대남자' : '동료'), x: isMain ? ZONES.chair.x : v.x + 1, y: isMain ? ZONES.chair.y : v.y + 0.9,
+      color: color || (isMain ? COLORS[0] : COLORS[1 + (agents.size % (COLORS.length - 1))]), zone: 'chair', say: '', text: '',
+      leaving: false, alpha: isMain ? 1 : 0, moving: false, seed: Math.random() * 6 };
     a.tx = a.x; a.ty = a.y; agents.set(id, a);
   }
   return agents.get(id);
 }
-function goTo(a, zone, text) {
-  const z = ZONES[zone], others = [...agents.values()].filter(o => o !== a && o.zone === zone).length;
-  const off = [[0.55, 0.55], [-0.35, 0.75], [0.75, -0.25], [-0.6, 0.1], [0.2, 0.95]][others % 5];
-  a.zone = zone; a.tx = z.x + off[0]; a.ty = z.y + off[1]; a.text = text; a.since = performance.now();
+function goTo(a, zone, say, text) {
+  const z = ZONES[zone], others = [...agents.values()].filter(o => o !== a && o.zone === zone && !o.leaving).length;
+  const off = zone === 'chair' ? [[0, 0], [0.9, -0.5], [0.5, 0.9], [-0.4, 0.6]][others % 4] : [[0, 0], [-0.5, 0.35], [0.5, 0.35], [-0.2, 0.75], [0.45, -0.35]][others % 5];
+  a.zone = zone; a.tx = z.x + z.ax + off[0]; a.ty = z.y + z.ay + off[1]; a.say = say || z.say; a.text = text || a.say;
 }
 function step(dt) {
   for (const a of agents.values()) {
-    const dx = a.tx - a.x, dy = a.ty - a.y, d = Math.hypot(dx, dy), sp = (reduce ? 20 : 3.6) * dt;
+    const dx = a.tx - a.x, dy = a.ty - a.y, d = Math.hypot(dx, dy), sp = (reduce ? 30 : 3.4) * dt;
     if (d > 0.01) { const m = Math.min(1, sp / d); a.x += dx * m; a.y += dy * m; a.moving = true; } else a.moving = false;
     a.alpha = a.leaving ? Math.max(0, a.alpha - dt * 1.5) : Math.min(1, a.alpha + dt * 2);
     if (a.leaving && a.alpha === 0) agents.delete(a.id);
   }
 }
 function person(a, t) {
-  const p = toScreen(a.x, a.y), bob = a.moving && !reduce ? Math.abs(Math.sin(t / 90)) * 3 * S : 0;
+  const p = toScreen(a.x, a.y), act = a.moving ? 'walk' : ZONES[a.zone].act, k = reduce ? 0 : t / 1000 + a.seed;
+  const sit = act === 'sit', bob = act === 'walk' && !reduce ? Math.abs(Math.sin(t / 90)) * 3 * S : 0;
+  const lift = sit ? 8 * S : 0, top = p.y - bob + lift;
   ctx.globalAlpha = a.alpha;
   ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(p.x, p.y, 7 * S, 3 * S, 0, 0, 7); ctx.fill();
-  ctx.fillStyle = '#2a3238'; ctx.fillRect(p.x - 4 * S, p.y - 9 * S - bob, 3 * S, 9 * S); ctx.fillRect(p.x + 1 * S, p.y - 9 * S - bob, 3 * S, 9 * S);
-  ctx.fillStyle = a.color; ctx.fillRect(p.x - 6 * S, p.y - 22 * S - bob, 12 * S, 14 * S);
-  ctx.fillStyle = '#f0d2b0'; ctx.beginPath(); ctx.arc(p.x, p.y - 27 * S - bob, 5.5 * S, 0, 7); ctx.fill();
-  ctx.fillStyle = '#2f4b3a'; ctx.fillRect(p.x - 7 * S, p.y - 32 * S - bob, 14 * S, 2.5 * S); ctx.fillRect(p.x - 4 * S, p.y - 36 * S - bob, 8 * S, 4 * S);   // 모자
-  // 말풍선
-  if (a.text) {
+  // 다리 (걸을 땐 엇갈림)
+  const sw = act === 'walk' && !reduce ? Math.sin(t / 90) * 2.5 * S : 0;
+  ctx.fillStyle = '#2a3238';
+  if (sit) { ctx.fillRect(p.x - 5 * S, p.y - 9 * S, 10 * S, 3 * S); ctx.fillRect(p.x - 5 * S, p.y - 7 * S, 3 * S, 7 * S); ctx.fillRect(p.x + 2 * S, p.y - 7 * S, 3 * S, 7 * S); }
+  else { ctx.fillRect(p.x - 4 * S + sw, top - 9 * S, 3 * S, 9 * S); ctx.fillRect(p.x + 1 * S - sw, top - 9 * S, 3 * S, 9 * S); }
+  // 몸·머리·모자
+  ctx.fillStyle = a.color; ctx.fillRect(p.x - 6 * S, top - 22 * S, 12 * S, 14 * S);
+  ctx.fillStyle = '#f0d2b0'; ctx.beginPath(); ctx.arc(p.x, top - 27 * S, 5.5 * S, 0, 7); ctx.fill();
+  ctx.fillStyle = '#2f4b3a'; ctx.fillRect(p.x - 7 * S, top - 32 * S, 14 * S, 2.5 * S); ctx.fillRect(p.x - 4 * S, top - 36 * S, 8 * S, 4 * S);
+  // 하는 일에 따라 팔과 손에 든 것
+  const sh = { x: p.x + 5 * S, y: top - 19 * S };
+  const ang = { walk: Math.sin(t / 90) * 0.6, read: -0.9, hammer: -1.2 + Math.abs(Math.sin(k * 6)) * 1.3, torch: -0.5 + Math.sin(k * 1.5) * 0.4,
+    pour: -0.7 + Math.sin(k * 2) * 0.25, type: -0.4 + Math.sin(k * 14) * 0.12, poke: -0.6 + Math.sin(k * 3) * 0.45,
+    flip: -0.9 + Math.max(0, Math.sin(k * 2.6)) * 0.9, sit: 0.5, wave: -2.2 + Math.sin(k * 8) * 0.5 }[act] || 0.3;
+  const hand = { x: sh.x + Math.cos(ang) * 9 * S, y: sh.y - Math.sin(-ang) * 9 * S };
+  ctx.strokeStyle = a.color; ctx.lineWidth = 3 * S; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(sh.x, sh.y); ctx.lineTo(hand.x, hand.y); ctx.stroke();
+  ctx.lineWidth = 2 * S;
+  if (a.carry || act === 'carry') { ctx.fillStyle = '#7a4e2e'; ctx.fillRect(p.x - 8 * S, top - 20 * S, 16 * S, 5 * S); ctx.fillRect(p.x - 6 * S, top - 25 * S, 12 * S, 5 * S); }
+  if (act === 'read') { ctx.fillStyle = '#e9e4d6'; ctx.fillRect(hand.x - 2 * S, hand.y - 6 * S, 8 * S, 6 * S); }
+  if (act === 'hammer') { ctx.strokeStyle = '#6b4a2f'; ctx.beginPath(); ctx.moveTo(hand.x, hand.y); ctx.lineTo(hand.x + 5 * S, hand.y - 4 * S); ctx.stroke(); ctx.fillStyle = '#8fa3a4'; ctx.fillRect(hand.x + 3 * S, hand.y - 7 * S, 5 * S, 3 * S); }
+  if (act === 'torch') { ctx.save(); ctx.globalCompositeOperation = 'lighter'; poly([hand, { x: hand.x + 34 * S, y: hand.y - 10 * S + Math.sin(k * 1.5) * 8 * S }, { x: hand.x + 34 * S, y: hand.y + 8 * S + Math.sin(k * 1.5) * 8 * S }], 'rgba(255,230,160,0.18)'); ctx.restore(); }
+  if (act === 'pour') { ctx.fillStyle = '#c7ccc9'; ctx.beginPath(); ctx.ellipse(hand.x + 3 * S, hand.y, 4 * S, 3 * S, 0, 0, 7); ctx.fill(); ctx.strokeStyle = 'rgba(180,210,220,0.7)'; ctx.beginPath(); ctx.moveTo(hand.x + 7 * S, hand.y); ctx.lineTo(hand.x + 9 * S, hand.y + 7 * S); ctx.stroke(); }
+  if (act === 'poke' || act === 'flip') { ctx.strokeStyle = act === 'flip' ? '#8fa3a4' : '#6b4a2f'; ctx.beginPath(); ctx.moveTo(hand.x, hand.y); ctx.lineTo(hand.x + 10 * S, hand.y + 5 * S); ctx.stroke(); }
+  if (act === 'sit' && !reduce && Math.sin(k * 0.8) > 0.7) { ctx.fillStyle = 'rgba(233,228,214,0.6)'; ctx.font = `${10 * S + 4}px sans-serif`; ctx.textAlign = 'left'; ctx.fillText('z', p.x + 8 * S, top - 36 * S - Math.sin(k) * 4 * S); }
+  // 말풍선 — 장소에 도착하면 그곳에서 하는 일
+  if (a.say && !a.moving) {
     ctx.font = `${Math.max(10, 10 * S + 2)}px "IBM Plex Sans KR", sans-serif`; ctx.textAlign = 'center';
-    const txt = a.text.length > 22 ? a.text.slice(0, 21) + '…' : a.text, w = ctx.measureText(txt).width + 12, h = 18, bx = p.x, by = p.y - 50 * S - 6;
-    ctx.fillStyle = 'rgba(233,228,214,0.95)'; roundRect(bx - w / 2, by - h, w, h, 6); ctx.fill();
+    const dots = reduce ? '' : '.'.repeat(1 + Math.floor((t / 400) % 3));
+    const txt = a.say.replace(/…$/, '') + (reduce ? '…' : dots), w = ctx.measureText(a.say.replace(/…$/, '') + '...').width + 14, h = 19, bx = p.x, by = top - 44 * S - 4;
+    ctx.fillStyle = 'rgba(233,228,214,0.95)'; roundRect(bx - w / 2, by - h, w, h, 7); ctx.fill();
     poly([{ x: bx - 4, y: by }, { x: bx + 4, y: by }, { x: bx, y: by + 5 }], 'rgba(233,228,214,0.95)');
-    ctx.fillStyle = '#0f1a1f'; ctx.fillText(txt, bx, by - 5);
+    ctx.fillStyle = '#0f1a1f'; ctx.fillText(txt, bx, by - 5.5);
   }
   ctx.font = `600 ${Math.max(9, 9 * S + 2)}px "IBM Plex Sans KR", sans-serif`; ctx.fillStyle = a.color; ctx.textAlign = 'center';
   ctx.fillText(a.name, p.x, p.y + 12 * S + 4);
-  ctx.globalAlpha = 1;
+  ctx.globalAlpha = 1; ctx.lineCap = 'butt';
 }
-function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 
 // ── 그리기 (뒤에서 앞으로) ──
 function frame(t) {
   const dt = Math.min(0.05, (t - (frame.last || t)) / 1000); frame.last = t;
   step(dt);
+  M = moodNow();
+  if (wood.shown !== wood.level) wood.shown += Math.sign(wood.level - wood.shown) * Math.min(Math.abs(wood.level - wood.shown), dt * 0.4);
   drawSky(t); drawGround();
-  const items = [
-    ...TREES.map(o => ({ d: o.x + o.y, f: () => tree(o) })),
-    { d: ZONES.tent.x + ZONES.tent.y, f: tent }, { d: ZONES.table.x + ZONES.table.y, f: table },
-    { d: ZONES.fire.x + ZONES.fire.y, f: () => fire(t) }, { d: ZONES.scope.x + ZONES.scope.y, f: scope },
-    { d: ZONES.van.x + ZONES.van.y, f: van }, { d: ZONES.chair.x + ZONES.chair.y, f: chair },
-    ...[...agents.values()].map(a => ({ d: a.x + a.y + 0.01, f: () => person(a, t) })),
+  const Z = ZONES, items = [
+    ...TREES.map(o => ({ d: dep(o.x, o.y), f: () => tree(o) })),
+    { d: dep(Z.dome.x, Z.dome.y), f: () => dome(t) }, { d: dep(Z.tipi.x, Z.tipi.y), f: tipi }, { d: dep(Z.shelter.x, Z.shelter.y), f: () => shelter(t) },
+    { d: dep(Z.coffee.x, Z.coffee.y), f: () => coffee(t) },
+    { d: dep(Z.tarp.x, Z.tarp.y) - 0.2, f: tarpUnder }, { d: dep(Z.tarp.x, Z.tarp.y) + (TALL ? 1.05 : 1.4), f: () => tarpTop(t) },
+    { d: dep(Z.fire.x, Z.fire.y), f: () => fire(t) }, { d: dep(Z.bbq.x, Z.bbq.y), f: () => bbq(t) },
+    { d: dep(Z.chair.x, Z.chair.y) - 0.1, f: chairs }, { d: dep(Z.van.x, Z.van.y), f: van },
+    { d: dep(L.picnic[0], L.picnic[1]), f: () => picnicTable(L.picnic[0], L.picnic[1]) }, { d: dep(WOODPILE.x, WOODPILE.y), f: woodpile },
+    ...[...agents.values()].map(a => ({ d: dep(a.x, a.y) + 0.02, f: () => person(a, t) })),
   ].sort((a, b) => a.d - b.d);
-  Object.keys(ZONES).forEach(zoneLabel);
   items.forEach(i => i.f());
+  drawPuffs(dt);
+  ctx.fillStyle = M.tint; ctx.fillRect(0, 0, W, H);
   requestAnimationFrame(frame);
 }
 
-// ── 이벤트 처리 ── {agent, name, tool, text, kind: 'tool'|'idle'|'spawn'|'done'}
-const logEl = document.getElementById('log'), nowEl = document.getElementById('now');
-function hhmm(d) { return d.toTimeString().slice(0, 8); }
-function handle(ev) {
-  const a = agent(ev.agent || 'main', ev.name);
-  if (ev.kind === 'done') { goTo(a, 'van', '돌아가는 중'); setTimeout(() => { a.leaving = true; }, 1800); }
-  else if (ev.kind === 'idle') goTo(a, 'chair', ev.text || '다음 지시 기다리는 중');
-  else { const z = zoneOf(ev.tool); goTo(a, z, ev.text || ZONES[z].verb); }
+// ── 이벤트 처리 ── {agent, name, tool, text, kind: 'tool'|'think'|'idle'|'done'}
+const logEl = document.getElementById('log'), nowEl = document.getElementById('now'), jobsEl = document.getElementById('jobs');
+const kstClock = ms => new Date(ms + KST).toISOString().slice(11, 19);
+function log(who, text) {
   const li = document.createElement('li');
-  li.innerHTML = `<span>${hhmm(new Date())}</span><span></span>`;
-  li.lastChild.textContent = `${a.name} · ${ev.text || ev.tool || ''}`;
+  li.innerHTML = '<span></span><span></span>';
+  li.firstChild.textContent = kstClock(Date.now()); li.lastChild.textContent = `${who} · ${text}`;
   logEl.prepend(li); while (logEl.children.length > 60) logEl.lastChild.remove();
+}
+const pending = [];   // 장작 나르는 동안 들어온 공대남자 일 (끝나면 마지막 것부터 이어서)
+function handle(ev) {
+  const a = agent(ev.agent || 'main', ev.name, ev.color);
+  if (refilling && a.id === 'main') { pending.push(ev); log(a.name, ev.text || ''); return; }
+  if (ev.kind === 'done') { goTo(a, 'van', '돌아가는 중…', ev.text || '돌아가는 중'); setTimeout(() => { a.leaving = true; renderNow(); }, 2200); }
+  else { const z = zoneOf(ev); goTo(a, z, ev.say, ev.text); }
+  log(a.name, ev.text || a.say);
+  if (demoOn && ev.kind !== 'done') useWood(0.004 + Math.random() * 0.006);
   renderNow();
 }
 function renderNow() {
@@ -337,32 +587,61 @@ function renderNow() {
   for (const a of agents.values()) {
     if (a.leaving) continue;
     const row = document.createElement('div'); row.className = 'row';
-    row.innerHTML = `<span class="sw" style="background:${a.color}"></span><div><b></b> <span class="t"></span></div>`;
-    row.querySelector('b').textContent = `${a.name} · ${ZONES[a.zone].label}`;
+    row.innerHTML = '<span class="sw"></span><div><b></b> <span class="t"></span></div><span></span>';
+    row.querySelector('.sw').style.background = a.color;
+    row.querySelector('b').textContent = a.name;
     row.querySelector('.t').textContent = a.text;
     nowEl.append(row);
   }
 }
+function renderJobs() {
+  const now = Date.now();
+  const list = JOBS.map(j => ({ j, at: nextRun(j, now) })).filter(x => x.at).sort((a, b) => a.at - b.at);
+  jobsEl.innerHTML = '';
+  for (const { j, at } of list) {
+    const row = document.createElement('div'); row.className = 'row' + (at - now < 30 * 60e3 ? ' soon' : '');
+    row.innerHTML = '<span class="sw"></span><div><b></b> <span class="t"></span></div><span class="when"></span>';
+    row.querySelector('.sw').style.background = '#8fa3a4';
+    row.querySelector('b').textContent = j.name;
+    row.querySelector('.t').textContent = kstClock(at).slice(0, 5);
+    row.querySelector('.when').textContent = untilText(at - now);
+    jobsEl.append(row);
+  }
+}
+// 예약 작업 시각이 되면 예약봇이 와서 일하고 캠핑카로 돌아감
+let botN = 0;
+function runJob(j) {
+  const id = 'bot' + (++botN), name = '예약봇';
+  handle({ agent: id, name, color: '#c9c3b3', tool: '', kind: 'tool', say: j.say, text: j.name, _zone: j.zone });
+  const a = agents.get(id); goTo(a, j.zone, j.say, j.name);
+  setTimeout(() => handle({ agent: id, name, kind: 'done', text: `${j.name} 끝` }), 6500);
+}
+let lastMin = -1;
+setInterval(() => {
+  renderJobs();
+  const now = Date.now(), m = Math.floor(now / 60e3);
+  if (m === lastMin) return; lastMin = m;
+  for (const j of JOBS) { const at = nextRun(j, now - 60e3); if (at && Math.floor(at / 60e3) === m) runJob(j); }
+}, 5000);
 
-// ── 데모: 실제 같은 작업 흐름을 돌림 ──
+// ── 데모: 실제 같은 작업 흐름 ──
 const DEMO = [
-  { tool: 'Read', text: 'CLAUDE.md 읽는 중' }, { tool: 'Grep', text: "'heatmap' 찾는 중" },
-  { tool: 'Read', text: 'kydzm/index.html 읽는 중' }, { kind: 'idle', text: '고칠 방법 생각 중' },
-  { tool: 'Edit', text: 'index.html 고치는 중' }, { tool: 'Bash', text: 'node --check 돌리는 중' },
-  { tool: 'Bash', text: 'git push origin main' }, { tool: 'WebSearch', text: '쿠팡 파트너스 API 찾아보는 중' },
-  { kind: 'spawn' }, { tool: 'Write', text: 'deals.py 쓰는 중' }, { tool: 'Bash', text: '테스트 돌리는 중' },
-  { kind: 'idle', text: '사용자 답 기다리는 중' },
+  { kind: 'think', text: '할 일 정리' }, { tool: 'Read', text: 'CLAUDE.md' }, { tool: 'Grep', text: "'heatmap' 찾기" },
+  { tool: 'Read', text: 'kydzm/index.html' }, { tool: 'Edit', text: 'index.html 고치기' },
+  { tool: 'Bash', text: 'node --check (문법 검사)' }, { tool: 'Bash', text: 'git push origin main' },
+  { tool: 'WebSearch', text: '쿠팡 파트너스 API' }, { kind: 'spawn' }, { tool: 'Write', text: 'deals.py 쓰기' },
+  { tool: 'Bash', text: 'pytest 테스트' }, { kind: 'idle', text: '사용자 답 기다리기' },
 ];
-const SUB_TASKS = [[{ tool: 'Glob', text: '파일 목록 훑는 중' }, { tool: 'Read', text: 'queue.json 읽는 중' }, { tool: 'Grep', text: '겨울 문구 찾는 중' }],
-  [{ tool: 'WebFetch', text: '문서 읽는 중' }, { tool: 'Read', text: '응답 정리 중' }]];
+const SUB_TASKS = [[{ tool: 'Glob', text: 'queue.json 찾기' }, { tool: 'Read', text: 'queue.json 읽기' }, { tool: 'Grep', text: '겨울 문구 찾기' }],
+  [{ tool: 'WebFetch', text: '쿠팡 문서 읽기' }, { kind: 'think', text: '요약 정리' }]];
 let demoOn = true, di = 0, subN = 0;
 function spawn() {
-  for (const tasks of SUB_TASKS) {
+  SUB_TASKS.forEach(tasks => {
     const id = 'sub' + (++subN), name = '동료 ' + subN;
-    handle({ agent: 'main', tool: 'Agent', text: `${name}에게 일 맡기는 중` });
-    tasks.forEach((e, i) => setTimeout(() => handle({ ...e, agent: id, name }), 1500 + i * 2600));
-    setTimeout(() => handle({ agent: id, name, kind: 'done', text: '보고하고 퇴근' }), 1500 + tasks.length * 2600);
-  }
+    handle({ agent: 'main', tool: 'Agent', text: `${name}에게 일 맡기기` });
+    tasks.forEach((e, i) => setTimeout(() => handle({ ...e, agent: id, name }), 1600 + i * 2800));
+    setTimeout(() => handle({ agent: id, name, kind: 'done', text: '보고하고 돌아감' }), 1600 + tasks.length * 2800);
+  });
 }
 function demoTick() {
   if (!demoOn) return;
@@ -371,10 +650,15 @@ function demoTick() {
 }
 document.getElementById('pause').onclick = e => { demoOn = !demoOn; e.currentTarget.textContent = demoOn ? '데모 멈추기' : '데모 다시 보기'; };
 document.getElementById('burst').onclick = spawn;
+document.getElementById('job').onclick = () => runJob(JOBS[Math.floor(Math.random() * JOBS.length)]);
+document.getElementById('refill').onclick = refill;
+const TODS = [null, 'dawn', 'day', 'sunset', 'night'];
+document.getElementById('tod').onclick = e => { todForce = TODS[(TODS.indexOf(todForce) + 1) % TODS.length]; e.currentTarget.textContent = '시간대: ' + (todForce ? MOODS[todForce].name : '자동'); };
 
-resize(); agent('main'); renderNow();
+resize(); agent('main'); renderNow(); renderJobs(); renderWood();
+setInterval(() => { renderWood(); if (Date.now() >= wood.resetAt) refill(); }, 30000);
 handle({ agent: 'main', kind: 'idle', text: '캠핑장 도착' });
-setInterval(demoTick, 3200);
+setInterval(demoTick, 3400);
 requestAnimationFrame(frame);
 })();
 </script>
