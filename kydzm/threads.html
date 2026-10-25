@@ -117,7 +117,8 @@
     .pgrid2 .link { grid-column: 1 / -1; }
   }
   .pgrid3 { display: grid; grid-template-columns: 100px 150px 1fr 1.4fr; gap: 8px; margin-bottom: 8px; }
-  @media (max-width: 760px) { .pgrid3 { grid-template-columns: 100px 1fr; } .pgrid3 .name, .pgrid3 .memo { grid-column: 1 / -1; } }
+  .pgrid3 .ser { grid-column: span 2; }
+  @media (max-width: 760px) { .pgrid3 { grid-template-columns: 100px 1fr; } .pgrid3 .name, .pgrid3 .memo, .pgrid3 .ser { grid-column: 1 / -1; } }
   .post textarea.body { min-height: 0; overflow: hidden; resize: none; }
   .part2-label { font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 8px 0 4px; }
   .done-row .stat2 { font-size: 12px; color: var(--muted); white-space: nowrap; }
@@ -435,8 +436,18 @@ const livePosts = () => S.posts.filter(p => !S.deleted.has(p.id));
 const isPending = p => !['게시완료'].includes(p.status || '대기');
 
 // post.py build()와 같은 규칙 — 첫 댓글 최종본 / 문제
+// post.py series_footer와 같게 — 시리즈 글 본문 끝 '📌 {시리즈} N편 · 다음 편은 '…'' (게시할 때 계산)
+function seriesFooter(p) {
+  const name = String(p.series || '').trim();
+  if (!name) return '';
+  const same = livePosts().filter(x => String(x.series || '').trim() === name && x.id !== p.id);
+  const n = p.series_no || same.filter(x => ['게시완료', '댓글실패', '게시중', '확인필요'].includes(x.status)).length + 1;
+  const nxt = same.find(x => (x.status || '대기') === '대기');
+  return `📌 ${name} ${n}편${nxt ? ` · 다음 편은 '${String(nxt.teaser || nxt.name || '').trim()}'` : ''}`;
+}
 function buildPost(p) {
-  const body = String(p.body || '').trim();
+  const foot = seriesFooter(p), raw = String(p.body || '').trim();
+  const body = raw && foot ? `${raw}\n\n${foot}` : raw;
   const out = { body, comment: '', problem: '' };
   if (!body) out.problem = '본문 없음';
   else if (body.includes(PH)) out.problem = '본문에 {링크}가 있어요';
@@ -778,6 +789,8 @@ function postHtml(p, i, n, slotKey) {
       <input class="input topic" data-f="topic" list="topic-list" value="${esc(p.topic || '')}" placeholder="# 주제 태그" title="주제 태그 (커뮤니티 이름, 글당 1개)">
       <input class="input name" data-f="name" value="${esc(p.name)}" placeholder="제목 (목록에서 알아보기용)">
       <input class="input memo" data-f="memo" value="${esc(p.memo || '')}" placeholder="메모 (상황 · 붙일 상품)">
+      ${p.kind === '정보' || p.series ? `<input class="input ser" data-f="series" value="${esc(p.series || '')}" placeholder="시리즈 이름 (같은 이름끼리 N편으로 묶임)" title="같은 시리즈 글 끝에 '📌 시리즈 N편 · 다음 편은 …'이 자동으로 붙어요">
+      <input class="input ser" data-f="teaser" value="${esc(p.teaser || '')}" placeholder="앞 글의 '다음 편' 예고에 나올 이 글 제목" title="비우면 제목(이름)이 나와요">` : ''}
     </div>
     ${p.kind === '수익화' ? `<div class="search-line">🔍 쿠팡 검색어 <b>${esc(p.search || p.name || '')}</b>
       <a class="btn small ghost" data-act="partners" data-q="${esc(p.search || p.name || '')}" href="https://partners.coupang.com/#affiliate/ws/link/0/${encodeURIComponent(p.search || p.name || '')}" target="_blank" rel="noopener">파트너스에서 찾기 ↗</a></div>` : ''}
