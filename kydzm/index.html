@@ -1925,6 +1925,9 @@ async function loadAllData(force = false) {
   cache.camps  = results[4];
   // 쿠팡 링크 점검 결과 (tools/check_links.py, 없으면 표시 안 함)
   cache.linkCheck = await fetchDataFile('link_check').catch(() => null);
+  // 홈페이지 링크별 쿠팡 클릭·주문 (비공개 cupas state/homepage_links.json — 수익 숫자라 공개 저장소엔 없음, 쿠파스 토큰 있을 때만)
+  cache.cpHome = cupasToken() ? await ghFetchRaw('/repos/kydxyz-git/cupas/contents/state/homepage_links.json?ref=main',
+    { headers: { Accept: 'application/vnd.github.raw+json' } }).then(r => r.json()).catch(() => null) : null;
   // 저장 시 3-way 병합 기준점 (이 창이 마지막으로 알고 있는 저장소 상태)
   files.forEach((name, i) => { cache.base[name] = JSON.parse(JSON.stringify(results[i])); });
   cache.loaded = true;
@@ -6642,6 +6645,8 @@ function linkIssue(item) {
 function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
   opts = opts || {};
   const li = linkIssue(item);
+  const cp = cache.cpHome && cache.cpHome.items && cache.cpHome.items[item.id];
+  const cpChip = cp && (cp.click || cp.order) ? `<span style="font-size:11px;color:#0b5e2e;background:#e6f4ea;border-radius:4px;padding:1px 5px;margin-right:6px;" title="쿠팡 최근 30일 (이 링크 상품 기준 — 같은 상품을 다른 곳에도 걸었으면 섞임)">🖱 ${cp.click}${cp.order ? ` · 주문 ${cp.order} · ${Number(cp.commission || 0).toLocaleString()}원` : ''}</span>` : '';
   const thumb = item.thumb
     ? `<img src="../${item.thumb.replace(/^\.\//, '')}" alt="" loading="lazy">`
     : fallbackEmoji;
@@ -6655,7 +6660,7 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
         <div class="list-item-thumb">${thumb}</div>
         <div class="list-item-body">
           <div class="list-item-title">${escapeHtml(item.name)}</div>
-          <div class="list-item-meta">${li ? `<span style="font-size:11px;color:#fff;background:#d93025;border-radius:4px;padding:1px 5px;margin-right:6px;" title="${escapeHtml(li.detail)}">⚠ ${LINK_BAD[li.status]}</span>` : ''}${src}${escapeHtml(item.desc || '')}</div>
+          <div class="list-item-meta">${cpChip}${li ? `<span style="font-size:11px;color:#fff;background:#d93025;border-radius:4px;padding:1px 5px;margin-right:6px;" title="${escapeHtml(li.detail)}">⚠ ${LINK_BAD[li.status]}</span>` : ''}${src}${escapeHtml(item.desc || '')}</div>
         </div>
       </a>
       <span class="pick-stars">${[1,2,3].map(n => `<button type="button"
@@ -6741,6 +6746,7 @@ function groupedItemsHtml(arr, opts, manual) {
   }).join('');
 }
 
+let _cpSort = false;   // 장비·먹거리 목록 '클릭 많은 순' (쿠팡 리포트 기준)
 function renderProductList(dataArr, searchVar, opts) {
   document.getElementById('topbar-title').innerHTML = `${opts.icon} ${opts.label}`;
   const c = document.getElementById('app-content');
@@ -6755,10 +6761,12 @@ function renderProductList(dataArr, searchVar, opts) {
   const badN = dataArr.filter(linkIssue).length;
   if (!badN) _linkOnly[opts.type] = false;
   const linkOnly = !!_linkOnly[opts.type];
+  const cpOf = x => ((cache.cpHome && cache.cpHome.items && cache.cpHome.items[x.id]) || {});
   const arr = sortedIndexed
     .map(({ x, idx }) => ({ ...x, _idx: idx }))
     .filter(x => matchSearch(x, q, ['name', 'desc', 'source']))
     .filter(x => !linkOnly || linkIssue(x));
+  if (_cpSort && cache.cpHome) arr.sort((a, b) => (cpOf(b).click || 0) - (cpOf(a).click || 0) || (cpOf(b).order || 0) - (cpOf(a).order || 0));
   const lc = cache.linkCheck;
   c.innerHTML = `
     <div class="page-header">
@@ -6786,17 +6794,23 @@ function renderProductList(dataArr, searchVar, opts) {
         <button type="button" class="btn btn-sm btn-ghost" id="order-reset-btn">되돌리기</button>
       </div>` : ''}
     ${currentSort === 'manual' && isSearchActive ? `<div class="series-sort-note" style="background:#fff3cd;border-color:#ffe69c;color:#856404;">⚠️ 검색 중에는 드래그 정렬이 비활성화됩니다 (검색을 비우세요)</div>` : ''}
+    ${cache.cpHome ? (() => { const h = cache.cpHome, t = h.homepage || {}, o = h.other || {};
+        return `<div class="series-sort-note" style="background:#e6f4ea;border-color:#b7dfc3;color:#0b5e2e;">🛒 쿠팡 최근 30일 (${escapeHtml(String(h.from || '').slice(5))}~${escapeHtml(String(h.to || '').slice(5))}) 홈페이지 링크: 클릭 <b>${(t.click || 0).toLocaleString()}</b> · 주문 <b>${t.order || 0}</b> · 수익 <b>${(t.commission || 0).toLocaleString()}원</b>
+          <span style="opacity:.75">· 홈페이지 밖 직접 만든 링크 클릭 ${(o.click || 0).toLocaleString()} · 주문 ${o.order || 0}</span>
+          <button type="button" class="btn btn-sm btn-ghost" id="cp-sort-btn" style="margin-left:6px">${_cpSort ? '원래 순서' : '클릭 많은 순'}</button></div>`; })() : ''}
     ${badN ? `<div class="series-sort-note" style="background:#fdecea;border-color:#f5c2c0;color:#8a1c14;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
         <span>🔎 쿠팡 링크 점검 (${escapeHtml(String(lc.checked_at || '').slice(5, 16).replace('T', ' '))}): 손볼 링크 <b>${badN}</b>개 — 파트너스에서 새 링크를 만들어 바꿔 주세요</span>
         <button type="button" class="btn btn-sm ${linkOnly ? '' : 'btn-ghost'}" id="link-only-btn">${linkOnly ? '전체 보기' : '문제만 보기'}</button></div>` : ''}
     <div class="list" id="prod-list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>'
-        : (opts.type === 'items' && !isSearchActive && !linkOnly)
+        : (opts.type === 'items' && !isSearchActive && !linkOnly && !_cpSort)
           ? groupedItemsHtml(arr, opts, isManual)
-          : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: isManual && !isSearchActive })).join('')}
+          : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: isManual && !isSearchActive && !_cpSort })).join('')}
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
+  const cpb = document.getElementById('cp-sort-btn');
+  if (cpb) cpb.onclick = () => { _cpSort = !_cpSort; renderProductList(dataArr, searchVar, opts); };
   const lob = document.getElementById('link-only-btn');
   if (lob) lob.onclick = () => { _linkOnly[opts.type] = !linkOnly; renderProductList(dataArr, searchVar, opts); };
   // 세부 분류 접기/펼치기
@@ -6975,7 +6989,7 @@ function renderProductList(dataArr, searchVar, opts) {
     });
   });
   // 수동 모드: 드래그앤드롭 (검색 중에는 비활성화)
-  if (isManual && !isSearchActive && typeof Sortable !== 'undefined') {
+  if (isManual && !isSearchActive && !_cpSort && typeof Sortable !== 'undefined') {
     const listEl = document.getElementById('prod-list');
     if (listEl) {
       // 순서 저장은 항상 목록 전체(분류 순 → 분류 내 순서) 기준으로 계산한다

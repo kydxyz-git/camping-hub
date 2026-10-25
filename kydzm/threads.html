@@ -392,7 +392,7 @@ async function commitFiles(mutators, message) {
 async function loadAll() {
   const head = await headCommit();
   const files = await readTree(head.tree);
-  const [queue, config, token, replies, insights, cpReport, weekly] = await Promise.all([
+  const [queue, config, token, replies, insights, cpReport, weekly, followers] = await Promise.all([
     files['queue.json'] ? readBlobJson(files['queue.json']) : [],
     files['config.json'] ? readBlobJson(files['config.json']) : null,
     files['state/token.json'] ? readBlobJson(files['state/token.json']) : null,
@@ -400,8 +400,9 @@ async function loadAll() {
     files['state/insights.json'] ? readBlobJson(files['state/insights.json']) : {},
     files['state/coupang_report.json'] ? readBlobJson(files['state/coupang_report.json']) : null,
     files['state/weekly_report.json'] ? readBlobJson(files['state/weekly_report.json']) : null,
+    files['state/followers.json'] ? readBlobJson(files['state/followers.json']) : null,
   ]);
-  S.cpReport = cpReport; S.weekly = weekly;
+  S.cpReport = cpReport; S.weekly = weekly; S.followers = followers;
   S.replies = (replies || []).filter(r => r && r.id);
   S.insights = insights || {};
   S.posts = (queue || []).filter(p => p && p.id);
@@ -813,15 +814,30 @@ function postHtml(p, i, n, slotKey) {
   </div>`;
 }
 // 성과 리포트: 쿠팡 30일 합계(매일) + 주간 리포트(월요일, 잘된 글·안된 글 공통점)
+// 팔로워 수 (replies.py가 3시간마다 state/followers.json에 날짜별 기록)
+function followersHtml() {
+  const f = S.followers || {};
+  const days = Object.keys(f).filter(k => /^\d{4}-\d\d-\d\d$/.test(k)).sort();
+  if (!days.length) return '';
+  const last = days[days.length - 1], prev = days[days.length - 2];
+  const diff = prev ? f[last] - f[prev] : 0;
+  const recent = days.slice(-14);
+  const max = Math.max(1, ...recent.map(d => f[d]));
+  const bars = recent.map(d => `<span title="${esc(d.slice(5))} ${f[d]}명" style="display:inline-block;width:10px;margin-right:3px;vertical-align:bottom;background:var(--ok,#2e7d32);opacity:.75;border-radius:2px;height:${Math.max(2, Math.round(f[d] / max * 28))}px"></span>`).join('');
+  return `<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+    <div><b>팔로워 ${f[last].toLocaleString()}명</b>${prev ? ` <span class="small ${diff > 0 ? '' : 'muted'}">(${diff >= 0 ? '+' : ''}${diff} · ${esc(prev.slice(5))} 대비)</span>` : ''}
+      <div class="small muted">${esc(fmtDT(f._at))} 기준 · 날짜별 막대는 최근 14일</div></div><div>${bars}</div></div>`;
+}
 function reportHtml() {
   const r = S.cpReport, w = S.weekly;
-  if (!r && !w) return '';
+  if (!r && !w && !followersHtml()) return '';
   const t = (r || {}).total || {};
   const li = a => (a || []).map(x => `<li>${esc(x)}</li>`).join('');
   const row = x => `<div class="done-row"><span class="nm">${esc(x.first || '')}</span><span class="tm">👁 ${x.views} · ❤ ${x.likes} · 🖱 ${x.click}${x.commission ? ` · 💰 ${Number(x.commission).toLocaleString()}원` : ''}</span></div>`;
   return `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">📊 성과 리포트
       <button class="btn small ghost" id="toggle-report">${S.showReport ? '접기' : '펼치기'}</button></div>
     <div class="card" style="padding:12px 14px;margin-bottom:16px">
+      ${followersHtml()}
       ${r ? `<div><b>쿠팡 최근 30일</b> (${esc(r.from)}~${esc(r.to)}) · 클릭 ${(t.click || 0).toLocaleString()} · 주문 ${t.order || 0} · 수익 ${(t.commission || 0).toLocaleString()}원
         <span class="small muted">홈페이지 포함 · ${esc(fmtDT(r.checked_at))}</span></div>` : ''}
       ${S.showReport && w ? `<div class="small muted" style="margin-top:8px">주간 리포트 ${esc(fmtDT(w.at))} · 글 ${w.count}개 기준</div>
