@@ -2823,6 +2823,82 @@ function hideContentTabs() {
   if (el) el.style.display = 'none';
 }
 
+// ════════════════════════════════════════════════════════════════════
+// 오늘의 캠핑 딜 TOP 5 — camping-search(비공개) 최근 수집에서 콘텐츠(인스타·스레드) 소재로 쓸 딜만 골라 대시보드 맨 위에 (사용자 요청 261026)
+// 고르는 법: 수집 점수 + 할인율 + 진행 중(live) + 딜 보드에서 직접 매긴 라벨(좋음/아님 871개)로 배운 제목 단어 가중치
+//            − 라벨 '아님·오래됨·잡담', 지난 행사(past), 제목에 품절·종료, 같은 브랜드·상품 겹치면 하나만
+// ════════════════════════════════════════════════════════════════════
+let _dealTop = null;
+async function loadDealTop() {
+  if (_dealTop && Date.now() - _dealTop.at < 10 * 60e3) return _dealTop;
+  const get = path => ghFetchRaw(`/repos/kydxyz-git/camping-search/contents/data/${path}?ref=main`, { headers: { Accept: 'application/vnd.github.raw+json' } }).then(r => r.json());
+  const today = kstToday(), yday = kstDateStr(Date.now() - 864e5);
+  const [d1, d0, lab] = await Promise.all([get(`daily/${today}.json`).catch(() => ({ records: [] })), get(`daily/${yday}.json`).catch(() => ({ records: [] })), get('labels.json').catch(() => ({ labels: {} }))]);
+  const labels = (lab.labels && typeof lab.labels === 'object') ? lab.labels : lab;
+  // 라벨로 제목 단어 가중치 (좋음 vs 아님)
+  const tok = t => [...new Set(String(t || '').toLowerCase().split(/[^0-9a-z가-힣%]+/).filter(w => w.length >= 2))];
+  const g = {}, b = {}; let G = 0, B = 0;
+  for (const v of Object.values(labels)) {
+    if (v.v === 'good') { G++; tok(v.t).forEach(w => g[w] = (g[w] || 0) + 1); }
+    else if (v.v === 'bad') { B++; tok(v.t).forEach(w => b[w] = (b[w] || 0) + 1); }
+  }
+  const wt = w => Math.log(((g[w] || 0) + 1) / (G + 2)) - Math.log(((b[w] || 0) + 1) / (B + 2));
+  const pct = r => Math.max(0, ...[].concat(r.discounts || []).map(x => +((String(x).match(/(\d{1,2})\s*%/) || [])[1] || 0)));
+  const recs = [...(d1.records || []), ...(d0.records || [])];
+  const seen = new Set(), rows = [];
+  for (const r of recs) {
+    if (!r.link || seen.has(r.link)) continue; seen.add(r.link);
+    const lv = (labels[r.link] || {}).v;
+    if (lv && lv !== 'good') continue;
+    if (r.date_status === 'past' || /품절|종료|마감|완판/.test(r.title || '')) continue;
+    if (/\?|？|어디서|어디가|질문|추천\s*(좀|부탁|해)|궁금|살까|고민/.test(r.title || '')) continue;   // 질문 글은 딜이 아님
+    const d = pct(r);
+    if (!(+r.score >= 35 || d >= 15)) continue;
+    const learn = tok(r.title).reduce((a, w) => a + Math.max(-1.5, Math.min(1.5, wt(w))), 0);
+    const rank = (+r.score || 0) + d * 0.6 + (r.date_status === 'live' ? 15 : 0) + (r.tag === '속보' ? 8 : 0) + learn * 8 + (lv === 'good' ? 30 : 0);
+    rows.push({ ...r, d, rank });
+  }
+  rows.sort((a, b) => b.rank - a.rank);
+  const pick = [], keys = new Set();
+  for (const r of rows) {   // 같은 브랜드+품목/같은 제목 앞부분은 하나만
+    const k = ((r.brands || [])[0] || '') + '|' + ((r.items || [])[0] || String(r.title || '').replace(/\s+/g, '').slice(0, 10));
+    if (keys.has(k)) continue; keys.add(k); pick.push(r);
+    if (pick.length >= 5) break;
+  }
+  _dealTop = { at: Date.now(), pick, total: rows.length, records: recs.length };
+  return _dealTop;
+}
+function dealCaption(r) {   // 인스타 스토리·스레드용 짧은 문구 (사실만: 제목·할인·카페 출처)
+  const brand = (r.brands || [])[0], item = (r.items || [])[0];
+  const head = [brand, item].filter(Boolean).join(' ') || String(r.title || '').replace(/^\[[^\]]*\]\s*/, '').slice(0, 30);
+  return `🔥 ${head}${r.d ? ` ${r.d}% 할인` : ''}\n${String(r.desc || r.title || '').replace(/https?:\/\/\S+/g, '').trim().slice(0, 70)}\n(${r.cafe} 정보 · 가격·재고는 금방 바뀌어요)`;
+}
+async function renderDealTop() {
+  const card = document.getElementById('deal-top-card');
+  if (!card) return;
+  try {
+    const { pick, total, records } = await loadDealTop();
+    card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <div class="section-title" style="margin:0">🔥 오늘의 캠핑 딜 TOP 5 <span class="help" style="display:inline">· 콘텐츠 소재</span></div>
+        <a class="btn btn-sm btn-ghost" href="deals.html">딜 보드 →</a></div>
+      <div class="help" style="margin:4px 0 8px">어제·오늘 모은 카페 글 ${records}개 중 딜 후보 ${total}개에서 골랐어요. 딜 보드에서 좋음/아님을 매길수록 더 잘 골라요.</div>
+      ${pick.length ? pick.map((r, i) => `<div style="padding:8px 0;border-top:1px solid var(--line, #eee)">
+        <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between">
+          <a href="${escapeHtml(r.link)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;min-width:0">
+            <b>${i + 1}. ${escapeHtml(r.title || '')}</b>
+            <div class="help" style="margin-top:2px">${r.d ? `<b style="color:#d93025">${r.d}%</b> · ` : ''}${escapeHtml(((r.brands || []).concat(r.items || [])).join(' · '))}${(r.brands || []).length || (r.items || []).length ? ' · ' : ''}${escapeHtml(r.cafe || '')} · ${escapeHtml(String(r.found_at || '').slice(5, 16))}${r.date_status === 'live' ? ' · 진행 중' : r.date_status === 'future' ? ' · 예정' : ''}</div></a>
+          <button type="button" class="btn btn-sm btn-ghost" data-deal-copy="${i}" title="인스타 스토리·스레드용 문구 복사" style="flex:none">📋 문구</button></div></div>`).join('')
+        : '<div class="help">오늘은 고를 만한 딜이 없어요.</div>'}`;
+    card.querySelectorAll('[data-deal-copy]').forEach(b => b.onclick = async () => {
+      const r = pick[+b.dataset.dealCopy];
+      try { await navigator.clipboard.writeText(dealCaption(r) + `\n${r.link}`); showToast('문구 복사됨 — 붙여넣고 다듬어 쓰세요', 'success', 1800); }
+      catch (e) { prompt('복사해서 쓰세요', dealCaption(r)); }
+    });
+  } catch (e) {
+    card.innerHTML = `<div class="section-title" style="margin:0">🔥 오늘의 캠핑 딜 TOP 5</div><div class="help">딜을 못 불러왔어요 — 토큰에 camping-search 접근 권한이 있는지 확인해 주세요. (${escapeHtml(e.message)})</div>`;
+  }
+}
+
 function renderDashboard() {
   hideContentTabs();
   document.getElementById('topbar-title').innerHTML = '🛠 kydz.kr 관리자';
@@ -2832,6 +2908,8 @@ function renderDashboard() {
   // 토큰 있으면 기본 접힌 상태, 없으면 펼친 상태 (입력 유도)
   const tokenExpanded = _tokenCardExpanded || !tokenConnected;
   c.innerHTML = `
+    <!-- 오늘의 캠핑 딜 TOP 5 (camping-search 수집 + 딜 보드 라벨로 고름) -->
+    <div class="card" id="deal-top-card" ${tokenConnected ? '' : 'style="display:none"'}><div class="section-title" style="margin:0">🔥 오늘의 캠핑 딜 TOP 5</div><div class="help">불러오는 중...</div></div>
     <!-- 토큰 카드 -->
     <div class="card token-card ${tokenExpanded ? 'is-expanded' : 'is-collapsed'}" id="token-card">
       <div class="token-card-header" id="token-card-toggle">
@@ -2931,6 +3009,8 @@ function renderDashboard() {
       Phase 2 · 데이터 로드 ${new Date(cache.loadedAt).toLocaleTimeString('ko-KR')}
     </div>
   `;
+  if (tokenConnected) renderDealTop();   // 오늘의 캠핑 딜 TOP 5 (비동기로 채움)
+
 
   // 토큰 카드 헤더 클릭 → 펼침/접힘 토글 (연결된 상태일 때만)
   if (tokenConnected) {
