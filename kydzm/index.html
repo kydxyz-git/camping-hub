@@ -2845,9 +2845,22 @@ async function loadDealTop() {
   const wt = w => Math.log(((g[w] || 0) + 1) / (G + 2)) - Math.log(((b[w] || 0) + 1) / (B + 2));
   const pct = r => Math.max(0, ...[].concat(r.discounts || []).map(x => +((String(x).match(/(\d{1,2})\s*%/) || [])[1] || 0)));
   const recs = [...(d1.records || []), ...(d0.records || [])];
+  // 오래된 글 거르기 (261026: 검색이 몇 년 전 글도 같이 가져옴 — 수집 시각만 있고 글 날짜는 없음)
+  // 카페 글 번호는 계속 늘어나니, 카페별 오늘 최대 번호 − 하루 증가량×3 보다 작으면 3일 넘은 글로 봄
+  const art = r => { const m = String(r.link || '').match(/cafe\.naver\.com\/([^/?#]+)\/(\d+)/); return m ? [m[1], +m[2]] : [null, 0]; };
+  const maxOf = list => { const o = {}; for (const r of list) { const [c, n] = art(r); if (c && n > (o[c] || 0)) o[c] = n; } return o; };
+  const m1 = maxOf(d1.records || []), m0 = maxOf(d0.records || []);
+  const RATE = { helinoxcrew: 130, campingfirst: 630 };   // 하루 글 수 (10/19~26 수집 기록) — 어제·오늘로 못 구할 때
+  const cutoff = {};
+  for (const c of new Set([...Object.keys(m1), ...Object.keys(m0)])) {
+    const top = Math.max(m1[c] || 0, m0[c] || 0), rate = (m1[c] && m0[c] && m1[c] > m0[c]) ? m1[c] - m0[c] : (RATE[c] || 30);
+    cutoff[c] = top - rate * 3;
+  }
+  const fresh = r => { const [c, n] = art(r); return !c || n >= cutoff[c]; };
   const seen = new Set(), rows = [];
   for (const r of recs) {
     if (!r.link || seen.has(r.link)) continue; seen.add(r.link);
+    if (!fresh(r)) continue;
     const lv = (labels[r.link] || {}).v;
     if (lv && lv !== 'good') continue;
     if (r.date_status === 'past' || /품절|종료|마감|완판/.test(r.title || '')) continue;
