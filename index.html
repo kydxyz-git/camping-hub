@@ -322,7 +322,8 @@
     .product-link svg { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 2; }
     .product-card.empty { cursor: pointer; }   /* 눌리면 안내 팝업 */
     /* 구매 링크 없는 제품: 사진에 회색 막 한 겹 + 이름 흐리게 (261026) — PICK 별은 막 위로 */
-    .product-card.empty .product-thumb::after { content:''; position:absolute; inset:0; background:rgba(110,110,110,.38); pointer-events:none; z-index:1; }
+    .product-card.empty .product-thumb::after { content:''; position:absolute; inset:0; background:rgba(110,110,110,.18); pointer-events:none; z-index:1; }
+    .source-badge.badge-listonly { background: rgba(95,95,95,.78); z-index: 2; }   /* 구매 링크 없는 장비 — 'List only' (261026 사용자 결정) */
     .product-card.empty .product-name { color: var(--text-sub); }
 
     /* ── 시리즈 ── */
@@ -1170,7 +1171,10 @@ html.is-pc .pcard:hover img{transform:scale(1.045)}
 html.is-pc .pcard.dead{cursor:pointer}
 html.is-pc .pcard.dead:hover img{transform:none}
 /* 구매 링크 없는 제품: 회색 막 한 겹 (모바일과 같게, 영상만 있는 것도) — 이름 오버레이·PICK·영상 버튼은 막 위로 */
-html.is-pc .pcard.nolink::after{content:'';position:absolute;inset:0;background:rgba(110,110,110,.38);pointer-events:none;z-index:1}
+html.is-pc .pcard.nolink::after{content:'';position:absolute;inset:0;background:rgba(110,110,110,.18);pointer-events:none;z-index:1}
+html.is-pc .pcard .lo{position:absolute;right:8px;bottom:8px;z-index:2;font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.04em;
+  background:rgba(95,95,95,.78);color:#fff;padding:2px 7px;border-radius:100px}
+html.is-pc .pcard .play~.lo{bottom:34px}
 html.is-pc .pcard.nolink .pn{z-index:3}
 html.is-pc .pcard .pn{position:absolute;inset:0;padding:14px;
   display:flex;align-items:center;justify-content:center;text-align:center;
@@ -1913,7 +1917,7 @@ function productCardHtml(item, trackCategory) {
   return `<${empty?'div':'a'} class="product-card${empty?' empty':''}" ${empty?`role="button" tabindex="0" data-nolink="${trackTitle}"`:`href="${item.url}" target="_blank" rel="noopener"`} ${trackAttrs}>
       <div class="product-thumb${item.thumb?'':' ph'}">
         ${item.thumb ? `<img src="${item.thumb}${item.updated_at ? '?v=' + new Date(item.updated_at).getTime() : ''}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
-        ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : ''}
+        ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : (empty && trackCategory === 'items' ? `<span class="source-badge badge-listonly">List only</span>` : '')}
         ${item.pick ? `<span class="pick-badge" title="공대남자 PICK">${
           Array.from({length: Math.min(3, Math.max(1, Number(item.pick) || 1))}, () =>
             `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95Z" fill="#FFC93C" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round"/></svg>`
@@ -1934,7 +1938,9 @@ function renderProducts(containerId, dataArr, keepOrder) {
     ? (siteConfig.foodsSort || 'random')
     : (siteConfig.itemsSort || 'random');
   const visible = (dataArr || []).filter(x => x.published !== false);
-  const shuffled = keepOrder ? visible : sortProductsByMode(visible, sortMode);
+  let shuffled = keepOrder ? visible : sortProductsByMode(visible, sortMode);
+  // 장비: 구매 링크 없는 건 분류 맨 뒤로 (각자 순서는 정렬 그대로) — 261026 사용자 결정
+  if (!keepOrder && trackCategory === 'items') shuffled = [...shuffled.filter(x => x.url && x.url !== '#'), ...shuffled.filter(x => !x.url || x.url === '#')];
   if (!shuffled.length) {
     grid.innerHTML = `<div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--text-sub);font-size:13px;">아직 등록된 항목이 없어요</div>`;
     return;
@@ -3693,11 +3699,14 @@ function pcardHtml(p, cat){
         </linearGradient></defs>
         <rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/>
         <circle cx="17.2" cy="6.8" r="1.3" fill="#962FBF" stroke="none"/></svg></span>`:''}
+      ${nolink&&cat==='items'?'<span class="lo">List only</span>':''}
       <span class="pn">${esc(p.name)}</span>
     </${dead?'div':'a'}>`;
 }
 function renderProducts(sel,rows,countSel,emptyMsg,mode,cat){
-  const list=sortProducts(pub(rows), mode||'random');
+  let list=sortProducts(pub(rows), mode||'random');
+  // 장비: 구매 링크 없는 건 분류 맨 뒤로 (모바일과 같게)
+  if(cat==='items') list=[...list.filter(p=>(p.url||'').trim()), ...list.filter(p=>!(p.url||'').trim())];
   if(countSel) $(countSel).textContent=list.length+'개';
   $(sel).innerHTML=list.length?list.map(p=>pcardHtml(p,cat)).join(''):`<p class="empty">${esc(emptyMsg||'아직 등록된 항목이 없습니다.')}</p>`;
 }
