@@ -2826,7 +2826,7 @@ function hideContentTabs() {
 // ════════════════════════════════════════════════════════════════════
 // 오늘의 캠핑 딜 TOP 5 — camping-search(비공개) 최근 수집에서 콘텐츠(인스타·스레드) 소재로 쓸 딜만 골라 대시보드 맨 위에 (사용자 요청 261026)
 // 고르는 법: 수집 점수 + 할인율 + 진행 중(live) + 딜 보드에서 직접 매긴 라벨(좋음/아님 871개)로 배운 제목 단어 가중치
-//            − 라벨 '아님·오래됨·잡담', 지난 행사(past), 제목에 품절·종료, 같은 브랜드·상품 겹치면 하나만
+//            − 라벨 '아님·오래됨·잡담', 지난 행사(past), 제목에 품절·종료, 할인 신호 없는 소식, 같은 브랜드·상품 겹치면 하나만
 // ════════════════════════════════════════════════════════════════════
 let _dealTop = null;
 async function loadDealTop() {
@@ -2866,6 +2866,8 @@ async function loadDealTop() {
     if (r.date_status === 'past' || /품절|종료|마감|완판/.test(r.title || '')) continue;
     if (/\?|？|어디서|어디가|질문|추천\s*(좀|부탁|해)|궁금|살까|고민/.test(r.title || '')) continue;   // 질문 글은 딜이 아님
     const d = pct(r);
+    // 할인 신호 없는 소식(행사 안내·재입고·출시)은 딜이 아님 — 그런 글은 딜 보드에서 (사용자 결정 261026)
+    if (!d && !/할인|특가|세일|sale|쿠폰|핫딜|최저가|타임딜|떨이|\d[\d,]*\s*원/i.test(r.title || '')) continue;
     if (!(+r.score >= 35 || d >= 15)) continue;
     const learn = tok(r.title).reduce((a, w) => a + Math.max(-1.5, Math.min(1.5, wt(w))), 0);
     const rank = (+r.score || 0) + d * 0.6 + (r.date_status === 'live' ? 15 : 0) + (r.tag === '속보' ? 8 : 0) + learn * 8 + (lv === 'good' ? 30 : 0);
