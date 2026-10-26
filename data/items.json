@@ -1647,7 +1647,8 @@
     "published": true,
     "created_at": "2026-10-14T06:58:00.170Z",
     "updated_at": "2026-10-26T05:50:33.322Z",
-    "pick": 1
+    "pick": 1,
+    "is_new": true
   },
   {
     "id": "item_b0e2d50dcb",
