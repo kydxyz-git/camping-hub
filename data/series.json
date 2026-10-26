@@ -403,6 +403,16 @@
     "sort": "random",
     "eps": [
       {
+        "id": "ep_39daabfc1a",
+        "ep": 0,
+        "title": "이거 하나면 가을밤이 달라집니다",
+        "url": "https://www.instagram.com/reel/Dez_NGehCW0/",
+        "thumb": "./images/series/items-mvpexs3x.jpg",
+        "published": true,
+        "created_at": "2026-10-26T15:30:07.637Z",
+        "updated_at": "2026-10-26T15:30:07.637Z"
+      },
+      {
         "id": "ep_08b234ff59",
         "ep": 0,
         "title": "짐 많은 사람에게 추천하는 캐리어",
