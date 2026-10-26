@@ -1,8 +1,8 @@
 {
-  "checked_at": "2026-10-22T09:21:04+09:00",
+  "checked_at": "2026-10-26T13:43:58+09:00",
   "main_af": "AF7202884",
   "counts": {
-    "unknown": 52
+    "unknown": 57
   },
   "results": {
     "item_a4b57441e0": {
@@ -161,7 +161,7 @@
     "item_7e65f604b9": {
       "type": "items",
       "name": "알루텍 클래식48",
-      "url": "https://link.coupang.com/a/hFChCtoZ6O",
+      "url": "https://link.coupang.com/a/h2MxMeAas0",
       "status": "unknown",
       "af": "AF7202884",
       "product_id": "7593992638",
@@ -170,7 +170,7 @@
     "item_097f1a0123": {
       "type": "items",
       "name": "알루텍 클래식68",
-      "url": "https://link.coupang.com/a/hFCc16aELt",
+      "url": "https://link.coupang.com/a/h2MABMelI4",
       "status": "unknown",
       "af": "AF7202884",
       "product_id": "6513778340",
@@ -179,7 +179,7 @@
     "item_48f6974ac5": {
       "type": "items",
       "name": "포레스트유 데크팩SET",
-      "url": "https://link.coupang.com/a/et5HiO",
+      "url": "https://link.coupang.com/a/h2MDTj4h3I",
       "status": "unknown",
       "af": "AF7202884",
       "product_id": "6684943223",
@@ -266,6 +266,15 @@
       "product_id": "7832677713",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
+    "item_37aa0767bf": {
+      "type": "items",
+      "name": "크레모아 3FACE L",
+      "url": "https://link.coupang.com/a/h2MeVeo6nc",
+      "status": "unknown",
+      "af": "AF7202884",
+      "product_id": "7294873246",
+      "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
     "item_a51e32a09f": {
       "type": "items",
       "name": "골제로 라이트하우스 마이크로 플래시",
@@ -287,10 +296,19 @@
     "item_3425e18446": {
       "type": "items",
       "name": "루메나 M4",
-      "url": "https://link.coupang.com/a/hFD4LJrk28",
+      "url": "https://link.coupang.com/a/h2Ml6IYXe0",
       "status": "unknown",
       "af": "AF7202884",
       "product_id": "8686027542",
+      "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_89e7fe138c": {
+      "type": "items",
+      "name": "씨투써밋 클로스라인 빨랫줄",
+      "url": "https://link.coupang.com/a/h2MGB14zf2",
+      "status": "unknown",
+      "af": "AF7202884",
+      "product_id": "7350154039",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
     "item_f774bcc7bd": {
@@ -300,6 +318,24 @@
       "status": "unknown",
       "af": "AF7202884",
       "product_id": "6403166332",
+      "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_2d86924f44": {
+      "type": "items",
+      "name": "씨투써밋 텍타월 SM",
+      "url": "https://link.coupang.com/a/h2MITtcnhA",
+      "status": "unknown",
+      "af": "AF7202884",
+      "product_id": "7049930830",
+      "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_e16e2bf312": {
+      "type": "items",
+      "name": "루메나 M3",
+      "url": "https://link.coupang.com/a/h2Mn1Tl9To",
+      "status": "unknown",
+      "af": "AF7202884",
+      "product_id": "7853897945",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
     "item_5f7e0b21f7": {
@@ -320,10 +356,19 @@
       "product_id": "2105345678",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
+    "item_81f6935124": {
+      "type": "items",
+      "name": "유니프레임 유니세라",
+      "url": "https://link.coupang.com/a/h2LWjA7Mbc",
+      "status": "unknown",
+      "af": "AF7202884",
+      "product_id": "8503339861",
+      "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
     "item_bac7ee8d28": {
       "type": "items",
       "name": "코베아 플레이트버너 IGT용",
-      "url": "https://link.coupang.com/a/hF0AQ574Ym",
+      "url": "https://link.coupang.com/a/h2LYqIMQAC",
       "status": "unknown",
       "af": "AF7202884",
       "product_id": "9638551127",
@@ -332,7 +377,7 @@
     "item_528d2f2157": {
       "type": "items",
       "name": "크레모아 이너프7",
-      "url": "https://link.coupang.com/a/hF2uyFOIKq",
+      "url": "https://link.coupang.com/a/h2MqGua29J",
       "status": "unknown",
       "af": "AF7202884",
       "product_id": "7811858184",
@@ -386,25 +431,25 @@
     "item_c722fec6c3": {
       "type": "items",
       "name": "타임모어 나노3 핸드그라인더 15g",
-      "url": "https://link.coupang.com/a/hJ2CEeQpZ6",
+      "url": "https://link.coupang.com/a/h2L4R9Imd2",
       "status": "unknown",
       "af": "AF7202884",
-      "product_id": "8355792302",
+      "product_id": "8243188595",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
     "item_a52fb6afa1": {
       "type": "items",
       "name": "타임모어 나노 케이터링 캠핑 커피 세트",
-      "url": "https://link.coupang.com/a/hJ2W0nZV8e",
+      "url": "https://link.coupang.com/a/h2L2yQfa8a",
       "status": "unknown",
       "af": "AF7202884",
-      "product_id": "5517005903",
+      "product_id": "8502676621",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
     "item_62da25abbd": {
       "type": "items",
       "name": "수산홈텍 COB-380V",
-      "url": "https://link.coupang.com/a/hV6CREQKnA",
+      "url": "https://link.coupang.com/a/h2PIW3TcTk",
       "status": "unknown",
       "af": "AF7202884",
       "product_id": "6911591845",
