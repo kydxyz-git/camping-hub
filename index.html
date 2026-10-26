@@ -321,6 +321,9 @@
     .price-only { font-size: 12px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
     .product-link svg { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 2; }
     .product-card.empty { cursor: pointer; }   /* 눌리면 안내 팝업 */
+    /* 구매 링크 없는 제품: 사진에 회색 막 한 겹 + 이름 흐리게 (261026) — PICK 별은 막 위로 */
+    .product-card.empty .product-thumb::after { content:''; position:absolute; inset:0; background:rgba(110,110,110,.38); pointer-events:none; z-index:1; }
+    .product-card.empty .product-name { color: var(--text-sub); }
 
     /* ── 시리즈 ── */
     .series-section { padding: 20px 0 8px; }
@@ -1166,6 +1169,9 @@ html.is-pc .pcard img{width:100%;height:100%;object-fit:cover;
 html.is-pc .pcard:hover img{transform:scale(1.045)}
 html.is-pc .pcard.dead{cursor:pointer}
 html.is-pc .pcard.dead:hover img{transform:none}
+/* 구매 링크 없는 제품: 회색 막 한 겹 (모바일과 같게, 영상만 있는 것도) — 이름 오버레이·PICK·영상 버튼은 막 위로 */
+html.is-pc .pcard.nolink::after{content:'';position:absolute;inset:0;background:rgba(110,110,110,.38);pointer-events:none;z-index:1}
+html.is-pc .pcard.nolink .pn{z-index:3}
 html.is-pc .pcard .pn{position:absolute;inset:0;padding:14px;
   display:flex;align-items:center;justify-content:center;text-align:center;
   color:#fff;font-weight:700;font-size:clamp(14px,1.35vw,18px);
@@ -3673,7 +3679,8 @@ function sortProducts(list,mode){
 function pcardHtml(p, cat){
   const hasV=!!(p.video||'').trim();
   const dead=!(p.url||'').trim() && !hasV;
-  return `<${dead?'div':'a'} class="pcard${dead?' dead':''}" ${dead?`data-nm="${esc(p.name)}"`:`href="${esc(p.url||'#')}"`}
+  const nolink=!(p.url||'').trim();
+  return `<${dead?'div':'a'} class="pcard${dead?' dead':''}${nolink?' nolink':''}" ${dead?`data-nm="${esc(p.name)}"`:`href="${esc(p.url||'#')}"`}
       ${dead?'':`data-t="${esc(p.name)}" data-v="${esc(p.video||'')}" data-b="${esc(p.url||'')}" data-s="${esc(p.source||'')}"`}
       data-track-path="/${cat}/${esc(p.id||'')}" data-track-title="${esc(p.name)}">
       ${p.thumb?`<img src="${esc(abs(p.thumb))}${p.updated_at?'?v='+new Date(p.updated_at).getTime():''}" alt="${esc(p.name)}" loading="lazy">`:''}
