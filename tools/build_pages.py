@@ -31,6 +31,10 @@ KST = datetime.timezone(datetime.timedelta(hours=9))
 OUT_DIRS = ['camps', 'gear', 'foods']
 STATS_URL = 'https://kyd-stats.kydxyz.workers.dev/log'
 IG = 'https://www.instagram.com/kyd_zm/'
+# '공대남자' 검색 시 한 사람으로 묶이도록 모든 정적 페이지에 같은 인물 정보(@id는 메인 index.html과 동일)
+PERSON = {'@context': 'https://schema.org', '@type': 'Person', '@id': SITE + '/#person', 'name': '공대남자',
+          'alternateName': 'kyd_zm', 'url': SITE + '/',
+          'sameAs': [IG, 'https://www.facebook.com/profile.php?id=61588881720150', 'https://naver.me/5ajsIHzm']}
 # 배지 색 (CLAUDE.md UI 규칙과 같게)
 SELLER_COLOR = {'쿠팡': '#ee2c4d', '컬리': '#5f0080', '네이버': '#03C75A', '알리': '#FF4747', '테무': '#FF6A00'}
 BOOK_COLOR = {'그래가 파트너스': '#1a1a1a', '네이버': '#03C75A', '캠핏': '#2D8F4C', '땡큐캠핑': '#FF6B2C'}
@@ -172,7 +176,7 @@ def track_js(path, title):
 def page(*, title, desc, canonical, og_image, cta, track, body, jsonld=None, og_type='article'):
     """cta: (버튼 글자, 사이트 안 주소) — 본문 안 큰 버튼 + 화면 아래 고정 버튼. track: (통계 경로, 이름)"""
     ld = ''
-    for obj in (jsonld or []):
+    for obj in [PERSON] + list(jsonld or []):
         ld += '<script type="application/ld+json">' + json.dumps(obj, ensure_ascii=False) + '</script>\n'
     return f"""<!doctype html>
 <html lang="ko">
