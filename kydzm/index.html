@@ -6840,15 +6840,15 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
       </a>
       <span class="pick-stars">${[1,2,3].map(n => `<button type="button"
         class="pick-btn ${(Number(item.pick)||0) >= n ? 'on' : ''}"
-        data-pick-idx="${item._idx}" data-pick-lv="${n}"
+        data-pick-idx="${item._idx}" data-pick-id="${escapeHtml(item.id || '')}" data-pick-lv="${n}"
         data-pick-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}"
         title="별 ${n}개${(Number(item.pick)||0) === n ? ' (다시 누르면 해제)' : ''}">★</button>`).join('')}</span>
       <button type="button" class="new-btn ${item.is_new ? 'on' : ''}"
-        data-new-idx="${item._idx}" data-new-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}"
+        data-new-idx="${item._idx}" data-new-id="${escapeHtml(item.id || '')}" data-new-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}"
         title="최근등록 섹션에 고정">🆕</button>
       ${item.id ? `<button type="button" class="link-copy-btn" data-copy-id="${item.id}"
         data-copy-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}" title="DM용 링크 복사">🔗</button>` : ''}
-      <button type="button" class="src-btn ${srcClass(item)}" data-src-idx="${item._idx}"
+      <button type="button" class="src-btn ${srcClass(item)}" data-src-idx="${item._idx}" data-src-id="${escapeHtml(item.id || '')}"
         data-src-kind="${hrefPrefix === 'items' ? 'items' : 'foods'}"
         title="구매처 링크 등록·수정">${item.url ? escapeHtml(item.source || '등록됨') : '미등록'}</button>
       ${toggleHtml(isPub, `data-${dataAttrKey}="${item._idx}"`)}
@@ -7007,8 +7007,9 @@ function renderProductList(dataArr, searchVar, opts) {
       if (btn.dataset.busy) return;
       btn.dataset.busy = '1';
       const kind = btn.dataset.pickKind;
-      const idx = +btn.dataset.pickIdx;
       const arr = cache[kind] || [];
+      // 순서 번호가 아니라 id로 찾음 (저장 뒤 목록이 바뀌면 번호가 다른 상품을 가리킬 수 있어서 — 261026 M 대신 L에 걸린 일)
+      const idx = btn.dataset.pickId ? arr.findIndex(x => x.id === btn.dataset.pickId) : +btn.dataset.pickIdx;
       const it = arr[idx];
       if (!it) { delete btn.dataset.busy; return; }
       const lv = +btn.dataset.pickLv || 1;
@@ -7044,8 +7045,8 @@ function renderProductList(dataArr, searchVar, opts) {
       if (btn.dataset.busy) return;
       btn.dataset.busy = '1';
       const kind = btn.dataset.newKind;
-      const idx = +btn.dataset.newIdx;
       const arr = cache[kind] || [];
+      const idx = btn.dataset.newId ? arr.findIndex(x => x.id === btn.dataset.newId) : +btn.dataset.newIdx;   // id로 (위 PICK과 같은 이유)
       const it = arr[idx];
       if (!it) { delete btn.dataset.busy; return; }
       const on = !it.is_new;
@@ -7073,8 +7074,8 @@ function renderProductList(dataArr, searchVar, opts) {
     btn.onclick = async (e) => {
       e.preventDefault(); e.stopPropagation();
       const kind = btn.dataset.srcKind;
-      const idx = +btn.dataset.srcIdx;
       const arr = cache[kind] || [];
+      const idx = btn.dataset.srcId ? arr.findIndex(x => x.id === btn.dataset.srcId) : +btn.dataset.srcIdx;   // id로 (PICK과 같은 이유)
       const it = arr[idx];
       if (!it) return;
       const cur = it.url || '';
