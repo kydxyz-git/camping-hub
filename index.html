@@ -1394,8 +1394,8 @@ async function loadData() {
   <nav class="tab-bar">
     <button class="tab-btn active" data-tab="t1" id="tab-btn-1"></button>
     <button class="tab-btn" data-tab="t2" id="tab-btn-2"></button>
-    <button class="tab-btn" data-tab="t3" id="tab-btn-3"></button>
     <button class="tab-btn" data-tab="t4" id="tab-btn-4"></button>
+    <button class="tab-btn" data-tab="t3" id="tab-btn-3"></button>
     <button class="tab-btn" data-tab="t5" id="tab-btn-5" style="display:none"></button>
   </nav>
 
@@ -3161,8 +3161,8 @@ if(document.documentElement.classList.contains('is-mo')) init();
     <div class="tabs">
       <a class="tab" href="#stories">영상모음</a>
       <a class="tab" href="#camps">다녀온 캠핑장</a>
-      <a class="tab" href="#food">먹거리</a>
       <a class="tab" href="#gear">캠핑용품</a>
+      <a class="tab" href="#food">먹거리</a>
       <a class="tab alt" href="./collab.html" data-track-target="협업 문의">소개 · 협업</a>
     </div>
   </div>
@@ -3279,8 +3279,8 @@ if(document.documentElement.classList.contains('is-mo')) init();
         </dl>
         <dl class="foot-col">
           <dt>PICK</dt>
-          <a href="#food">먹거리</a>
           <a href="#gear">캠핑용품</a>
+          <a href="#food">먹거리</a>
         </dl>
         <dl class="foot-col">
           <dt>CONTACT</dt>
@@ -3431,10 +3431,10 @@ function renderMenu(){
      img:M+'stories.jpg', color:M+'stories-color.jpg'},
     {cls:'lg',href:'#camps',  title:'다녀온 캠핑장', n:c.length+'곳 / '+visits+'회',
      img:M+'camps.jpg',   color:M+'camps-color.jpg'},
-    {cls:'sm',href:'#food',   title:'먹거리',     n:nFood?nFood+'개':'',
-     img:M+'food.jpg',    color:M+'food-color.jpg'},
     {cls:'sm',href:'#gear',   title:'캠핑용품',     n:nGear?nGear+'개':'',
      img:M+'gear.jpg',    color:M+'gear-color.jpg'},
+    {cls:'sm',href:'#food',   title:'먹거리',     n:nFood?nFood+'개':'',
+     img:M+'food.jpg',    color:M+'food-color.jpg'},
     {cls:'sm intro',href:'./collab.html',title:'소개 · 협업', n:'',
      img:'', desc:'캠핑장, 장비, 음식, 촬영 장비 협업을 받고 있습니다.'}
   ];
