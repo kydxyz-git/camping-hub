@@ -3111,6 +3111,15 @@ async function loadAndRenderStats(forceRefresh = false) {
     _statsCacheAt = Date.now();
     renderStats(container, data);
   } catch (e) {
+    // Worker가 막혔을 때(예: KV 하루 쓰기 한도 261027) — 매시간 저장소에 남긴 사본 data/stats.json으로 대신 보여줌
+    try {
+      const r2 = await ghFetchRaw(`/repos/${GH_OWNER}/${GH_REPO}/contents/data/stats.json?ref=main`, { headers: { Accept: 'application/vnd.github.raw+json' } });
+      if (!r2.ok) throw new Error('HTTP ' + r2.status);
+      const snap = await r2.json();
+      renderStats(container, snap);
+      container.insertAdjacentHTML('afterbegin', `<div class="card" style="font-size:12px;color:#8a5a00;background:#fff8e1;border:1px solid #ffe08a;margin-bottom:10px">⚠️ 통계 서버 응답 없음 (${escapeHtml(e.message)}) — 저장소 사본(${escapeHtml(kstDateStr(Date.parse(snap.updated_at)) + ' ' + new Date(Date.parse(snap.updated_at) + 9 * 3600e3).toISOString().slice(11, 16))} 기준)을 보여주고 있어요. 그 뒤 방문은 서버가 돌아오면 반영돼요.</div>`);
+      return;
+    } catch (e2) { /* 사본도 못 읽으면 아래 실패 표시 */ }
     container.innerHTML = `
       <div class="card" style="text-align:center;color:var(--muted);font-size:13px;">
         <div style="margin-bottom:8px;">⚠️ 통계 불러오기 실패</div>
