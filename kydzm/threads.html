@@ -392,7 +392,7 @@ async function commitFiles(mutators, message) {
 async function loadAll() {
   const head = await headCommit();
   const files = await readTree(head.tree);
-  const [queue, config, token, replies, insights, cpReport, weekly, followers] = await Promise.all([
+  const [queue, config, token, replies, insights, cpReport, weekly, followers, linkReport] = await Promise.all([
     files['queue.json'] ? readBlobJson(files['queue.json']) : [],
     files['config.json'] ? readBlobJson(files['config.json']) : null,
     files['state/token.json'] ? readBlobJson(files['state/token.json']) : null,
@@ -401,8 +401,9 @@ async function loadAll() {
     files['state/coupang_report.json'] ? readBlobJson(files['state/coupang_report.json']) : null,
     files['state/weekly_report.json'] ? readBlobJson(files['state/weekly_report.json']) : null,
     files['state/followers.json'] ? readBlobJson(files['state/followers.json']) : null,
+    files['state/link_report.json'] ? readBlobJson(files['state/link_report.json']) : null,
   ]);
-  S.cpReport = cpReport; S.weekly = weekly; S.followers = followers;
+  S.cpReport = cpReport; S.weekly = weekly; S.followers = followers; S.linkReport = linkReport;
   S.replies = (replies || []).filter(r => r && r.id);
   S.insights = insights || {};
   S.posts = (queue || []).filter(p => p && p.id);
@@ -828,6 +829,21 @@ function followersHtml() {
     <div><b>팔로워 ${f[last].toLocaleString()}명</b>${prev ? ` <span class="small ${diff > 0 ? '' : 'muted'}">(${diff >= 0 ? '+' : ''}${diff} · ${esc(prev.slice(5))} 대비)</span>` : ''}
       <div class="small muted">${esc(fmtDT(f._at))} 기준 · 날짜별 막대는 최근 14일</div></div><div>${bars}</div></div>`;
 }
+// 쿠팡 30일을 링크가 걸린 곳으로 나눔 (report.py state/link_report.json — admin 쿠팡 실적의 그룹과 같은 기준)
+function cpSplitHtml() {
+  const rows = (S.linkReport || {}).rows;
+  if (!rows) return '';
+  const g = { threads: { click: 0, order: 0, commission: 0 }, home: { click: 0, order: 0, commission: 0 }, other: { click: 0, order: 0, commission: 0 } };
+  for (const r of rows) {
+    const w = r.where || [], ch = r.channel || '';
+    const k = w.some(x => x.type === 'post') || ch.startsWith('스레드') ? 'threads' : w.some(x => x.type === 'home') || ch === '홈페이지' ? 'home' : 'other';
+    g[k].click += +r.click || 0; g[k].order += +r.order || 0; g[k].commission += +r.commission || 0;
+  }
+  const line = (label, x, note) => `<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:3px 0 3px 10px;border-left:3px solid var(--line,#e5e5e5)">
+    <span><b>${label}</b>${note ? ` <span class="small muted">${note}</span>` : ''}</span>
+    <span>클릭 ${x.click.toLocaleString()} · 주문 ${x.order} · 수익 ${x.commission.toLocaleString()}원</span></div>`;
+  return `<div style="margin-top:6px;display:grid;gap:4px">${line('스레드', g.threads)}${line('홈페이지', g.home)}${g.other.click || g.other.order || g.other.commission ? line('그 외', g.other, '어디 링크인지 못 찾음') : ''}</div>`;
+}
 function reportHtml() {
   const r = S.cpReport, w = S.weekly;
   if (!r && !w && !followersHtml()) return '';
@@ -839,7 +855,7 @@ function reportHtml() {
     <div class="card" style="padding:12px 14px;margin-bottom:16px">
       ${followersHtml()}
       ${r ? `<div><b>쿠팡 최근 30일</b> (${esc(r.from)}~${esc(r.to)}) · 클릭 ${(t.click || 0).toLocaleString()} · 주문 ${t.order || 0} · 수익 ${(t.commission || 0).toLocaleString()}원
-        <span class="small muted">홈페이지 포함 · ${esc(fmtDT(r.checked_at))}</span></div>` : ''}
+        <span class="small muted">전체 · ${esc(fmtDT(r.checked_at))}</span></div>${cpSplitHtml()}` : ''}
       ${S.showReport && w ? `<div class="small muted" style="margin-top:8px">주간 리포트 ${esc(fmtDT(w.at))} · 글 ${w.count}개 기준</div>
         ${w.good?.length ? `<div style="margin-top:6px"><b>잘된 글 공통점</b><ul style="margin:4px 0 0 18px">${li(w.good)}</ul></div>` : ''}
         ${w.bad?.length ? `<div style="margin-top:6px"><b>안된 글 공통점</b><ul style="margin:4px 0 0 18px">${li(w.bad)}</ul></div>` : ''}
