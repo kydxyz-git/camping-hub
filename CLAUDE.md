@@ -27,7 +27,7 @@
 - `threads.html` 스레드 예약 게시 관리(쿠파스). 데이터는 **비공개 저장소 `kydxyz-git/cupas`**(글 `queue/YYYY-MM.json`·`items.json`·`config.json`) — 이 공개 저장소에 예약 글·쿠팡 링크를 넣지 말 것. cupas 전용 PAT를 localStorage `kydz_cupas_gh_token`에만 저장. Secret 암호화는 `kydzm/lib/sealedbox.js`(+`nacl-fast.min.js`)
 - `camp-live.html` 공대남자 캠핑사이트: 기본은 GitHub 커밋(공대남자)·Actions 실행(예약봇)을 1분마다 보여줌(쿠파스는 cupas 토큰 있을 때만), `?demo=1` 데모, `tools/camp-watch.js`로 열면 내 컴퓨터 Claude Code 작업. 비밀번호는 admin과 같은 해시(`PASSWORD_HASH` 두 곳 같이 변경), 한 번 들어가면 localStorage로 유지
 - 대시보드 맨 위 **🔥 오늘의 캠핑 딜 TOP 5**(콘텐츠 소재): 비공개 `kydxyz-git/camping-search`(딜 보드 수집, 하루 3번 08·16·23시)의 어제·오늘 수집에서 브라우저가 골라 보여줌 — 최근 3일 글만(카페 글 번호로 판단), 수집 점수 + 할인율 + 진행 중 + 딜 보드 라벨(좋음/아님)로 배운 제목 단어 가중치, 라벨 아님·오래됨·잡담·지난 행사·품절·질문 글 제외, 같은 브랜드·품목은 하나. '📋 문구'는 인스타·스레드용 짧은 문구(제목·할인·카페 출처만, 지어내지 않음). Actions 시간 안 씀.
-- `#coupang` 쿠팡 실적 (대시보드 메뉴 🛒): **눌러서 들어온 링크(상품 번호 ctag) 기준** 클릭·주문(취소 뺌)·수익 + 링크가 걸린 곳(홈페이지 장비·먹거리/스레드 글) + 그 링크로 들어와 실제로 산 것. 데이터는 비공개 cupas `state/link_report.json`(report.py 매일 06:10) — 수익 숫자라 공개 저장소에 두지 않음, 쿠파스 토큰 있는 브라우저에서만.
+- `#coupang` 쿠팡 실적 (대시보드 메뉴 🛒): **눌러서 들어온 링크(상품 번호 ctag) 기준** 클릭·주문(취소 뺌)·수익 + 링크가 걸린 곳(홈페이지 장비·먹거리/스레드 글) + 그 링크로 들어와 실제로 산 것. 데이터는 비공개 cupas `state/link_report.json`(report.py 매일 06:10·16:40 — 쿠팡 전일 데이터는 오후 4시 전후 반영) — 수익 숫자라 공개 저장소에 두지 않음, 쿠파스 토큰 있는 브라우저에서만.
 - 인증: GitHub PAT를 브라우저 localStorage에만 저장. **토큰·시크릿은 저장소에 절대 커밋 금지.**
 - 커밋 메시지: 추가 `sync(admin): …` / 수정 `update(admin): …` / 삭제 `delete(admin): …`
 - 저장(`ghCommitTree`)은 직전에 저장소 최신 `data/*.json`을 읽어 `id` 기준 3-way 병합 후 커밋 — 오래 열어 둔 창이 다른 곳의 변경을 덮어쓰지 않게. 저장 로직을 고칠 때 이 경로를 우회하지 말 것.
