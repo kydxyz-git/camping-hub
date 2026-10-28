@@ -422,12 +422,17 @@ function normalizeConfig(c) {
   const kinds = {};
   Object.entries(c.kinds || {}).forEach(([h, k]) => { if (k) kinds[hh(h)] = String(k); });
   return { paused: !!c.paused, weekdays: Array.isArray(c.weekdays) ? c.weekdays.map(Number) : [0, 1, 2, 3, 4, 5, 6], hours,
-    kinds, deal_hour: hh(c.deal_hour || '10'), monetize_from: String(c.monetize_from || '') };
+    kinds, deal_hour: hh(c.deal_hour || '10'), monetize_from: String(c.monetize_from || ''),
+    deal_weekdays: Array.isArray(c.deal_weekdays) ? c.deal_weekdays.map(Number) : [0, 1, 2, 3, 4, 5, 6] };
 }
 // post.py want_kind / choose / plan과 같은 계산
 function wantKind(key) {
   const k = S.config.kinds[key.slice(11, 13)] || '';
-  return k === '수익화' && S.config.monetize_from && key.slice(0, 10) < S.config.monetize_from ? '일상' : k;
+  if (k === '수익화' && S.config.monetize_from && key.slice(0, 10) < S.config.monetize_from) return '일상';
+  // 특가 요일(config deal_weekdays)엔 링크 하루 1개를 지키려고 추천템 자리를 정보성으로 (post.py와 같게, 261028)
+  const dw = S.config.deal_weekdays || [];
+  if (k === '수익화' && dw.length < 7 && dw.includes((new Date(key.slice(0, 10) + 'T00:00:00Z').getUTCDay() + 6) % 7)) return '정보';
+  return k;
 }
 function chooseFor(cands, kind) {
   if (!kind) return cands[0] || null;
