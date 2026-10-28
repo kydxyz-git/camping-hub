@@ -3115,10 +3115,12 @@ if(document.documentElement.classList.contains('is-mo')) init();
     if (!a) return;
     const href = a.getAttribute('href');
     if (!href) return;
-    const target = detectTarget(href);
+    let target = detectTarget(href);
     if (!target) return; // 내부 링크 또는 미분류 → 추적 안 함
     // context: 추적 카드 path 우선, 없으면 현재 위치 (탭 hash)
     const context = cardPath || (location.pathname + (location.hash || ''));
+    // naver.me 짧은 링크는 캠핑장이면 예약, 장비·먹거리면 네이버 쇼핑 (261028 카시오페아가 '네이버예약'으로 잡힘)
+    if (target === '네이버예약' && /naver\.me/i.test(href) && /\/(items|foods)\/|#(gear|food|items|foods)\b/.test(context)) target = '네이버';
     send({
       type: 'click',
       target,
@@ -4125,10 +4127,12 @@ function renderChrome(){
     if (!a) return;
     const href = a.getAttribute('href');
     if (!href) return;
-    const target = detectTarget(href);
+    let target = detectTarget(href);
     if (!target) return; // 내부 링크 또는 미분류 → 추적 안 함
     // context: 추적 카드 path 우선, 없으면 현재 위치 (탭 hash)
     const context = cardPath || (location.pathname + (location.hash || ''));
+    // naver.me 짧은 링크는 캠핑장이면 예약, 장비·먹거리면 네이버 쇼핑 (261028 카시오페아가 '네이버예약'으로 잡힘)
+    if (target === '네이버예약' && /naver\.me/i.test(href) && /\/(items|foods)\/|#(gear|food|items|foods)\b/.test(context)) target = '네이버';
     send({
       type: 'click',
       target,

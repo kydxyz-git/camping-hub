@@ -8,6 +8,16 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_c4d2e16dd7",
+        "ep": 8,
+        "title": "어떤 난로 들고 갈까?",
+        "url": "https://www.instagram.com/reel/DfA3OEohgzQ/",
+        "thumb": "./images/series/series-ep08.jpg",
+        "published": true,
+        "created_at": "2026-10-28T01:28:40.097Z",
+        "updated_at": "2026-10-28T01:28:40.097Z"
+      },
+      {
         "id": "ep_832cc8dda8",
         "ep": 7,
         "title": "화로대 고민 중이라면?",
