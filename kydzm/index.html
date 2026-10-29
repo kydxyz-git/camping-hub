@@ -2615,7 +2615,7 @@ async function router() {
 // 데이터: 비공개 cupas state/link_report.json (report.py가 매일 06:10) — 수익 숫자라 공개 저장소엔 없음
 // ════════════════════════════════════════════════════════════════════
 let _cpFilter = 'all', _cpOpen = new Set(), _cpData = null;
-let _cpPeriod = '7d', _cpFrom = '', _cpTo = '', _cpMetric = 'commission';
+let _cpPeriod = '7d', _cpFrom = '', _cpTo = '', _cpMetric = 'commission', _cpOrder = 'commission';
 const CP_THREADS = 'thread0sshdPemf', CP_HOME = 'kydzhome';   // 쿠팡 채널 아이디 (cupas deals.THREADS_CHANNEL / report.HOME_SUB)
 const cpChannel = sub => sub === CP_THREADS ? '스레드' : sub === CP_HOME ? '홈페이지' : !sub ? '채널 없음'
   : (/^p[0-9a-f]{10}$/.test(sub) ? '스레드(예전 글별)' : sub);
@@ -2653,7 +2653,7 @@ function cpAggregate(daily, map, from, to) {
       for (const [sub, ctag, oid, pid, name, qty, com] of list) {
         const r = row(sub, ctag);
         r.commission += com; pd.commission += com;
-        if (key === 'o') { r._o.add(oid); pd._o.add(oid); }
+        if (key === 'o') { r._o.add(oid); pd._o.add(oid); if (d > (r.lastBuy || '')) r.lastBuy = d; }   // 최근 구매일 (정렬용)
         if (String(pid) === ctag && name && !r.landing) r.landing = name;
         const bn = name + (key === 'x' ? ' (취소)' : '');
         const b = r._b.get(bn) || { name: bn, qty: 0, commission: 0 };
@@ -2747,6 +2747,10 @@ async function renderCoupangReport() {
   const nameOf = r => { const w = r.where[0]; return w ? w.name + (r.where.length > 1 ? ` 외 ${r.where.length - 1}곳` : '') : (r.landing || `상품 ${r.ctag}`); };
   const badge = r => { const g = cpGroup(r); const [bg, t] = g === 'home' ? ['#0b5e2e', '홈페이지'] : g === 'threads' ? ['#111', '스레드'] : ['#9e9e9e', '그 외']; return `<span style="font-size:11px;color:#fff;background:${bg};border-radius:4px;padding:1px 6px;margin-right:6px">${t}</span>`; };
   const list = G[_cpFilter][1], t = sum(list);
+  // 아래 목록 정렬: 수익(기본)·주문·클릭·최근 구매 (사용자 요청 261029)
+  const ORD = { commission: (a, b) => b.commission - a.commission || b.click - a.click, order: (a, b) => b.order - a.order || b.commission - a.commission,
+    click: (a, b) => b.click - a.click || b.commission - a.commission, recent: (a, b) => (b.lastBuy || '').localeCompare(a.lastBuy || '') || b.commission - a.commission };
+  const shown = [...list].sort(ORD[_cpOrder] || ORD.commission);
   const P = [['7d', '최근 7일'], ['30d', '최근 30일'], ['thisMonth', '이번 달'], ['lastMonth', '지난달'], ['year', '올해'], ['custom', '직접']];
   c.innerHTML = `
     <div class="page-header"><button class="page-back" id="back-btn">← 대시보드</button>
@@ -2768,12 +2772,13 @@ async function renderCoupangReport() {
       ${cpChart(list, from, to, _cpMetric)}
       <div class="help" style="margin-top:6px">아래 한 줄 = 사람이 <b>눌러서 들어온 링크</b>. 그 링크로 들어와서 다른 걸 사도 그 링크 몫이에요(쿠팡 24시간). 줄을 누르면 실제로 산 물건이 보여요. 클릭은 파트너스 웹이 일부 걸러서 웹이 조금 적게 나와요.</div>
     </div>
-    <div class="list">${list.length ? list.map(r => {
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 8px"><span class="help">정렬</span>${[['commission', '수익'], ['order', '주문'], ['click', '클릭'], ['recent', '최근 구매']].map(([k, l]) => `<button type="button" class="btn btn-sm ${_cpOrder === k ? '' : 'btn-ghost'}" data-cpord="${k}">${l}</button>`).join('')}</div>
+    <div class="list">${shown.length ? shown.map(r => {
       const open = _cpOpen.has(r.key);
       return `<div class="list-item" style="display:block;padding:10px 12px">
         <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;cursor:pointer" data-cpo="${escapeHtml(r.key)}">
           <div style="min-width:0">${badge(r)}<b>${escapeHtml(nameOf(r))}</b>
-            <div class="help" style="margin-top:2px">🖱 ${r.click} · 주문 ${r.order}건 · <b>${won(r.commission)}</b>${r.channel !== '채널 없음' ? ` · 채널 ${escapeHtml(r.channel)}` : ''}</div></div>
+            <div class="help" style="margin-top:2px">🖱 ${r.click} · 주문 ${r.order}건 · <b>${won(r.commission)}</b>${r.lastBuy ? ` · 최근 구매 ${+r.lastBuy.slice(4, 6)}/${+r.lastBuy.slice(6)}` : ''}${r.channel !== '채널 없음' ? ` · 채널 ${escapeHtml(r.channel)}` : ''}</div></div>
           <span class="help">${open ? '▴' : '▾ 산 것'}</span></div>
         ${open ? `<div style="margin-top:8px;font-size:13px">
           ${r.where.length ? `<div><b>링크가 걸린 곳</b> ${r.where.map(w => w.type === 'home'
@@ -2787,6 +2792,7 @@ async function renderCoupangReport() {
   c.querySelectorAll('[data-cpp]').forEach(b => b.onclick = () => { _cpPeriod = b.dataset.cpp; if (_cpPeriod === 'custom' && !_cpFrom) { _cpFrom = from; _cpTo = to; } renderCoupangReport(); });
   c.querySelectorAll('[data-cpf]').forEach(b => b.onclick = () => { _cpFilter = b.dataset.cpf; renderCoupangReport(); });
   c.querySelectorAll('[data-cpm]').forEach(b => b.onclick = () => { _cpMetric = b.dataset.cpm; renderCoupangReport(); });
+  c.querySelectorAll('[data-cpord]').forEach(b => b.onclick = () => { _cpOrder = b.dataset.cpord; renderCoupangReport(); });
   c.querySelectorAll('[data-cpo]').forEach(el => el.onclick = () => { const k = el.dataset.cpo; _cpOpen.has(k) ? _cpOpen.delete(k) : _cpOpen.add(k); renderCoupangReport(); });
   const ap = document.getElementById('cp-apply');
   if (ap) ap.onclick = () => { _cpFrom = document.getElementById('cp-from').value; _cpTo = document.getElementById('cp-to').value; renderCoupangReport(); };
