@@ -1,0 +1,22 @@
+{
+ "id": "camp_b205723404",
+ "name": "고흥나로힐링캠핑장",
+ "platform": "자체/기타",
+ "url": "http://www.narohealing.kr/",
+ "final_url": "http://www.narohealing.kr/",
+ "status": "ok",
+ "fetched_at": "2026-10-30T10:03:07+09:00",
+ "text": "나로힐링펜션\n소개\n전망\n객실\n시설배치도\n펜션예약\n오시는길\n커뮤니티\n공지사항\n일지\n갤러리\n백장미의 솔캠라이브(2023.03)\nkbs 자연의 철학자들(2022.12) 하늘을 지붕삼아\n펜션예약\n캠핑예약\n공지사항\n10월 7일, 누리호 5차 발사 소식 안내\n2026년 하계 수영장 운영 안내\n2026년 6월 6일(토) 펜션 소규모 대관 일정 안내\n공지사항\n더보기\n나로힐링펜션\n 전남 고흥군 봉래면 우주로 3810-14 (전남 고흥군 봉래면 외초리 333-5) \nTEL : 010-****-****\n나로힐링캠핑장 사업자등록번호 : ***-**-*****\nCOPYRIGHTS 2016 NARO HEALING ALL RIGHTS RESERVED.",
+ "extracted": {
+  "checkin": "",
+  "checkout": "",
+  "manner": "",
+  "pets": "",
+  "facilities": [
+   "수영장"
+  ],
+  "season": "",
+  "notice": ""
+ },
+ "http_status": 200
+}

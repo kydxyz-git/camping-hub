@@ -1,0 +1,13 @@
+{
+ "id": "camp_e2b57e4e5d",
+ "name": "경주에덴펜션&오토캠핑장",
+ "platform": "자체/기타",
+ "url": "https://booking.ddnayo.com/booking-calendar-status?accommodationId=4593",
+ "final_url": "https://booking.ddnayo.com/booking-calendar-status?accommodationId=4593",
+ "status": "fail",
+ "fetched_at": "2026-10-30T10:01:42+09:00",
+ "text": "Access Denied\nAccess Denied\nYou don't have permission to access \"http://booking.ddnayo.com/booking-calendar-status?\" on this server.\nReference #18.bee9fbcb.1793322102.355b6239\nhttps://errors.edgesuite.net/18.bee9fbcb.1793322102.355b6239",
+ "extracted": {},
+ "http_status": 403,
+ "reason": "HTTP 403, 본문 236자"
+}

@@ -110,6 +110,27 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .cta-arrow{margin-left:5px;opacity:.65;font-weight:800}
 .cta.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);margin-top:10px;font-weight:600;font-size:14px}
 .note{margin-top:12px;font-size:12px;color:var(--stone);text-align:center;line-height:1.6}
+.one{max-width:760px;margin:clamp(30px,4vw,48px) auto 0}
+.hook{width:100%;margin-top:10px;font-size:clamp(17px,2.2vw,21px);font-weight:800;letter-spacing:-.02em;line-height:1.45}
+.story p{font-size:15px;line-height:1.75;margin-bottom:14px;color:#2A2F2B}
+.guide{list-style:none;display:grid;gap:8px}
+.guide li{background:#fff;border:1px solid var(--line);border-radius:6px;padding:12px 14px;font-size:14px;line-height:1.6}
+.guide li.pick{border-color:#E8CF3A;background:#FFFBE3}
+.guide b{display:block;font-size:14.5px}
+.layout{width:100%;height:auto;object-fit:contain;border-radius:4px;border:1px solid var(--line);margin-top:10px}
+.src{margin-top:8px;font-size:11.5px;color:var(--stone)}
+.links{display:grid;gap:8px}
+.links .cta{border-radius:12px}
+.pcards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+@media (max-width:620px){.pcards{grid-template-columns:repeat(3,1fr)}}
+.pcard{display:block}
+.pcard .pth{position:relative;display:block;aspect-ratio:1/1;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+.pcard .pth img{object-fit:contain}
+.pcard .pth i{position:absolute;right:5px;bottom:5px;font-style:normal;font-size:10px;font-weight:700;color:#fff;padding:2px 7px;border-radius:999px}
+.pcard b{display:block;font-size:12.5px;font-weight:600;line-height:1.4;margin-top:6px}
+.near{display:flex;flex-wrap:wrap;gap:6px}
+.near a{font-size:13px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px}
+.dmbox{display:block;padding:14px 16px;border:1px solid var(--line);background:#fff;border-radius:6px;font-size:14px}
 footer{border-top:1px solid var(--line);padding:30px 0;margin-top:20px;font-size:12.5px;color:var(--stone)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -162,15 +183,41 @@ const BASE='https://kydz.kr/';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const abs=p=>!p?'':/^https?:/.test(p)?p:BASE+String(p).replace(/^\.?\//,'');
 
-/* INFO 표 — 값이 있는 항목만 */
+/* INFO 표 — 값이 있는 항목만 (info가 최상위 checkin/checkout보다 우선) — tools/build_pages.py와 같은 항목·순서 */
 function infoRows(c){
-  const r=[];
-  if(c.checkin||c.checkout) r.push(['입·퇴실', `${c.checkin||'-'} ~ ${c.checkout||'-'}`]);
-  if(c.sites)   r.push(['사이트', c.sites]);
-  if(c.price)   r.push(['요금', c.price]);
+  const r=[], i=(c.info&&typeof c.info==='object')?c.info:{}, s=v=>String(v??'').trim();
+  const cin=i.checkin||c.checkin, cout=i.checkout||c.checkout;
+  if(c.region)  r.push(['지역', c.region]);
   if(c.address) r.push(['주소', c.address]);
+  if(cin||cout) r.push(['입·퇴실', `${cin||'-'} ~ ${cout||'-'}`]);
+  if(s(i.manner))     r.push(['매너타임', s(i.manner)]);
+  if(s(i.pets))       r.push(['반려동물', s(i.pets)]);
+  if(s(i.max_people)) r.push(['최대 인원', s(i.max_people)]);
+  const fac=(i.facilities||[]).filter(Boolean);
+  if(fac.length)      r.push(['편의시설', fac.join(' · ')]);
+  if(s(i.season))     r.push(['운영', s(i.season)]);
+  if(s(i.notice))     r.push(['안내', s(i.notice)]);
+  if(+c.visits)       r.push(['방문', `${+c.visits}회`]);
   return r;
 }
+const LINK_TYPES=['reserve','discount','event','homepage','naver_blog','etc'];
+const LINK_LABEL={reserve:'예약하기',discount:'할인 받기',event:'이벤트',homepage:'캠핑장 홈페이지',naver_blog:'네이버 블로그 후기',etc:'링크'};
+const BOOK_COLOR={'그래가':'#1a1a1a','네이버':'#03C75A','캠핏':'#2D8F4C','땡큐캠핑':'#FF6B2C'};
+const SELLER_COLOR={'쿠팡':'#ee2c4d','컬리':'#5f0080','네이버':'#03C75A','알리':'#FF4747','테무':'#FF6A00'};
+function platformOf(u){ u=String(u||'').toLowerCase();
+  return /graega/.test(u)?'그래가':/naver/.test(u)?'네이버':/camfit/.test(u)?'캠핏':/thankqcamping|camperstory/.test(u)?'땡큐캠핑':''; }
+/* links[]를 type 순서로. 예약 버튼은 예약처 배지 색. 예약 링크가 없으면 기존 url로 예약 버튼 */
+function campLinks(c){
+  const plat=c.graega?'그래가':platformOf(c.url);
+  const out=(c.links||[]).filter(l=>l&&String(l.url||'').trim()).map(l=>{
+    const t=LINK_TYPES.includes(l.type)?l.type:'etc';
+    return {t, label:String(l.label||'').trim()||LINK_LABEL[t], url:l.url.trim(),
+      color:t==='reserve'?(BOOK_COLOR[platformOf(l.url)||plat]||''):''};
+  });
+  if(c.url && !out.some(x=>x.t==='reserve')) out.push({t:'reserve',label:'예약 페이지 열기',url:c.url,color:BOOK_COLOR[plat]||''});
+  return out.sort((a,b)=>LINK_TYPES.indexOf(a.t)-LINK_TYPES.indexOf(b.t));
+}
+const storyParas=s=>String(s||'').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
 
 /* 대표 이미지: main_img 우선, 없으면 첫 장 */
 function orderedImgs(c){
@@ -230,6 +277,29 @@ function orderedImgs(c){
   const seen=new Set(); const vids=[];
   for(const x of [...linked,...own]){ if(!seen.has(x.url)){ seen.add(x.url); vids.push(x); } }
 
+  // 이때 쓴 장비·먹은 것 → 각 상세 페이지(/gear/{이름}/, /foods/{이름}/)로
+  const getJson=u=>fetch(u).then(r=>r.ok?r.json():null).catch(()=>null);
+  const prod={gear:[],foods:[]};
+  for(const [key,file,hub] of [['gear','items','gear'],['foods','foods','foods']]){
+    const ids=(c[key]||[]).filter(Boolean);
+    if(!ids.length) continue;
+    const [rows,slugs]=await Promise.all([getJson(BASE+`data/${file}.json?v=`+Date.now()),getJson(`/${hub}/slugs.json?v=`+Date.now())]);
+    const byId=new Map((rows||[]).filter(x=>x.published!==false).map(x=>[x.id,x]));
+    prod[key]=ids.map(i=>byId.get(i)).filter(Boolean).map(p=>({...p,
+      href:(slugs&&slugs[p.id])?`/${hub}/${encodeURIComponent(slugs[p.id])}/`:(hub==='gear'?`/?ref=camp#items/${p.id}`:`/?ref=camp#foods/${p.id}`)}));
+  }
+  const pcards=list=>`<div class="pcards">${list.map(p=>`<a class="pcard" href="${esc(p.href)}">
+      <span class="pth">${p.thumb?`<img src="${esc(abs(p.thumb))}" alt="" loading="lazy">`:''}${(p.source&&p.url)?`<i style="background:${SELLER_COLOR[p.source]||'#9e9e9e'}">${esc(p.source)}</i>`:''}</span>
+      <b>${esc(p.name)}</b></a>`).join('')}</div>`;
+  const guide=(c.guide||[]).filter(g=>g&&(g.zone||g.text)).sort((a,b)=>(b.pick?1:0)-(a.pick?1:0));
+  const layouts=(c.layout_imgs||[]).filter(Boolean);
+  const paras=storyParas(c.story);
+  const links=campLinks(c);
+  const rows=infoRows(c);
+  const src=(c.info&&c.info.source)||{};
+  const near=(camps||[]).filter(x=>x.id!==c.id&&x.published!==false&&(x.region||'')===(c.region||'')).slice(0,12);
+  const kw=String(c.dm_keyword||'').trim();
+
   root.innerHTML=`
     <section class="gal">
       <div class="gal-main" id="gal-main">
@@ -242,49 +312,69 @@ function orderedImgs(c){
     <header class="title">
       <h1>${esc(c.name)}</h1>
       ${v?`<p class="sub">${v}번 다녀왔습니다</p>`:''}
+      ${c.hook?`<p class="hook">${esc(c.hook)}</p>`:''}
     </header>
     <div class="tags">
       ${c.region?`<span class="tag region">${esc(c.region)}</span>`:''}
       ${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}
     </div>
 
-    <div class="cols">
-      <div>
-        ${infoRows(c).length?`<div class="block">
-          <h2>INFO</h2>
-          <dl class="rows">
-            ${infoRows(c).map(([k,val])=>`<div class="row"><dt>${esc(k)}</dt><dd>${esc(val)}</dd></div>`).join('')}
-          </dl>
-        </div>`:''}
+    <div class="one">
+      ${vids.length?`<div class="block">
+        <h2>REELS</h2>
+        <div class="vids">
+          ${vids.map(x=>`<a class="vid" href="${esc(x.url)}" target="_blank" rel="noopener">
+            <span class="vthumb">${x.thumb?`<img src="${esc(abs(x.thumb))}" alt="">`:''}</span>
+            <span class="vmeta">
+              <b>${esc(x.title)}</b>
+              ${x.sub?`<em>${esc(x.sub)}</em>`:''}
+            </span>
+          </a>`).join('')}
+        </div>
+      </div>`:''}
 
-        ${c.notes?`<div class="block">
-          <h2>NOTE</h2>
-          <ul class="notes">${String(c.notes).split('\n').filter(x=>x.trim())
-            .map(x=>`<li>${esc(x.trim())}</li>`).join('')}</ul>
-        </div>`:''}
+      ${paras.length?`<div class="block story">
+        <h2>STORY</h2>
+        ${paras.map(p=>`<p>${p.split('\n').map(esc).join('<br>')}</p>`).join('')}
+      </div>`:''}
 
-        ${vids.length?`<div class="block">
-          <h2>POST</h2>
-          <div class="vids">
-            ${vids.map(x=>`<a class="vid" href="${esc(x.url)}" target="_blank" rel="noopener">
-              <span class="vthumb">${x.thumb?`<img src="${esc(abs(x.thumb))}" alt="">`:''}</span>
-              <span class="vmeta">
-                <b>${esc(x.title)}</b>
-                ${x.sub?`<em>${esc(x.sub)}</em>`:''}
-              </span>
-            </a>`).join('')}
-          </div>
-        </div>`:''}
+      ${(guide.length||layouts.length)?`<div class="block">
+        <h2>GUIDE</h2>
+        ${guide.length?`<ul class="guide">${guide.map(g=>`<li class="${g.pick?'pick':''}"><b>${g.pick?'★ ':''}${esc(g.zone)}</b>${esc(g.text)}</li>`).join('')}</ul>`:''}
+        ${layouts.map(p=>`<img class="layout" src="${esc(abs(p))}" alt="${esc(c.name)} 배치도" loading="lazy">`).join('')}
+      </div>`:''}
+
+      ${(rows.length||(c.lat&&c.lng))?`<div class="block">
+        <h2>INFO</h2>
+        ${rows.length?`<dl class="rows">
+          ${rows.map(([k,val])=>`<div class="row"><dt>${esc(k)}</dt><dd>${esc(val)}</dd></div>`).join('')}
+        </dl>`:''}
+        ${(src.platform||src.checked_at)?`<p class="src">출처: ${esc([src.platform, src.checked_at?src.checked_at+' 확인':''].filter(Boolean).join(' · '))}</p>`:''}
+        ${(c.lat&&c.lng)?`<div id="map" style="margin-top:16px"></div>`:''}
+      </div>`:''}
+
+      <div class="block">
+        <h2>LINKS</h2>
+        ${links.length?`<div class="links">${links.map(l=>`<a class="cta${['reserve','discount','event'].includes(l.t)?'':' ghost'}" href="${esc(l.url)}" target="_blank" rel="noopener"${l.color?` style="background:${l.color}"`:''}>${esc(l.label)} <span class="cta-arrow">→</span></a>`).join('')}</div>`:
+                `<p class="note">등록된 예약 링크가 없습니다. 인스타그램 DM으로 문의해 주세요.</p>`}
+        ${prod.gear.length?`<h3 style="font-size:14px;margin-top:22px">이때 쓴 장비</h3>${pcards(prod.gear)}`:''}
+        ${prod.foods.length?`<h3 style="font-size:14px;margin-top:22px">이때 먹은 것</h3>${pcards(prod.foods)}`:''}
       </div>
 
-      <aside>
-        ${(c.lat&&c.lng)?`<div class="block"><h2>LOCATION</h2><div id="map"></div></div>`:''}
-        <div class="block">
-          <h2>RESERVATION</h2>
-          ${c.url?`<a class="cta" href="${esc(c.url)}" target="_blank" rel="noopener">예약 페이지 열기 <span class="cta-arrow">→</span></a>`:
-                  `<p class="note">등록된 예약 링크가 없습니다. 인스타그램 DM으로 문의해 주세요.</p>`}
-        </div>
-      </aside>
+      ${c.notes?`<div class="block">
+        <h2>NOTE</h2>
+        <ul class="notes">${String(c.notes).split('\n').filter(x=>x.trim())
+          .map(x=>`<li>${esc(x.trim())}</li>`).join('')}</ul>
+      </div>`:''}
+
+      ${near.length?`<div class="block">
+        <h2>${esc(c.region)} 다른 캠핑장</h2>
+        <div class="near">${near.map(x=>`<a href="/camp.html?id=${encodeURIComponent(x.id)}">${esc(x.name)}</a>`).join('')}</div>
+      </div>`:''}
+
+      ${(c.dm&&!guide.length)?`<div class="block">
+        <a class="dmbox" href="https://www.instagram.com/kyd_zm/" target="_blank" rel="noopener">${esc(kw?`더 자세한 추천 자리·배치도는 인스타 DM '${kw}'`:'더 자세한 추천 자리·배치도는 인스타 DM으로 물어봐 주세요')} →</a>
+      </div>`:''}
     </div>
 
     <footer>© 2026 공대남자 · <a href="/#camps" style="text-decoration:underline">캠핑장 목록으로</a></footer>

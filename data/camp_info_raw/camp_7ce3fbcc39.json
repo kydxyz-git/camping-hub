@@ -1,0 +1,12 @@
+{
+ "id": "camp_7ce3fbcc39",
+ "name": "왕피천숲속캠핑장",
+ "platform": "자체/기타",
+ "url": "https://xn--bm4bvl68khmiz2i.com/Reservation",
+ "final_url": "",
+ "status": "fail",
+ "fetched_at": "2026-10-30T10:01:21+09:00",
+ "text": "",
+ "extracted": {},
+ "reason": "ConnectionError: HTTPSConnectionPool(host='xn--bm4bvl68khmiz2i.com', port=443): Max retries exceeded with url: /Reservation (Caused by NameResolutionError(\"HTTPSConnection(host='xn--bm4bvl68khmiz2i.com', port=443): Fa"
+}

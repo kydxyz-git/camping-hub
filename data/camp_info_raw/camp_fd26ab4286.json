@@ -1,0 +1,12 @@
+{
+ "id": "camp_fd26ab4286",
+ "name": "포항비손농장",
+ "platform": "네이버",
+ "url": "https://booking.naver.com/booking/3/bizes/466168",
+ "final_url": "",
+ "status": "needs_browser",
+ "fetched_at": "2026-10-30T10:01:44+09:00",
+ "text": "",
+ "extracted": {},
+ "reason": "네이버 예약/플레이스/지도/카페는 시도하지 않음"
+}

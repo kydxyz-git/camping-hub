@@ -4525,6 +4525,15 @@ function renderCampDetail(idx) {
     <div class="page-header">
       <button class="page-back" id="back-btn">← 캠핑장 목록</button>
     </div>
+    <div class="card" style="margin-bottom:12px;">
+      <details id="cp-box">
+        <summary style="font-size:14px;font-weight:700;cursor:pointer;">📥 패치 붙여넣기</summary>
+        <div class="help" style="margin:8px 0;">채팅에서 만든 패치 JSON을 붙여 넣으세요. <code>id</code> 또는 <code>name</code>으로 대상을 찾고, 둘 다 없으면 이 캠핑장에 적용합니다. 값을 <code>null</code>로 주면 그 필드를 지웁니다. <code>"visits":"+1"</code>은 1 증가.</div>
+        <textarea id="cp-text" class="input" rows="8" placeholder='{"id":"${escapeHtml(camp.id || '')}","hook":"…","guide":[…]}' style="font-family:monospace;font-size:12px;"></textarea>
+        <div style="margin-top:8px;"><button type="button" class="btn btn-sm" id="cp-preview-btn">미리보기</button></div>
+        <div id="cp-preview" style="margin-top:10px;"></div>
+      </details>
+    </div>
     <div class="card">
       <h2 style="font-size:18px;font-weight:800;margin-bottom:4px;">${escapeHtml(camp.name)}</h2>
       ${camp.graega ? '<div style="margin-bottom:12px;"><span class="badge badge-graega">그래가 직영</span></div>' : '<div style="margin-bottom:12px;"></div>'}
@@ -4587,6 +4596,146 @@ function renderCampDetail(idx) {
   `;
   document.getElementById('back-btn').onclick = () => location.hash = 'camps';
   document.getElementById('camp-delete-btn').onclick = () => deleteCamp(idx);
+  document.getElementById('cp-preview-btn').onclick = () => _campPatchPreview(idx);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 📥 캠핑장 패치 붙여넣기 — 채팅 세션이 만든 JSON을 미리보기 후 ghCommitTree(3-way 병합)로 저장
+// ════════════════════════════════════════════════════════════════════
+const CAMP_PATCH_FIELDS = ['name', 'region', 'extras', 'graega', 'url', 'imgs', 'main_img', 'img_pos', 'rating', 'visits',
+  'published', 'checkin', 'checkout', 'address', 'notes', 'pick', 'videos', 'dm', 'dm_keyword', 'lat', 'lng',
+  'hook', 'story', 'guide', 'layout_imgs', 'info', 'links', 'gear', 'foods', 'visit_log'];
+const CAMP_PATCH_ARRAYS = ['guide', 'links', 'gear', 'foods', 'imgs', 'extras'];
+const CAMP_LINK_TYPES = ['reserve', 'discount', 'event', 'homepage', 'naver_blog', 'etc'];
+const CAMP_INFO_FIELDS = ['checkin', 'checkout', 'manner', 'pets', 'max_people', 'facilities', 'season', 'notice', 'source'];
+
+// 패치 검사: { target, patch, errors[], warnings[] }
+function _campPatchParse(text, curIdx) {
+  const out = { errors: [], warnings: [] };
+  let p;
+  try { p = JSON.parse(text); } catch (e) { out.errors.push('JSON 형식 오류: ' + e.message); return out; }
+  if (!p || typeof p !== 'object' || Array.isArray(p)) { out.errors.push('맨 바깥은 { … } 객체여야 해요'); return out; }
+  let idx = -1;
+  if (p.id) {
+    idx = cache.camps.findIndex(x => x.id === p.id);
+    if (idx < 0) { out.errors.push(`id '${p.id}' 캠핑장을 찾을 수 없어요`); return out; }
+  } else if (p.name) {
+    idx = cache.camps.findIndex(x => x.name === p.name);
+    if (idx < 0) { out.errors.push(`이름 '${p.name}' 캠핑장을 찾을 수 없어요 (새 캠핑장은 '추가'에서 만들어 주세요)`); return out; }
+  } else idx = curIdx;
+  const patch = { ...p };
+  delete patch.id;
+  ['created_at', 'updated_at'].forEach(k => { if (k in patch) { out.warnings.push(`'${k}'는 자동 관리라 무시해요`); delete patch[k]; } });
+  for (const k of Object.keys(patch)) {
+    if (!CAMP_PATCH_FIELDS.includes(k)) out.warnings.push(`모르는 필드 '${k}' — 그대로 저장해요`);
+  }
+  const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
+  const arrOk = (k, fn) => {
+    if (!(k in patch) || patch[k] === null) return;
+    if (!Array.isArray(patch[k])) out.errors.push(`'${k}'는 배열이어야 해요`);
+    else if (fn) patch[k].forEach((x, i) => fn(x, i));
+  };
+  arrOk('guide', (g, i) => { if (!isObj(g) || (!g.zone && !g.text)) out.errors.push(`guide[${i}]에 zone/text가 없어요`); });
+  arrOk('links', (l, i) => {
+    if (!isObj(l) || !l.url) out.errors.push(`links[${i}]에 url이 없어요`);
+    else if (!CAMP_LINK_TYPES.includes(l.type)) out.warnings.push(`links[${i}].type '${l.type}' — 'etc'로 표시돼요`);
+  });
+  arrOk('gear', (id, i) => { if (!(cache.items || []).some(x => x.id === id)) out.warnings.push(`gear[${i}] '${id}' 장비가 없어요`); });
+  arrOk('foods', (id, i) => { if (!(cache.foods || []).some(x => x.id === id)) out.warnings.push(`foods[${i}] '${id}' 먹거리가 없어요`); });
+  ['imgs', 'extras', 'layout_imgs', 'videos', 'visit_log'].forEach(k => arrOk(k));
+  if ('info' in patch && patch.info !== null) {
+    if (!isObj(patch.info)) out.errors.push(`'info'는 { … } 객체여야 해요`);
+    else Object.keys(patch.info).forEach(k => { if (!CAMP_INFO_FIELDS.includes(k)) out.warnings.push(`info의 모르는 항목 '${k}' — 그대로 저장해요`); });
+  }
+  if ('visits' in patch && !(typeof patch.visits === 'number' || /^\+\d+$/.test(String(patch.visits)))) {
+    out.errors.push(`'visits'는 숫자 또는 "+1" 형식이어야 해요`);
+  }
+  out.target = idx; out.patch = patch;
+  return out;
+}
+
+// 패치 적용 (merge: 병합할 배열 필드 Set). info는 항목별로 덮어쓴다
+function _campPatchApply(camp, patch, merge) {
+  const c = JSON.parse(JSON.stringify(camp));
+  for (const [k, v] of Object.entries(patch)) {
+    if (v === null) { delete c[k]; continue; }
+    if (k === 'visits' && typeof v === 'string') { c.visits = (+c.visits || 0) + parseInt(v.slice(1)); continue; }
+    if (k === 'info' && c.info && typeof c.info === 'object') {
+      const info = { ...c.info };
+      for (const [ik, iv] of Object.entries(v)) { if (iv === null) delete info[ik]; else info[ik] = iv; }
+      c.info = info; continue;
+    }
+    if (merge.has(k) && Array.isArray(c[k])) {
+      const key = x => JSON.stringify(k === 'guide' ? x.zone : k === 'links' ? [x.type, x.url] : x);
+      const seen = new Map(c[k].map((x, i) => [key(x), i]));
+      const arr = c[k].slice();
+      v.forEach(x => { seen.has(key(x)) ? (arr[seen.get(key(x))] = x) : arr.push(x); });
+      c[k] = arr; continue;
+    }
+    c[k] = v;
+  }
+  return c;
+}
+
+function _campPatchPreview(curIdx) {
+  const box = document.getElementById('cp-preview');
+  const r = _campPatchParse(document.getElementById('cp-text').value.trim(), curIdx);
+  const warn = r.warnings.map(w => `<div style="color:#b26a00;font-size:12px;">⚠ ${escapeHtml(w)}</div>`).join('');
+  if (r.errors.length) {
+    box.innerHTML = r.errors.map(e => `<div style="color:#c94a4a;font-size:13px;">✖ ${escapeHtml(e)}</div>`).join('') + warn;
+    return;
+  }
+  const camp = cache.camps[r.target];
+  const short = v => v === undefined ? '<span style="color:var(--muted)">(없음)</span>'
+    : `<pre style="white-space:pre-wrap;word-break:break-all;margin:0;font-size:11.5px;">${escapeHtml(JSON.stringify(v, null, 1).slice(0, 1200))}</pre>`;
+  const keys = Object.keys(r.patch);
+  if (!keys.length) { box.innerHTML = '<div style="font-size:13px;">바꿀 필드가 없어요</div>' + warn; return; }
+  const render = () => {
+    const merge = new Set([...box.querySelectorAll('[data-merge]:checked')].map(x => x.dataset.merge));
+    const next = _campPatchApply(camp, r.patch, merge);
+    return { merge, next };
+  };
+  box.innerHTML = `
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px;">대상: ${escapeHtml(camp.name)} <span style="color:var(--muted);font-weight:400;">${escapeHtml(camp.id)}</span></div>
+    ${warn}
+    <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:12px;">
+      <tr style="background:var(--bg);"><th style="text-align:left;padding:4px;">필드</th><th style="text-align:left;padding:4px;">기존</th><th style="text-align:left;padding:4px;">새 값</th></tr>
+      ${keys.map(k => `<tr style="border-top:1px solid var(--line);vertical-align:top;">
+        <td style="padding:4px;font-weight:700;white-space:nowrap;">${escapeHtml(k)}
+          ${CAMP_PATCH_ARRAYS.includes(k) && Array.isArray(r.patch[k]) ? `<label style="display:block;font-weight:400;font-size:11px;"><input type="checkbox" data-merge="${k}"> 병합</label>` : ''}</td>
+        <td style="padding:4px;">${short(camp[k])}</td>
+        <td style="padding:4px;" data-new="${k}"></td>
+      </tr>`).join('')}
+    </table>
+    <div style="margin-top:10px;display:flex;gap:8px;">
+      <button type="button" class="btn" id="cp-apply-btn">적용 (커밋)</button>
+    </div>`;
+  const fill = () => { const { next } = render(); keys.forEach(k => { box.querySelector(`[data-new="${k}"]`).innerHTML = short(next[k]); }); };
+  box.querySelectorAll('[data-merge]').forEach(cb => cb.onchange = fill);
+  fill();
+  document.getElementById('cp-apply-btn').onclick = async () => {
+    if (!localStorage.getItem(STORAGE_KEYS.token)) return showToast('대시보드에서 GitHub 토큰을 먼저 설정해주세요', 'error');
+    const { next } = render();
+    next.updated_at = new Date().toISOString();
+    const newCamps = JSON.parse(JSON.stringify(cache.camps));
+    newCamps[r.target] = next;
+    const btn = document.getElementById('cp-apply-btn');
+    btn.disabled = true; btn.textContent = '저장 중…';
+    try {
+      await ghCommitWithDeletions(
+        [{ path: 'data/camps.json', content: JSON.stringify(newCamps, null, 2) + '\n', encoding: 'utf-8' }],
+        [], `update(admin): ${next.name} 패치`);
+      cache.camps = newCamps;
+      cache.loadedAt = Date.now();
+      showToast(`'${next.name}' 패치 적용 완료 — 1~3분 뒤 페이지에 반영돼요`, 'success', 4000);
+      location.hash = `camps/${r.target}`;
+      renderCampDetail(r.target);
+    } catch (e) {
+      console.error(e);
+      btn.disabled = false; btn.textContent = '적용 (커밋)';
+      showToast('저장 실패: ' + e.message, 'error', 5000);
+    }
+  };
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -4618,6 +4767,7 @@ let _campForm = {
   images: [],
   mainIdx: 0,           // 대표 이미지 인덱스 (카드 썸네일에 쓰임)
   checkin: '', checkout: '', sites: '', price: '', address: '', notes: '', dm: false, pick: false,
+  hook: '', story: '', guide: [], info: {}, links: [], gear: [], foods: [], layouts: [], dm_keyword: '',
 };
 
 function _campImgIdBase() {
@@ -4644,6 +4794,7 @@ function renderCampAddForm() {
     images: [],
     mainIdx: 0,
     checkin: '', checkout: '', sites: '', price: '', address: '', notes: '', dm: false, pick: false,
+  hook: '', story: '', guide: [], info: {}, links: [], gear: [], foods: [], layouts: [], dm_keyword: '',
   };
   _renderCampFormUI();
 }
@@ -4669,7 +4820,17 @@ function renderCampEditForm(idx) {
     checkin: c.checkin || '', checkout: c.checkout || '', sites: c.sites || '',
     price: c.price || '', address: c.address || '', notes: c.notes || '', dm: !!c.dm, pick: !!c.pick,
     mainIdx: Math.max(0, (c.imgs || []).indexOf(c.main_img)),
+    hook: c.hook || '', story: c.story || '',
+    guide: (c.guide || []).map(g => ({ zone: g.zone || '', text: g.text || '', pick: !!g.pick })),
+    info: JSON.parse(JSON.stringify(c.info || {})),
+    links: (c.links || []).map(l => ({ type: l.type || 'reserve', label: l.label || '', url: l.url || '' })),
+    gear: [...(c.gear || [])], foods: [...(c.foods || [])],
+    layouts: (c.layout_imgs || []).map(src => ({ type: 'existing', src })),
+    dm_keyword: c.dm_keyword || '',
   };
+  // 입실·퇴실 칸은 info 값이 있으면 그걸 보여 준다 (페이지도 info 우선)
+  if (_campForm.info.checkin) _campForm.checkin = _campForm.info.checkin;
+  if (_campForm.info.checkout) _campForm.checkout = _campForm.info.checkout;
   _renderCampFormUI();
 }
 
@@ -4754,6 +4915,64 @@ function _renderCampFormUI() {
         </div>
 
         <div class="form-field">
+          <label class="label" for="cf-hook">훅 (한 줄 — 릴스 첫 자막 그대로)</label>
+          <input type="text" id="cf-hook" class="input" value="${escapeHtml(_campForm.hook)}">
+        </div>
+
+        <div class="form-field">
+          <label class="label" for="cf-story">본문 (캡션 확정본, 빈 줄 = 단락, 해시태그 없이)</label>
+          <textarea id="cf-story" class="input" rows="10">${escapeHtml(_campForm.story)}</textarea>
+        </div>
+
+        <div class="form-field">
+          <label class="label">존별 가이드</label>
+          <div id="cf-guide-list"></div>
+          <button type="button" class="btn btn-sm btn-secondary" id="cf-guide-add" style="margin-top:6px;">+ 존 추가</button>
+          <div class="help">★ 추천을 체크한 존은 페이지 맨 위에 표시됩니다</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label">배치도 이미지 (원본 비율 · 긴 변 1200)</label>
+          <label class="form-image-drop" id="cf-layout-drop">
+            <input type="file" id="cf-layout" accept="image/*" multiple>
+            <div class="form-image-drop-text">배치도 선택 (여러 장 가능 · 크롭 없음)</div>
+          </label>
+          <div id="cf-layout-list" class="camp-image-list"></div>
+        </div>
+
+        <div class="form-field">
+          <label class="label">정보 (예약 플랫폼 기준)</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <input type="text" class="input" data-info="manner" placeholder="매너타임 23:00~07:00" value="${escapeHtml(_campForm.info.manner || '')}">
+            <input type="text" class="input" data-info="pets" placeholder="반려동물 (2마리까지 / 불가)" value="${escapeHtml(_campForm.info.pets || '')}">
+            <input type="text" class="input" data-info="max_people" placeholder="최대 인원" value="${escapeHtml(_campForm.info.max_people || '')}">
+            <input type="text" class="input" data-info="season" placeholder="운영 (연중 / 3~11월)" value="${escapeHtml(_campForm.info.season || '')}">
+          </div>
+          <input type="text" class="input" data-info="facilities" style="margin-top:6px;" placeholder="편의시설 — 콤마로 구분 (와이파이, 온수 샤워, 매점)" value="${escapeHtml((_campForm.info.facilities || []).join(', '))}">
+          <input type="text" class="input" data-info="notice" style="margin-top:6px;" placeholder="안내 (공지·예약 방식)" value="${escapeHtml(_campForm.info.notice || '')}">
+          <div style="display:grid;grid-template-columns:1fr 2fr 1fr;gap:6px;margin-top:6px;">
+            <input type="text" class="input" data-src="platform" placeholder="출처 플랫폼" value="${escapeHtml((_campForm.info.source || {}).platform || '')}">
+            <input type="text" class="input" data-src="url" placeholder="출처 URL" value="${escapeHtml((_campForm.info.source || {}).url || '')}">
+            <input type="text" class="input" data-src="checked_at" placeholder="확인일 2026-10-30" value="${escapeHtml((_campForm.info.source || {}).checked_at || '')}">
+          </div>
+          <div class="help">입실·퇴실은 위 칸을 씁니다</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label">링크 (예약·할인·이벤트·홈페이지·블로그)</label>
+          <div id="cf-links-list"></div>
+          <button type="button" class="btn btn-sm btn-secondary" id="cf-link-add" style="margin-top:6px;">+ 링크 추가</button>
+          <div class="help">비워 두면 위 '예약 URL'로 예약 버튼이 나갑니다</div>
+        </div>
+
+        <div class="form-field">
+          <label class="label">이때 쓴 장비 · 먹은 것</label>
+          <div id="cf-prod-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;"></div>
+          <input type="text" id="cf-prod-search" class="input" placeholder="장비·먹거리 이름 검색 (Enter)">
+          <div id="cf-prod-results" style="margin-top:4px;"></div>
+        </div>
+
+        <div class="form-field">
           <label class="label" style="display:flex;align-items:center;gap:7px;cursor:pointer;">
             <input type="checkbox" id="cf-pick" ${_campForm.pick ? 'checked' : ''} style="margin:0;cursor:pointer;">
             추천 표시 (별)
@@ -4764,9 +4983,10 @@ function _renderCampFormUI() {
         <div class="form-field">
           <label class="label" style="display:flex;align-items:center;gap:7px;cursor:pointer;">
             <input type="checkbox" id="cf-dm" ${_campForm.dm ? 'checked' : ''} style="margin:0;cursor:pointer;">
-            명당 자리 DM 안내 표시
+            DM 안내 표시 (존별 가이드가 없을 때)
           </label>
-          <div class="help">체크하면 상세 페이지에 '추천 자리는 DM으로' 안내가 나옵니다</div>
+          <input type="text" id="cf-dm-keyword" class="input" style="margin-top:6px;" placeholder="DM 키워드 (예: 그늘)" value="${escapeHtml(_campForm.dm_keyword)}">
+          <div class="help">가이드가 비어 있으면 페이지 아래에 "더 자세한 추천 자리·배치도는 인스타 DM '키워드'"가 나옵니다</div>
         </div>
 
         <div class="form-field">
@@ -5335,7 +5555,146 @@ function _renderCampFormUI() {
   attachClipboardPaste((file) => handleFiles([file]));
 
   renderImageList();
+
+  // ─── 풀 버전 페이지 필드 (훅·본문·가이드·배치도·정보·링크·장비/먹거리) ───
+  $('cf-hook').oninput = (e) => { _campForm.hook = e.target.value; };
+  $('cf-story').oninput = (e) => { _campForm.story = e.target.value; };
+  $('cf-dm-keyword').oninput = (e) => { _campForm.dm_keyword = e.target.value; };
+  c.querySelectorAll('[data-info]').forEach(el => {
+    el.oninput = () => {
+      const k = el.dataset.info;
+      _campForm.info[k] = k === 'facilities' ? el.value.split(',').map(s => s.trim()).filter(Boolean) : el.value;
+    };
+  });
+  c.querySelectorAll('[data-src]').forEach(el => {
+    el.oninput = () => { _campForm.info.source = { ...(_campForm.info.source || {}), [el.dataset.src]: el.value }; };
+  });
+
+  function renderGuideList() {
+    const el = $('cf-guide-list');
+    el.innerHTML = _campForm.guide.map((g, i) => `
+      <div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:6px;">
+        <input type="text" class="input" data-g="zone" data-i="${i}" placeholder="A존" value="${escapeHtml(g.zone)}" style="width:90px;flex:none;">
+        <textarea class="input" data-g="text" data-i="${i}" rows="2" placeholder="설명" style="flex:1;min-width:0;">${escapeHtml(g.text)}</textarea>
+        <label style="font-size:11px;white-space:nowrap;display:flex;align-items:center;gap:3px;"><input type="checkbox" data-g="pick" data-i="${i}" ${g.pick ? 'checked' : ''}>★</label>
+        <button type="button" class="camp-image-remove" data-g-rm="${i}">×</button>
+      </div>`).join('') || '<div style="font-size:12px;color:var(--muted);">아직 없어요</div>';
+    el.querySelectorAll('[data-g]').forEach(x => {
+      const g = _campForm.guide[+x.dataset.i];
+      x.oninput = x.onchange = () => { g[x.dataset.g] = x.type === 'checkbox' ? x.checked : x.value; };
+    });
+    el.querySelectorAll('[data-g-rm]').forEach(b => b.onclick = () => { _campForm.guide.splice(+b.dataset.gRm, 1); renderGuideList(); });
+  }
+  $('cf-guide-add').onclick = () => { _campForm.guide.push({ zone: '', text: '', pick: false }); renderGuideList(); };
+  renderGuideList();
+
+  const LINK_TYPE_LABEL = { reserve: '예약', discount: '할인', event: '이벤트', homepage: '홈페이지', naver_blog: '네이버 블로그', etc: '기타' };
+  function renderLinksList() {
+    const el = $('cf-links-list');
+    el.innerHTML = _campForm.links.map((l, i) => `
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+        <select data-l="type" data-i="${i}" style="flex:none;">${Object.entries(LINK_TYPE_LABEL).map(([k, v]) => `<option value="${k}" ${l.type === k ? 'selected' : ''}>${v}</option>`).join('')}</select>
+        <input type="text" class="input" data-l="label" data-i="${i}" placeholder="버튼 글자" value="${escapeHtml(l.label)}" style="flex:1;min-width:120px;">
+        <input type="text" class="input" data-l="url" data-i="${i}" placeholder="https://" value="${escapeHtml(l.url)}" style="flex:2;min-width:160px;">
+        <button type="button" class="camp-image-remove" data-l-rm="${i}">×</button>
+      </div>`).join('') || '<div style="font-size:12px;color:var(--muted);">아직 없어요</div>';
+    el.querySelectorAll('[data-l]').forEach(x => {
+      x.oninput = x.onchange = () => { _campForm.links[+x.dataset.i][x.dataset.l] = x.value; };
+    });
+    el.querySelectorAll('[data-l-rm]').forEach(b => b.onclick = () => { _campForm.links.splice(+b.dataset.lRm, 1); renderLinksList(); });
+  }
+  $('cf-link-add').onclick = () => { _campForm.links.push({ type: _campForm.links.length ? 'etc' : 'reserve', label: '', url: '' }); renderLinksList(); };
+  renderLinksList();
+
+  // 장비·먹거리: 이름 검색 → id 선택 (여러 개)
+  const prodOf = (key, id) => ((key === 'gear' ? cache.items : cache.foods) || []).find(x => x.id === id);
+  function renderProdChips() {
+    $('cf-prod-chips').innerHTML = ['gear', 'foods'].flatMap(key => _campForm[key].map(id => {
+      const p = prodOf(key, id);
+      return `<span class="badge" style="display:inline-flex;align-items:center;gap:4px;">${key === 'gear' ? '🎒' : '🍖'} ${escapeHtml(p ? p.name : id)}
+        <button type="button" data-p-rm="${key}:${escapeHtml(id)}" style="border:none;background:none;cursor:pointer;">×</button></span>`;
+    })).join('');
+    $('cf-prod-chips').querySelectorAll('[data-p-rm]').forEach(b => b.onclick = () => {
+      const [key, id] = b.dataset.pRm.split(':');
+      _campForm[key] = _campForm[key].filter(x => x !== id); renderProdChips();
+    });
+  }
+  function searchProd() {
+    const q = $('cf-prod-search').value.trim().toLowerCase();
+    const res = $('cf-prod-results');
+    if (!q) { res.innerHTML = ''; return; }
+    const hits = [...(cache.items || []).map(x => ['gear', x]), ...(cache.foods || []).map(x => ['foods', x])]
+      .filter(([, x]) => String(x.name || '').toLowerCase().includes(q)).slice(0, 12);
+    res.innerHTML = hits.map(([key, x]) => `<button type="button" class="btn btn-sm btn-secondary" data-p-add="${key}:${escapeHtml(x.id)}" style="margin:0 4px 4px 0;">${key === 'gear' ? '🎒' : '🍖'} ${escapeHtml(x.name)}</button>`).join('')
+      || '<div style="font-size:12px;color:var(--muted);">검색 결과 없음</div>';
+    res.querySelectorAll('[data-p-add]').forEach(b => b.onclick = () => {
+      const [key, id] = b.dataset.pAdd.split(':');
+      if (!_campForm[key].includes(id)) _campForm[key].push(id);
+      renderProdChips();
+    });
+  }
+  $('cf-prod-search').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); searchProd(); } });
+  renderProdChips();
+
+  // 배치도: 원본 비율 유지(크롭 금지), 긴 변 1200
+  function renderLayoutList() {
+    const el = $('cf-layout-list');
+    el.innerHTML = _campForm.layouts.map((im, i) => `
+      <div class="camp-image-item">
+        <span class="camp-image-idx">${i + 1}</span>
+        <img src="${im.type === 'existing' ? '../' + im.src.replace(/^\.\//, '') : im.previewUrl}" alt="" style="object-fit:contain;">
+        <span class="camp-image-label">${im.type === 'existing' ? '기존' : '새'}</span>
+        <button class="camp-image-remove" data-lay-rm="${i}">×</button>
+      </div>`).join('');
+    el.querySelectorAll('[data-lay-rm]').forEach(b => b.onclick = (e) => { e.preventDefault(); _campForm.layouts.splice(+b.dataset.layRm, 1); renderLayoutList(); });
+  }
+  async function handleLayoutFiles(files) {
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) continue;
+      try { _campForm.layouts.push({ type: 'new', ...(await fitLongSide(file, 1200)) }); }
+      catch (err) { showToast(`'${file.name}' 처리 실패: ${err.message}`, 'error'); }
+    }
+    renderLayoutList();
+  }
+  $('cf-layout').onchange = (e) => { if (e.target.files.length) handleLayoutFiles(Array.from(e.target.files)); e.target.value = ''; };
+  const ldrop = $('cf-layout-drop');
+  ldrop.ondragover = (e) => { e.preventDefault(); e.stopPropagation(); ldrop.classList.add('is-dragover'); };
+  ldrop.ondragleave = () => ldrop.classList.remove('is-dragover');
+  ldrop.ondrop = (e) => {
+    e.preventDefault(); e.stopPropagation(); ldrop.classList.remove('is-dragover');
+    if (e.dataTransfer.files.length) handleLayoutFiles(Array.from(e.dataTransfer.files));
+  };
+  renderLayoutList();
+
   $('cf-submit').onclick = submitCampForm;
+}
+
+// 배치도용: 원본 비율 그대로, 긴 변을 maxSide로 (작으면 그대로), JPEG
+async function fitLongSide(file, maxSide = 1200, quality = 0.85) {
+  const dataUrl = await new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onerror = () => rej(new Error('파일 읽기 실패'));
+    r.onload = () => res(r.result);
+    r.readAsDataURL(file);
+  });
+  const img = await new Promise((res, rej) => {
+    const i = new Image();
+    i.onerror = () => rej(new Error('이미지 로드 실패'));
+    i.onload = () => res(i);
+    i.src = dataUrl;
+  });
+  const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(img.naturalWidth * scale); canvas.height = Math.round(img.naturalHeight * scale);
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', quality));
+  if (!blob) throw new Error('JPEG 변환 실패');
+  const previewUrl = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(blob); });
+  return { base64: previewUrl.split(',')[1], previewUrl, size: blob.size };
 }
 
 function resetCampForm() {
@@ -5346,6 +5705,7 @@ function resetCampForm() {
     lat: null, lng: null,
     videos: [],
     images: [],
+    hook: '', story: '', guide: [], info: {}, links: [], gear: [], foods: [], layouts: [], dm_keyword: '',
   };
 }
 
@@ -5494,6 +5854,50 @@ async function submitCampForm() {
     // 개별 영상 URL (비어있지 않을 때만 포함)
     if (Array.isArray(_campForm.videos) && _campForm.videos.length > 0) {
       campObj.videos = _campForm.videos.slice();
+    }
+
+    // 풀 버전 페이지 필드 (값 있을 때만)
+    if (_campForm.hook.trim()) campObj.hook = _campForm.hook.trim();
+    if (_campForm.story.trim()) campObj.story = _campForm.story.replace(/\r\n/g, '\n').trim();
+    const guide = _campForm.guide.map(g => ({ zone: g.zone.trim(), text: g.text.trim(), pick: !!g.pick })).filter(g => g.zone || g.text);
+    if (guide.length) campObj.guide = guide;
+    const info = {};
+    for (const [k, v] of Object.entries(_campForm.info || {})) {
+      if (k === 'source') {
+        const s = Object.fromEntries(Object.entries(v || {}).map(([a, b]) => [a, String(b || '').trim()]).filter(([, b]) => b));
+        if (Object.keys(s).length) info.source = s;
+      } else if (Array.isArray(v)) { if (v.length) info[k] = v; }
+      else if (String(v ?? '').trim()) info[k] = String(v).trim();
+    }
+    // 입실·퇴실 칸은 하나 — info에 이미 있던 값이면 info도 같이 갱신
+    ['checkin', 'checkout'].forEach(k => {
+      if ((_campForm.info || {})[k] !== undefined) { if (campObj[k]) info[k] = campObj[k]; else delete info[k]; }
+    });
+    if (Object.keys(info).length) campObj.info = info;
+    const links = _campForm.links.map(l => ({ type: l.type, label: l.label.trim(), url: l.url.trim() })).filter(l => l.url);
+    if (links.length) campObj.links = links;
+    if (_campForm.gear.length) campObj.gear = _campForm.gear.slice();
+    if (_campForm.foods.length) campObj.foods = _campForm.foods.slice();
+    if (_campForm.dm_keyword.trim()) campObj.dm_keyword = _campForm.dm_keyword.trim();
+    // 배치도: 기존 경로는 그대로, 새 파일은 새 이름. 지운 것 중 admin이 만든 배치도 파일(-layout-)만 삭제
+    const layoutImgs = [];
+    _campForm.layouts.forEach((im, i) => {
+      if (im.type === 'existing') { layoutImgs.push(im.src); return; }
+      const path = `images/camps/${hash}-layout-${Date.now().toString(36)}${i}.jpg`;
+      filesToUpload.push({ path, content: im.base64, encoding: 'base64' });
+      layoutImgs.push('./' + path);
+    });
+    if (layoutImgs.length) campObj.layout_imgs = layoutImgs;
+    if (isEdit) {
+      (_oldCamp.layout_imgs || []).forEach(p => {
+        if (!layoutImgs.includes(p) && /\/images\/camps\/[^/]+-layout-[^/]+\.jpg$/.test('/' + p.replace(/^\.\//, ''))) filesToDelete.push(p.replace(/^\.\//, ''));
+      });
+      // 폼에 없는 필드(visit_log, 패치로 들어온 새 필드 등)는 그대로 보존
+      const FORM_KEYS = new Set(['checkin', 'checkout', 'address', 'notes', 'dm', 'pick', 'main_img', 'img_pos', 'lat', 'lng', 'videos',
+        'hook', 'story', 'guide', 'info', 'links', 'gear', 'foods', 'layout_imgs', 'dm_keyword', 'seasons', 'landscape', 'sites', 'price']);
+      for (const [k, v] of Object.entries(_oldCamp)) {
+        if (!(k in campObj) && !FORM_KEYS.has(k)) campObj[k] = v;
+      }
     }
 
     if (isEdit) {

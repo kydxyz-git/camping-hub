@@ -1,0 +1,13 @@
+{
+ "id": "camp_4ba7c9c565",
+ "name": "무릉관광농원(캠핑빌리지)",
+ "platform": "캠핏",
+ "url": "https://camfit.co.kr/camp/65efb03f0834af001ee12925",
+ "final_url": "https://camfit.co.kr/camp/notfound",
+ "status": "needs_browser",
+ "fetched_at": "2026-10-30T10:01:46+09:00",
+ "text": "캠핏 앱 설치하고\n캠핑에 필요한 모든 순간을 함께해요\nQR 코드를 스캔하면 다운로드로 연결됩니다\n유효하지 않은 캠핑장입니다",
+ "extracted": {},
+ "http_status": 200,
+ "reason": "HTTP 200, 본문 68자"
+}

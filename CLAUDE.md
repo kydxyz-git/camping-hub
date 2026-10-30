@@ -16,7 +16,7 @@
 ## 페이지 구성
 
 - `index.html` 메인 (`is-pc`/`is-mo` 클래스로 PC·모바일 레이아웃 분기)
-- `camp.html` 캠핑장 상세 — 메인 캠핑장 카드에서 `camp.html?id=`로 연결됨 (사용 중). 로드 후 캠핑장별 설명·OG·JSON-LD를 채우고, 주소창을 `/camps/{이름}/`로 바꿔 복사·공유 시 정적 페이지 미리보기가 나오게 함(`camps/slugs.json`). 그래서 내부 링크는 `/`·`/#camps`처럼 절대 경로로 쓸 것.
+- `camp.html` 캠핑장 상세 — 메인 캠핑장 카드에서 `camp.html?id=`로 연결됨 (사용 중). 정적 페이지 `/camps/{이름}/`와 **같은 필드·같은 순서**(맨 위 갤러리가 사진 섹션을 겸함). 장비·먹거리 카드는 `gear/slugs.json`·`foods/slugs.json`으로 상세 페이지에 연결. 로드 후 캠핑장별 설명·OG·JSON-LD를 채우고, 주소창을 `/camps/{이름}/`로 바꿔 복사·공유 시 정적 페이지 미리보기가 나오게 함(`camps/slugs.json`). 그래서 내부 링크는 `/`·`/#camps`처럼 절대 경로로 쓸 것.
 - `collab.html` 협업 문의(공유 이미지 `images/refs/og-collab-*.jpg`) · `preview.html` 모바일 미리보기
 - `v2.html`, `v3.html` 폐기된 실험 — 수정 대상 아님
 - `conti/`, `kydzm/conti/` 릴스 콘티 · `prompts/` 프롬프트 모음
@@ -39,6 +39,8 @@
 - 기본은 admin에서 추가/수정.
 - 직접 추가할 때: 기존 항목 형식 그대로 (`id`, `created_at`, `updated_at` 포함). 장비 `cat`은 `config.itemCats`의 key.
 - 캠핑장 CSV 병합은 `id` 기준. 삭제된 필드(`landscape`/`seasons`/`sites`/`price`)는 되살리지 않기.
+- 캠핑장 풀 버전 필드(261030): `hook` 한 줄 훅 · `story` 본문(빈 줄 = 단락) · `guide[{zone,text,pick}]` 존별 가이드 · `layout_imgs` 배치도 · `info{checkin checkout manner pets max_people facilities[] season notice source}` · `links[{type,label,url}]`(`reserve discount event homepage naver_blog etc`) · `gear`/`foods` id 목록 · `visit_log` · `dm_keyword`. 없는 필드는 렌더에서 건너뛴다. 설명과 패치 예시: [docs/camp-patch.md](docs/camp-patch.md).
+- admin 캠핑장 폼은 폼에 없는 필드(`visit_log`, 패치로 들어온 새 필드 등)를 저장할 때 그대로 보존한다 — 폼을 고칠 때 이 보존을 지우지 말 것.
 - `sitemap.xml`·정적 페이지는 GitHub Actions가 자동 생성 (아래 '검색 노출' 참고). `tools/update_sitemap.py`는 더 이상 쓰지 않음.
 
 ## 이미지
@@ -51,7 +53,7 @@
 
 - `tools/build_pages.py`가 `data/*.json`으로 `camps/{이름}/` · `gear/{이름}/` · `foods/{이름}/` 상세 페이지와 목록 페이지(`camps/` `gear/` `foods/`), `sitemap.xml`, `index.html`의 `PRERENDER` 블록을 만든다. **생성물은 직접 수정 금지** — 스크립트를 고친다.
 - `.github/workflows/build-pages.yml`: main에 `data/{camps,items,foods,series,config}.json`이 바뀌면 자동 실행해 `chore(build): …`로 커밋.
-- **자동 이동 없음** (261022 — 구글이 자바스크립트 이동을 '리디렉션'으로 보고 색인에서 뺌): 페이지 자체가 볼 만한 착지 페이지(사진·배지·정보)이고, 본문 큰 버튼 + 화면 아래 고정 버튼으로 실제 화면에 들어간다: 캠핑장 → `camp.html?id=`, 용품 → `/?ref=search#items/{id}`, 먹거리 → `/?ref=search#foods/{id}` (메인 맨 위에 '찾으신 제품/음식'으로 고정), 목록 → 해당 탭. **검색엔진에만 다르게 보여주는 이동(봇 판별 후 이동 등)은 금지** — 구글 스팸 정책(sneaky redirect).
+- **자동 이동 없음** (261022 — 구글이 자바스크립트 이동을 '리디렉션'으로 보고 색인에서 뺌): 페이지 자체가 볼 만한 착지 페이지(사진·배지·정보)이고, 본문 큰 버튼 + 화면 아래 고정 버튼으로 실제 화면에 들어간다(캠핑장은 정적 페이지가 풀 버전이라 **아래 고정 버튼만**, 261030): 캠핑장 → `camp.html?id=`, 용품 → `/?ref=search#items/{id}`, 먹거리 → `/?ref=search#foods/{id}` (메인 맨 위에 '찾으신 제품/음식'으로 고정), 목록 → 해당 탭. **검색엔진에만 다르게 보여주는 이동(봇 판별 후 이동 등)은 금지** — 구글 스팸 정책(sneaky redirect).
 - 방문 기록: 정적 페이지가 통계 Worker에 `/search/{camps|gear|foods}/{id}`(목록은 `/search/{hub}`)로 pageview + 출처(구글·네이버…) + 주소에 실려 온 검색어(`ctx` '검색어 …', 네이버 일부). admin 통계 '🔎 검색으로 들어온 페이지'. 구글 검색어는 넘어오지 않음 → 서치 콘솔 '실적'.
 - 페이지 문구는 데이터(주소·방문 횟수·메모·태그·영상)로만 만든다 — 없는 사실을 지어 넣지 않기.
 - 검색엔진 등록 완료(2026-10-08): 네이버 서치어드바이저(`naver7a710ec2e81a089dd8a5d993d3ceb9c4.html` + `index.html`의 `naver-site-verification` 메타), 구글 서치 콘솔(가비아 DNS TXT `google-site-verification=…`). **이 파일·메타 태그·DNS 레코드는 지우지 말 것.**
@@ -68,7 +70,10 @@
 - 랜덤 정렬은 7일 이내 신규(`created_at`) 우선 (`sortRecentFirst`).
 - 캠핑용품 탭 상단 분류 필터(모바일 `renderItemTab` / PC `renderGearTab`): `config.itemCats` 순서, 제품 있는 분류만, 개수 표시 없음. 분류 선택 시 최근등록 섹션은 숨기고 해당 분류만 표시 ('전체'일 때만 최근등록 노출).
 - 인스타 링크 정규화 유지: `/reel/`·`/tv/` → `/p/`, 추적 파라미터 제거, 인앱 브라우저 → 외부 브라우저, Android는 `intent://`.
-- 명당 자리 번호·계곡 포인트 등은 DM 전용 — 사이트에 공개 금지.
+- 캠핑장 페이지는 인스타 게시물의 풀 버전 — 본문·존별 가이드·배치도·추천 자리를 사이트에 공개한다(261030 사용자 결정, 인스타→홈페이지 유입 구조). `dm` 플래그는 guide가 없을 때 DM 안내용.
+- 정적 페이지 `/camps/{slug}/`가 기준(풀 버전). `camp.html`은 같은 필드·같은 순서: 히어로·훅 → 릴스 → 본문 → 존별 가이드·배치도 → 정보(+출처) → 예약·링크·장비·먹거리 → 메모 → 사진 → 같은 지역 → DM 안내. 섹션 제목은 데이터가 있을 때만. 릴스는 썸네일 카드 + 인스타 링크(외부 embed 스크립트 금지).
+- 캠핑장 정보 소스는 그 캠핑장 예약 플랫폼 페이지. 고캠핑(관광공사) 데이터는 쓰지 않는다. 수집은 `tools/collect_camp_info.py`(로컬) → `data/camp_info_raw/` → 사람이 검토해 admin 패치로 반영. 자동 반영 금지. 봇 차단 우회(프록시·UA 로테이션·재시도 루프·숨은 API 직접 호출) 금지 — 막히면 `needs_browser`.
+- 데이터 패치 반영 경로는 admin '📥 패치 붙여넣기'(캠핑장 상세 맨 위). 채팅 세션은 패치 JSON만 만든다. `story`·`guide`는 사용자 확정본만.
 - **디스플레이 광고 배너 추가 금지** (협찬 브랜드 인상 관리).
 
 ## 통계 (Worker v6 · KST)
@@ -89,7 +94,7 @@
 
 ## 구버전 문서 (적용 금지)
 
-- `tools/SYNC_GUIDE.md`·`tools/*.py`·`_cache/`: 260507 노션 동기화용 구버전. 장비 썸네일 규격에 적용하지 말 것, 노션 토큰 푸시 절차도 폐기됨.
+- `tools/SYNC_GUIDE.md`·`tools/*.py`(`build_pages.py`·`check_links.py`·`collect_camp_info.py`·`camp-watch.js` 제외)·`_cache/`: 260507 노션 동기화용 구버전. 장비 썸네일 규격에 적용하지 말 것, 노션 토큰 푸시 절차도 폐기됨.
 - `docs/OPERATIONS_GUIDE.md`의 "⚠️ 폐기" 섹션(노션 진실소스 동기화, `_build` 복원, 토큰 푸시, v3).
 
 ## 쿠팡 링크 점검

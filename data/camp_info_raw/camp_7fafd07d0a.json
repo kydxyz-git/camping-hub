@@ -1,0 +1,13 @@
+{
+ "id": "camp_7fafd07d0a",
+ "name": "칠곡보오토캠핑장",
+ "platform": "자체/기타",
+ "url": "https://camp.xticket.kr/web/main?shopEncode=3b8dfd4fe83ef398626319d169929b5df473aafca57da427af869db901ce8b86",
+ "final_url": "https://camp.xticket.kr/web/error.html?code=9001",
+ "status": "fail",
+ "fetched_at": "2026-10-30T10:02:14+09:00",
+ "text": "에러페이지\n 잘못된 접근입니다.",
+ "extracted": {},
+ "http_status": 200,
+ "reason": "HTTP 200, 본문 17자"
+}

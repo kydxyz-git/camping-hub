@@ -1,0 +1,13 @@
+{
+ "id": "camp_4b6ea440d0",
+ "name": "달서별빛캠핑장",
+ "platform": "자체/기타",
+ "url": "https://dalseocamp.kr/",
+ "final_url": "https://dalseocamp.kr/intro/intro.php",
+ "status": "fail",
+ "fetched_at": "2026-10-30T10:03:18+09:00",
+ "text": "달서별빛캠프 캠핑장\n메인으로 들어가기",
+ "extracted": {},
+ "http_status": 200,
+ "reason": "HTTP 200, 본문 20자"
+}

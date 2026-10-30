@@ -1,0 +1,12 @@
+{
+ "id": "camp_f0df0a949b",
+ "name": "경산갓바위캠핑장",
+ "platform": "자체/기타",
+ "url": "http://www.gatbawi-camp.co.kr/",
+ "final_url": "",
+ "status": "fail",
+ "fetched_at": "2026-10-30T10:03:24+09:00",
+ "text": "",
+ "extracted": {},
+ "reason": "ConnectionError: HTTPConnectionPool(host='www.gatbawi-camp.co.kr', port=80): Max retries exceeded with url: / (Caused by NameResolutionError(\"HTTPConnection(host='www.gatbawi-camp.co.kr', port=80): Failed to resolve '"
+}

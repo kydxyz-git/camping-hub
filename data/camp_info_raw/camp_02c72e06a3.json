@@ -1,0 +1,12 @@
+{
+ "id": "camp_02c72e06a3",
+ "name": "단양소풍캠핑장",
+ "platform": "네이버",
+ "url": "https://m.place.naver.com/accommodation/1667975888/room?entry=plt&businessCategory=camping",
+ "final_url": "",
+ "status": "needs_browser",
+ "fetched_at": "2026-10-30T10:03:22+09:00",
+ "text": "",
+ "extracted": {},
+ "reason": "네이버 예약/플레이스/지도/카페는 시도하지 않음"
+}

@@ -1,0 +1,20 @@
+{
+ "id": "camp_2d2adbe3fd",
+ "name": "장성편백힐치유의숲",
+ "platform": "자체/기타",
+ "url": "https://heal3001.modoo.at/",
+ "final_url": "https://heal3001.modoo.at/",
+ "status": "ok",
+ "fetched_at": "2026-10-30T10:03:55+09:00",
+ "text": "네이버 modoo!\n네이버\nmodoo!\n 네이버 modoo!가\n 2025년 6월 26일 종료\n되었습니다.\n 그동안 modoo! 서비스를 이용해주셔서 진심으로 감사드립니다.\n 네이버 내부 서비스 운영 정책에 따라 modoo!는 \n2025년 6월 26일부로 서비스를 종료\n하였습니다.\n 이에 따라 해당 서비스를 통해 제공되던 홈페이지는 더 이상 네이버에서 운영되지 않습니다.\n 이용해주신 모든 분들께 다시 한 번 깊이 감사드리며,\n 앞으로 더 나은 서비스로 보답할 수 있도록 노력하겠습니다.",
+ "extracted": {
+  "checkin": "",
+  "checkout": "",
+  "manner": "",
+  "pets": "",
+  "facilities": [],
+  "season": "",
+  "notice": ""
+ },
+ "http_status": 200
+}
