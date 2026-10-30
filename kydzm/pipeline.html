@@ -99,6 +99,9 @@ flowchart LR
   IG -. 재업로드 .-> CLIP
   SE --> HUB
   SE --> BLOG
+  SE -- 게시물 검색 노출 --> IG
+  SE --> CLIP
+  SE --> FB
   BLOG -- 본문 링크 --> HUB
   HUB -- 릴스 모음 · 시리즈 --> IG
   HUB --> CP
@@ -188,6 +191,9 @@ flowchart TB
   V2 --> K
   V3 --> K
   V3 --> N
+  V3 -. 인스타·클립·페북 게시물도 검색됨 .-> D
+  V3 -.-> F
+  V3 -.-> G
   G --> M2
   K --> M1
   K --> M2
@@ -278,7 +284,7 @@ import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.es
 const $=id=>document.getElementById(id);
 const src=$('src'),canvas=$('canvas'),err=$('err'),zoom=$('zoom'),view=$('view');
 const DEF=k=>document.getElementById('src-'+k).textContent.trim();
-const KEY=k=>'kydz_pipeline_v2_'+k;
+const KEY=k=>'kydz_pipeline_v3_'+k;
 const get=k=>{try{return localStorage.getItem(KEY(k))||DEF(k)}catch(e){return DEF(k)}};
 const put=(k,v)=>{try{localStorage.setItem(KEY(k),v)}catch(e){}};
 let tab='map';try{tab=localStorage.getItem('kydz_pipeline_tab')||'map'}catch(e){}
