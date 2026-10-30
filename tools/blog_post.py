@@ -108,6 +108,12 @@ def pieces(spec, out):
             res.append({'k': 'img', 'src': jpeg(fit(load(b['img'])), out / f'{n:02d}.jpg'), 'label': f'사진 {n}'})
         elif 'h' in b:
             text.append((f'<p><b>{html.escape(b["h"])}</b></p><p><br></p>', b['h'] + '\n'))
+        elif 'link' in b:
+            # 주소는 글자 그대로 붙여야 네이버가 링크 카드(미리보기)를 만든다
+            flush()
+            t = b.get('text') or b['link']
+            plain = t if b['link'] in t else f'{t}\n{b["link"]}'
+            res.append({'k': 'link', 'plain': plain, 'html': '<br>'.join(html.escape(l) for l in plain.split('\n')), 'label': '링크 카드'})
         elif 'map' in b:
             t = f'[지도: 에디터 \'장소\' 버튼 → {b["map"]} 검색해서 넣고 이 줄은 지우기]'
             text.append((f'<p>{html.escape(t)}</p><p><br></p>', t + '\n'))
@@ -153,14 +159,14 @@ const toast = t => { const e = $('toast'); e.textContent = t; e.classList.add('o
 const list = $('list');
 D.pieces.forEach((p, k) => {
   const el = document.createElement('div'); el.className = 'pc'; el.dataset.k = k;
-  el.innerHTML = `<div class="no">${k + 1}. ${p.k === 'img' ? p.label : '글'}</div>` + (p.k === 'img' ? `<img src="${p.src}">` : `<div class="t">${p.html}</div>`);
+  el.innerHTML = `<div class="no">${k + 1}. ${p.k === 'text' ? '글' : p.label}</div>` + (p.k === 'img' ? `<img src="${p.src}">` : `<div class="t">${p.html}</div>`);
   el.onclick = () => { i = k; copy(); };
   list.appendChild(el);
 });
 function mark() {
   document.querySelectorAll('.pc').forEach((e, k) => { e.classList.toggle('done', k < i); e.classList.toggle('cur', k === i); });
   const p = D.pieces[i];
-  $('state').textContent = i < D.pieces.length ? `${i + 1}/${D.pieces.length} · 다음은 ${p.k === 'img' ? '사진' : '글'}` : '다 붙였어요 ✓';
+  $('state').textContent = i < D.pieces.length ? `${i + 1}/${D.pieces.length} · 다음은 ${{img: '사진', link: '링크'}[p.k] || '글'}` : '다 붙였어요 ✓';
 }
 async function copy() {
   const p = D.pieces[i]; if (!p) return;
@@ -169,6 +175,9 @@ async function copy() {
       const png = await new Promise(res => { const im = new Image(); im.onload = () => { const c = document.createElement('canvas');
         c.width = im.naturalWidth; c.height = im.naturalHeight; c.getContext('2d').drawImage(im, 0, 0); c.toBlob(res, 'image/png'); }; im.src = p.src; });
       await navigator.clipboard.write([new ClipboardItem({ 'image/png': png })]);
+    } else if (p.k === 'link') {
+      await navigator.clipboard.writeText(p.plain);
+      toast(`${i + 1}번 링크 — Ctrl+V, 카드가 안 생기면 주소 끝에서 Enter`); i++; mark(); return;
     } else {
       await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([p.html], { type: 'text/html' }), 'text/plain': new Blob([p.plain], { type: 'text/plain' }) })]);
     }
