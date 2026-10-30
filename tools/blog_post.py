@@ -8,10 +8,11 @@ post.html을 브라우저로 열고 '다음 복사' → 네이버 에디터에 C
 
 사용법:
     pip install pillow
-    python tools/blog_post.py _blog/봉화별캠핑장.json          # 만들기
-    python tools/blog_post.py _blog/봉화별캠핑장.json --serve  # 만들고 브라우저로 열기
+    python tools/blog_post.py "D:/☆KYD_ZM/000002_블로그게시글/봉화별캠핑장.json"          # 만들기 (JSON 옆에 폴더 생성)
+    python tools/blog_post.py "D:/☆KYD_ZM/000002_블로그게시글/봉화별캠핑장.json" --serve  # 만들고 브라우저로 열기
 
-원고 JSON 형식은 docs/blog.md 참고. `_blog/`는 .gitignore — 사진·원고는 저장소에 올리지 않는다.
+원고 JSON 형식은 docs/blog.md 참고. 원고·결과물은 저장소 밖 `D:/☆KYD_ZM/000002_블로그게시글/`에 둔다
+(공개 저장소라 사진·원고는 올리지 않는다). 결과물은 원고 JSON 옆 `{slug}/` 폴더에 생긴다.
 """
 import argparse, base64, html, io, json, os, sys, urllib.request
 from pathlib import Path
@@ -76,8 +77,21 @@ def make_thumb(t):
 
 
 def fit(im):
+    # 세로 사진은 4:5까지만 — 네이버 본문 폭에 꽉 차서 한 장이 화면을 다 덮지 않게
+    if im.height > im.width * 1.25:
+        im = cover(im, im.width, round(im.width * 1.25))
     s = min(1, PHOTO_LONG / max(im.size))
     return im.resize((round(im.width * s), round(im.height * s)), Image.LANCZOS) if s < 1 else im
+
+
+def pair(paths):
+    """세로 사진 2장을 3:4로 잘라 나란히 한 장으로 (높이가 절반 가까이 줄어듦)."""
+    gap, w = 12, (PHOTO_LONG - 12) // 2
+    h = round(w * 4 / 3)
+    out = Image.new('RGB', (w * 2 + gap, h), (255, 255, 255))
+    for k, p in enumerate(paths[:2]):
+        out.paste(cover(load(p), w, h), (k * (w + gap), 0))
+    return out
 
 
 def jpeg(im, path):
@@ -100,12 +114,15 @@ def pieces(spec, out):
     if spec.get('thumb'):
         res.append({'k': 'img', 'src': jpeg(make_thumb(spec['thumb']), out / '00_대표.jpg'), 'label': '대표 썸네일'})
     for b in spec['blocks']:
-        if 'img' in b:
+        if 'img' in b or 'imgs' in b:
             flush()
-            if str(b['img']).startswith('http'):
-                sys.exit(f'사진은 내 PC 파일로 넣어 주세요 (주소를 넣으면 네이버에 링크만 걸려요): {b["img"]}')
+            srcs = b['imgs'] if 'imgs' in b else [b['img']]
+            for s in srcs:
+                if str(s).startswith('http'):
+                    sys.exit(f'사진은 내 PC 파일로 넣어 주세요 (주소를 넣으면 네이버에 링크만 걸려요): {s}')
             n += 1
-            res.append({'k': 'img', 'src': jpeg(fit(load(b['img'])), out / f'{n:02d}.jpg'), 'label': f'사진 {n}'})
+            im = pair(srcs) if len(srcs) > 1 else fit(load(srcs[0]))
+            res.append({'k': 'img', 'src': jpeg(im, out / f'{n:02d}.jpg'), 'label': f'사진 {n}' + (' (2장 묶음)' if len(srcs) > 1 else '')})
         elif 'h' in b:
             text.append((f'<p><b>{html.escape(b["h"])}</b></p><p><br></p>', b['h'] + '\n'))
         elif 'link' in b:
@@ -201,7 +218,7 @@ def main():
     for k in ('slug', 'title', 'blocks'):
         if k not in spec:
             sys.exit(f'원고 JSON에 "{k}"가 없어요')
-    out = OUT / spec['slug']
+    out = Path(a.spec).resolve().parent / spec['slug']   # 원고 JSON 옆에 만든다 (D:\☆KYD_ZM\000002_블로그게시글\)
     out.mkdir(parents=True, exist_ok=True)
     ps = pieces(spec, out)
     data = json.dumps({'title': spec['title'], 'tags': spec.get('tags', ''), 'pieces': ps}, ensure_ascii=False)
