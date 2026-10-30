@@ -8,13 +8,13 @@ post.html을 브라우저로 열고 '다음 복사' → 네이버 에디터에 C
 
 사용법:
     pip install pillow
-    python tools/blog_post.py "D:/☆KYD_ZM/000002_블로그게시글/봉화별캠핑장.json"          # 만들기 (JSON 옆에 폴더 생성)
-    python tools/blog_post.py "D:/☆KYD_ZM/000002_블로그게시글/봉화별캠핑장.json" --serve  # 만들고 브라우저로 열기
+    python tools/blog_post.py "D:/☆KYD_ZM/000002_블로그게시글/001_봉화별캠핑장/봉화별캠핑장.json"          # 만들기
+    python tools/blog_post.py "D:/☆KYD_ZM/000002_블로그게시글/001_봉화별캠핑장/봉화별캠핑장.json" --serve  # 만들고 브라우저로 열기
 
 원고 JSON 형식은 docs/blog.md 참고. 원고·결과물은 저장소 밖 `D:/☆KYD_ZM/000002_블로그게시글/`에 둔다
-(공개 저장소라 사진·원고는 올리지 않는다). 결과물은 원고 JSON 옆 `{slug}/` 폴더에 생긴다.
+(공개 저장소라 사진·원고는 올리지 않는다). 글마다 번호 폴더(`001_봉화별캠핑장/`)에 원고 JSON·`src/`(사진 복사본)·결과물을 함께 둔다.
 """
-import argparse, base64, html, io, json, os, sys, urllib.request
+import argparse, base64, html, io, json, os, re, sys, urllib.request
 from pathlib import Path
 
 try:
@@ -30,6 +30,7 @@ FONT_URL = 'https://raw.githubusercontent.com/orioncactus/pretendard/main/packag
 # 썸네일 틀 — 블로그 타이틀(남색 밤 사진)과 같은 톤
 NAVY, INK, SUB, MUTED, YEL = (16, 22, 38), (245, 242, 235), (170, 176, 190), (120, 128, 145), (255, 232, 115)
 PHOTO_LONG = 1600   # 본문 사진 긴 변 (네이버 본문 폭보다 충분히 큼)
+SPEC_DIR = ROOT     # 원고 JSON 폴더 — main()에서 정함
 
 
 def font(weight, size):
@@ -44,7 +45,8 @@ def font(weight, size):
 def load(path):
     p = Path(path).expanduser()
     if not p.is_absolute():
-        p = (ROOT / p) if (ROOT / p).exists() else p
+        # 상대경로는 원고 JSON 폴더 기준 (src/사진.jpg), 없으면 저장소 기준
+        p = next((c for c in (SPEC_DIR / p, ROOT / p) if c.exists()), p)
     if not p.exists():
         sys.exit(f'사진을 찾을 수 없어요: {path}')
     return ImageOps.exif_transpose(Image.open(p)).convert('RGB')
@@ -218,7 +220,10 @@ def main():
     for k in ('slug', 'title', 'blocks'):
         if k not in spec:
             sys.exit(f'원고 JSON에 "{k}"가 없어요')
-    out = Path(a.spec).resolve().parent / spec['slug']   # 원고 JSON 옆에 만든다 (D:\☆KYD_ZM\000002_블로그게시글\)
+    global SPEC_DIR
+    SPEC_DIR = Path(a.spec).resolve().parent
+    # 글마다 번호 폴더(001_봉화별캠핑장\)에 원고·src\·결과물을 함께 둔다 (261031). 번호 폴더가 아니면 예전처럼 JSON 옆 {slug}\
+    out = SPEC_DIR if re.match(r'\d{3}_', SPEC_DIR.name) else SPEC_DIR / spec['slug']
     out.mkdir(parents=True, exist_ok=True)
     ps = pieces(spec, out)
     data = json.dumps({'title': spec['title'], 'tags': spec.get('tags', ''), 'pieces': ps}, ensure_ascii=False)
