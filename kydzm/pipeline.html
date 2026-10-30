@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>운영 지도</title>
+<script>/* 관리자 인증 가드 — index.html과 같은 키 */ if (sessionStorage.getItem("kydz_admin_authed") !== "1") location.replace("index.html");</script>
 <style>
 :root{--bg:#f6f7f5;--panel:#fff;--line:#dfe3dc;--ink:#1d221d;--muted:#6b736b;--accent:#2f6f3e;--err-bg:#fff1f0;--err:#a8071a;--dot:#d8dcd5}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151815;--panel:#1d211d;--line:#333a33;--ink:#e8ece6;--muted:#9aa39a;--accent:#7fc28e;--err-bg:#3a1414;--err:#ffb3b3;--dot:#2a302a}}
@@ -31,7 +32,8 @@ input[type=range]{width:110px;vertical-align:middle}
 </head>
 <body>
 <header>
-  <div><h1>공대남자 운영 지도</h1><div class="sub">261030 · 수동/자동 · 수익까지의 경로 · 소스는 docs/pipeline.md와 같음</div></div>
+  <a href="index.html" style="color:var(--muted);text-decoration:none;font-size:13px">← 관리자</a>
+  <div><h1>공대남자 운영 지도</h1><div class="sub">261030 · 수동/자동 · 수익까지의 경로 · 소스는 docs/pipeline.md와 같음 (운영이 바뀌면 둘 다 고치기)</div></div>
   <div class="tabs"><button class="tab on" data-tab="map">전체 지도</button><button class="tab" data-tab="flow">콘텐츠 1건 흐름</button><button class="tab" data-tab="site">홈페이지 연결 구조</button></div>
   <div class="legend">
     <span><i style="background:#FFF3C4"></i>사용자</span><span><i style="background:#E3F2FD"></i>Claude</span><span><i style="background:#EEEEEE"></i>시스템</span>
