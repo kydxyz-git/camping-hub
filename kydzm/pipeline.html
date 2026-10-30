@@ -7,305 +7,97 @@
 <title>운영 지도</title>
 <script>/* 관리자 인증 가드 — index.html과 같은 키 */ if (sessionStorage.getItem("kydz_admin_authed") !== "1") location.replace("index.html");</script>
 <style>
-:root{--bg:#f6f7f5;--panel:#fff;--line:#dfe3dc;--ink:#1d221d;--muted:#6b736b;--accent:#2f6f3e;--err-bg:#fff1f0;--err:#a8071a;--dot:#d8dcd5}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151815;--panel:#1d211d;--line:#333a33;--ink:#e8ece6;--muted:#9aa39a;--accent:#7fc28e;--err-bg:#3a1414;--err:#ffb3b3;--dot:#2a302a}}
-:root[data-theme="dark"]{--bg:#151815;--panel:#1d211d;--line:#333a33;--ink:#e8ece6;--muted:#9aa39a;--accent:#7fc28e;--err-bg:#3a1414;--err:#ffb3b3;--dot:#2a302a}
-*{box-sizing:border-box}html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-size:14px;display:flex;flex-direction:column}
-header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
-h1{font-size:16px;margin:0} .sub{color:var(--muted);font-size:12.5px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap}
-button{font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--line);background:var(--panel);border-radius:6px;cursor:pointer;color:var(--ink)}
-button:hover{border-color:var(--accent);color:var(--accent)} .tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
-.legend{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;margin-left:auto} .legend span{display:inline-flex;align-items:center;gap:4px}
-.legend i{width:13px;height:13px;border-radius:3px;border:1px solid rgba(0,0,0,.25)}
-main{flex:1;display:grid;grid-template-columns:minmax(280px,34%) minmax(0,1fr);min-height:0}
-.pane{display:flex;flex-direction:column;min-height:0;min-width:0} .pane.src{border-right:1px solid var(--line);background:var(--panel)}
-.bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted)} .bar b{color:var(--ink)}
-textarea{flex:1;width:100%;border:0;resize:none;padding:12px 14px;font:12.5px/1.55 ui-monospace,Menlo,Consolas,monospace;color:var(--ink);background:transparent;outline:none;white-space:pre;overflow:auto}
-.view{flex:1;overflow:auto;padding:16px;background:radial-gradient(circle,var(--dot) 1px,transparent 1px) 0 0/22px 22px}
-.canvas{display:inline-block;background:#fff;border-radius:8px;padding:8px} .canvas svg{max-width:none!important;height:auto}
-.err{display:none;margin:0;padding:10px 12px;background:var(--err-bg);color:var(--err);font:12px/1.5 ui-monospace,monospace;white-space:pre-wrap} .err.on{display:block}
-input[type=range]{width:110px;vertical-align:middle}
-@media (max-width:900px){main{grid-template-columns:minmax(0,1fr);grid-template-rows:38vh minmax(0,1fr)}.pane.src{border-right:0;border-bottom:1px solid var(--line)}.legend{margin-left:0}}
+:root{--bg:#f6f7f5;--panel:#fff;--line:#dfe3dc;--ink:#1d221d;--muted:#6b736b;--accent:#2f6f3e;--warn:#a15c00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151815;--panel:#1d211d;--line:#333a33;--ink:#e8ece6;--muted:#9aa39a;--accent:#7fc28e;--warn:#f0b35a}}
+:root[data-theme="dark"]{--bg:#151815;--panel:#1d211d;--line:#333a33;--ink:#e8ece6;--muted:#9aa39a;--accent:#7fc28e;--warn:#f0b35a}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-size:14px;display:flex;flex-direction:column}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:8px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+header a{color:var(--muted);text-decoration:none;font-size:13px}
+h1{font-size:16px;margin:0}
+.sub{color:var(--muted);font-size:12.5px}
+#status{margin-left:auto;font-size:12.5px;color:var(--muted)}
+#status.dirty{color:var(--warn);font-weight:600}
+#status.ok{color:var(--accent)}
+iframe{flex:1;width:100%;border:0;background:#fff}
+.msg{margin:24px auto;max-width:560px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:10px;line-height:1.6}
 </style>
 </head>
 <body>
 <header>
-  <a href="index.html" style="color:var(--muted);text-decoration:none;font-size:13px">← 관리자</a>
-  <div><h1>공대남자 운영 지도</h1><div class="sub">261030 · 수동/자동 · 수익까지의 경로 · 소스는 docs/pipeline.md와 같음 (운영이 바뀌면 둘 다 고치기)</div></div>
-  <div class="tabs"><button class="tab on" data-tab="map">전체 지도</button><button class="tab" data-tab="flow">콘텐츠 1건 흐름</button><button class="tab" data-tab="site">홈페이지 연결 구조</button></div>
-  <div class="legend">
-    <span><i style="background:#FFF3C4"></i>사용자</span><span><i style="background:#E3F2FD"></i>Claude</span><span><i style="background:#EEEEEE"></i>시스템</span>
-    <span><i style="background:#F3E8FF"></i>정보 소스</span><span><i style="background:#DCFCE7"></i>자산</span><span><i style="background:#FFE4E6"></i>채널·유입</span>
-    <span><i style="background:#FFEDD5"></i>수익</span><span><i style="background:#E0F2FE;border-style:dashed"></i>파트너·미정</span>
-  </div>
+  <a href="index.html">← 관리자</a>
+  <div><h1>공대남자 운영 지도</h1>
+    <div class="sub">박스를 끌어 옮기고, 더블클릭으로 글자를 고치고, 아래 탭으로 그림을 바꿔요. 다 고치면 오른쪽 위 <b>저장</b>.</div></div>
+  <span id="status">불러오는 중...</span>
 </header>
-<main>
-  <section class="pane src">
-    <div class="bar"><b>Mermaid 소스</b> 고치면 오른쪽이 바로 바뀜(이 브라우저에만 저장)
-      <span style="margin-left:auto;display:flex;gap:6px"><button id="copy">소스 복사</button><button id="reset">되돌리기</button></span></div>
-    <pre class="err" id="err"></pre>
-    <textarea id="src" spellcheck="false" aria-label="Mermaid 소스"></textarea>
-  </section>
-  <section class="pane">
-    <div class="bar"><b>미리보기</b>
-      <label>확대 <input type="range" id="zoom" min="40" max="200" value="100"> <span id="zv">100%</span></label>
-      <button id="fit">맞춤</button></div>
-    <div class="view" id="view"><div class="canvas" id="canvas"></div></div>
-  </section>
-</main>
-<script type="text/plain" id="src-map">
-flowchart LR
-  subgraph CH["채널"]
-    direction TB
-    IG["인스타 @kyd_zm<br/>릴스(주력) · 게시물 · 꿀템방<br/>Meta Verified"]:::in
-    FB["페이스북<br/>릴스 교차게시"]:::in
-    CLIP["네이버 클립<br/>재업로드 + 브랜드커넥트 링크"]:::in
-    BLOG["네이버 블로그<br/>후기 (신규)"]:::in
-    TH["스레드 · 쿠파스<br/>겨울 집 관리 · 별도 라인"]:::in
-    YT["유튜브 (고민 중)"]:::partner
-  end
+<div id="body" style="flex:1;display:flex;flex-direction:column;min-height:0"></div>
+<script>
+// draw.io(embed.diagrams.net)를 띄우고, 저장하면 camping-hub 저장소 docs/pipeline.drawio에 커밋 (사용자 결정 261030 — GUI로 직접 고치기)
+const REPO = '/repos/kydxyz-git/camping-hub/contents/docs/pipeline.drawio';
+const DRAWIO = 'https://embed.diagrams.net/?embed=1&proto=json&spin=1&lang=ko&ui=atlas&noExitBtn=1&saveAndExit=0&libraries=1&pages=1';
+const statusEl = document.getElementById('status'), body = document.getElementById('body');
+let sha = null, xml = '', dirty = false, frame = null;
 
-  subgraph INFLOW["유입"]
-    direction TB
-    DM["소셜비즈 DM<br/>댓글 키워드 → 1차 팔로우 → 2차 링크"]:::in
-    SE["구글 · 네이버 검색"]:::in
-  end
+const token = () => { try { return localStorage.getItem('kydz_admin_gh_token') || ''; } catch (e) { return ''; } };
+const setStatus = (t, cls = '') => { statusEl.textContent = t; statusEl.className = cls; };
+const b64dec = s => decodeURIComponent(escape(atob(s.replace(/\n/g, ''))));
+const b64enc = s => btoa(unescape(encodeURIComponent(s)));
+const gh = (method, body) => fetch('https://api.github.com' + REPO + (method === 'GET' ? '?ref=main&t=' + Date.now() : ''), {
+  method, headers: { Authorization: 'Bearer ' + token(), Accept: 'application/vnd.github+json', ...(body ? { 'Content-Type': 'application/json' } : {}) },
+  body: body ? JSON.stringify(body) : undefined });
 
-  HUB[["kydz.kr<br/>캠핑장 · 장비 · 먹거리 · 시리즈(릴스 모음)"]]:::page
+async function load() {
+  const r = await gh('GET');
+  if (!r.ok) throw new Error('불러오기 실패 (' + r.status + ')');
+  const j = await r.json();
+  sha = j.sha; xml = b64dec(j.content);
+}
 
-  subgraph DEAL["협찬 창구"]
-    direction TB
-    MK["소셜비즈 마켓 · 아하크리에이터<br/>네이버(푸드 제안만)"]:::src
-    MAIL["협찬 메일 → Apps Script 10분<br/>→ 카카오 · 캘린더 · 노션 대장"]:::sys
-    META["메타 크리에이터 마켓 (미등록)"]:::partner
-  end
+async function save(newXml) {
+  setStatus('저장 중...');
+  let r = await gh('PUT', { message: 'update(admin): 운영 지도 수정', content: b64enc(newXml), sha, branch: 'main' });
+  if (r.status === 409 || r.status === 422) {   // 다른 곳(다른 창·Claude)에서 먼저 바뀜
+    const cur = await gh('GET').then(x => x.json());
+    if (b64dec(cur.content) !== xml && !confirm('다른 곳에서 운영 지도가 바뀌었어요. 지금 화면 내용으로 덮어쓸까요?\n(취소하면 저장하지 않아요 — 새로고침하면 바뀐 내용을 볼 수 있어요)')) {
+      setStatus('저장 안 함 — 새로고침해서 최신본을 받아 주세요', 'dirty'); return false;
+    }
+    sha = cur.sha;
+    r = await gh('PUT', { message: 'update(admin): 운영 지도 수정', content: b64enc(newXml), sha, branch: 'main' });
+  }
+  if (!r.ok) { setStatus('저장 실패 (' + r.status + ') — 토큰 권한을 확인해 주세요', 'dirty'); return false; }
+  sha = (await r.json()).content.sha; xml = newXml; dirty = false;
+  setStatus('저장됨 ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }), 'ok');
+  return true;
+}
 
-  subgraph MONEY["수익"]
-    direction TB
-    SPON["협찬 · 광고비 · 서포터즈<br/>건당"]:::money
-    CP["쿠팡파트너스<br/>클릭 · 구매"]:::money
-    NBC["네이버 브랜드커넥트<br/>클릭 · 구매"]:::money
-    KUR["컬리 큐레이터<br/>먹거리 일부"]:::money
-    CC["클립 크리에이터<br/>월 게시글 2 + 영상 10 → 월 10만원 고정"]:::money
-    VIEW["조회수 수익 (예정)<br/>FB 팔로워 1,633 → 1만 · 28일 유효조회 14.6만 → 15만<br/>클립 팔로워 467 → 1,000 · 90일 유효조회 45만 → 300만"]:::partner
-  end
+function post(msg) { frame.contentWindow.postMessage(JSON.stringify(msg), '*'); }
 
-  GR["그래가 파트너<br/>수익 ✕ · 예약 유입 계속"]:::partner
+window.addEventListener('message', async e => {
+  if (!frame || e.source !== frame.contentWindow || typeof e.data !== 'string') return;
+  let m; try { m = JSON.parse(e.data); } catch (_) { return; }
+  if (m.event === 'init') { post({ action: 'load', xml, autosave: 1, title: '운영 지도' }); setStatus('불러옴'); }
+  else if (m.event === 'autosave') { dirty = true; setStatus('저장 안 된 변경 있음', 'dirty'); }   // 변경 표시만 (저장은 저장 버튼으로)
+  else if (m.event === 'save') {
+    const ok = await save(m.xml);
+    post({ action: 'status', message: ok ? '저장됨' : '저장 실패', modified: !ok });
+  }
+});
+window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 
-  IG --> DM --> HUB
-  IG -. 교차게시 .-> FB
-  IG -. 재업로드 .-> CLIP
-  SE --> HUB
-  SE --> BLOG
-  SE -- 게시물 검색 노출 --> IG
-  SE --> CLIP
-  SE --> FB
-  BLOG -- 본문 링크 --> HUB
-  HUB -- 릴스 모음 · 시리즈 --> IG
-  HUB --> CP
-  HUB --> NBC
-  HUB --> KUR
-  HUB -. 예약 .-> GR
-  TH --> CP
-  CLIP --> NBC
-  CLIP --> CC
-  FB -.-> VIEW
-  CLIP -.-> VIEW
-  MK --> SPON
-  MAIL --> SPON
-  IG -- 협찬 콘텐츠 --> SPON
-
-  classDef user    fill:#FFF3C4,stroke:#B7791F,color:#1a1a1a
-  classDef ai      fill:#E3F2FD,stroke:#1E63B4,color:#1a1a1a
-  classDef sys     fill:#EEEEEE,stroke:#616161,color:#1a1a1a
-  classDef src     fill:#F3E8FF,stroke:#6B21A8,color:#1a1a1a
-  classDef page    fill:#DCFCE7,stroke:#15803D,color:#1a1a1a,stroke-width:3px
-  classDef in      fill:#FFE4E6,stroke:#BE123C,color:#1a1a1a
-  classDef money   fill:#FFEDD5,stroke:#C2410C,color:#1a1a1a
-  classDef partner fill:#E0F2FE,stroke:#0369A1,color:#1a1a1a,stroke-dasharray:5 4
-</script>
-<script type="text/plain" id="src-flow">
-flowchart TB
-  subgraph MAKE["① 만들기"]
-    direction LR
-    A["캠핑 · 촬영<br/>[수동]"]:::user
-    B["릴스 편집<br/>Claude Code + HyperFrames + kyd-reels<br/>[반자동]"]:::ai
-    C{"캡션 · DM 문구 확정<br/>[수동]"}:::user
-    A --> B --> C
-  end
-
-  subgraph UP["② 올리기 — 업로드에서 갈라짐"]
-    direction LR
-    D["인스타 업로드<br/>릴스 · 게시물<br/>[수동]"]:::user
-    E["소셜비즈 키워드 · 2차 DM 세팅<br/>[수동]"]:::user
-    F["페이스북 교차게시<br/>[반자동]"]:::sys
-    G["네이버 클립 재업로드<br/>+ 브랜드커넥트 링크 [수동]"]:::user
-    D --> E
-    D --> F
-    D --> G
-  end
-
-  subgraph PAGE["③ 쌓기"]
-    direction LR
-    H["admin 등록 · 시리즈 · 캠핑장 정보<br/>Claude가 정리 [반자동]"]:::ai
-    I["GitHub main 커밋 → Actions build-pages<br/>[자동]"]:::sys
-    K[["kydz.kr 페이지<br/>캠핑장 · 장비 · 먹거리 · 릴스 모음"]]:::page
-    L["네이버 블로그 복붙본<br/>Claude 작성 [반자동]"]:::ai
-    M["블로그 발행<br/>[수동]"]:::user
-    N[["네이버 블로그 글"]]:::page
-    H --> I --> K
-    L --> M --> N
-    N -- 본문 링크 --> K
-  end
-
-  subgraph VIEWER["④ 보는 사람"]
-    direction LR
-    V1["댓글 키워드"]:::in
-    V2["1차 DM 팔로우 → 2차 DM 홈페이지 링크<br/>[자동]"]:::sys
-    V3["구글 · 네이버 검색"]:::in
-    V1 --> V2
-  end
-
-  subgraph MONEY["⑤ 수익"]
-    direction LR
-    M1["쿠팡파트너스"]:::money
-    M2["네이버 브랜드커넥트"]:::money
-    M3["컬리 큐레이터"]:::money
-    GR["그래가 예약 유입<br/>수익 ✕ · 파트너"]:::partner
-  end
-
-  subgraph REPORT["⑥ 성과 — 월말 + 수시"]
-    direction LR
-    R1["IG 인사이트 CSV<br/>[수동]"]:::user
-    R2["Claude 분석<br/>[반자동]"]:::ai
-    R3["admin 인사이트 · insights.json<br/>→ 다음 콘텐츠 기획"]:::sys
-    R1 --> R2 --> R3
-  end
-
-  C --> D
-  C --> H
-  C --> L
-  D --> V1
-  V2 --> K
-  V3 --> K
-  V3 --> N
-  V3 -. 인스타·클립·페북 게시물도 검색됨 .-> D
-  V3 -.-> F
-  V3 -.-> G
-  G --> M2
-  K --> M1
-  K --> M2
-  K --> M3
-  K -.-> GR
-  K -- 릴스 모음 · 시리즈 → 다시 인스타 --> D
-  D -. 며칠 뒤 .-> R1
-
-  classDef user    fill:#FFF3C4,stroke:#B7791F,color:#1a1a1a
-  classDef ai      fill:#E3F2FD,stroke:#1E63B4,color:#1a1a1a
-  classDef sys     fill:#EEEEEE,stroke:#616161,color:#1a1a1a
-  classDef src     fill:#F3E8FF,stroke:#6B21A8,color:#1a1a1a
-  classDef page    fill:#DCFCE7,stroke:#15803D,color:#1a1a1a,stroke-width:3px
-  classDef in      fill:#FFE4E6,stroke:#BE123C,color:#1a1a1a
-  classDef money   fill:#FFEDD5,stroke:#C2410C,color:#1a1a1a
-  classDef partner fill:#E0F2FE,stroke:#0369A1,color:#1a1a1a,stroke-dasharray:5 4
-</script>
-<script type="text/plain" id="src-site">
-flowchart LR
-  subgraph TOOLS["작업 도구"]
-    direction TB
-    U["사용자"]:::user
-    CC["Claude Code<br/>클라우드 세션"]:::ai
-    ADM["admin kydz.kr/kydzm<br/>콘텐츠 · 통계 · 딜 · 스레드 · 쿠팡 실적<br/>GitHub 토큰은 브라우저에만"]:::user
-  end
-
-  subgraph GH["GitHub"]
-    direction TB
-    REPO[("camping-hub · 공개<br/>main = 배포")]:::src
-    BP["Actions build-pages<br/>data 바뀌면 → 정적 페이지 · sitemap"]:::sys
-    LC["Actions link-check<br/>월 09:10 쿠팡 링크 점검"]:::sys
-    CUP[("cupas · 비공개<br/>스레드 예약 게시 · 쿠팡 실적 리포트")]:::src
-    CS[("camping-search · 비공개<br/>카페 딜 수집 하루 3번")]:::src
-  end
-
-  subgraph CF["Cloudflare"]
-    direction TB
-    W["Worker kyd-stats<br/>방문 기록 D1 · 집계 KV"]:::sys
-    WC["Worker 예약<br/>매시 집계 → stats.json 커밋<br/>매시 05분 → cupas 깨우기"]:::sys
-  end
-
-  subgraph WEB["사이트"]
-    direction TB
-    DNS["가비아 DNS<br/>kydz.kr"]:::sys
-    PAGES[["GitHub Pages<br/>kydz.kr"]]:::page
-    SA["네이버 서치어드바이저"]:::in
-    SC["구글 서치 콘솔"]:::in
-    GA["GA (미설치)"]:::partner
-  end
-
-  subgraph OUT["바깥 서비스"]
-    direction TB
-    CPAPI["쿠팡 파트너스 API"]:::src
-    THAPI["스레드 API"]:::src
-    LINKS["제휴 링크<br/>쿠팡 · 네이버 · 컬리 · 그래가"]:::money
-  end
-
-  U --> CC --> REPO
-  U --> ADM
-  ADM -- 저장 커밋 --> REPO
-  ADM -- cupas 토큰 --> CUP
-  ADM -- 딜 보드 · TOP 5 --> CS
-  REPO --> BP --> REPO
-  LC --> REPO
-  REPO --> PAGES
-  DNS --> PAGES
-  PAGES -- 방문 · 클릭 --> W
-  WC --> REPO
-  WC --> CUP
-  CUP <--> CPAPI
-  CUP --> THAPI
-  PAGES --> LINKS
-  SA -. 수집 .-> PAGES
-  SC -. 수집 .-> PAGES
-  GA -.- PAGES
-
-  classDef user    fill:#FFF3C4,stroke:#B7791F,color:#1a1a1a
-  classDef ai      fill:#E3F2FD,stroke:#1E63B4,color:#1a1a1a
-  classDef sys     fill:#EEEEEE,stroke:#616161,color:#1a1a1a
-  classDef src     fill:#F3E8FF,stroke:#6B21A8,color:#1a1a1a
-  classDef page    fill:#DCFCE7,stroke:#15803D,color:#1a1a1a,stroke-width:3px
-  classDef in      fill:#FFE4E6,stroke:#BE123C,color:#1a1a1a
-  classDef money   fill:#FFEDD5,stroke:#C2410C,color:#1a1a1a
-  classDef partner fill:#E0F2FE,stroke:#0369A1,color:#1a1a1a,stroke-dasharray:5 4
-</script>
-<script type="module">
-import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs';
-const $=id=>document.getElementById(id);
-const src=$('src'),canvas=$('canvas'),err=$('err'),zoom=$('zoom'),view=$('view');
-const DEF=k=>document.getElementById('src-'+k).textContent.trim();
-const KEY=k=>'kydz_pipeline_v3_'+k;
-const get=k=>{try{return localStorage.getItem(KEY(k))||DEF(k)}catch(e){return DEF(k)}};
-const put=(k,v)=>{try{localStorage.setItem(KEY(k),v)}catch(e){}};
-let tab='map';try{tab=localStorage.getItem('kydz_pipeline_tab')||'map'}catch(e){}
-mermaid.initialize({startOnLoad:false,theme:'base',securityLevel:'strict',flowchart:{htmlLabels:true,curve:'basis',nodeSpacing:28,rankSpacing:44},
-  themeVariables:{fontFamily:'-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif',fontSize:'13px',primaryColor:'#ffffff',lineColor:'#4b534b',clusterBkg:'#fbfcfa',clusterBorder:'#c9cfc6',titleColor:'#1d221d'}});
-let seq=0,timer=null;
-async function render(){try{await mermaid.parse(src.value);const{svg}=await mermaid.render('g'+(++seq),src.value);canvas.innerHTML=svg;err.classList.remove('on');applyZoom()}
-  catch(e){err.textContent=String(e&&e.message||e).split('\n').slice(0,6).join('\n');err.classList.add('on')}}
-// 확대: SVG 실제 크기(viewBox)에 배율을 곱해 너비·높이로 줌 (transform은 스크롤 영역이 안 늘어서)
-const box=()=>{const s=canvas.querySelector('svg');return s&&s.viewBox&&s.viewBox.baseVal&&s.viewBox.baseVal.width?[s,s.viewBox.baseVal]:[s,null]};
-function applyZoom(){const z=zoom.value/100,[s,vb]=box();$('zv').textContent=zoom.value+'%';if(!s||!vb)return;
-  s.style.maxWidth='none';s.setAttribute('width',Math.round(vb.width*z));s.setAttribute('height',Math.round(vb.height*z))}
-function fit(){const[s,vb]=box();if(!s||!vb)return;zoom.value=Math.max(40,Math.min(200,Math.floor((view.clientWidth-56)/vb.width*100)));applyZoom()}
-async function show(k){tab=k;try{localStorage.setItem('kydz_pipeline_tab',k)}catch(e){}
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));src.value=get(k);await render();fit()}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(b.dataset.tab));
-src.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>{put(tab,src.value);render()},450)});
-zoom.addEventListener('input',applyZoom);$('fit').onclick=fit;
-$('copy').onclick=async()=>{try{await navigator.clipboard.writeText(src.value)}catch(e){src.select()}};
-$('reset').onclick=()=>{src.value=DEF(tab);put(tab,src.value);render().then(fit)};
-show(tab);
+(async () => {
+  if (!token()) {
+    body.innerHTML = '<div class="msg">GitHub 토큰이 이 브라우저에 없어요. <a href="index.html">관리자 대시보드</a>에서 토큰을 먼저 넣어 주세요. (저장할 때 저장소에 커밋하려면 토큰이 필요해요)</div>';
+    setStatus(''); return;
+  }
+  try { await load(); } catch (err) {
+    body.innerHTML = '<div class="msg">운영 지도를 못 불러왔어요: ' + String(err.message).replace(/</g, '&lt;') + '</div>';
+    setStatus(''); return;
+  }
+  frame = document.createElement('iframe');
+  frame.title = '운영 지도 편집기 (draw.io)';
+  frame.src = DRAWIO;
+  body.appendChild(frame);
+})();
 </script>
 </body>
 </html>

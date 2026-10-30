@@ -20,7 +20,7 @@
 - `collab.html` 협업 문의(공유 이미지 `images/refs/og-collab-*.jpg`) · `preview.html` 모바일 미리보기
 - `v2.html`, `v3.html` 폐기된 실험 — 수정 대상 아님
 - `conti/`, `kydzm/conti/` 릴스 콘티 · `prompts/` 프롬프트 모음
-- `docs/pipeline.md`(+ admin 🗺️ 운영 지도 `kydzm/pipeline.html` 미리보기·편집, 관리자 비밀번호) 전체 운영 지도 — 채널·자동화·수익 경로 Mermaid 3탭(261030). 운영이 바뀌면 같이 고칠 것. 비공개 저장소는 '무엇을 하는지'까지만(토큰·쿠팡 링크·실적 숫자 금지)
+- 전체 운영 지도: 원본 `docs/pipeline.drawio`(draw.io, 페이지 3개: 전체 지도·콘텐츠 1건 흐름·홈페이지 연결 구조) — admin 🗺️ 운영 지도(`kydzm/pipeline.html`, draw.io 편집기 embed)에서 사용자가 GUI로 고치고 저장하면 커밋(261030). 설명·확인 메모는 `docs/pipeline.md`. 운영이 바뀌면 같이 고칠 것. 비공개 저장소는 '무엇을 하는지'까지만(토큰·쿠팡 링크·실적 숫자 금지)
 
 ## admin (kydzm/)
 
