@@ -95,7 +95,7 @@
 
 ## 구버전 문서 (적용 금지)
 
-- `tools/SYNC_GUIDE.md`·`tools/*.py`(`build_pages.py`·`check_links.py`·`collect_camp_info.py`·`camp-watch.js` 제외)·`_cache/`: 260507 노션 동기화용 구버전. 장비 썸네일 규격에 적용하지 말 것, 노션 토큰 푸시 절차도 폐기됨.
+- `tools/SYNC_GUIDE.md`·`tools/*.py`(`build_pages.py`·`check_links.py`·`collect_camp_info.py`·`apply_camp_patch.py`·`blog_post.py`·`camp-watch.js` 제외)·`_cache/`: 260507 노션 동기화용 구버전. 장비 썸네일 규격에 적용하지 말 것, 노션 토큰 푸시 절차도 폐기됨.
 - `docs/OPERATIONS_GUIDE.md`의 "⚠️ 폐기" 섹션(노션 진실소스 동기화, `_build` 복원, 토큰 푸시, v3).
 
 ## 쿠팡 링크 점검
@@ -105,6 +105,11 @@
 ## 쿠팡에서 찾기 (새 장비·먹거리)
 
 - admin 새 장비·먹거리 추가 화면 '🛒 쿠팡에서 찾기' → **비공개 저장소 cupas**의 `coupang-search.yml`을 cupas 토큰(localStorage `kydz_cupas_gh_token`, 스레드 관리 화면에서 넣음)으로 실행 — 쿠팡 키가 cupas Secrets에만 있어서 (쿠팡 파트너스 API 검색 + 내 파트너스 짧은 링크 + cupas `coupang_search.py`가 썸네일 규격 800×800·흰 배경·여백 7%로 변환) → 결과는 cupas `coupang-search` 브랜치의 `coupang_search.json` 하나(매번 덮어씀) → admin이 폼을 채우고 **기존 저장 경로로 비공개 저장** (사용자 결정 261022). **'상품명 + 쿠팡 링크'를 붙이면 링크 모드** — 링크에서 상품 번호를 읽고(상품 페이지는 쿠팡이 막음) 상품명 검색 결과 중 같은 번호를 찾아 채우며, 링크는 사용자가 준 그대로 쓴다 (API로 만든 링크도 같은 계정 코드 AF7202884 확인 261022). 모서리가 흰색이 아닌 연출 사진은 '⚠ 배경 있음' 표시 — 자동 배경 제거는 품질 문제로 쓰지 않음.
+
+## 네이버 블로그 (261030)
+
+- '공대남자의 캠핑 기록' 글은 **PC의 Claude에서** 만든다(사진 원본이 PC의 네이버 MYBOX 폴더). 절차·글 규칙·사진 고르기·원고 형식은 **[docs/blog.md](docs/blog.md)** — "블로그 글 만들어줘"면 이 문서부터.
+- `tools/blog_post.py`가 원고 JSON + PC 사진으로 '다음 복사' 페이지(`_blog/`, gitignore)를 만든다. 사진은 반드시 사진 그대로 붙인다(이미지 주소를 붙이면 네이버가 링크만 걸음). 브라우저 자동 조작으로 글 올리기 금지.
 
 ## 메일·외부 발송 (사용자 지시 261021)
 
