@@ -226,7 +226,7 @@ def page(*, title, desc, canonical, og_image, cta, track, body, jsonld=None, og_
 </head>
 <body>
 <div class="wrap">
-<div class="top"><a href="{SITE}/">{BRAND}</a><a class="ig" href="{IG}" rel="noopener" target="_blank">@kyd_zm</a></div>
+<div class="top"><a href="{SITE}/">← {BRAND}</a><a class="ig" href="{IG}" rel="noopener" target="_blank">@kyd_zm</a></div>
 {body}
 <div class="foot">
 <a href="{SITE}/">홈</a><a href="{SITE}/camps/">다녀온 캠핑장</a><a href="{SITE}/gear/">캠핑용품</a><a href="{SITE}/foods/">먹거리</a>
@@ -459,7 +459,7 @@ def camp_page(c, slug, by_region, slugs, eps_by_camp, products):
     title = f"{name} — {hook} | {BRAND}" if hook else f"{name} 후기·정보 | {BRAND}"
     return page(title=title, desc=desc, canonical=canonical,
                 og_image=abs_img(imgs[0]) if imgs else OG_DEFAULT,
-                cta=('캠핑장 기록 보기', f"/camp.html?id={c['id']}"), track=(f"/search/camps/{c['id']}", name),
+                cta=('공대남자 홈페이지로', '/#camps'), track=(f"/search/camps/{c['id']}", name),
                 body='\n'.join(b for b in body if b),
                 jsonld=[ld, breadcrumb([('홈', SITE + '/'), ('다녀온 캠핑장', SITE + '/camps/'), (name, canonical)])])
 
