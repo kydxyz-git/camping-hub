@@ -9,7 +9,7 @@
 | 필드 | 형식 | 내용 |
 |---|---|---|
 | `hook` | 문자열 | 한 줄 훅 (릴스 첫 자막 그대로). 있으면 제목 아래 + `<title>` |
-| `story` | 문자열 | 본문. 캡션을 웹용으로 — 해시태그 없음. 빈 줄 = 단락, 마크다운 처리 없음 |
+| `story` | 문자열 | 본문. 업로드 캡션을 웹용으로 — 해시태그는 넣고, 협찬 고지·DM 유도·정보 줄은 빼고, '이번에·올해·내년' 같은 시점 표현은 뺀다(261030). 빈 줄 = 단락, 마크다운 처리 없음 |
 | `guide` | `[{zone, text, pick}]` | 존별 가이드. `pick: true`는 ★ + 맨 위 |
 | `layout_imgs` | `["./images/camps/…jpg"]` | 배치도 (원본 비율, 긴 변 1200 — admin 업로드는 `{hash}-layout-…jpg`) |
 | `info` | 객체 | `checkin checkout manner pets max_people facilities[] season notice source{platform,url,checked_at}` — 예약 플랫폼 기준. 입퇴실은 `info`가 최상위 `checkin/checkout`보다 우선 |

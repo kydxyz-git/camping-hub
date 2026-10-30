@@ -40,7 +40,7 @@
 - 기본은 admin에서 추가/수정.
 - 직접 추가할 때: 기존 항목 형식 그대로 (`id`, `created_at`, `updated_at` 포함). 장비 `cat`은 `config.itemCats`의 key.
 - 캠핑장 CSV 병합은 `id` 기준. 삭제된 필드(`landscape`/`seasons`/`sites`/`price`)는 되살리지 않기.
-- 캠핑장 풀 버전 필드(261030): `hook` 한 줄 훅 · `story` 본문(빈 줄 = 단락) · `guide[{zone,text,pick}]` 존별 가이드 · `layout_imgs` 배치도 · `info{checkin checkout manner pets max_people facilities[] season notice source}` · `links[{type,label,url}]`(`reserve discount event homepage naver_blog etc`) · `gear`/`foods` id 목록 · `visit_log` · `dm_keyword`. 없는 필드는 렌더에서 건너뛴다. 설명과 패치 예시: [docs/camp-patch.md](docs/camp-patch.md).
+- 캠핑장 풀 버전 필드(261030): `hook` 한 줄 훅 · `story` 본문(빈 줄 = 단락. 업로드 캡션 기준 — 해시태그 포함, 협찬 고지·DM 유도·정보 줄·'이번에/올해/내년' 같은 시점 표현은 뺌, 261030) · `guide[{zone,text,pick}]` 존별 가이드 · `layout_imgs` 배치도 · `info{checkin checkout manner pets max_people facilities[] season notice source}` · `links[{type,label,url}]`(`reserve discount event homepage naver_blog etc`) · `gear`/`foods` id 목록 · `visit_log` · `dm_keyword`. 없는 필드는 렌더에서 건너뛴다. 설명과 패치 예시: [docs/camp-patch.md](docs/camp-patch.md).
 - admin 캠핑장 폼은 폼에 없는 필드(`visit_log`, 패치로 들어온 새 필드 등)를 저장할 때 그대로 보존한다 — 폼을 고칠 때 이 보존을 지우지 말 것.
 - `sitemap.xml`·정적 페이지는 GitHub Actions가 자동 생성 (아래 '검색 노출' 참고). `tools/update_sitemap.py`는 더 이상 쓰지 않음.
 
