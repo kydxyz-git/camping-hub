@@ -55,7 +55,30 @@ li{margin:3px 0}
 .cols li{break-inside:avoid}
 .foot{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--stone)}
 .foot a{margin-right:12px}
-@media (min-width:720px){h1{font-size:32px}.go{display:inline-block;padding:13px 28px}}
+.hook{font-size:19px;font-weight:800;line-height:1.45;letter-spacing:-.01em;margin-bottom:16px}
+.story p{font-size:16px;margin:0 0 14px}
+.reels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.reels a{text-decoration:none;display:block}
+.reels .th{display:block;aspect-ratio:4/5;border-radius:8px;overflow:hidden;background:#EDEDE7}
+.reels .th img{width:100%;height:100%;object-fit:cover;display:block}
+.reels b{display:block;font-size:13px;line-height:1.4;margin-top:6px}
+.guide{list-style:none;padding:0;display:grid;gap:8px}
+.guide li{margin:0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.guide li.pick{border-color:#E8CF3A;background:#FFFBE3}
+.guide b{display:block;font-size:15px}
+.layout{display:block;width:100%;height:auto;border-radius:10px;margin-top:10px;border:1px solid var(--line)}
+.src{font-size:12px;color:var(--stone);margin-top:6px}
+.btns{display:grid;gap:8px}
+.btn{display:block;text-align:center;padding:13px 16px;border-radius:12px;background:var(--ink);color:#fff;text-decoration:none;font-weight:800;font-size:15px}
+.btn.sub{background:var(--card);color:var(--ink);border:1px solid var(--line);font-weight:700}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cards a{text-decoration:none;display:block}
+.cards .th{position:relative;display:block;aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:#fff;border:1px solid var(--line)}
+.cards .th img{width:100%;height:100%;object-fit:contain;display:block}
+.cards .th .badge{position:absolute;right:6px;bottom:6px;font-size:10px;padding:2px 7px}
+.cards b{display:block;font-size:13px;font-weight:600;line-height:1.4;margin-top:6px}
+.dm{margin-top:30px;padding:14px 16px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:15px}
+@media (min-width:720px){h1{font-size:32px}.go{display:inline-block;padding:13px 28px}.cards{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
 <body>
@@ -65,8 +88,7 @@ li{margin:3px 0}
 <h1>온새미로캠핑장</h1>
 <div class="badges"><span class="badge line">강원</span><span class="badge line">1회 방문</span></div>
 <p class="lead">온새미로캠핑장은 강원 횡성군 청일면 봉명리 155에 있는 캠핑장입니다. 공대남자가 직접 1번 다녀온 곳입니다.</p>
-<a class="go" href="https://kydz.kr/camp.html?id=camp_50b5aafda9">캠핑장 기록 보기</a>
-<h2>기본 정보</h2><dl><dt>지역</dt><dd>강원</dd><dt>주소</dt><dd>강원 횡성군 청일면 봉명리 155</dd><dt>방문 횟수</dt><dd>1회</dd></dl>
+<h2>정보</h2><dl><dt>지역</dt><dd>강원</dd><dt>주소</dt><dd>강원 횡성군 청일면 봉명리 155</dd><dt>방문 횟수</dt><dd>1회</dd></dl>
 <h2>강원의 다른 캠핑장</h2><ul class="cols"><li><a href="https://kydz.kr/camps/%EB%82%98%EC%A1%B0%EC%8A%A4%ED%8A%B8/">나조스트</a></li><li><a href="https://kydz.kr/camps/%EC%83%81%EC%9A%B0%EB%86%8D%EC%9E%A5/">상우농장</a></li><li><a href="https://kydz.kr/camps/%EC%BA%A0%ED%94%84%ED%95%98%EB%8B%A4/">캠프하다</a></li><li><a href="https://kydz.kr/camps/%EC%BA%A0%ED%95%91%EB%8A%90%EB%A3%A8/">캠핑느루</a></li></ul>
 <div class="foot">
 <a href="https://kydz.kr/">홈</a><a href="https://kydz.kr/camps/">다녀온 캠핑장</a><a href="https://kydz.kr/gear/">캠핑용품</a><a href="https://kydz.kr/foods/">먹거리</a>
