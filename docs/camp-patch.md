@@ -2,14 +2,14 @@
 
 캠핑장 페이지(`/camps/{이름}/`, `camp.html?id=`)는 인스타 게시물의 **풀 버전**이다 (261030 결정).
 채팅 세션이 아래 형식의 패치 JSON을 만들면 **Code 세션이 `python tools/apply_camp_patch.py patch.json`으로 적용·커밋**한다(여러 곳은 `[…]` 배열 하나). 사용자가 직접 고칠 때는 admin 캠핑장 상세 맨 위 **📥 패치 붙여넣기**(같은 규칙).
-`story`·`guide`는 사용자가 확정한 문장만 넣는다 (Code·채팅이 지어 넣지 않음).
+`story`는 위 규칙대로 본인 글을 다시 쓴 것, `guide`는 사용자가 확정한 문장만 넣는다 (없는 사실을 지어 넣지 않음).
 
 ## 필드 (`data/camps.json`, 기존 필드는 그대로 두고 추가)
 
 | 필드 | 형식 | 내용 |
 |---|---|---|
 | `hook` | 문자열 | 한 줄 훅 (릴스 첫 자막 그대로). 있으면 제목 아래 + `<title>` |
-| `story` | 문자열 | 본문. 업로드 캡션을 웹용으로 — 해시태그는 넣고, 협찬 고지·DM 유도·정보 줄은 빼고, '이번에·올해·내년' 같은 시점 표현은 뺀다(261030). 빈 줄 = 단락, 마크다운 처리 없음 |
+| `story` | 문자열 | 본문. 그 캠핑장 인스타 글을 **모두 합쳐 홈페이지 블로그 문체로 다시 쓴다**(캡션 그대로 복사 X). 사실은 본인 글·메모·방문 기록·예약 플랫폼 소개에서만 가져오고 지어내지 않는다. 해시태그는 끝에 모아 넣고, 협찬 고지·DM 유도·이벤트·할인·정보 블록·'이번에·올해·내년' 같은 시점 표현은 뺀다(261030). 빈 줄 = 단락, 마크다운 처리 없음 |
 | `guide` | `[{zone, text, pick}]` | 존별 가이드. `pick: true`는 ★ + 맨 위 |
 | `layout_imgs` | `["./images/camps/…jpg"]` | 배치도 (원본 비율, 긴 변 1200 — admin 업로드는 `{hash}-layout-…jpg`) |
 | `info` | 객체 | `checkin checkout manner pets max_people facilities[] season notice source{platform,url,checked_at}` — 예약 플랫폼 기준. 입퇴실은 `info`가 최상위 `checkin/checkout`보다 우선 |

@@ -40,7 +40,7 @@
 - 기본은 admin에서 추가/수정.
 - 직접 추가할 때: 기존 항목 형식 그대로 (`id`, `created_at`, `updated_at` 포함). 장비 `cat`은 `config.itemCats`의 key.
 - 캠핑장 CSV 병합은 `id` 기준. 삭제된 필드(`landscape`/`seasons`/`sites`/`price`)는 되살리지 않기.
-- 캠핑장 풀 버전 필드(261030): `hook` 한 줄 훅 · `story` 본문(빈 줄 = 단락. 업로드 캡션 기준 — 해시태그 포함, 협찬 고지·DM 유도·정보 줄·'이번에/올해/내년' 같은 시점 표현은 뺌, 261030) · `guide[{zone,text,pick}]` 존별 가이드 · `layout_imgs` 배치도 · `info{checkin checkout manner pets max_people facilities[] season notice source}` · `links[{type,label,url}]`(`reserve discount event homepage naver_blog etc`) · `gear`/`foods` id 목록 · `visit_log` · `dm_keyword`. 없는 필드는 렌더에서 건너뛴다. 설명과 패치 예시: [docs/camp-patch.md](docs/camp-patch.md).
+- 캠핑장 풀 버전 필드(261030): `hook` 한 줄 훅 · `story` 본문(빈 줄 = 단락. 그 캠핑장 인스타 글 **전부를 합쳐 홈페이지 블로그 문체로 다시 씀** — 캡션 복사 X, 사실은 본인 글·메모·방문 기록·예약 플랫폼 소개에서만, 해시태그는 끝에 모아 포함, 협찬 고지·DM 유도·이벤트·할인·정보 블록·'이번에/올해/내년' 같은 시점 표현은 뺌. 인스타 글 없는 곳은 메모·플랫폼 소개로 짧게, 261030) · `guide[{zone,text,pick}]` 존별 가이드 · `layout_imgs` 배치도 · `info{checkin checkout manner pets max_people facilities[] season notice source}` · `links[{type,label,url}]`(`reserve discount event homepage naver_blog etc`) · `gear`/`foods` id 목록 · `visit_log` · `dm_keyword`. 없는 필드는 렌더에서 건너뛴다. 설명과 패치 예시: [docs/camp-patch.md](docs/camp-patch.md).
 - admin 캠핑장 폼은 폼에 없는 필드(`visit_log`, 패치로 들어온 새 필드 등)를 저장할 때 그대로 보존한다 — 폼을 고칠 때 이 보존을 지우지 말 것.
 - `sitemap.xml`·정적 페이지는 GitHub Actions가 자동 생성 (아래 '검색 노출' 참고). `tools/update_sitemap.py`는 더 이상 쓰지 않음.
 
@@ -74,7 +74,7 @@
 - 캠핑장 페이지는 인스타 게시물의 풀 버전 — 본문·존별 가이드·배치도·추천 자리를 사이트에 공개한다(261030 사용자 결정, 인스타→홈페이지 유입 구조). `dm` 플래그는 guide가 없을 때 DM 안내용.
 - 정적 페이지 `/camps/{slug}/`가 기준(풀 버전). `camp.html`은 같은 필드·같은 순서: 히어로·훅 → 릴스 → 본문 → 존별 가이드·배치도 → 정보(+출처) → 예약·링크·장비·먹거리 → 메모 → 사진 → 같은 지역 → DM 안내. 섹션 제목은 데이터가 있을 때만. 릴스는 썸네일 카드 + 인스타 링크(외부 embed 스크립트 금지).
 - 캠핑장 정보 소스는 그 캠핑장 예약 플랫폼 페이지. 고캠핑(관광공사) 데이터는 쓰지 않는다. 수집은 `tools/collect_camp_info.py`(로컬) → `data/camp_info_raw/` → 사람이 검토해 admin 패치로 반영. 자동 반영 금지. 봇 차단 우회(프록시·UA 로테이션·재시도 루프·숨은 API 직접 호출) 금지 — 막히면 `needs_browser`.
-- 데이터 패치 반영: **Code 세션이 `python tools/apply_camp_patch.py patch.json`으로 바로 적용·커밋**(사용자 결정 261030 — 사용자가 일일이 붙여 넣지 않음, 여러 곳은 `[…]` 배열 하나로). admin '📥 패치 붙여넣기'(캠핑장 상세 맨 위)는 사용자가 직접 고칠 때용으로 같은 규칙. 채팅 세션은 패치 JSON을 만들고, `story`·`guide`는 사용자 확정본만. 커밋 `update(code): {이름} 패치`, 적용 전 최신 main을 받고 camps.json은 해당 캠핑장만 바뀌는지 diff 확인.
+- 데이터 패치 반영: **Code 세션이 `python tools/apply_camp_patch.py patch.json`으로 바로 적용·커밋**(사용자 결정 261030 — 사용자가 일일이 붙여 넣지 않음, 여러 곳은 `[…]` 배열 하나로). admin '📥 패치 붙여넣기'(캠핑장 상세 맨 위)는 사용자가 직접 고칠 때용으로 같은 규칙. 채팅 세션은 패치 JSON을 만들고, `story`는 본인 글을 합쳐 블로그 문체로(없는 사실 X), `guide`는 사용자 확정본만. 커밋 `update(code): {이름} 패치`, 적용 전 최신 main을 받고 camps.json은 해당 캠핑장만 바뀌는지 diff 확인.
 - **디스플레이 광고 배너 추가 금지** (협찬 브랜드 인상 관리).
 
 ## 통계 (Worker v6 · KST)
