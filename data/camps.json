@@ -1583,12 +1583,65 @@
     "visits": 1,
     "published": true,
     "created_at": "2026-09-17T00:20:32.016Z",
-    "updated_at": "2026-09-17T00:33:51.388Z",
+    "updated_at": "2026-10-30T01:28:58.852Z",
     "checkin": "14:00",
     "checkout": "12:00",
     "address": "경남 밀양시 산외면 밀양대로 3468-7",
     "lat": 35.506106,
-    "lng": 128.8298286
+    "lng": 128.8298286,
+    "hook": "가을에도 낮은 더워요, 그래서 찾은 그늘지옥 캠핑장",
+    "story": "(초안 — 확정 캡션으로 교체) 가을에도 나무 그늘은 여전히 필요합니다. 큰 나무가 사이트마다 그늘을 만들어 주는 곳이라 한낮에도 타프 없이 버틸 만했어요.\n\n봄에는 벚꽃, 가을에는 단풍 터널로 유명한 곳이고, 강 따라 걷는 길과 아이들 방방이가 있어요. 시설은 세월의 흔적이 있지만 관리는 괜찮았고, 올해 공사로 싹 달라질 예정이라고 합니다.",
+    "guide": [
+      {
+        "zone": "A존",
+        "text": "강뷰 명당. 뷰 보러 간다면 여기",
+        "pick": true
+      },
+      {
+        "zone": "C·D존",
+        "text": "그늘 좋고 사이트 넓음",
+        "pick": false
+      },
+      {
+        "zone": "E·F존",
+        "text": "그늘은 최고(E>F). 도로 쪽이라 차량 소음, 화장실은 민박 쪽",
+        "pick": false
+      }
+    ],
+    "info": {
+      "checkin": "14:00",
+      "checkout": "12:00",
+      "manner": "23:00~07:00",
+      "pets": "2마리까지",
+      "facilities": [
+        "와이파이"
+      ],
+      "notice": "방문객 출입 불가 · 2026.9.1부터 그래가 앱 전용 예약",
+      "source": {
+        "platform": "그래가",
+        "url": "https://www.graega.com/rooms/7143",
+        "checked_at": "2026-10-30"
+      }
+    },
+    "links": [
+      {
+        "type": "reserve",
+        "label": "그래가 앱에서 예약",
+        "url": "https://graega.short.gy/7143kydzm"
+      },
+      {
+        "type": "discount",
+        "label": "올해 말까지 20% 할인 · 추천인 코드 공대남자",
+        "url": "https://graega.short.gy/7143kydzm"
+      }
+    ],
+    "visit_log": [
+      {
+        "date": "2026-09-11",
+        "note": "E-3 사이트, 1박"
+      }
+    ],
+    "dm_keyword": "그늘"
   },
   {
     "id": "camp_db69a01534",
