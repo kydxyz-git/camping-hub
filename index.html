@@ -2799,7 +2799,8 @@ async function init() {
     renderChips('extra-chips',  autoExtras,  state.extras, 'ecnt');
     renderGrid();
     renderRecentSection('food-recent-section', 'food-recent-grid', foods, 'foods', '최근등록 음식');
-    renderProducts('food-grid', foods);
+    // 음식은 분류가 없어서 최근등록에 올라간 건 아래 목록에서 뺀다 (중복 노출 방지)
+    renderProducts('food-grid', foods.filter(x => !x.is_new));
     renderItemTab();
     // 데이터 로드가 끝난 뒤에 다시 한 번 — 첫 호출 시점엔 items가 비어 있어 그려지지 않는다
     applyHashTab();
@@ -3378,7 +3379,9 @@ addEventListener('hashchange',route);
   renderCamps();
   renderSeriesList();
   renderPcRecent('#pc-food-recent',DATA.foods,'foods','최근등록 음식');
-  renderProducts('#pc-food-grid',DATA.foods,'#food-count',null,(DATA.config||{}).foodsSort||'random','foods');
+  // 음식은 분류가 없어서 최근등록에 올라간 건 아래 목록에서 뺀다 (개수는 전체 기준)
+  renderProducts('#pc-food-grid',(DATA.foods||[]).filter(x=>!x.is_new),null,null,(DATA.config||{}).foodsSort||'random','foods');
+  $('#food-count').textContent=pub(DATA.foods).length+'개';
   renderGearTab();
   renderChrome();
   route();
