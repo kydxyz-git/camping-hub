@@ -2341,6 +2341,7 @@ async function ghCommitWithDeletions(files, deletePaths, message) {
 // 장비·음식 썸네일 (CLAUDE.md 규격): 800x800 JPEG, 흰 배경, 여백 7%, 원본 비율 유지(잘림 없음)
 //  · 투명 PNG는 흰 배경에 합성
 //  · 사진 가장자리의 흰색/거의 흰색 여백은 잘라낸 뒤 가운데 배치
+//  · 네 모서리가 모두 밝지 않은 직접 찍은 사진은 흰 여백 없이 가운데를 정사각형으로 꽉 채움 (261031 사용자 결정)
 // ════════════════════════════════════════════════════════════════════
 async function fitProductImage(file, size = 800, margin = 0.07, quality = 0.85) {
   const dataUrl = await new Promise((res, rej) => {
@@ -2363,6 +2364,7 @@ async function fitProductImage(file, size = 800, margin = 0.07, quality = 0.85) 
   sctx.fillStyle = '#fff'; sctx.fillRect(0, 0, w, h);
   sctx.drawImage(img, 0, 0);
   let x0 = 0, y0 = 0, x1 = w - 1, y1 = h - 1;
+  let isPhoto = false;
   try {
     // 연회색 배경(쿠팡·네이버 상품 사진에 흔한 240~250)이면 흰색으로 끌어올림
     const all = sctx.getImageData(0, 0, w, h);
@@ -2371,6 +2373,7 @@ async function fitProductImage(file, size = 800, margin = 0.07, quality = 0.85) 
       const k = (y * w + x) * 4; return Math.min(px[k], px[k + 1], px[k + 2]);
     });
     const bg = Math.min(...corner);
+    isPhoto = Math.max(...corner) < 228;
     if (bg >= 228 && bg < 253 && Math.max(...corner) - bg <= 6) {
       const f = 255 / (bg - 2);
       for (let k = 0; k < px.length; k += 4) {
@@ -2387,9 +2390,10 @@ async function fitProductImage(file, size = 800, margin = 0.07, quality = 0.85) 
     while (x0 < x1 && !colHas(x0)) x0++;
     while (x1 > x0 && !colHas(x1)) x1--;
   } catch (e) { x0 = 0; y0 = 0; x1 = w - 1; y1 = h - 1; }
+  if (isPhoto) { const s = Math.min(w, h); x0 = Math.floor((w - s) / 2); y0 = Math.floor((h - s) / 2); x1 = x0 + s - 1; y1 = y0 + s - 1; }
   const cw = x1 - x0 + 1, ch = y1 - y0 + 1;
   // 2) 800x800 흰 캔버스에 여백 7%로 비율 유지 배치
-  const box = Math.round(size * (1 - margin * 2));
+  const box = isPhoto ? size : Math.round(size * (1 - margin * 2));
   const scale = Math.min(box / cw, box / ch);
   const dw = Math.round(cw * scale), dh = Math.round(ch * scale);
   const canvas = document.createElement('canvas');
