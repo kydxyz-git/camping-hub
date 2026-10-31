@@ -276,5 +276,20 @@
     "created_at": "2026-10-31T14:10:29.823Z",
     "updated_at": "2026-10-31T14:10:29.823Z",
     "is_new": true
+  },
+  {
+    "id": "food_4b26940fcc",
+    "name": "하림 자연실록 무항생제 인증 닭윙 아랫날개 (냉장)",
+    "desc": "",
+    "url": "https://link.coupang.com/a/iiFuSnhoHZ",
+    "source": "쿠팡",
+    "thumb": "./images/products/d45af2ec3cb7.jpg",
+    "currency": "KRW",
+    "price_original": 11640,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": false,
+    "created_at": "2026-10-31T14:12:47.605Z",
+    "updated_at": "2026-10-31T14:12:47.605Z"
   }
 ]
