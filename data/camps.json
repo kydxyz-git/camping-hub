@@ -1748,12 +1748,22 @@
     "graega": false,
     "url": "https://m.place.naver.com/accommodation/1401925417/room?entry=plt&businessCategory=camping",
     "imgs": [
-      "./images/camps/aa890d7face6.jpg"
+      "./images/camps/aa890d7face6.jpg",
+      "./images/camps/aa890d7face6-2.jpg",
+      "./images/camps/aa890d7face6-3.jpg",
+      "./images/camps/aa890d7face6-4.jpg",
+      "./images/camps/aa890d7face6-5.jpg",
+      "./images/camps/aa890d7face6-6.jpg",
+      "./images/camps/aa890d7face6-7.jpg",
+      "./images/camps/aa890d7face6-8.jpg",
+      "./images/camps/aa890d7face6-9.jpg",
+      "./images/camps/aa890d7face6-10.jpg",
+      "./images/camps/aa890d7face6-11.jpg"
     ],
     "visits": 1,
     "published": true,
     "created_at": "2026-10-31T06:55:18.376Z",
-    "updated_at": "2026-10-31T06:55:18.376Z",
+    "updated_at": "2026-10-31T07:13:04.753Z",
     "story": "우니메이카 단양은 사이트 하나를 예약하면 독채까지 함께 쓸 수 있는 캠핑장입니다."
   }
 ]
