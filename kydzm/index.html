@@ -7345,8 +7345,8 @@ function srcClass(item) {
   return m[item.source] || 'src-etc';
 }
 
-// 쿠팡 링크 점검 — 지금 등록된 링크가 점검한 링크와 같을 때만 (링크를 바꾸면 다음 점검까지 표시 안 함)
-const LINK_BAD = { no_af: '파트너스 코드 없음', other_af: '다른 파트너스 코드', soldout: '품절·판매종료 의심', broken: '링크 깨짐' };
+// 쿠팡·컬리 링크 점검 — 지금 등록된 링크가 점검한 링크와 같을 때만 (링크를 바꾸면 다음 점검까지 표시 안 함)
+const LINK_BAD = { no_af: '파트너스 코드 없음', other_af: '다른 파트너스 코드', soldout: '품절·판매종료', broken: '링크 깨짐' };
 const _linkOnly = {};
 function linkIssue(item) {
   const r = cache.linkCheck && cache.linkCheck.results && cache.linkCheck.results[item.id];
@@ -7511,7 +7511,7 @@ function renderProductList(dataArr, searchVar, opts) {
           <span style="opacity:.75">· 홈페이지 밖 직접 만든 링크 클릭 ${(o.click || 0).toLocaleString()} · 주문 ${o.order || 0}</span>
           <button type="button" class="btn btn-sm btn-ghost" id="cp-sort-btn" style="margin-left:6px">${_cpSort ? '원래 순서' : '클릭 많은 순'}</button></div>`; })() : ''}
     ${badN ? `<div class="series-sort-note" style="background:#fdecea;border-color:#f5c2c0;color:#8a1c14;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-        <span>🔎 쿠팡 링크 점검 (${escapeHtml(String(lc.checked_at || '').slice(5, 16).replace('T', ' '))}): 손볼 링크 <b>${badN}</b>개 — 파트너스에서 새 링크를 만들어 바꿔 주세요</span>
+        <span>🔎 링크 점검(쿠팡·컬리) (${escapeHtml(String(lc.checked_at || '').slice(5, 16).replace('T', ' '))}): 손볼 링크 <b>${badN}</b>개 — 파트너스에서 새 링크를 만들어 바꿔 주세요</span>
         <button type="button" class="btn btn-sm ${linkOnly ? '' : 'btn-ghost'}" id="link-only-btn">${linkOnly ? '전체 보기' : '문제만 보기'}</button></div>` : ''}
     <div class="list" id="prod-list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>'

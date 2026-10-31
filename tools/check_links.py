@@ -1,6 +1,7 @@
 """
-쿠팡 링크 점검 — data/items.json · data/foods.json의 쿠팡 링크를 하나씩 따라가서
+링크 점검 — data/items.json · data/foods.json의 쿠팡 링크를 하나씩 따라가서
 내 파트너스 코드(AF…)가 붙어 있는지, 상품이 판매 중인지 확인해 data/link_check.json에 기록한다.
+컬리 링크(lounge.kurly.com · kurly.com/goods)는 판매 여부만 본다 — 상품 페이지 안의 상품 데이터(isSoldOut) 기준 (261031).
 링크는 고치지 않는다 (고치는 건 사용자가 파트너스에서 직접 — 사용자 결정 261022).
 .github/workflows/link-check.yml이 매주 월요일 + 수동으로 실행. 표준 라이브러리만 사용.
 
@@ -11,6 +12,7 @@
   soldout   품절·판매 종료 의심 (상품 페이지 문구 기준 — 직접 확인 필요)
   broken    링크 깨짐 (없는 링크·상품으로 안 감)
   unknown   상품 페이지 확인 불가 (쿠팡이 자동 접속을 막음) — 코드 확인은 됨
+  컬리는 ok / soldout / broken / unknown 만 쓴다 (파트너스 코드 판정 없음)
 """
 
 import json
@@ -130,28 +132,62 @@ def check(url):
             "detail": f"상품 페이지 확인 불가 (응답 {status or '연결 오류'})"}
 
 
+def check_kurly(url):
+    """컬리: 큐레이터 짧은 링크면 페이지 안의 상품 번호를 찾고, 상품 페이지의 상품 데이터로 판매 여부 확인"""
+    gid = (re.search(r"kurly\.com/goods/(\d+)", url) or [None, ""])[1]
+    if not gid:
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "ko-KR,ko;q=0.9"})
+            body = urllib.request.urlopen(req, timeout=20).read(300_000).decode("utf-8", "replace")
+        except urllib.error.HTTPError as e:
+            return {"status": "broken", "af": "", "product_id": "", "detail": f"컬리 링크 응답 {e.code}"}
+        except Exception:
+            return {"status": "unknown", "af": "", "product_id": "", "detail": "컬리 링크 확인 불가 (연결 오류)"}
+        gid = (re.search(r"kurly\.com/goods/(\d+)", body) or [None, ""])[1]
+        if not gid:
+            return {"status": "broken", "af": "", "product_id": "", "detail": "컬리 링크가 상품으로 안 감"}
+    status, _, body = get(f"https://www.kurly.com/goods/{gid}", read=True)
+    if status == 404:
+        return {"status": "broken", "af": "", "product_id": gid, "detail": "컬리 상품 페이지 404 (삭제된 상품)"}
+    m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', body or "", re.S)
+    if status != 200 or not m:
+        return {"status": "unknown", "af": "", "product_id": gid, "detail": f"컬리 상품 페이지 확인 불가 (응답 {status or '연결 오류'})"}
+    try:
+        prod = json.loads(m.group(1))["props"]["pageProps"].get("product")
+    except (ValueError, KeyError, TypeError):
+        return {"status": "unknown", "af": "", "product_id": gid, "detail": "컬리 상품 데이터를 못 읽음 (페이지 구조 바뀜?)"}
+    if not prod:
+        return {"status": "broken", "af": "", "product_id": gid, "detail": "컬리 상품 없음 (판매 종료)"}
+    deals = prod.get("dealProducts") or []
+    if prod.get("isSoldOut") or (deals and all(d.get("isSoldOut") for d in deals)):
+        return {"status": "soldout", "af": "", "product_id": gid, "detail": "컬리 품절"}
+    return {"status": "ok", "af": "", "product_id": gid, "detail": ""}
+
+
 def main():
     rows = []
     for kind in ("items", "foods"):
         with open(os.path.join(ROOT, "data", f"{kind}.json"), encoding="utf-8") as f:
             for it in json.load(f):
                 url = (it.get("url") or "").strip()
-                if "coupang" in url and it.get("id"):
+                if ("coupang" in url or "kurly.com" in url) and it.get("id"):
                     rows.append((kind, it))
     results, sample = {}, ""
     for n, (kind, it) in enumerate(rows, 1):
-        r = check(it["url"].strip())
+        url = it["url"].strip()
+        r = check_kurly(url) if "kurly.com" in url else check(url)
         body = r.pop("_body", "")
         if body and not sample:
             sample = body
-        results[it["id"]] = {"type": kind, "name": it.get("name", ""), "url": it["url"].strip(), **r}
+        results[it["id"]] = {"type": kind, "name": it.get("name", ""), "url": url,
+                             "shop": "kurly" if "kurly.com" in url else "coupang", **r}
         print(f"[{n}/{len(rows)}] {r['status']:8} {it.get('name', '')} {r['af']} {r['detail']}")
         time.sleep(1.5)
 
     # 내 코드 = 가장 많이 쓰인 코드. 코드 없는 링크·다른 코드 링크를 따로 표시
     main_af = (Counter(r["af"] for r in results.values() if r["af"]).most_common(1) or [("", 0)])[0][0]
     for r in results.values():
-        if r["status"] == "broken" or not r["product_id"]:
+        if r["shop"] != "coupang" or r["status"] == "broken" or not r["product_id"]:
             continue   # 상품까지 못 따라간 링크는 코드 판정도 안 함 (확인 불가 그대로)
         if not r["af"]:
             r["status"], r["detail"] = "no_af", "파트너스 코드 없음 — 파트너스에서 만든 링크가 아님 (수익 안 잡힘)" + (f" · {r['detail']}" if r["detail"] else "")
@@ -172,7 +208,7 @@ def main():
     if summary:
         bad = [r for r in results.values() if r["status"] not in ("ok", "unknown")]
         with open(summary, "a", encoding="utf-8") as f:
-            f.write(f"## 쿠팡 링크 점검 — 문제 {len(bad)}개 / {len(results)}개\n\n")
+            f.write(f"## 링크 점검(쿠팡·컬리) — 문제 {len(bad)}개 / {len(results)}개\n\n")
             for r in bad:
                 f.write(f"- **{r['name']}** ({r['type']}) — {r['detail']}\n")
             if sample:  # 점검 방식 손볼 때 참고용 (짧은 링크 페이지 앞부분)
