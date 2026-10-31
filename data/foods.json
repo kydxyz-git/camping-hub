@@ -288,7 +288,7 @@
     "price_original": 11640,
     "price_sale": null,
     "discount_rate": null,
-    "published": false,
+    "published": true,
     "created_at": "2026-10-31T14:12:47.605Z",
     "updated_at": "2026-10-31T14:14:45.692Z",
     "is_new": true
