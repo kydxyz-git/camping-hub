@@ -320,7 +320,7 @@
     "price_original": 19030,
     "price_sale": null,
     "discount_rate": null,
-    "published": false,
+    "published": true,
     "created_at": "2026-10-31T14:18:26.876Z",
     "updated_at": "2026-10-31T14:19:59.000Z",
     "is_new": true
