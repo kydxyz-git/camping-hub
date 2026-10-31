@@ -92,6 +92,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .vthumb{display:block;position:relative;aspect-ratio:4/5;overflow:hidden;
   border-radius:4px;background:#EDEDE7}
 .vthumb img{width:100%;height:100%;object-fit:cover}
+.vthumb.vplay{aspect-ratio:9/16;background:#111}.vthumb video{display:block;width:100%;height:100%;object-fit:cover}
 .vmeta{display:block;padding:9px 2px 0}
 .vmeta b{display:block;font-size:13.5px;font-weight:700;letter-spacing:-.015em;line-height:1.4}
 .vmeta em{display:block;font-style:normal;font-family:var(--mono);font-size:10.5px;
@@ -267,13 +268,13 @@ function orderedImgs(c){
     for(const ep of (s.eps||[])){
       if(ep.published===false || ep.camp_id!==c.id || !ep.url) continue;
       const num = ep.ep>0 ? `${s.name} EP.${String(ep.ep).padStart(2,'0')}${ep.ep_sub>0?'-'+ep.ep_sub:''}` : s.name;
-      linked.push({url:ep.url, title:(ep.title||'').trim()||num, sub:num, thumb:ep.thumb||''});
+      linked.push({url:ep.url, title:(ep.title||'').trim()||num, sub:num, thumb:ep.thumb||'', mp4:ep.mp4||''});
     }
   }
   // 캠핑장에 직접 등록한 영상은 썸네일이 없다 → 캠핑장 대표 사진으로 대신 채운다
   const fallbackThumb=(imgs&&imgs[0])||'';
   const own=(c.videos||[]).filter(x=>x&&x.url)
-    .map(x=>({url:x.url,title:x.title||'게시물 보기',sub:'',thumb:x.thumb||fallbackThumb}));
+    .map(x=>({url:x.url,title:x.title||'게시물 보기',sub:'',thumb:x.thumb||fallbackThumb,mp4:x.mp4||''}));
   const seen=new Set(); const vids=[];
   for(const x of [...linked,...own]){ if(!seen.has(x.url)){ seen.add(x.url); vids.push(x); } }
 
@@ -323,7 +324,13 @@ function orderedImgs(c){
       ${vids.length?`<div class="block">
         <h2>REELS</h2>
         <div class="vids">
-          ${vids.map(x=>`<a class="vid" href="${esc(x.url)}" target="_blank" rel="noopener">
+          ${vids.map(x=>x.mp4?`<div class="vid">
+            <span class="vthumb vplay"><video controls playsinline preload="none" src="${esc(x.mp4)}"${x.thumb?` poster="${esc(abs(x.thumb))}"`:''}></video></span>
+            <span class="vmeta">
+              <b>${esc(x.title)}</b>
+              <a href="${esc(x.url)}" target="_blank" rel="noopener" style="font-size:12px;color:var(--stone)">인스타그램에서 보기 →</a>
+            </span>
+          </div>`:`<a class="vid" href="${esc(x.url)}" target="_blank" rel="noopener">
             <span class="vthumb">${x.thumb?`<img src="${esc(abs(x.thumb))}" alt="">`:''}</span>
             <span class="vmeta">
               <b>${esc(x.title)}</b>

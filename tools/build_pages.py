@@ -160,6 +160,9 @@ li{margin:3px 0}
 .foot a{margin-right:12px}
 .hook{font-size:19px;font-weight:800;line-height:1.45;letter-spacing:-.01em;margin-bottom:16px}
 .story p{font-size:16px;margin:0 0 14px}
+.vids{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.vids figure{margin:0}.vids video{display:block;width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:8px;background:#111}
+.vids figcaption{font-size:13px;line-height:1.5;margin-top:6px}.vids figcaption a{color:#888;font-size:12px}
 .reels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .reels a{text-decoration:none;display:block}
 .reels .th{display:block;aspect-ratio:4/5;border-radius:8px;overflow:hidden;background:#EDEDE7}
@@ -362,19 +365,29 @@ def camp_page(c, slug, by_region, slugs, eps_by_camp, products):
              f'<p class="hook">{e(hook)}</p>' if hook else f'<p class="lead">{e(lead)}</p>']
 
     # 2) 릴스 — 썸네일 카드 + 인스타 링크 (외부 embed 스크립트 없음)
-    vids = [(v.get('title') or '영상', clean_ig(v.get('url')), v.get('thumb') or (imgs[0] if imgs else ''))
+    # mp4(직접 올린 영상 파일, R2)가 있으면 페이지 안에서 재생 + VideoObject — docs/video.md (261031)
+    vids = [dict(t=v.get('title') or '영상', u=clean_ig(v.get('url')), th=v.get('thumb') or (imgs[0] if imgs else ''),
+                 mp4=v.get('mp4') or '', day=(v.get('uploaded') or '')[:10])
             for v in (c.get('videos') or []) if isinstance(v, dict) and v.get('url')]
-    vids += [(t, clean_ig(u), th or (imgs[0] if imgs else '')) for t, u, th in eps_by_camp.get(c['id'], [])]
+    vids += [dict(v, u=clean_ig(v['u']), th=v['th'] or (imgs[0] if imgs else '')) for v in eps_by_camp.get(c['id'], [])]
     seen, reels = set(), []
-    for t, u, th in vids:
-        if u not in seen:
-            seen.add(u)
-            reels.append((t, u, th))
-    if reels:
-        body.append('<h2>릴스</h2><div class="reels">' + ''.join(
-            f'<a href="{e(u)}" rel="nofollow noopener" target="_blank"><span class="th">'
-            + (f'<img src="{e(abs_img(th))}" alt="" loading="lazy">' if th else '')
-            + f'</span><b>{e(t)}</b></a>' for t, u, th in reels) + '</div>')
+    for v in vids:
+        if v['u'] not in seen:
+            seen.add(v['u'])
+            reels.append(v)
+    played = [v for v in reels if v['mp4']]
+    if played:
+        body.append('<h2>영상</h2><div class="vids">' + ''.join(
+            f'<figure><video controls playsinline preload="none" src="{e(v["mp4"])}"'
+            + (f' poster="{e(abs_img(v["th"]))}"' if v['th'] else '') + '></video>'
+            f'<figcaption><b>{e(v["t"])}</b> <a href="{e(v["u"])}" rel="nofollow noopener" target="_blank">인스타그램에서 보기 →</a></figcaption></figure>'
+            for v in played) + '</div>')
+    rest = [v for v in reels if not v['mp4']]
+    if rest:
+        body.append(('<h2>릴스</h2>' if not played else '<h2>다른 릴스</h2>') + '<div class="reels">' + ''.join(
+            f'<a href="{e(v["u"])}" rel="nofollow noopener" target="_blank"><span class="th">'
+            + (f'<img src="{e(abs_img(v["th"]))}" alt="" loading="lazy">' if v['th'] else '')
+            + f'</span><b>{e(v["t"])}</b></a>' for v in rest) + '</div>')
 
     # 3) 본문 (빈 줄 = 단락, 마크다운 처리 없음)
     if paras:
@@ -454,8 +467,12 @@ def camp_page(c, slug, by_region, slugs, eps_by_camp, products):
     same = list(dict.fromkeys(u for t, _, u, _ in links if t in ('reserve', 'homepage')))
     if same:
         ld['sameAs'] = same
-    if reels:
-        ld['video'] = [{'@type': 'VideoObject', 'name': t, 'url': u} for t, u, _ in reels]
+    # 동영상 표시는 페이지에서 실제로 재생되는 영상만 (인스타 링크 카드는 구글이 영상으로 보지 않음 — 서치 콘솔 경고 261031)
+    vo = [{'@type': 'VideoObject', 'name': v['t'], 'description': f"{name} — {v['t']}. 공대남자가 직접 다녀와 찍은 영상.",
+           'thumbnailUrl': abs_img(v['th']), 'uploadDate': v['day'], 'contentUrl': v['mp4']}
+          for v in played if v['th'] and v['day']]
+    if vo:
+        ld['video'] = vo
     title = f"{name} — {hook} | {BRAND}" if hook else f"{name} 후기·정보 | {BRAND}"
     return page(title=title, desc=desc, canonical=canonical,
                 og_image=abs_img(imgs[0]) if imgs else OG_DEFAULT,
@@ -567,7 +584,9 @@ def main():
         for ep in pub(s.get('eps') or []):
             if ep.get('camp_id') and ep.get('url'):
                 title = re.sub(r'^EP\.\d+\s*', '', ep.get('title') or '', flags=re.I) or s.get('name')
-                eps_by_camp.setdefault(ep['camp_id'], []).append((f"{s.get('name')} · {title}", ep['url'], ep.get('thumb') or ''))
+                eps_by_camp.setdefault(ep['camp_id'], []).append(dict(
+                    t=f"{s.get('name')} · {title}", u=ep['url'], th=ep.get('thumb') or '', mp4=ep.get('mp4') or '',
+                    day=(ep.get('uploaded') or ep.get('created_at') or '')[:10]))
 
     # 정렬: 캠핑장은 방문 많은 순, 나머지는 이름순
     camps.sort(key=lambda c: (-(int(c.get('visits') or 0)), c['name']))
