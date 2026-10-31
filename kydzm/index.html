@@ -2672,6 +2672,8 @@ function cpAggregate(daily, map, from, to) {
 }
 const cpGroup = r => r.where.some(w => w.type === 'post') || r.channel.startsWith('스레드') ? 'threads'
   : r.where.some(w => w.type === 'home') || r.channel === '홈페이지' ? 'home' : 'other';
+// 홈페이지 줄을 눌린 링크가 걸린 곳 기준으로 음식·장비로 나눔 (둘 다 걸렸으면 장비, 링크를 빼서 못 찾으면 '')
+const cpHomeKind = r => { const ks = r.where.filter(w => w.type === 'home').map(w => w.kind); return ks.includes('items') ? 'items' : ks.includes('foods') ? 'foods' : ''; };
 // 그래프: 기간 날짜별(62일 넘으면 월별) 막대 — 지표(수익·클릭·주문)는 버튼으로
 function cpTip(e, box) {
   const tip = box.querySelector('.cp-tip');
@@ -2745,11 +2747,12 @@ async function renderCoupangReport() {
     }
   }
   const sum = list => list.reduce((a, r) => ({ click: a.click + r.click, order: a.order + r.order, commission: a.commission + r.commission }), { click: 0, order: 0, commission: 0 });
-  const G = { all: ['전체', all], home: ['홈페이지', all.filter(r => cpGroup(r) === 'home')], threads: ['스레드', all.filter(r => cpGroup(r) === 'threads')], other: ['그 외', all.filter(r => cpGroup(r) === 'other')] };
+  const G = { all: ['전체', all], home: ['홈페이지', all.filter(r => cpGroup(r) === 'home')],
+    foods: ['ㄴ 음식', all.filter(r => cpGroup(r) === 'home' && cpHomeKind(r) === 'foods')], items: ['ㄴ 장비', all.filter(r => cpGroup(r) === 'home' && cpHomeKind(r) === 'items')], threads: ['스레드', all.filter(r => cpGroup(r) === 'threads')], other: ['그 외', all.filter(r => cpGroup(r) === 'other')] };
   const won = n => `${Math.round(n).toLocaleString()}원`;
   const idxOf = w => { const arr = w.kind === 'foods' ? cache.foods : cache.items; return (arr || []).findIndex(x => x.id === w.id); };
   const nameOf = r => { const w = r.where[0]; return w ? w.name + (r.where.length > 1 ? ` 외 ${r.where.length - 1}곳` : '') : (r.landing || `상품 ${r.ctag}`); };
-  const badge = r => { const g = cpGroup(r); const [bg, t] = g === 'home' ? ['#0b5e2e', '홈페이지'] : g === 'threads' ? ['#111', '스레드'] : ['#9e9e9e', '그 외']; return `<span style="font-size:11px;color:#fff;background:${bg};border-radius:4px;padding:1px 6px;margin-right:6px">${t}</span>`; };
+  const badge = r => { const g = cpGroup(r); const k = g === 'home' ? cpHomeKind(r) : ''; const [bg, t] = g === 'home' ? ['#0b5e2e', '홈페이지' + (k === 'foods' ? '·음식' : k === 'items' ? '·장비' : '')] : g === 'threads' ? ['#111', '스레드'] : ['#9e9e9e', '그 외']; return `<span style="font-size:11px;color:#fff;background:${bg};border-radius:4px;padding:1px 6px;margin-right:6px">${t}</span>`; };
   const list = G[_cpFilter][1], t = sum(list);
   // 아래 목록 정렬: 수익(기본)·주문·클릭·최근 구매 (사용자 요청 261029)
   const ORD = { commission: (a, b) => b.commission - a.commission || b.click - a.click, order: (a, b) => b.order - a.order || b.commission - a.commission,
