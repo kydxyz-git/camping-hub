@@ -12,7 +12,7 @@ post.html을 브라우저로 열고 '다음 복사' → 네이버 에디터에 C
     python tools/blog_post.py "D:/☆KYD_ZM/000002_블로그게시글/001_봉화별캠핑장/봉화별캠핑장.json" --serve  # 만들고 브라우저로 열기
 
 원고 JSON 형식은 docs/blog.md 참고. 원고·결과물은 저장소 밖 `D:/☆KYD_ZM/000002_블로그게시글/`에 둔다
-(공개 저장소라 사진·원고는 올리지 않는다). 글마다 번호 폴더(`001_봉화별캠핑장/`)에 원고 JSON·`src/`(사진 복사본)·결과물을 함께 둔다.
+(공개 저장소라 사진·원고는 올리지 않는다). 캠핑장 폴더(`001_봉화별캠핑장/`, 안 올린 곳은 `더360캠핑장/`)에 원고 JSON·`사진/`(사진 복사본)·결과물을 함께 둔다.
 """
 import argparse, base64, html, io, json, os, re, sys, urllib.request
 from pathlib import Path
@@ -45,7 +45,7 @@ def font(weight, size):
 def load(path):
     p = Path(path).expanduser()
     if not p.is_absolute():
-        # 상대경로는 원고 JSON 폴더 기준 (src/사진.jpg), 없으면 저장소 기준
+        # 상대경로는 원고 JSON 폴더 기준 (사진/파일.jpg), 없으면 저장소 기준
         p = next((c for c in (SPEC_DIR / p, ROOT / p) if c.exists()), p)
     if not p.exists():
         sys.exit(f'사진을 찾을 수 없어요: {path}')
@@ -222,8 +222,10 @@ def main():
             sys.exit(f'원고 JSON에 "{k}"가 없어요')
     global SPEC_DIR
     SPEC_DIR = Path(a.spec).resolve().parent
-    # 글마다 번호 폴더(001_봉화별캠핑장\)에 원고·src\·결과물을 함께 둔다 (261031). 번호 폴더가 아니면 예전처럼 JSON 옆 {slug}\
-    out = SPEC_DIR if re.match(r'\d{3}_', SPEC_DIR.name) else SPEC_DIR / spec['slug']
+    # 캠핑장 폴더(올린 글은 001_봉화별캠핑장\, 안 올린 글은 더360캠핑장\)에 원고·사진\·결과물을 함께 둔다 (261031).
+    # 그런 폴더가 아니면 예전처럼 JSON 옆 {slug}\
+    camp_dir = re.match(r'\d{3}_', SPEC_DIR.name) or SPEC_DIR.name == Path(a.spec).stem
+    out = SPEC_DIR if camp_dir else SPEC_DIR / spec['slug']
     out.mkdir(parents=True, exist_ok=True)
     ps = pieces(spec, out)
     data = json.dumps({'title': spec['title'], 'tags': spec.get('tags', ''), 'pieces': ps}, ensure_ascii=False)
