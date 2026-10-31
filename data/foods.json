@@ -267,14 +267,14 @@
     "desc": "",
     "url": "https://link.coupang.com/a/iiFlUzPUZM",
     "source": "쿠팡",
-    "thumb": "./images/products/f6bf83d17a5d.jpg",
+    "thumb": "./images/products/88237c8f2ddf.jpg",
     "currency": "KRW",
     "price_original": 22900,
     "price_sale": null,
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-31T14:10:29.823Z",
-    "updated_at": "2026-10-31T14:10:29.823Z",
+    "updated_at": "2026-10-31T14:19:59.000Z",
     "is_new": true
   },
   {
@@ -283,14 +283,14 @@
     "desc": "",
     "url": "https://link.coupang.com/a/iiFuSnhoHZ",
     "source": "쿠팡",
-    "thumb": "./images/products/d45af2ec3cb7.jpg",
+    "thumb": "./images/products/a50f4969a308.jpg",
     "currency": "KRW",
     "price_original": 11640,
     "price_sale": null,
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-31T14:12:47.605Z",
-    "updated_at": "2026-10-31T14:14:45.692Z",
+    "updated_at": "2026-10-31T14:19:59.000Z",
     "is_new": true
   },
   {
@@ -299,14 +299,14 @@
     "desc": "",
     "url": "https://link.coupang.com/a/iiFOrqlmx2",
     "source": "쿠팡",
-    "thumb": "./images/products/212dc410df7c.jpg",
+    "thumb": "./images/products/25784f9e1747.jpg",
     "currency": "KRW",
     "price_original": 26350,
     "price_sale": null,
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-31T14:16:17.650Z",
-    "updated_at": "2026-10-31T14:16:17.650Z",
+    "updated_at": "2026-10-31T14:19:59.000Z",
     "is_new": true
   },
   {
@@ -315,14 +315,14 @@
     "desc": "",
     "url": "https://link.coupang.com/a/iiFVLh11SC",
     "source": "쿠팡",
-    "thumb": "./images/products/910016518dd5.jpg",
+    "thumb": "./images/products/2dbc8a4c22de.jpg",
     "currency": "KRW",
     "price_original": 19030,
     "price_sale": null,
     "discount_rate": null,
     "published": false,
     "created_at": "2026-10-31T14:18:26.876Z",
-    "updated_at": "2026-10-31T14:18:26.876Z",
+    "updated_at": "2026-10-31T14:19:59.000Z",
     "is_new": true
   }
 ]
