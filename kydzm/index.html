@@ -1925,6 +1925,8 @@ async function loadAllData(force = false) {
   cache.camps  = results[4];
   // 쿠팡 링크 점검 결과 (tools/check_links.py, 없으면 표시 안 함)
   cache.linkCheck = await fetchDataFile('link_check').catch(() => null);
+  // 홈페이지 자체 통계 최근 30일 (data/stats.json — 통계 Worker가 매시간 커밋하는 사본) → 목록의 조회·클릭
+  cache.siteStats = await fetchDataFile('stats').then(siteStats30).catch(() => null);
   // 홈페이지 링크별 쿠팡 클릭·주문 (비공개 cupas state/homepage_links.json — 수익 숫자라 공개 저장소엔 없음, 쿠파스 토큰 있을 때만)
   cache.cpHome = cupasToken() ? await ghFetchRaw('/repos/kydxyz-git/cupas/contents/state/homepage_links.json?ref=main',
     { headers: { Accept: 'application/vnd.github.raw+json' } }).then(r => r.json()).catch(() => null) : null;
@@ -2748,7 +2750,8 @@ async function renderCoupangReport() {
   }
   const sum = list => list.reduce((a, r) => ({ click: a.click + r.click, order: a.order + r.order, commission: a.commission + r.commission }), { click: 0, order: 0, commission: 0 });
   const G = { all: ['전체', all], home: ['홈페이지', all.filter(r => cpGroup(r) === 'home')],
-    foods: ['ㄴ 음식', all.filter(r => cpGroup(r) === 'home' && cpHomeKind(r) === 'foods')], items: ['ㄴ 장비', all.filter(r => cpGroup(r) === 'home' && cpHomeKind(r) === 'items')], threads: ['스레드', all.filter(r => cpGroup(r) === 'threads')], other: ['그 외', all.filter(r => cpGroup(r) === 'other')] };
+    foods: ['ㄴ 음식', all.filter(r => cpGroup(r) === 'home' && cpHomeKind(r) === 'foods')], items: ['ㄴ 장비', all.filter(r => cpGroup(r) === 'home' && cpHomeKind(r) === 'items')],
+    homeEtc: ['ㄴ 분류 없음', all.filter(r => cpGroup(r) === 'home' && !cpHomeKind(r))], threads: ['스레드', all.filter(r => cpGroup(r) === 'threads')], other: ['그 외', all.filter(r => cpGroup(r) === 'other')] };
   const won = n => `${Math.round(n).toLocaleString()}원`;
   const idxOf = w => { const arr = w.kind === 'foods' ? cache.foods : cache.items; return (arr || []).findIndex(x => x.id === w.id); };
   const nameOf = r => { const w = r.where[0]; return w ? w.name + (r.where.length > 1 ? ` 외 ${r.where.length - 1}곳` : '') : (r.landing || `상품 ${r.ctag}`); };
@@ -4377,6 +4380,7 @@ async function renderContentAnalysisCharts() {
 // 캠핑장 리스트
 // ════════════════════════════════════════════════════════════════════
 let _campSearch = '';
+let _campSiteSort = false;   // 캠핑장 목록 '홈페이지 클릭 많은 순'
 function renderCampList() {
   document.getElementById('topbar-title').innerHTML = '🏕 캠핑장';
   const c = document.getElementById('app-content');
@@ -4400,6 +4404,8 @@ function renderCampList() {
       .map((x, idx) => ({ ...x, _idx: idx }))
       .filter(x => matchSearch(x, _campSearch, ['name', 'region', 'extras', 'landscape', 'seasons']));
   }
+  const cstOf = x => (x.id && siteStatItem('camps', x.id)) || { view: 0, click: 0 };
+  if (_campSiteSort && cache.siteStats) arr.sort((a, b) => cstOf(b).click - cstOf(a).click || cstOf(b).view - cstOf(a).view);
 
   c.innerHTML = `
     <div class="page-header">
@@ -4421,6 +4427,8 @@ function renderCampList() {
       </div>
       ${withCoord < total ? `<button id="filter-no-coord" type="button" style="padding:4px 10px;background:#1a1a1a;color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;">미등록만 보기</button>` : ''}
     </div>
+    ${cache.siteStats ? `<div class="series-sort-note" style="background:#e8f0fb;border-color:#c5d8f2;color:#1a4d8f;margin-bottom:10px">${siteNote()}
+      <button type="button" class="btn btn-sm btn-ghost" id="camp-site-sort-btn" style="margin-left:6px">${_campSiteSort ? '원래 순서' : '홈페이지 클릭 많은 순'}</button></div>` : ''}
     <div class="list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(camp => {
         const visits = camp.visits || 0;
@@ -4435,6 +4443,7 @@ function renderCampList() {
         if (camp.region) metaParts.push(`<span class="meta-badge meta-badge--region">${escapeHtml(camp.region)}</span>`);
         if (seasons.length) metaParts.push(`<span class="meta-badge meta-badge--season">${escapeHtml(seasons.join('·'))}</span>`);
         if (visits > 0) metaParts.push(`<span class="meta-visits">${visits}회 방문</span>`);
+        if (camp.id) metaParts.push(siteChip(cstOf(camp)));
         return `
           <div class="list-item ${isPub ? '' : 'is-unpublished'}">
             <a class="list-item-link" href="#camps/${camp._idx}">
@@ -4454,6 +4463,8 @@ function renderCampList() {
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
+  const csb = document.getElementById('camp-site-sort-btn');
+  if (csb) csb.onclick = () => { _campSiteSort = !_campSiteSort; renderCampList(); };
   // 미등록만 보기 버튼
   const filterBtn = document.getElementById('filter-no-coord');
   if (filterBtn) {
@@ -6007,6 +6018,7 @@ const _seriesOpen = new Set([0]); // 첫 시리즈는 기본 펼침
 let _seriesDragOrder = null; // 드래그로 변경된 시리즈 순서 (null이면 변경 없음)
 let _epDragOrder = null;     // EP 수동 정렬 변경 상태 { si: number, newOrder: number[] }
 
+let _seriesSiteSort = false;   // 시리즈 EP '홈페이지 클릭 많은 순' (시리즈 안에서만, 보기 전용)
 function renderSeriesList() {
   document.getElementById('topbar-title').innerHTML = '🎬 시리즈 EP';
   const c = document.getElementById('app-content');
@@ -6017,6 +6029,8 @@ function renderSeriesList() {
       <a class="btn btn-sm" href="#series/new" style="margin-left:auto;">+ EP 추가</a>
       <div class="page-count">${cache.series.length}시리즈 · ${totalEps}편</div>
     </div>
+    ${cache.siteStats ? `<div class="series-sort-note" style="background:#e8f0fb;border-color:#c5d8f2;color:#1a4d8f;margin-bottom:10px">${siteNote()}
+      <button type="button" class="btn btn-sm btn-ghost" id="series-site-sort-btn" style="margin-left:6px">${_seriesSiteSort ? '원래 순서' : 'EP 홈페이지 클릭 많은 순'}</button></div>` : ''}
     <div id="series-sortable">
       ${cache.series.map((s, si) => {
         const sPub = s.published !== false;
@@ -6026,7 +6040,7 @@ function renderSeriesList() {
           <div class="series-group-header">
             <span class="drag-handle" title="드래그해서 순서 변경">⋮⋮</span>
             <div class="series-group-header-clickable" data-toggle="${si}">
-              <span class="series-group-emoji">${escapeHtml(s.emoji || '🎬')}</span>${escapeHtml(s.name)}<span class="series-group-count">${s.eps.length}편</span>
+              <span class="series-group-emoji">${escapeHtml(s.emoji || '🎬')}</span>${escapeHtml(s.name)}<span class="series-group-count">${s.eps.length}편</span>${s.id ? ' ' + siteChip(siteStatOf([], `/series/${s.id}/`)) : ''}
             </div>
             <div class="series-group-header-right">
               ${toggleHtml(sPub, `data-series-toggle="${si}"`, 'green')}
@@ -6043,15 +6057,16 @@ function renderSeriesList() {
             </div>
             ${(s.sort === 'random') ? `<div class="series-sort-note">🎲 메인 사이트에서는 매 페이지 로드마다 다른 순서로 보입니다 (admin은 입력 순서)<br>✨ 최근 7일 이내 신규 EP는 항상 상위에 노출됩니다</div>` : ''}
             <div class="ep-sortable" data-ep-sortable="${si}">
-              ${getSortedEpsForAdmin(s).map(({ ep, ei }) => {
+              ${(() => { const L = getSortedEpsForAdmin(s), eSt = ep => (s.id && ep.id && siteStatOf([`/series/${s.id}/${ep.id}`])) || { view: 0, click: 0 };
+                  return _seriesSiteSort && cache.siteStats ? [...L].sort((a, b) => eSt(b.ep).click - eSt(a.ep).click || eSt(b.ep).view - eSt(a.ep).view) : L; })().map(({ ep, ei }) => {
                 const epPub = ep.published !== false;
-                const isManual = (s.sort || 'ep_desc') === 'manual';
+                const isManual = (s.sort || 'ep_desc') === 'manual' && !_seriesSiteSort;
                 return `
                 <div class="series-ep-item ${epPub ? '' : 'is-unpublished'}" data-ei="${ei}">
                   ${isManual ? `<span class="drag-handle drag-handle--ep" title="드래그해서 순서 변경">⋮⋮</span>` : ''}
                   <a class="series-ep-link" href="#series/${si}/${ei}">
                     <span class="series-ep-num">${epLabelOf(ep)}</span>
-                    <span class="series-ep-title">${escapeHtml(ep.title)}</span>
+                    <span class="series-ep-title">${escapeHtml(ep.title)}</span>${s.id && ep.id ? siteChip(siteStatOf([`/series/${s.id}/${ep.id}`])) : ''}
                   </a>
                   ${toggleHtml(epPub, `data-ep-toggle="${si}-${ei}"`)}
                   <a class="series-ep-arrow" href="#series/${si}/${ei}">›</a>
@@ -6077,6 +6092,8 @@ function renderSeriesList() {
   document.getElementById('back-btn').onclick = () => {
     location.hash = '';
   };
+  const ssb = document.getElementById('series-site-sort-btn');
+  if (ssb) ssb.onclick = () => { _seriesSiteSort = !_seriesSiteSort; renderSeriesList(); };
   // 시리즈 그룹 펼치기/접기 — 명시적으로 toggle 영역만
   c.querySelectorAll('[data-toggle]').forEach(h => {
     h.onclick = () => {
@@ -7351,6 +7368,31 @@ function srcClass(item) {
 // 쿠팡·컬리 링크 점검 — 지금 등록된 링크가 점검한 링크와 같을 때만 (링크를 바꾸면 다음 점검까지 표시 안 함)
 const LINK_BAD = { no_af: '파트너스 코드 없음', other_af: '다른 파트너스 코드', soldout: '품절·판매종료', broken: '링크 깨짐' };
 const _linkOnly = {};
+// 홈페이지 자체 통계: 최근 30일 경로별 조회(pages)·바깥 링크 클릭(clicks '경로::대상')
+function siteStats30(s) {
+  const days = Object.keys((s && s.daily) || {}).sort().slice(-30);
+  const pages = {}, clicks = {};
+  for (const d of days) {
+    const v = s.daily[d] || {};
+    for (const [k, n] of Object.entries(v.pages || {})) pages[k] = (pages[k] || 0) + n;
+    for (const [k, n] of Object.entries(v.clicks || {})) { const p = k.split('::')[0]; clicks[p] = (clicks[p] || 0) + n; }
+  }
+  return { pages, clicks, from: days[0] || '', to: days[days.length - 1] || '' };
+}
+// paths: 정확히 같은 경로들 / prefix: 이 문자열로 시작하는 경로 전부 (시리즈 전체)
+function siteStatOf(paths, prefix) {
+  const s = cache.siteStats; if (!s) return null;
+  const hit = k => paths.includes(k) || (prefix && k.startsWith(prefix));
+  let view = 0, click = 0;
+  for (const [k, n] of Object.entries(s.pages)) if (hit(k)) view += n;
+  for (const [k, n] of Object.entries(s.clicks)) if (hit(k)) click += n;
+  return { view, click };
+}
+const siteStatItem = (kind, id) => siteStatOf(kind === 'camps' ? [`/camps/${id}`, `/camps/${id}/video`, `/search/camps/${id}`]
+  : [`/${kind}/${id}`, `/search/${kind === 'items' ? 'gear' : 'foods'}/${id}`]);
+const siteChip = st => st && (st.view || st.click) ? `<span style="font-size:11px;color:#1a4d8f;background:#e8f0fb;border-radius:4px;padding:1px 5px;margin-right:6px;" title="홈페이지 최근 30일: 조회 · 바깥 링크(구매처·예약처·DM) 클릭">🏠 👁 ${st.view} · 🖱 ${st.click}</span>` : '';
+const siteNote = () => cache.siteStats ? `<span style="opacity:.75">🏠 = 홈페이지 최근 30일(${escapeHtml(cache.siteStats.from.slice(5))}~${escapeHtml(cache.siteStats.to.slice(5))}) 조회 · 바깥 링크 클릭</span>` : '';
+
 function linkIssue(item) {
   const r = cache.linkCheck && cache.linkCheck.results && cache.linkCheck.results[item.id];
   if (!r || !LINK_BAD[r.status] || String(item.url || '').trim() !== r.url) return null;
@@ -7361,6 +7403,7 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
   opts = opts || {};
   const li = linkIssue(item);
   const cp = cache.cpHome && cache.cpHome.items && cache.cpHome.items[item.id];
+  const stChip = item.id ? siteChip(siteStatItem(hrefPrefix === 'items' ? 'items' : 'foods', item.id)) : '';
   const cpChip = cp && (cp.click || cp.order) ? `<span style="font-size:11px;color:#0b5e2e;background:#e6f4ea;border-radius:4px;padding:1px 5px;margin-right:6px;" title="쿠팡 최근 30일 (이 링크 상품 기준 — 같은 상품을 다른 곳에도 걸었으면 섞임)">🖱 ${cp.click}${cp.order ? ` · 주문 ${cp.order} · ${Number(cp.commission || 0).toLocaleString()}원` : ''}</span>` : '';
   const thumb = item.thumb
     ? `<img src="../${item.thumb.replace(/^\.\//, '')}" alt="" loading="lazy">`
@@ -7375,7 +7418,7 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
         <div class="list-item-thumb">${thumb}</div>
         <div class="list-item-body">
           <div class="list-item-title">${escapeHtml(item.name)}</div>
-          <div class="list-item-meta">${cpChip}${li ? `<span style="font-size:11px;color:#fff;background:#d93025;border-radius:4px;padding:1px 5px;margin-right:6px;" title="${escapeHtml(li.detail)}">⚠ ${LINK_BAD[li.status]}</span>` : ''}${src}${escapeHtml(item.desc || '')}</div>
+          <div class="list-item-meta">${stChip}${cpChip}${li ? `<span style="font-size:11px;color:#fff;background:#d93025;border-radius:4px;padding:1px 5px;margin-right:6px;" title="${escapeHtml(li.detail)}">⚠ ${LINK_BAD[li.status]}</span>` : ''}${src}${escapeHtml(item.desc || '')}</div>
         </div>
       </a>
       <span class="pick-stars">${[1,2,3].map(n => `<button type="button"
@@ -7462,6 +7505,7 @@ function groupedItemsHtml(arr, opts, manual) {
 }
 
 let _cpSort = false;   // 장비·먹거리 목록 '클릭 많은 순' (쿠팡 리포트 기준)
+let _siteSort = false; // 장비·먹거리 목록 '홈페이지 클릭 많은 순' (홈페이지 자체 통계)
 function renderProductList(dataArr, searchVar, opts) {
   document.getElementById('topbar-title').innerHTML = `${opts.icon} ${opts.label}`;
   const c = document.getElementById('app-content');
@@ -7481,7 +7525,9 @@ function renderProductList(dataArr, searchVar, opts) {
     .map(({ x, idx }) => ({ ...x, _idx: idx }))
     .filter(x => matchSearch(x, q, ['name', 'desc', 'source']))
     .filter(x => !linkOnly || linkIssue(x));
-  if (_cpSort && cache.cpHome) arr.sort((a, b) => (cpOf(b).click || 0) - (cpOf(a).click || 0) || (cpOf(b).order || 0) - (cpOf(a).order || 0));
+  const stOf = x => (x.id && siteStatItem(opts.type, x.id)) || { view: 0, click: 0 };
+  if (_siteSort && cache.siteStats) arr.sort((a, b) => stOf(b).click - stOf(a).click || stOf(b).view - stOf(a).view);
+  else if (_cpSort && cache.cpHome) arr.sort((a, b) => (cpOf(b).click || 0) - (cpOf(a).click || 0) || (cpOf(b).order || 0) - (cpOf(a).order || 0));
   const lc = cache.linkCheck;
   c.innerHTML = `
     <div class="page-header">
@@ -7513,19 +7559,23 @@ function renderProductList(dataArr, searchVar, opts) {
         return `<div class="series-sort-note" style="background:#e6f4ea;border-color:#b7dfc3;color:#0b5e2e;">🛒 쿠팡 최근 30일 (${escapeHtml(String(h.from || '').slice(5))}~${escapeHtml(String(h.to || '').slice(5))}) 홈페이지 링크: 클릭 <b>${(t.click || 0).toLocaleString()}</b> · 주문 <b>${t.order || 0}</b> · 수익 <b>${(t.commission || 0).toLocaleString()}원</b>
           <span style="opacity:.75">· 홈페이지 밖 직접 만든 링크 클릭 ${(o.click || 0).toLocaleString()} · 주문 ${o.order || 0}</span>
           <button type="button" class="btn btn-sm btn-ghost" id="cp-sort-btn" style="margin-left:6px">${_cpSort ? '원래 순서' : '클릭 많은 순'}</button></div>`; })() : ''}
+    ${cache.siteStats ? `<div class="series-sort-note" style="background:#e8f0fb;border-color:#c5d8f2;color:#1a4d8f;">${siteNote()}
+          <button type="button" class="btn btn-sm btn-ghost" id="site-sort-btn" style="margin-left:6px">${_siteSort ? '원래 순서' : '홈페이지 클릭 많은 순'}</button></div>` : ''}
     ${badN ? `<div class="series-sort-note" style="background:#fdecea;border-color:#f5c2c0;color:#8a1c14;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
         <span>🔎 링크 점검(쿠팡·컬리) (${escapeHtml(String(lc.checked_at || '').slice(5, 16).replace('T', ' '))}): 손볼 링크 <b>${badN}</b>개 — 파트너스에서 새 링크를 만들어 바꿔 주세요</span>
         <button type="button" class="btn btn-sm ${linkOnly ? '' : 'btn-ghost'}" id="link-only-btn">${linkOnly ? '전체 보기' : '문제만 보기'}</button></div>` : ''}
     <div class="list" id="prod-list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>'
-        : (opts.type === 'items' && !isSearchActive && !linkOnly && !_cpSort)
+        : (opts.type === 'items' && !isSearchActive && !linkOnly && !_cpSort && !_siteSort)
           ? groupedItemsHtml(arr, opts, isManual)
-          : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: isManual && !isSearchActive && !_cpSort })).join('')}
+          : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: isManual && !isSearchActive && !_cpSort && !_siteSort })).join('')}
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
   const cpb = document.getElementById('cp-sort-btn');
-  if (cpb) cpb.onclick = () => { _cpSort = !_cpSort; renderProductList(dataArr, searchVar, opts); };
+  if (cpb) cpb.onclick = () => { _cpSort = !_cpSort; _siteSort = false; renderProductList(dataArr, searchVar, opts); };
+  const stb = document.getElementById('site-sort-btn');
+  if (stb) stb.onclick = () => { _siteSort = !_siteSort; _cpSort = false; renderProductList(dataArr, searchVar, opts); };
   const lob = document.getElementById('link-only-btn');
   if (lob) lob.onclick = () => { _linkOnly[opts.type] = !linkOnly; renderProductList(dataArr, searchVar, opts); };
   // 세부 분류 접기/펼치기
@@ -7705,7 +7755,7 @@ function renderProductList(dataArr, searchVar, opts) {
     });
   });
   // 수동 모드: 드래그앤드롭 (검색 중에는 비활성화)
-  if (isManual && !isSearchActive && !_cpSort && typeof Sortable !== 'undefined') {
+  if (isManual && !isSearchActive && !_cpSort && !_siteSort && typeof Sortable !== 'undefined') {
     const listEl = document.getElementById('prod-list');
     if (listEl) {
       // 순서 저장은 항상 목록 전체(분류 순 → 분류 내 순서) 기준으로 계산한다
