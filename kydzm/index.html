@@ -2258,8 +2258,9 @@ function ghCommitTree(files, deletePaths, message) {
 }
 async function ghCommitTreeNow(files, deletePaths, message, baseSnap) {
   for (let attempt = 1; ; attempt++) {
-    // 1) 최신 commit + tree SHA
-    const ref = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`);
+    // 1) 최신 commit + tree SHA — 브라우저가 GitHub API GET을 최대 60초 캐시해서(max-age=60)
+    //    재시도해도 옛 ref를 다시 읽고 422가 반복되던 문제(261101 NEW 저장 실패) → 캐시 없이 읽는다
+    const ref = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/refs/heads/${GH_BRANCH}`, { cache: 'no-store' });
     const latestCommitSha = ref.object.sha;
     const latestCommit = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/git/commits/${latestCommitSha}`);
     const baseTreeSha = latestCommit.tree.sha;
@@ -2308,7 +2309,10 @@ async function ghCommitTreeNow(files, deletePaths, message, baseSnap) {
         body: JSON.stringify({ sha: newCommit.sha })
       });
     } catch (e) {
-      if (attempt < 3 && String(e.message).includes('GitHub API 422')) continue;
+      if (attempt < 4 && String(e.message).includes('GitHub API 422')) {
+        await new Promise(r => setTimeout(r, 700 * attempt));  // 자동 빌드 커밋 등이 끝나길 잠깐 기다림
+        continue;
+      }
       throw e;
     }
 
