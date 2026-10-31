@@ -163,6 +163,10 @@
       <button data-v="10">10+</button>
       <button data-v="1" class="on">후보</button>
     </div>
+    <div class="seg" id="age">
+      <button data-v="fresh" class="on">최근 3일</button>
+      <button data-v="">전체</button>
+    </div>
     <div class="seg" id="lf">
       <button data-v="todo" class="on">미판정</button>
       <button data-v="">전체</button>
@@ -201,6 +205,7 @@ if (sessionStorage.getItem('kydz_admin_authed') !== '1') {
 }
 
 let RECORDS = [], PICKED = new Set();
+let DATES = [], ART_CUT = {};   // 수집 날짜 목록 · 카페별 '3일 넘은 글' 기준 글 번호
 let LABELS = {}, LABELS_SHA = null, dirty = false, saveTimer = null;
 const LABEL_NAMES = {good:'✓ 좋음', bad:'✗ 아님', old:'⏱ 오래됨', chat:'💤 잡담'};
 const $ = id => document.getElementById(id);
@@ -294,6 +299,7 @@ async function boot(){
   try {
     await loadLabels();
     const idx = await getJSON('index.json');
+    DATES = idx.dates || [];
     $('date').innerHTML = idx.dates.slice().reverse()
       .map((d,i)=>`<option value="${d}"${i===0?' selected':''}>${d}</option>`).join('');
     await loadDate(idx.latest);
@@ -308,6 +314,17 @@ async function loadDate(date){
   try {
     const d = await getJSON(`daily/${date}.json`);
     RECORDS = d.records || [];
+    // 오래된 글 거르기 (261031) — 대시보드 TOP 5와 같은 방식: 검색이 몇 년 전 글도 같이 가져오고 글 날짜는 없음
+    // 카페 글 번호는 계속 늘어나니, 그날 카페별 최대 번호 − 하루 증가량×3 보다 작으면 3일 넘은 글로 봄
+    const prev = DATES[DATES.indexOf(date) - 1];
+    const d0 = prev ? await getJSON(`daily/${prev}.json`).catch(() => ({ records: [] })) : { records: [] };
+    const m1 = maxArt(RECORDS), m0 = maxArt(d0.records || []);
+    const RATE = { helinoxcrew: 130, campingfirst: 630 };   // 하루 글 수 (10/19~26 수집 기록) — 전날 기록으로 못 구할 때
+    ART_CUT = {};
+    for (const c of new Set([...Object.keys(m1), ...Object.keys(m0)])) {
+      const top = Math.max(m1[c] || 0, m0[c] || 0), rate = (m1[c] && m0[c] && m1[c] > m0[c]) ? m1[c] - m0[c] : (RATE[c] || 30);
+      ART_CUT[c] = top - rate * 3;
+    }
     const s = d.summary || {};
     META_BASE = `${date} · 전체 ${s.total||RECORDS.length}건 / 딜후보 ${s.deals||0}건` +
       (d.runs ? ` · ${d.runs.length}회 수집 (${d.runs.map(r=>r.at).join(', ')})` : '');
@@ -320,12 +337,17 @@ async function loadDate(date){
   }
 }
 
+const artOf = r => { const m = String(r.link || '').match(/cafe\.naver\.com\/([^/?#]+)\/(\d+)/); return m ? [m[1], +m[2]] : [null, 0]; };
+const maxArt = list => { const o = {}; for (const r of list) { const [c, n] = artOf(r); if (c && n > (o[c] || 0)) o[c] = n; } return o; };
+// 최근 3일 글 + 지난 행사 아님 (번호를 못 읽는 글은 남김)
+const isFresh = r => { const [c, n] = artOf(r); return (!c || ART_CUT[c] == null || n >= ART_CUT[c]) && r.date_status !== 'past'; };
+
 let META_BASE = '';
 function updateMeta(){
   const c = {good:0,bad:0,old:0,chat:0};
   RECORDS.forEach(r=>{ const v=LABELS[r.link]?.v; if(v) c[v]++; });
   const done = c.good+c.bad+c.old+c.chat;
-  $('meta').textContent = META_BASE +
+  $('meta').textContent = META_BASE + ($('meta').dataset.old || '') +
     (done ? ` · 판정 ${done}건 (✓${c.good} ✗${c.bad} ⏱${c.old} 💤${c.chat})` : '');
 }
 
@@ -381,7 +403,12 @@ function render(){
   const q    = $('q').value.trim().toLowerCase();
 
   const lf = segVal('lf');
+  const fresh = segVal('age') === 'fresh' && segVal('mode') !== 'keep';
+  const oldN = fresh ? RECORDS.filter(r => !isFresh(r)).length : 0;
+  $('meta').dataset.old = oldN ? ` · 3일 넘은 글·지난 행사 ${oldN}건 숨김` : '';
+  updateMeta();
   const rows = RECORDS.filter(r =>
+    (!fresh || isFresh(r)) &&
     r.score >= min &&
     (!cafe || r.cafe === cafe) &&
     (!q || (r.title+r.desc).toLowerCase().includes(q)) &&
@@ -507,7 +534,7 @@ $('reload').addEventListener('click', ()=>{
 
 window.addEventListener('beforeunload', e=>{ if(dirty){ saveLabels(); e.preventDefault(); e.returnValue=''; } });
 
-['cafe','min','lf'].forEach(id=>{
+['cafe','min','age','lf'].forEach(id=>{
   $(id).addEventListener('click', e=>{
     if (e.target.tagName !== 'BUTTON') return;
     $(id).querySelectorAll('button').forEach(b=>b.classList.remove('on'));
