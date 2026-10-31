@@ -631,7 +631,7 @@ def main():
         groups=[(cat_label[k], by_cat[k]) for k in keys], redirect='/#items', slugs=gs))
     write('foods/index.html', hub_page(
         hub='foods', title='캠핑 먹거리 전체 목록', h1='먹거리',
-        lead=f'캠핑 가서 먹어 본 밀키트와 간편식 중 다시 살 만했던 {len(foods)}가지입니다.',
+        lead=f'캠핑 가서 먹어 본 음식 중 다시 살 만했던 {len(foods)}가지입니다.',
         groups=[('먹거리', foods)], redirect='/#foods', slugs=fs))
 
     # index.html PRERENDER 블록 (자바스크립트가 돌면 바로 제거됨)
