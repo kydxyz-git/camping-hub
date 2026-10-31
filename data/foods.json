@@ -291,5 +291,20 @@
     "published": false,
     "created_at": "2026-10-31T14:12:47.605Z",
     "updated_at": "2026-10-31T14:14:45.692Z"
+  },
+  {
+    "id": "food_1cfd7a589e",
+    "name": "한돈 등갈비 찜용/구이용",
+    "desc": "",
+    "url": "https://link.coupang.com/a/iiFOrqlmx2",
+    "source": "쿠팡",
+    "thumb": "./images/products/212dc410df7c.jpg",
+    "currency": "KRW",
+    "price_original": 26350,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": false,
+    "created_at": "2026-10-31T14:16:17.650Z",
+    "updated_at": "2026-10-31T14:16:17.650Z"
   }
 ]
