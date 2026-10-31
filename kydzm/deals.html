@@ -207,7 +207,7 @@ if (sessionStorage.getItem('kydz_admin_authed') !== '1') {
 let RECORDS = [], PICKED = new Set();
 let DATES = [], ART_CUT = {};   // 수집 날짜 목록 · 카페별 '3일 넘은 글' 기준 글 번호
 let LABELS = {}, LABELS_SHA = null, dirty = false, saveTimer = null;
-const LABEL_NAMES = {good:'✓ 좋음', bad:'✗ 아님', old:'⏱ 오래됨', chat:'💤 잡담'};
+const LABEL_NAMES = {good:'✓ 좋음', bad:'✗ 아님', old:'⏱ 오래됨'};   // 잡담은 뺌 (261031 사용자 결정) — 예전 잡담 라벨은 '아님'으로 셈
 const $ = id => document.getElementById(id);
 
 function toast(msg){
@@ -344,11 +344,11 @@ const isFresh = r => { const [c, n] = artOf(r); return (!c || ART_CUT[c] == null
 
 let META_BASE = '';
 function updateMeta(){
-  const c = {good:0,bad:0,old:0,chat:0};
-  RECORDS.forEach(r=>{ const v=LABELS[r.link]?.v; if(v) c[v]++; });
-  const done = c.good+c.bad+c.old+c.chat;
+  const c = {good:0,bad:0,old:0};
+  RECORDS.forEach(r=>{ const v=LABELS[r.link]?.v; if(v) c[v === 'chat' ? 'bad' : v]++; });
+  const done = c.good+c.bad+c.old;
   $('meta').textContent = META_BASE + ($('meta').dataset.old || '') +
-    (done ? ` · 판정 ${done}건 (✓${c.good} ✗${c.bad} ⏱${c.old} 💤${c.chat})` : '');
+    (done ? ` · 판정 ${done}건 (✓${c.good} ✗${c.bad} ⏱${c.old})` : '');
 }
 
 function segVal(id){ return $(id).querySelector('.on').dataset.v; }
