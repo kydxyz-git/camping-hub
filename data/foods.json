@@ -306,6 +306,7 @@
     "discount_rate": null,
     "published": false,
     "created_at": "2026-10-31T14:16:17.650Z",
-    "updated_at": "2026-10-31T14:16:17.650Z"
+    "updated_at": "2026-10-31T14:16:17.650Z",
+    "is_new": true
   }
 ]
