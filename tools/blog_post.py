@@ -224,7 +224,7 @@ def main():
     SPEC_DIR = Path(a.spec).resolve().parent
     # 캠핑장 폴더(올린 글은 001_봉화별캠핑장\, 안 올린 글은 더360캠핑장\)에 원고·사진\·결과물을 함께 둔다 (261031).
     # 그런 폴더가 아니면 예전처럼 JSON 옆 {slug}\
-    camp_dir = re.match(r'\d{3}_', SPEC_DIR.name) or SPEC_DIR.name == Path(a.spec).stem
+    camp_dir = re.match(r'(\(완\))?\d{3}_', SPEC_DIR.name) or SPEC_DIR.name == Path(a.spec).stem  # (완) = 발행 끝난 글
     out = SPEC_DIR if camp_dir else SPEC_DIR / spec['slug']
     out.mkdir(parents=True, exist_ok=True)
     ps = pieces(spec, out)
