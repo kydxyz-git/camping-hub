@@ -423,7 +423,9 @@ function normalizeConfig(c) {
   Object.entries(c.kinds || {}).forEach(([h, k]) => { if (k) kinds[hh(h)] = String(k); });
   return { paused: !!c.paused, weekdays: Array.isArray(c.weekdays) ? c.weekdays.map(Number) : [0, 1, 2, 3, 4, 5, 6], hours,
     kinds, deal_hour: hh(c.deal_hour || '10'), monetize_from: String(c.monetize_from || ''),
-    deal_weekdays: Array.isArray(c.deal_weekdays) ? c.deal_weekdays.map(Number) : [0, 1, 2, 3, 4, 5, 6] };
+    deal_weekdays: Array.isArray(c.deal_weekdays) ? c.deal_weekdays.map(Number) : [0, 1, 2, 3, 4, 5, 6],
+    // 하루 자동 답글 상한 (0 = 끔) — 관리 화면에서 저장해도 그대로 유지 (단계적 재개 261102)
+    ...(c.auto_per_day !== undefined ? { auto_per_day: Number(c.auto_per_day) } : {}) };
 }
 // post.py want_kind / choose / plan과 같은 계산
 function wantKind(key) {
