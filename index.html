@@ -172,6 +172,7 @@
     }
     a.header-badge.header-badge-naver:hover { background: #02b551; }
     .header-badge-blog { background: #03C75A; }
+    .header-badge-sub { margin-top: 6px; }
     .header-badge-insta { background: linear-gradient(45deg, #f09433, #dc2743 50%, #bc1888); }
     a.header-badge.header-badge-insta:hover { filter: brightness(.95); }
     a.header-badge.header-badge-blog:hover { background: #02b551; }
@@ -1385,7 +1386,6 @@ async function loadData() {
     <a class="header-badge header-badge-facebook" id="header-badge-facebook" data-track-target="Facebook" data-track-external="1" target="_blank" rel="noopener"></a>
     <a class="header-badge header-badge-naver" id="header-badge-naver" data-track-target="Clip Creators" data-track-external="1" target="_blank" rel="noopener"></a>
     <a class="header-badge header-badge-blog" id="header-badge-blog" data-track-target="네이버 블로그" data-track-external="1" target="_blank" rel="noopener"></a>
-    <a class="header-badge" id="header-badge" data-track-target="그래가파트너스" data-track-external="1" target="_blank" rel="noopener"></a>
   </div>
 
   <!-- 헤더: 타이틀 왼쪽 + 부제목 오른쪽 -->
@@ -1395,6 +1395,8 @@ async function loadData() {
     </div>
     <div class="header-right">
       <p class="header-sub" id="header-sub"></p>
+      <!-- 그래가파트너스는 부제목 아래 오른쪽 (위 줄은 채널만 — 사용자 결정 261103) -->
+      <a class="header-badge header-badge-sub" id="header-badge" data-track-target="그래가파트너스" data-track-external="1" target="_blank" rel="noopener"></a>
     </div>
   </header>
 
