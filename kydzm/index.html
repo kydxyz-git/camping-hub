@@ -215,8 +215,8 @@
   .dash-more:hover { text-decoration: underline; }
   .dash-nav { display: none; }
   @media (max-width: 759px) {
-    .dash-nav { display: flex; gap: 6px; position: sticky; top: 59px; z-index: 5; background: var(--accent-soft); padding: 6px 0 10px; }
-    .dash-nav button { flex: 1; min-height: 40px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); font-size: 14px; font-weight: 700; color: inherit; cursor: pointer; }
+    .dash-nav { display: flex; gap: 4px; position: sticky; top: 59px; z-index: 5; background: var(--accent-soft); padding: 4px 0 6px; margin-top: -12px; }
+    .dash-nav button { flex: 1; min-height: 34px; padding: 0 4px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); font-size: 13px; font-weight: 700; color: inherit; cursor: pointer; }
     .dash-nav button.on { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .dash-pages { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; align-items: flex-start; gap: 16px; scrollbar-width: none; overscroll-behavior-x: contain; }
     .dash-pages::-webkit-scrollbar { display: none; }
@@ -243,6 +243,11 @@
     .dash-page .money-v { font-size: 18px; }
     .dash-page #money-container .help { display: none; }
     .dash-page .money-s { font-size: 11.5px; }
+    .dash-page .money-s, .dash-page .deal-meta, .dash-page .today-top-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dash-page .money-col { min-width: 0; }
+    .dash-page .deal-sub { display: none !important; }
+    .dash-page #deal-top-card a > b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dash-page .stats-card-value, .dash-page .today-value { white-space: nowrap; }
     .dash-page #stats-container > .card:not(.today-card) { font-size: 11px !important; padding: 6px 10px !important; margin-bottom: 6px !important; }
   }
   .money-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -2822,9 +2827,9 @@ async function renderMoneySummary() {
       return { ...t, home: by('home'), threads: by('threads') };
     };
     const w = sumOf('7d'), m = sumOf('thisMonth');
-    const col = (label, v) => `<div class="money-col"><div class="today-label">${label}</div><div class="money-v">${won(v.commission)}</div>
+    const col = (label, v) => `<div class="money-col" style="min-width:0"><div class="today-label">${label}</div><div class="money-v">${won(v.commission)}</div>
       <div class="money-s">클릭 ${v.click.toLocaleString()} · 주문 ${v.order.toLocaleString()}</div>
-      <div class="money-s">홈페이지 ${won(v.home)} · 스레드 ${won(v.threads)}</div></div>`;
+      <div class="money-s">홈 ${won(v.home)} · 스레드 ${won(v.threads)}</div></div>`;
     box.innerHTML = `<div class="card" style="margin:0"><div class="money-grid">${col('최근 7일', w)}${col('이번 달', m)}</div>
       <div class="help" style="margin-top:8px">쿠팡 · ${escapeHtml(md2(last))}까지 반영 (전날 실적은 오후 4시 전후)</div>
       <a class="dash-more" href="#coupang">쿠팡 실적 자세히 →</a></div>`;
@@ -3051,14 +3056,14 @@ async function renderDealTop() {
   try {
     const { pick, total, records } = await loadDealTop();
     card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <div class="section-title" style="margin:0">🔥 오늘의 캠핑 딜 TOP 5 <span class="help" style="display:inline">· 콘텐츠 소재</span></div>
-        <a class="btn btn-sm btn-ghost" href="deals.html">딜 보드 →</a></div>
+        <div class="section-title" style="margin:0;white-space:nowrap">🔥 오늘의 캠핑 딜 TOP 5 <span class="help deal-sub" style="display:inline">· 콘텐츠 소재</span></div>
+        <a class="btn btn-sm btn-ghost" href="deals.html" style="white-space:nowrap;flex:none">딜 보드 →</a></div>
       <div class="help" style="margin:4px 0 8px">어제·오늘 모은 카페 글 ${records}개 중 딜 후보 ${total}개에서 골랐어요. 딜 보드에서 좋음/아님을 매길수록 더 잘 골라요.</div>
       ${pick.length ? pick.map((r, i) => `<div style="padding:8px 0;border-top:1px solid var(--line, #eee)">
         <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between">
           <a href="${escapeHtml(r.link)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;min-width:0">
             <b>${i + 1}. ${escapeHtml(r.title || '')}</b>
-            <div class="help" style="margin-top:2px">${r.d ? `<b style="color:#d93025">${r.d}%</b> · ` : ''}${escapeHtml(((r.brands || []).concat(r.items || [])).join(' · '))}${(r.brands || []).length || (r.items || []).length ? ' · ' : ''}${escapeHtml(r.cafe || '')} · ${escapeHtml(String(r.found_at || '').slice(5, 16))}${r.date_status === 'live' ? ' · 진행 중' : r.date_status === 'future' ? ' · 예정' : ''}</div></a>
+            <div class="help deal-meta" style="margin-top:2px">${r.d ? `<b style="color:#d93025">${r.d}%</b> · ` : ''}${escapeHtml(((r.brands || []).concat(r.items || [])).join(' · '))}${(r.brands || []).length || (r.items || []).length ? ' · ' : ''}${escapeHtml(r.cafe || '')} · ${escapeHtml(String(r.found_at || '').slice(5, 16))}${r.date_status === 'live' ? ' · 진행 중' : r.date_status === 'future' ? ' · 예정' : ''}</div></a>
           <button type="button" class="btn btn-sm btn-ghost" data-deal-copy="${i}" title="인스타 스토리·스레드용 문구 복사" style="flex:none">📋 문구</button></div></div>`).join('')
         : '<div class="help">오늘은 고를 만한 딜이 없어요.</div>'}`;
     card.querySelectorAll('[data-deal-copy]').forEach(b => b.onclick = async () => {
