@@ -1828,7 +1828,7 @@
 
 <!-- Leaflet CSS (좌표 피커용) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-<script src="lib/passkey.js"></script>
+<script src="lib/passkey.js?v=261103c"></script>
 </head>
 <body>
 
@@ -2885,7 +2885,10 @@ async function renderMoneySummary() {
 // 지문 로그인 상태 (폰): 이 브라우저가 지원하는지 · 등록됐는지 · 바로 등록 — 로그인된 채로도 등록하게 (사용자 요청 261103)
 async function renderPasskeySlot() {
   const el = document.getElementById('passkey-slot');
-  if (!el || !window.kydzPasskey || !kydzPasskey.isPhone()) return;
+  if (!el) return;
+  const phone = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  if (!phone) return;
+  if (!window.kydzPasskey || typeof kydzPasskey.isPhone !== 'function') { el.textContent = '👆 지문 기능을 불러오지 못했어요 — 새로고침해 주세요'; return; }
   const ok = await kydzPasskey.supported();
   if (!ok) { el.textContent = '👆 이 브라우저는 지문 로그인을 지원하지 않아요 (크롬·삼성 인터넷은 돼요)'; return; }
   el.innerHTML = kydzPasskey.has() ? '👆 지문 로그인 켜짐 · <a href="#" id="pk-reg">다시 등록</a>' : '👆 <a href="#" id="pk-reg">이 폰에서 지문으로 열기 등록</a>';
