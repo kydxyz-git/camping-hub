@@ -90,7 +90,8 @@
         "sameAs": [
           "https://www.instagram.com/kyd_zm/",
           "https://www.facebook.com/profile.php?id=61588881720150",
-          "https://naver.me/5ajsIHzm"
+          "https://naver.me/5ajsIHzm",
+          "https://blog.naver.com/kydz"
         ],
         "knowsAbout": ["캠핑", "캠핑장 후기", "캠핑 장비", "캠핑 요리"]
       }
@@ -169,6 +170,9 @@
       vertical-align: -1px;
     }
     a.header-badge.header-badge-naver:hover { background: #02b551; }
+    .header-badge-blog { background: #03C75A; }
+    .header-badge-break { flex-basis: 100%; height: 0; }   /* 2줄 2개씩: 네이버(클립·블로그) / 페이스북·그래가 — 261103 */
+    a.header-badge.header-badge-blog:hover { background: #02b551; }
     .header-badge-facebook {
       background: #1877F2;
     }
@@ -1376,6 +1380,8 @@ async function loadData() {
   <!-- 채널 배지 -->
   <div class="header-badges">
     <a class="header-badge header-badge-naver" id="header-badge-naver" data-track-target="Clip Creators" data-track-external="1" target="_blank" rel="noopener"></a>
+    <a class="header-badge header-badge-blog" id="header-badge-blog" data-track-target="네이버 블로그" data-track-external="1" target="_blank" rel="noopener"></a>
+    <span class="header-badge-break" aria-hidden="true"></span>
     <a class="header-badge header-badge-facebook" id="header-badge-facebook" data-track-target="Facebook" data-track-external="1" target="_blank" rel="noopener"></a>
     <a class="header-badge" id="header-badge" data-track-target="그래가파트너스" data-track-external="1" target="_blank" rel="noopener"></a>
   </div>
@@ -1568,6 +1574,13 @@ function renderConfig() {
     siteConfig.headerBadgeNaver,
     siteConfig.headerBadgeNaverIcon,
     siteConfig.headerBadgeNaverUrl,
+    'header-badge-naver-icon'
+  );
+  renderBadge(
+    document.getElementById('header-badge-blog'),
+    siteConfig.headerBadgeBlog,
+    siteConfig.headerBadgeBlogIcon,
+    siteConfig.headerBadgeBlogUrl,
     'header-badge-naver-icon'
   );
   renderBadge(
