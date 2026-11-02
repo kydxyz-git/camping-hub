@@ -319,6 +319,10 @@
     display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
     height: 100%; position: relative;
   }
+  .stale-tag, .stale-bar { font-size: 11px; color: var(--muted); margin: 0 0 6px; }
+  .stale-bar { position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 50; margin: 0;
+    background: rgba(26,26,26,.85); color: #fff; padding: 6px 12px; border-radius: 999px; font-size: 12px; white-space: nowrap; pointer-events: none; }
+  .stale-tag::before, .stale-bar::before { content: '⟳ '; }
   .money-msg { font-size: 13px; color: var(--muted); line-height: 1.6; }
   .stats-bar {
     width: 100%; max-width: 14px;
@@ -1994,22 +1998,51 @@ async function fetchDataFile(name) {
   return JSON.parse(await fetchRepoText(`data/${name}.json`));
 }
 
+// ── 대시보드 '마지막에 본 숫자 먼저' (이 브라우저 localStorage에만, 사용자 요청 261103) ──
+function dashCacheGet(k) { try { return JSON.parse(localStorage.getItem('kydz_dash_' + k) || 'null'); } catch (e) { return null; } }
+function dashCacheSet(k, html) {
+  try { localStorage.setItem('kydz_dash_' + k, JSON.stringify({ at: Date.now(), html })); } catch (e) {}
+  clearTimeout(dashCacheSet._t); dashCacheSet._t = setTimeout(saveDashSnap, 1500);
+}
+function saveDashSnap() {
+  const c = document.getElementById('app-content');
+  if (!c || !document.getElementById('dash-pages') || (location.hash || '').replace(/^#/, '')) return;
+  const tmp = c.cloneNode(true);
+  tmp.querySelectorAll('.stale-bar, .stale-tag').forEach(x => x.remove());
+  tmp.querySelectorAll('iframe').forEach(f => f.replaceWith(Object.assign(document.createElement('div'), { className: 'card help', textContent: '할일 불러오는 중…' })));
+  tmp.querySelectorAll('[data-stale]').forEach(x => x.removeAttribute('data-stale'));
+  try { localStorage.setItem('kydz_dash_snap', JSON.stringify({ at: Date.now(), html: tmp.innerHTML })); } catch (e) {}
+}
+function agoText(at) { const m = Math.round((Date.now() - at) / 60000); return m < 1 ? '방금' : m < 60 ? `${m}분 전` : m < 1440 ? `${Math.round(m / 60)}시간 전` : `${Math.round(m / 1440)}일 전`; }
+function dashPrefill(id, k) {
+  const el = document.getElementById(id), c = dashCacheGet(k);
+  if (!el || !c || !c.html) return;
+  el.innerHTML = `<div class="stale-tag">${agoText(c.at)} 기준 · 새로 받는 중…</div>` + c.html;
+  el.dataset.stale = '1';
+}
+
 async function loadAllData(force = false) {
   if (cache.loaded && !force) return cache;
   const files = ['config', 'series', 'foods', 'items', 'camps'];
-  const results = await Promise.all(files.map(fetchDataFile));
+  // 모두 한꺼번에 받음 (예전엔 뒤 3개를 하나씩 기다려서 느렸음, 261103)
+  const [results, linkCheck, siteStats, cpHome] = await Promise.all([
+    Promise.all(files.map(fetchDataFile)),
+    // 쿠팡 링크 점검 결과 (tools/check_links.py, 없으면 표시 안 함)
+    fetchDataFile('link_check').catch(() => null),
+    // 홈페이지 자체 통계 최근 30일 (data/stats.json — 통계 Worker가 매시간 커밋하는 사본) → 목록의 조회·클릭
+    fetchDataFile('stats').then(siteStats30).catch(() => null),
+    // 홈페이지 링크별 쿠팡 클릭·주문 (비공개 cupas state/homepage_links.json — 수익 숫자라 공개 저장소엔 없음, 쿠파스 토큰 있을 때만)
+    cupasToken() ? ghFetchRaw('/repos/kydxyz-git/cupas/contents/state/homepage_links.json?ref=main',
+      { headers: { Accept: 'application/vnd.github.raw+json' } }).then(r => r.json()).catch(() => null) : null,
+  ]);
   cache.config = results[0];
   cache.series = results[1];
   cache.foods  = results[2];
   cache.items  = results[3];
   cache.camps  = results[4];
-  // 쿠팡 링크 점검 결과 (tools/check_links.py, 없으면 표시 안 함)
-  cache.linkCheck = await fetchDataFile('link_check').catch(() => null);
-  // 홈페이지 자체 통계 최근 30일 (data/stats.json — 통계 Worker가 매시간 커밋하는 사본) → 목록의 조회·클릭
-  cache.siteStats = await fetchDataFile('stats').then(siteStats30).catch(() => null);
-  // 홈페이지 링크별 쿠팡 클릭·주문 (비공개 cupas state/homepage_links.json — 수익 숫자라 공개 저장소엔 없음, 쿠파스 토큰 있을 때만)
-  cache.cpHome = cupasToken() ? await ghFetchRaw('/repos/kydxyz-git/cupas/contents/state/homepage_links.json?ref=main',
-    { headers: { Accept: 'application/vnd.github.raw+json' } }).then(r => r.json()).catch(() => null) : null;
+  cache.linkCheck = linkCheck;
+  cache.siteStats = siteStats;
+  cache.cpHome = cpHome;
   // 저장 시 3-way 병합 기준점 (이 창이 마지막으로 알고 있는 저장소 상태)
   files.forEach((name, i) => { cache.base[name] = JSON.parse(JSON.stringify(results[i])); });
   cache.loaded = true;
@@ -2652,7 +2685,12 @@ async function router() {
   document.body.classList.remove('dash-lock');   // 대시보드 폰 가로판의 세로 스크롤 잠금은 대시보드에서만
 
   const content = document.getElementById('app-content');
-  content.innerHTML = '<div class="loading">로딩 중...</div>';
+  const isDash = !(location.hash || '').replace(/^#/, '');
+  const snap = isDash && !cache.loaded ? dashCacheGet('snap') : null;
+  if (snap) {   // 대시보드: 마지막에 본 화면을 먼저 보여주고, 새 데이터가 오면 바꿈 (사용자 요청 261103)
+    content.innerHTML = `<div class="stale-bar">${agoText(snap.at)} 화면 · 새로 받는 중…</div>` + snap.html;
+    bindDashPages();
+  } else content.innerHTML = '<div class="loading">로딩 중...</div>';
 
   // 데이터 로드 (캐시 활용)
   try {
@@ -2885,6 +2923,7 @@ async function renderMoneySummary() {
       <div class="money-chart"><div class="today-label" style="margin:10px 0 4px">최근 7일 수익 (원)</div>${renderBarChart(d7, v7, Math.max(1, ...v7))}</div>
       <div class="help" style="margin-top:8px">쿠팡 · ${escapeHtml(md2(last))}까지 반영 (전날 실적은 오후 4시 전후)</div>
       <a class="dash-more" href="#coupang">쿠팡 실적 자세히 →</a></div>`;
+    dashCacheSet('money', box.innerHTML);
   } catch (e) {
     box.innerHTML = `<div class="card money-msg" style="margin:0">아직 쿠팡 실적을 못 불러왔어요. <a href="#coupang">쿠팡 실적</a><div>${escapeHtml(e.message)}</div></div>`;
   }
@@ -3154,6 +3193,7 @@ async function renderDealTop() {
       try { await navigator.clipboard.writeText(dealCaption(r) + `\n${r.link}`); showToast('문구 복사됨 — 붙여넣고 다듬어 쓰세요', 'success', 1800); }
       catch (e) { prompt('복사해서 쓰세요', dealCaption(r)); }
     });
+    dashCacheSet('deal', card.innerHTML);
   } catch (e) {
     card.innerHTML = `<div class="section-title" style="margin:0">🔥 오늘의 캠핑 딜 TOP 7</div><div class="help">딜을 못 불러왔어요 — 토큰에 camping-search 접근 권한이 있는지 확인해 주세요. (${escapeHtml(e.message)})</div>`;
   }
@@ -3260,6 +3300,10 @@ ${dashPhone ? `    <section class="dash-page dash-todo-page">
     </div>
   `;
   bindDashPages();
+  // 마지막에 본 숫자를 먼저 채워 두고(작은 '…새로 받는 중' 표시), 새 숫자가 오면 바뀜 (사용자 요청 261103)
+  if (!_statsCache) dashPrefill('stats-container', 'stats');
+  if (cupasToken() && !(_cpData && Date.now() - _cpData.at < 10 * 60e3)) dashPrefill('money-container', 'money');
+  if (tokenConnected && !(_dealTop && Date.now() - _dealTop.at < 10 * 60e3)) dashPrefill('deal-top-card', 'deal');
   renderMoneySummary();   // 수익화 요약 (cupas 토큰 있을 때만 숫자)
   renderRecentChanges();  // 메뉴 장 아래: 최근 바뀐 콘텐츠
   if (tokenConnected) renderDealTop();   // 오늘의 캠핑 딜 TOP 7 (비동기로 채움)
@@ -3341,7 +3385,7 @@ async function loadAndRenderStats(forceRefresh = false, mini = false) {
     return;
   }
 
-  container.innerHTML = `<div class="stats-loading">통계 불러오는 중...</div>`;
+  if (!container.dataset.stale) container.innerHTML = `<div class="stats-loading">통계 불러오는 중...</div>`;
   try {
     const resp = await fetch(STATS_API + '?t=' + Date.now());
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -3349,6 +3393,8 @@ async function loadAndRenderStats(forceRefresh = false, mini = false) {
     _statsCache = data;
     _statsCacheAt = Date.now();
     renderStats(container, data, mini);
+    delete container.dataset.stale;
+    if (mini) dashCacheSet('stats', container.innerHTML);
   } catch (e) {
     // Worker가 막혔을 때(예: KV 하루 쓰기 한도 261027) — 매시간 저장소에 남긴 사본 data/stats.json으로 대신 보여줌
     try {
@@ -3356,7 +3402,9 @@ async function loadAndRenderStats(forceRefresh = false, mini = false) {
       if (!r2.ok) throw new Error('HTTP ' + r2.status);
       const snap = await r2.json();
       renderStats(container, snap, mini);
+      delete container.dataset.stale;
       container.insertAdjacentHTML('afterbegin', `<div class="card" style="font-size:12px;color:#8a5a00;background:#fff8e1;border:1px solid #ffe08a;margin-bottom:10px">⚠️ 통계 서버 응답 없음 (${escapeHtml(e.message)}) — 저장소 사본(${escapeHtml(kstDateStr(Date.parse(snap.updated_at)) + ' ' + new Date(Date.parse(snap.updated_at) + 9 * 3600e3).toISOString().slice(11, 16))} 기준)을 보여주고 있어요. 그 뒤 방문은 서버가 돌아오면 반영돼요.</div>`);
+      if (mini) dashCacheSet('stats', container.innerHTML);
       return;
     } catch (e2) { /* 사본도 못 읽으면 아래 실패 표시 */ }
     container.innerHTML = `
