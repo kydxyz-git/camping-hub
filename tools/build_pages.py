@@ -35,7 +35,7 @@ IG = 'https://www.instagram.com/kyd_zm/'
 # '공대남자' 검색 시 한 사람으로 묶이도록 모든 정적 페이지에 같은 인물 정보(@id는 메인 index.html과 동일)
 PERSON = {'@context': 'https://schema.org', '@type': 'Person', '@id': SITE + '/#person', 'name': '공대남자',
           'alternateName': 'kyd_zm', 'url': SITE + '/',
-          'sameAs': [IG, 'https://www.facebook.com/profile.php?id=61588881720150', 'https://naver.me/5ajsIHzm']}
+          'sameAs': [IG, 'https://www.facebook.com/profile.php?id=61588881720150', 'https://naver.me/5ajsIHzm', 'https://blog.naver.com/kydz']}
 # 배지 색 (CLAUDE.md UI 규칙과 같게)
 SELLER_COLOR = {'쿠팡': '#ee2c4d', '컬리': '#5f0080', '네이버': '#03C75A', '알리': '#FF4747', '테무': '#FF6A00'}
 BOOK_COLOR = {'그래가 파트너스': '#1a1a1a', '네이버': '#03C75A', '캠핏': '#2D8F4C', '땡큐캠핑': '#FF6B2C'}
@@ -531,11 +531,16 @@ def product_page(p, slug, kind, cat_label, siblings, slugs):
             f'<li><a href="{url_of(hub, slugs[x["id"]])}">{e(x["name"])}</a></li>' for x in sib) + '</ul>')
 
     canonical = url_of(hub, slug)
-    ld = {'@context': 'https://schema.org', '@type': 'Product', 'name': name, 'url': canonical, 'description': desc}
+    # Product가 아니라 '이 물건에 대한 페이지'(WebPage + about) — 파는 곳이 아니라 가격(offers)·리뷰 별점이 없어서
+    # Product로 두면 서치 콘솔 '제품 스니펫: offers·review·aggregateRating 필요' 오류가 남 (261103). 없는 가격·별점은 지어 넣지 않는다.
+    about = {'@type': 'Thing', 'name': name}
     if p.get('thumb'):
-        ld['image'] = abs_img(p['thumb'])
+        about['image'] = abs_img(p['thumb'])
+    ld = {'@context': 'https://schema.org', '@type': 'WebPage', 'name': name, 'url': canonical, 'description': desc, 'about': about}
+    if p.get('thumb'):
+        ld['primaryImageOfPage'] = abs_img(p['thumb'])
     if cat_label:
-        ld['category'] = cat_label
+        ld['keywords'] = cat_label
     return page(title=f"{name} | {BRAND}", desc=desc, canonical=canonical,
                 og_image=abs_img(p.get('thumb')) or OG_DEFAULT, cta=('공대남자의 캠핑이야기에서 보기', target),
                 track=(f"/search/{hub}/{p['id']}", name), body='\n'.join(body),
