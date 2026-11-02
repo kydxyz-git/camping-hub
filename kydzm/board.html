@@ -172,12 +172,24 @@
   .toast { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 80;
     background: #1a1a1a; color: #fff; padding: 11px 16px; border-radius: 10px; font-size: 14px; max-width: 90vw; box-shadow: 0 6px 20px rgba(0,0,0,.2); }
   .toast.err { background: var(--danger); }
+  html.embed .topbar { display: none; }
+  html.embed .wrap { padding: 4px 2px 90px; }
+  html.embed .fab { width: 50px; height: 50px; font-size: 26px; bottom: 14px; right: 12px; }
+  html.embed .toast { bottom: 76px; }
+  .emb-sec { background: var(--bg); border-radius: 14px; padding: 10px 12px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+  .emb-h { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; font-weight: 800; padding: 2px 0 4px; cursor: pointer; list-style: none; }
+  .emb-h::-webkit-details-marker { display: none; }
+  .emb-h .n { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .emb-more { width: 100%; min-height: 38px; border: none; background: none; color: var(--muted); font-size: 13px; font-weight: 700; cursor: pointer; border-top: 1px solid var(--line); }
+  .emb-hint { font-size: 11.5px; color: var(--muted); text-align: center; margin: 2px 0 8px; }
+  html.embed .task { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .drag-ghost { position: fixed; left: 0; top: 0; z-index: 95; pointer-events: none; background: var(--bg); border-radius: 10px; box-shadow: 0 10px 28px rgba(0,0,0,.28); opacity: .95; padding: 2px 8px; }
   .toast.act { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
   .toast.act button { border: 1px solid rgba(255,255,255,.35); background: none; color: #fff; border-radius: 8px; padding: 6px 10px; font-size: 13px; font-weight: 700; cursor: pointer; min-height: 34px; }
   .mv.more { min-width: 36px; padding: 0 6px; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; }
   .task[draggable="true"] { cursor: grab; }
   .task.dragging { opacity: .4; }
-  .col.drop-on { outline: 2px dashed var(--success); outline-offset: -4px; }
+  .col.drop-on, .emb-sec.drop-on { outline: 2px dashed var(--success); outline-offset: -4px; }
 
   /* 폰: 한 칸씩 / PC: 받은함 + 3칸 */
   .pc-only { display: none; }
@@ -246,6 +258,9 @@ const POLL_MS = 30000;          // 보이는 동안 외부 변경 확인
 const STALE_DAYS = 14;          // 프로젝트 방치 표시
 const ARCHIVE_DAYS = 60;        // 완료 후 이만큼 지나면 board/archive/YYYY-MM.json 으로
 const TODAY_LIMIT = 3;
+// 대시보드 '할일' 탭 안에 들어가는 작은 화면 (board.html?embed=1, 사용자 요청 261103): 오늘 전부 · 이번 주 일부 · 이번 달 펼치기 · 꾹 눌러 끌기
+const EMBED = new URLSearchParams(location.search).has('embed');
+if (EMBED) document.documentElement.classList.add('embed');
 
 // 칸 = 날짜로 자동 (사용자 결정 261102): 오늘 ⊂ 이번 주 ⊂ 이번 달 — 겹쳐서 보임, 반복 일정만 자기 칸 하나에
 //  task.bucket: inbox(날짜 없음) | open | done | canceled · task.date: 할 날 'YYYY-MM-DD'
@@ -674,6 +689,7 @@ function render() {
     return;
   }
   if (!S.loaded) return;
+  if (EMBED) { renderEmbed(m); return; }
   const pc = lastPc;
   let tab = S.tab;
   if (pc && ['today', 'week', 'month', 'later', 'inbox'].includes(tab)) tab = 'tasks';
@@ -693,6 +709,79 @@ function render() {
   bind();
 }
 
+function renderEmbed(m) {
+  const today = tasksIn('today');
+  const inT = new Set(today.map(t => t.id));
+  const week = tasksIn('week').filter(t => !inT.has(t.id));
+  week.forEach(t => inT.add(t.id));
+  const month = tasksIn('month').filter(t => !inT.has(t.id));
+  const inbox = tasksIn('inbox');
+  const WEEK_N = 3;
+  const rows = l => l.map(t => taskRowHtml(t)).join('');
+  let h = '';
+  if (S.failed) h += `<div class="banner err savefail"><span>저장 못 함: ${esc(S.failed)}</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
+  h += `<div class="emb-hint">꾹 눌러서 다른 칸으로 끌면 날짜가 바뀌어요</div>`;
+  h += `<div class="emb-sec" data-drop="today"><div class="emb-h">오늘 <span class="n">${today.length}개</span></div>${today.length ? rows(today) : '<div class="empty">오늘 할 일 없음 🎉</div>'}</div>`;
+  const wl = S.weekAll ? week : week.slice(0, WEEK_N);
+  h += `<div class="emb-sec" data-drop="week"><div class="emb-h">이번 주 <span class="n">${week.length}개</span></div>${week.length ? rows(wl) : '<div class="empty">비어 있어요</div>'}
+    ${week.length > WEEK_N ? `<button class="emb-more" data-act="emb-week">${S.weekAll ? '접기' : `${week.length - WEEK_N}개 더 보기`}</button>` : ''}</div>`;
+  h += `<details class="emb-sec" data-drop="month"${S.openMonth ? ' open' : ''}><summary class="emb-h">이번 달 ▾ <span class="n">${month.length}개</span></summary>${month.length ? rows(month) : '<div class="empty">비어 있어요</div>'}</details>`;
+  h += `<details class="emb-sec" data-drop="inbox"${S.openInbox ? ' open' : ''}><summary class="emb-h">받은함 ▾ <span class="n">${inbox.length}개</span></summary>${inbox.length ? rows(inbox) : '<div class="empty">던져 둔 게 없어요</div>'}</details>`;
+  h += `<div class="emb-hint"><a href="board.html" target="_top" style="color:inherit">운영판 전체 열기 →</a></div>`;
+  m.innerHTML = h;
+  m.querySelectorAll('details.emb-sec').forEach(d => d.addEventListener('toggle', () => { if (d.dataset.drop === 'month') S.openMonth = d.open; else S.openInbox = d.open; }));
+  let fab = $('#fab');
+  if (!fab) { fab = document.createElement('button'); fab.id = 'fab'; fab.className = 'fab'; fab.textContent = '+'; fab.setAttribute('aria-label', '할 일 추가'); document.body.appendChild(fab); fab.onclick = () => openAddSheet(); }
+  bind();
+}
+// 폰: 꾹 눌러(0.45초) 끌어서 다른 칸에 놓기 — 그냥 쓸면 스크롤·페이지 넘김 그대로 (사용자 요청 261103)
+function bindTouchDrag(m) {
+  let timer = null, sx = 0, sy = 0, gx = 0, gy = 0, id = null, from = null, ghost = null, row = null, over = null, scrollT = null;
+  const reset = () => {
+    clearTimeout(timer); timer = null; clearInterval(scrollT); scrollT = null;
+    if (ghost) ghost.remove(); ghost = null; if (row) row.classList.remove('dragging'); row = null;
+    m.querySelectorAll('.drop-on').forEach(x => x.classList.remove('drop-on'));
+  };
+  const move = (x, y) => {
+    ghost.style.transform = `translate(${Math.round(gx)}px, ${Math.round(y - gy)}px)`;
+    const el = document.elementFromPoint(x, y);
+    const col = el && el.closest('[data-drop]');
+    m.querySelectorAll('.drop-on').forEach(c => c !== col && c.classList.remove('drop-on'));
+    if (col) col.classList.add('drop-on');
+    over = col;
+    clearInterval(scrollT); scrollT = null;
+    const edge = y < 50 ? -10 : y > innerHeight - 50 ? 10 : 0;
+    if (edge) scrollT = setInterval(() => window.scrollBy(0, edge), 16);
+  };
+  m.addEventListener('touchstart', e => {
+    const r = e.target.closest('.task[data-tid]');
+    if (!r || e.touches.length > 1 || e.target.closest('button') || r.classList.contains('done')) return;
+    const t = e.touches[0]; sx = t.clientX; sy = t.clientY;
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      timer = null; row = r; id = r.dataset.tid; const c = r.closest('[data-drop]'); from = c ? c.dataset.drop : null;
+      const rc = r.getBoundingClientRect(); gx = rc.left; gy = sy - rc.top;
+      ghost = r.cloneNode(true); ghost.className = 'task drag-ghost'; ghost.style.width = rc.width + 'px'; ghost.style.boxSizing = 'border-box';
+      document.body.appendChild(ghost); r.classList.add('dragging');
+      if (navigator.vibrate) navigator.vibrate(15);
+      move(sx, sy);
+    }, 450);
+  }, { passive: true });
+  m.addEventListener('touchmove', e => {
+    const t = e.touches[0];
+    if (!ghost) { if (timer && Math.hypot(t.clientX - sx, t.clientY - sy) > 8) { clearTimeout(timer); timer = null; } return; }
+    e.preventDefault(); move(t.clientX, t.clientY);
+  }, { passive: false });
+  m.addEventListener('touchend', e => {
+    if (!ghost) { clearTimeout(timer); timer = null; return; }
+    e.preventDefault();   // 끈 뒤 '수정' 창이 열리지 않게
+    const v = over && over.dataset.drop, tid = id, src = from;
+    reset();
+    if (v && v !== src) dropTask(tid, v);
+  });
+  m.addEventListener('touchcancel', reset);
+  m.addEventListener('contextmenu', e => { if (ghost || timer) e.preventDefault(); });
+}
 function staleWarnHtml() {
   const st = projects().map(p => [p, staleDays(p)]).filter(([, d]) => d !== null && d > STALE_DAYS);
   if (!st.length) return '';
@@ -724,7 +813,7 @@ function taskRowHtml(t, opts = {}) {
   else if (t.bucket === 'inbox') mv = `<button class="mv" data-act="classify" data-id="${esc(t.id)}">분류</button>`;
   else mv = `<button class="mv" data-act="date" data-id="${esc(t.id)}">날짜</button>`;
   const drag = !closed && CAN_DRAG ? ` draggable="true" data-drag="${esc(t.id)}"` : '';
-  return `<div class="task${closed ? ' done' : ''}"${drag}>
+  return `<div class="task${closed ? ' done' : ''}" data-tid="${esc(t.id)}"${drag}>
     ${closed ? `<span class="chk ${t.bucket === 'canceled' ? 'cx' : 'on'}" aria-hidden="true"><span></span></span>` : `<button class="chk" data-act="check" data-id="${esc(t.id)}" aria-label="완료"><span></span></button>`}
     <div class="t-main" data-act="edit" data-id="${esc(t.id)}"><div class="t-title">${esc(t.title)}</div>${meta.length ? `<div class="t-meta">${meta.join('')}</div>` : ''}</div>
     ${mv}<button class="mv more" data-act="edit" data-id="${esc(t.id)}" title="수정 · 삭제 · 완료 날짜" aria-label="수정·삭제"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="5" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="19" cy="12" r="2" fill="currentColor"/></svg></button>
@@ -1055,7 +1144,7 @@ function openUploadSheet() {
 // ════════════════════════════════════════════════════════════════════
 function bind() {
   const m = $('#main');
-  if (!m._drag) { bindDrag(m); m._drag = true; }
+  if (!m._drag) { bindDrag(m); if (EMBED) bindTouchDrag(m); m._drag = true; }
   m.onclick = e => {
     const tabBtn = e.target.closest('[data-tab]');
     if (tabBtn) {
@@ -1068,6 +1157,7 @@ function bind() {
     const t = id ? S.data.tasks.find(x => x.id === id) : null;
     switch (el.dataset.act) {
       case 'retry': S.failed = ''; save(); break;
+      case 'emb-week': S.weekAll = !S.weekAll; render(); break;
       case 'check': if (t) toggleDone(t); break;
       case 'date': openDateSheet(id); break;
       case 'edit': openEditSheet(id); break;
