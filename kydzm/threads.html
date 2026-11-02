@@ -192,6 +192,7 @@
   code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
   ol.steps { padding-left: 20px; font-size: 13.5px; display: flex; flex-direction: column; gap: 4px; }
 </style>
+<script src="lib/passkey.js"></script>
 </head>
 <body>
 
@@ -1336,6 +1337,7 @@ function boot() {
       try { sessionStorage.setItem(AUTH_KEY, '1'); } catch (e) {}
       login.style.display = 'none';
       start();
+      kydzPasskey.offer();
     } else {
       $('#login-error').style.display = 'block';
       pw.value = ''; pw.focus();
@@ -1344,6 +1346,7 @@ function boot() {
   $('#login-submit').onclick = submit;
   pw.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) submit(); });
   setTimeout(() => pw.focus(), 100);
+  kydzPasskey.mountLogin(() => { login.style.display = 'none'; start(); });
 }
 boot();
 </script>

@@ -1804,6 +1804,7 @@
 
 <!-- Leaflet CSS (좌표 피커용) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<script src="lib/passkey.js"></script>
 </head>
 <body>
 
@@ -9218,6 +9219,7 @@ async function tryLogin() {
   if (hash === PASSWORD_HASH) {
     sessionStorage.setItem(STORAGE_KEYS.authed, '1');
     showApp();
+    kydzPasskey.offer();
   } else {
     loginError.style.display = 'block';
     loginPassword.value = '';
@@ -9231,6 +9233,7 @@ function showLogin() {
   loginScreen.style.display = 'flex';
   app.classList.remove('is-active');
   setTimeout(() => loginPassword.focus(), 100);
+  kydzPasskey.mountLogin(showApp);
 }
 function showApp() {
   loginScreen.style.display = 'none';

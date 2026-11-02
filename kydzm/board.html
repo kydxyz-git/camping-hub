@@ -186,6 +186,7 @@
     .col { padding: 10px 12px; }
   }
 </style>
+<script src="lib/passkey.js"></script>
 </head>
 <body>
 
@@ -1097,6 +1098,7 @@ function boot() {
       try { sessionStorage.setItem(AUTH_KEY, '1'); } catch (e) {}
       login.style.display = 'none';
       start();
+      kydzPasskey.offer();
     } else {
       $('#login-error').style.display = 'block';
       pw.value = ''; pw.focus();
@@ -1105,6 +1107,7 @@ function boot() {
   $('#login-submit').onclick = submit;
   pw.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) submit(); });
   setTimeout(() => pw.focus(), 100);
+  kydzPasskey.mountLogin(() => { login.style.display = 'none'; start(); });
 }
 boot();
 </script>
