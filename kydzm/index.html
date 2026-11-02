@@ -3163,6 +3163,7 @@ function renderDashboard() {
   const cnt = (n, u) => `${n}${u}`;
   const grp = (title, items) => `<div class="card dash-group"><div class="dash-group-title">${title}</div>${items.map(([href, icon, t, d]) =>
     `<a class="dash-link" href="${href}"><span class="dash-link-icon">${icon}</span><span class="dash-link-t">${t}</span><span class="dash-link-d">${d}</span></a>`).join('')}</div>`;
+  const dashPhone = window.matchMedia('(max-width: 759px)').matches;   // 할일 장은 폰 가로판에서만 (PC는 메뉴 → 운영판, 261103)
   c.innerHTML = `
     <!-- 폰: 3페이지를 가로로 넘김 (오늘 · 메뉴 · 캠핑딜), PC는 위아래 그대로 — 사용자 요청 261102 -->
     <div class="dash-nav" id="dash-nav"><button data-pg="0" class="on">📊 오늘</button><button data-pg="1">✅ 할일</button><button data-pg="2">📋 메뉴</button><button data-pg="3">🔥 캠핑딜</button></div>
@@ -3181,10 +3182,10 @@ function renderDashboard() {
     </div>
 
     </div></section>
-    <section class="dash-page dash-todo-page">
+${dashPhone ? `    <section class="dash-page dash-todo-page">
     <!-- 할일: 운영판을 작게 넣음 (오늘 전부·이번 주 일부·이번 달 펼치기·꾹 눌러 끌기). 저장·반복·병합은 운영판 코드 그대로 — 사용자 요청 261103 -->
     ${cupasToken() ? `<iframe class="dash-board" src="board.html?embed=1" title="할일" loading="lazy"></iframe>` : `<div class="card help">쿠파스 토큰이 이 브라우저에 없어요. <a href="threads.html">스레드 관리</a>에서 한 번 넣으면 할일이 보여요.</div>`}
-    </section>
+    </section>` : ''}
     <section class="dash-page"><div class="dash-fit">
     <!-- 메뉴 (묶음) -->
     <div class="dash-groups">
