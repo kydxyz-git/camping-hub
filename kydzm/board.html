@@ -105,6 +105,9 @@
   .col-h h2 { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
   .col-h .n { font-size: 13px; color: var(--muted); font-weight: 600; }
   .over { font-size: 12px; color: var(--danger); font-weight: 700; }
+  .rep { color: #6a5bd0; }
+  details.later { margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 6px; }
+  details.later summary { cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 700; padding: 4px 0; }
   .empty { font-size: 13.5px; color: var(--muted); padding: 10px 2px; }
   .task { display: flex; align-items: center; gap: 6px; padding: 4px 0; border-top: 1px solid var(--line); }
   .task:first-of-type { border-top: none; }
@@ -112,6 +115,8 @@
   .chk span { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--muted); display: block; }
   .chk.on span { background: var(--success); border-color: var(--success); position: relative; }
   .chk.on span::after { content: '✓'; color: #fff; font-size: 14px; font-weight: 800; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .chk.cx span { border-color: var(--muted); position: relative; opacity: .6; }
+  .chk.cx span::after { content: '✕'; color: var(--muted); font-size: 13px; font-weight: 800; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
   .t-main { flex: 1; min-width: 0; cursor: pointer; padding: 6px 0; }
   .t-title { font-size: 15px; word-break: break-word; }
   .task.done .t-title { text-decoration: line-through; color: var(--muted); }
@@ -121,7 +126,7 @@
   .late { color: var(--danger); font-weight: 700; }
   .mv { min-height: 44px; min-width: 44px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg);
     font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
-  .quick { display: grid; grid-template-columns: 1fr 150px 110px 150px auto; gap: 8px; margin-bottom: 14px; }
+  .quick { display: grid; grid-template-columns: 1fr 170px 160px auto; gap: 8px; margin-bottom: 14px; }
   .upload-btn { margin-bottom: 14px; }
   details.donebox { margin-top: 16px; }
   details.donebox summary { cursor: pointer; font-size: 14px; font-weight: 700; color: var(--muted); padding: 6px 2px; }
@@ -226,13 +231,10 @@ const STALE_DAYS = 14;          // 프로젝트 방치 표시
 const ARCHIVE_DAYS = 60;        // 완료 후 이만큼 지나면 board/archive/YYYY-MM.json 으로
 const TODAY_LIMIT = 3;
 
-const BUCKETS = [
-  { key: 'inbox', label: '받은함' },
-  { key: 'today', label: '오늘' },
-  { key: 'week', label: '이번 주' },
-  { key: 'month', label: '이번 달' },
-];
-const BUCKET_LABEL = { inbox: '받은함', today: '오늘', week: '이번 주', month: '이번 달', done: '완료' };
+// 칸 = 날짜로 자동 (사용자 결정 261102): 오늘 ⊂ 이번 주 ⊂ 이번 달 — 겹쳐서 보임, 반복 일정만 자기 칸 하나에
+//  task.bucket: inbox(날짜 없음) | open | done | canceled · task.date: 할 날 'YYYY-MM-DD'
+const VIEW_LABEL = { inbox: '받은함', today: '오늘', week: '이번 주', month: '이번 달', later: '나중' };
+const REPEAT_LABEL = { day: '매일', week: '매주', month: '매월' };
 const KINDS = ['마감', '구축', '운영', '후속'];
 // 업로드 등록 → 이번 주에 생기는 후속 할 일 (프로젝트 id가 없으면 첫 프로젝트로)
 const UPLOAD_FOLLOWUPS = [
@@ -392,43 +394,74 @@ function op(o) {
 function upsertTask(id, fields) { op({ t: 'upsert', coll: 'tasks', id, fields }); }
 function createTask(fields) {
   const now = kstNow();
-  const t = { title: '', project: null, bucket: 'inbox', due: '', today_date: '', prev_bucket: '', done_at: '', upload: '', created_at: now, ...fields };
-  if (t.bucket === 'today') t.today_date = kstToday();
+  const t = { title: '', project: null, bucket: 'inbox', date: '', due: '', repeat: null, prev_bucket: '', done_at: '', canceled_at: '', upload: '', created_at: now, ...fields };
+  if (t.bucket === 'inbox' && t.date) t.bucket = 'open';
+  if (t.bucket === 'open' && !t.date) t.bucket = 'inbox';
   op({ t: 'upsert', coll: 'tasks', id: newTaskId(), fields: t, create: true });
 }
 function upsertProject(id, fields, create) { op({ t: 'upsert', coll: 'projects', id, fields, create: !!create }); }
 
-function moveTask(t, bucket) {
-  const f = { bucket };
-  f.today_date = bucket === 'today' ? kstToday() : '';
-  upsertTask(t.id, f);
-}
-function toggleDone(t) {
-  if (t.bucket === 'done') {
-    const back = t.prev_bucket && t.prev_bucket !== 'done' ? t.prev_bucket : (t.project ? 'week' : 'inbox');
-    upsertTask(t.id, { bucket: back, done_at: '', prev_bucket: '', today_date: back === 'today' ? kstToday() : '' });
-  } else {
-    upsertTask(t.id, { bucket: 'done', prev_bucket: t.bucket, done_at: kstNow() });
+// 날짜 바꾸기 ('' = 날짜 없음 → 받은함)
+function setDate(t, date) { upsertTask(t.id, { date, bucket: date ? 'open' : 'inbox' }); }
+
+// 다음 반복 날짜: base 다음 날부터 규칙에 맞는 첫 날
+function nextRepeat(rep, base) {
+  let d = addDays(base, 1);
+  for (let i = 0; i < 400; i++, d = addDays(d, 1)) {
+    const [y, m, dd] = d.split('-').map(Number);
+    const wd = new Date(d + 'T00:00:00Z').getUTCDay();
+    if (rep.every === 'day') return d;
+    if (rep.every === 'week' && (rep.wd || []).includes(wd)) return d;
+    if (rep.every === 'month') {
+      const lastDay = new Date(Date.UTC(y, m, 0)).getUTCDate();
+      const want = rep.md === 'last' ? lastDay : Math.min(+rep.md || 1, lastDay);
+      if (dd === want) return d;
+    }
   }
+  return addDays(base, 7);
+}
+function repeatText(rep) {
+  if (!rep || !rep.every) return '';
+  if (rep.every === 'week') return '매주 ' + (rep.wd || []).slice().sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7)).map(w => WD[w]).join('·');
+  if (rep.every === 'month') return rep.md === 'last' ? '매월 말일' : `매월 ${rep.md}일`;
+  return '매일';
 }
 
-// 자정 넘김: 오늘 칸의 미완료 할 일 중 today_date가 오늘 전이면 이번 주로
-function rolloverOps() {
-  const today = kstToday();
-  const ops = [];
+function toggleDone(t, doneDate) {
+  if (t.bucket === 'done' || t.bucket === 'canceled') {
+    const back = t.prev_bucket === 'inbox' || !t.date ? 'inbox' : 'open';
+    upsertTask(t.id, { bucket: back, done_at: '', canceled_at: '', prev_bucket: '' });
+    return;
+  }
+  const at = doneDate && doneDate !== kstToday() ? doneDate + 'T12:00:00+09:00' : kstNow();
+  upsertTask(t.id, { bucket: 'done', prev_bucket: t.bucket, done_at: at });
+  // 반복이면 다음 회차를 새로 만듦 (기준 = 할 날과 오늘 중 늦은 날)
+  if (t.repeat && t.repeat.every) {
+    const base = t.date && t.date > kstToday() ? t.date : kstToday();
+    createTask({ title: t.title, project: t.project, bucket: 'open', date: nextRepeat(t.repeat, base), repeat: t.repeat });
+    toast(`다음 회차: ${md(nextRepeat(t.repeat, base))}`);
+  }
+}
+function cancelTask(t) { upsertTask(t.id, { bucket: 'canceled', prev_bucket: t.bucket, canceled_at: kstNow() }); toast('취소했어요 — 아래 \'최근 정리\'에서 되돌릴 수 있어요'); }
+
+// 예전 칸(today/week/month)으로 저장된 할 일 → 날짜로 (한 번만, 열 때)
+function endOfWeek(ymd) { const wd = new Date(ymd + 'T00:00:00Z').getUTCDay(); return addDays(ymd, (7 - wd) % 7); }   // 일요일
+function endOfMonth(ymd) { const [y, m] = ymd.split('-').map(Number); return new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10); }
+function migrateOps() {
+  const today = kstToday(), ops = [];
   for (const t of S.data.tasks) {
-    if (t.bucket === 'today' && t.today_date && t.today_date < today) {
-      ops.push({ t: 'upsert', coll: 'tasks', id: t.id, fields: { bucket: 'week', today_date: '', updated_at: kstNow(), by: 'admin' } });
-    }
+    if (!['today', 'week', 'month'].includes(t.bucket)) continue;
+    const date = t.due || (t.bucket === 'today' ? (t.today_date || today) : t.bucket === 'week' ? endOfWeek(today) : endOfMonth(today));
+    ops.push({ t: 'upsert', coll: 'tasks', id: t.id, fields: { bucket: 'open', date, updated_at: kstNow(), by: 'admin' } });
   }
   return ops;
 }
 
 // 완료 60일 지난 할 일 → 완료 월 archive 파일로 (지우지 않음)
-function archiveMonth(t) { return (t.done_at || '').slice(0, 7); }
+function archiveMonth(t) { return (t.done_at || t.canceled_at || '').slice(0, 7); }
 function archiveCandidates(board) {
   const cut = addDays(kstToday(), -ARCHIVE_DAYS);
-  return board.tasks.filter(t => t.bucket === 'done' && t.done_at && ymdOf(t.done_at) < cut && /^\d{4}-\d{2}$/.test(archiveMonth(t)));
+  return board.tasks.filter(t => (t.bucket === 'done' || t.bucket === 'canceled') && archiveMonth(t) && ymdOf(t.done_at || t.canceled_at) < cut && /^\d{4}-\d{2}$/.test(archiveMonth(t)));
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -442,8 +475,8 @@ async function load() {
   S.base = normBoard(board);
   S.sha = head.sha;
   recompute();
-  const roll = rolloverOps();
-  if (roll.length) { S.ops.push(...roll); recompute(); scheduleSave(); }
+  const mig = migrateOps();
+  if (mig.length) { S.ops.push(...mig); recompute(); scheduleSave(); }
   S.loaded = true;
 }
 
@@ -529,8 +562,8 @@ async function refresh(force) {
     S.base = normBoard(board);
     S.sha = ref.object.sha;
     recompute();
-    const roll = rolloverOps();
-    if (roll.length) { S.ops.push(...roll); recompute(); scheduleSave(); }
+    const mig = migrateOps();
+    if (mig.length) { S.ops.push(...mig); recompute(); scheduleSave(); }
     renderSoon();
   } catch (e) { /* 조용히 — 다음 확인 때 다시 */ }
 }
@@ -555,9 +588,28 @@ function setDot() {
 // ════════════════════════════════════════════════════════════════════
 function projects() { return S.data.projects.slice().sort((a, b) => (a.order ?? 999) - (b.order ?? 999)); }
 function projOf(id) { return S.data.projects.find(p => p.id === id) || null; }
-function tasksIn(bucket, projectId) {
-  return S.data.tasks.filter(t => t.bucket === bucket && (projectId === undefined || t.project === projectId))
-    .sort((a, b) => (a.due || '9999') .localeCompare(b.due || '9999') || (a.created_at || '').localeCompare(b.created_at || ''));
+// 칸 계산: 오늘 ⊂ 이번 주 ⊂ 이번 달 (겹침). 반복 일정은 가장 가까운 칸 하나에만.
+function viewOf(t) {
+  if (t.bucket === 'inbox') return 'inbox';
+  if (t.bucket !== 'open') return '';
+  const today = kstToday();
+  if (!t.date || t.date <= today) return 'today';
+  if (t.date <= endOfWeek(today)) return 'week';
+  if (t.date <= endOfMonth(today)) return 'month';
+  return 'later';
+}
+const RANK = { today: 0, week: 1, month: 2, later: 3 };
+function inView(t, view) {
+  const v = viewOf(t);
+  if (!v) return false;
+  if (view === 'inbox' || v === 'inbox') return v === view;
+  if (t.repeat && t.repeat.every) return v === view;              // 반복은 겹치지 않음
+  if (view === 'later') return v === 'later';
+  return RANK[v] <= RANK[view];
+}
+function tasksIn(view, projectId) {
+  return S.data.tasks.filter(t => inView(t, view) && (projectId === undefined || t.project === projectId))
+    .sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || (a.created_at || '').localeCompare(b.created_at || ''));
 }
 function lastTouched(p) {
   let last = p.updated_at || '';
@@ -567,8 +619,9 @@ function lastTouched(p) {
 function staleDays(p) { const l = lastTouched(p); return l ? daysBetween(ymdOf(l), kstToday()) : null; }
 function recentDone() {
   const cut = addDays(kstToday(), -7);
-  return S.data.tasks.filter(t => t.bucket === 'done' && t.done_at && ymdOf(t.done_at) >= cut)
-    .sort((a, b) => (b.done_at || '').localeCompare(a.done_at || ''));
+  const at = t => t.done_at || t.canceled_at || '';
+  return S.data.tasks.filter(t => (t.bucket === 'done' || t.bucket === 'canceled') && at(t) && ymdOf(at(t)) >= cut)
+    .sort((a, b) => at(b).localeCompare(at(a)));
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -590,12 +643,12 @@ function render() {
   if (!S.loaded) return;
   const pc = lastPc;
   let tab = S.tab;
-  if (pc && ['today', 'week', 'month', 'inbox'].includes(tab)) tab = 'tasks';
+  if (pc && ['today', 'week', 'month', 'later', 'inbox'].includes(tab)) tab = 'tasks';
   if (!pc && tab === 'tasks') tab = 'today';
   const inboxN = tasksIn('inbox').length;
   const tabs = pc
     ? [['tasks', '할 일'], ['projects', '프로젝트']]
-    : [['today', '오늘'], ['week', '이번 주'], ['month', '이번 달'], ['inbox', '받은함'], ['projects', '프로젝트']];
+    : [['today', '오늘'], ['week', '이번 주'], ['month', '이번 달'], ['later', '나중'], ['inbox', '받은함'], ['projects', '프로젝트']];
   let h = '';
   if (S.failed) h += `<div class="banner err savefail"><span>저장하지 못했어요: ${esc(S.failed)} (바꾼 내용은 이 화면에 남아 있어요)</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
   h += `<div class="tabs">${tabs.map(([k, l]) => `<button class="tab${tab === k ? ' on' : ''}" data-tab="${k}">${l}${(k === 'inbox' || (pc && k === 'tasks')) && inboxN ? ` <span class="badge">${inboxN}</span>` : ''}</button>`).join('')}</div>`;
@@ -613,53 +666,67 @@ function staleWarnHtml() {
   return `<div class="banner warn">⚠ ${st.map(([p, d]) => `${esc(p.name)} ${d}일째`).join(' · ')} 손 안 댐</div>`;
 }
 
+function dateLabel(ymd) {
+  const today = kstToday();
+  if (ymd === today) return '오늘';
+  if (ymd === addDays(today, 1)) return '내일';
+  const wd = new Date(ymd + 'T00:00:00Z').getUTCDay();
+  return `${md(ymd)}(${WD[wd]})`;
+}
 function taskRowHtml(t, opts = {}) {
   const p = projOf(t.project);
   const today = kstToday();
+  const closed = t.bucket === 'done' || t.bucket === 'canceled';
   const meta = [];
   if (p && !opts.hideProject) meta.push(`<span class="pdot"><i style="background:${esc(p.color || '#999')}"></i>${esc(p.name)}</span>`);
-  if (!p && t.bucket !== 'inbox' && t.bucket !== 'done') meta.push('<span>프로젝트 없음</span>');
-  if (opts.showBucket && t.bucket !== 'done') meta.push(`<span>${BUCKET_LABEL[t.bucket] || ''}</span>`);
-  if (t.due && t.bucket !== 'done') meta.push(t.due < today ? `<span class="late">~${md(t.due)} 지남</span>` : `<span>~${md(t.due)}</span>`);
+  if (!p && !closed && t.bucket !== 'inbox') meta.push('<span>프로젝트 없음</span>');
+  if (!closed && t.date) meta.push(t.date < today ? `<span class="late">${md(t.date)} 지남</span>` : `<span>${dateLabel(t.date)}</span>`);
+  if (!closed && t.due && t.due !== t.date) meta.push(t.due < today ? `<span class="late">마감 ${md(t.due)} 지남</span>` : `<span>마감 ${md(t.due)}</span>`);
+  if (t.repeat && t.repeat.every) meta.push(`<span class="rep">🔁 ${esc(repeatText(t.repeat))}</span>`);
   if (t.bucket === 'done' && t.done_at) meta.push(`<span>${md(ymdOf(t.done_at))} 완료</span>`);
+  if (t.bucket === 'canceled') meta.push(`<span>취소됨</span>`);
   if (t.by === 'claude') meta.push('<span title="Claude가 마지막으로 바꿈">🤖</span>');
   let mv = '';
-  if (t.bucket === 'inbox') mv = `<button class="mv" data-act="classify" data-id="${esc(t.id)}">분류</button>`;
-  else if (t.bucket === 'month') mv = `<button class="mv" data-act="move" data-to="week" data-id="${esc(t.id)}">→ 이번 주</button>`;
-  else if (t.bucket === 'week') mv = `<button class="mv" data-act="move" data-to="today" data-id="${esc(t.id)}">→ 오늘</button>`;
-  else if (t.bucket === 'today') mv = `<button class="mv" data-act="move" data-to="week" data-id="${esc(t.id)}">이번 주로</button>`;
-  return `<div class="task${t.bucket === 'done' ? ' done' : ''}">
-    <button class="chk${t.bucket === 'done' ? ' on' : ''}" data-act="check" data-id="${esc(t.id)}" aria-label="${t.bucket === 'done' ? '완료 취소' : '완료'}"><span></span></button>
+  if (closed) mv = `<button class="mv" data-act="check" data-id="${esc(t.id)}">되돌리기</button>`;
+  else if (t.bucket === 'inbox') mv = `<button class="mv" data-act="classify" data-id="${esc(t.id)}">분류</button>`;
+  else mv = `<button class="mv" data-act="date" data-id="${esc(t.id)}">날짜</button>`;
+  return `<div class="task${closed ? ' done' : ''}">
+    ${closed ? `<span class="chk ${t.bucket === 'canceled' ? 'cx' : 'on'}" aria-hidden="true"><span></span></span>` : `<button class="chk" data-act="check" data-id="${esc(t.id)}" aria-label="완료"><span></span></button>`}
     <div class="t-main" data-act="edit" data-id="${esc(t.id)}"><div class="t-title">${esc(t.title)}</div>${meta.length ? `<div class="t-meta">${meta.join('')}</div>` : ''}</div>
     ${mv}
   </div>`;
 }
 
-function colHtml(bucket, opts = {}) {
-  const list = tasksIn(bucket, opts.project);
-  const over = bucket === 'today' && list.length > TODAY_LIMIT ? `<span class="over">${TODAY_LIMIT}개 넘음</span>` : '';
-  return `<div class="col"><div class="col-h"><h2>${BUCKET_LABEL[bucket]}${bucket === 'inbox' && list.length ? ` <span class="badge">${list.length}</span>` : ''} ${over}</h2><span class="n">${list.length}개</span></div>
-    ${list.length ? list.map(t => taskRowHtml(t, opts)).join('') : `<div class="empty">${bucket === 'inbox' ? '던져 둔 게 없어요' : '비어 있어요'}</div>`}</div>`;
+function colHtml(view, opts = {}) {
+  const list = tasksIn(view, opts.project);
+  const over = view === 'today' && list.length > TODAY_LIMIT ? `<span class="over">${TODAY_LIMIT}개 넘음</span>` : '';
+  let later = '';
+  if (view === 'month' && opts.withLater) {
+    const l = tasksIn('later');
+    if (l.length) later = `<details class="later"${S.openLater ? ' open' : ''}><summary>다음 달 이후 ${l.length}개</summary>${l.map(t => taskRowHtml(t, opts)).join('')}</details>`;
+  }
+  const empty = view === 'inbox' ? '던져 둔 게 없어요' : '비어 있어요';
+  return `<div class="col"><div class="col-h"><h2>${VIEW_LABEL[view]}${view === 'inbox' && list.length ? ` <span class="badge">${list.length}</span>` : ''} ${over}</h2><span class="n">${list.length}개</span></div>
+    ${list.length ? list.map(t => taskRowHtml(t, opts)).join('') : `<div class="empty">${empty}</div>`}${later}</div>`;
 }
 
-function tasksHtml(onlyBucket) {
+function tasksHtml(onlyView) {
   let h = staleWarnHtml();
-  if (!onlyBucket) {
+  if (!onlyView) {
     h += `<div class="quick">
-      <input class="input" id="q-title" placeholder="할 일 빠르게 추가 (Enter)">
+      <input class="input" id="q-title" placeholder="할 일 빠르게 추가 (Enter) — 날짜 없으면 받은함">
       <select class="input" id="q-project"><option value="">프로젝트 없음</option>${projects().map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select>
-      <select class="input" id="q-bucket">${BUCKETS.map(b => `<option value="${b.key}"${b.key === 'inbox' ? ' selected' : ''}>${b.label}</option>`).join('')}</select>
-      <input class="input" id="q-due" type="date">
+      <input class="input" id="q-date" type="date" title="할 날">
       <button class="btn" data-act="quick-add">추가</button>
     </div>`;
     h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
-    h += `<div class="cols board">${colHtml('inbox')}${colHtml('today')}${colHtml('week')}${colHtml('month')}</div>`;
+    h += `<div class="cols board">${colHtml('inbox')}${colHtml('today')}${colHtml('week')}${colHtml('month', { withLater: true })}</div>`;
   } else {
-    if (onlyBucket === 'week') h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
-    h += `<div class="cols">${colHtml(onlyBucket)}</div>`;
+    if (onlyView === 'week') h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
+    h += `<div class="cols">${colHtml(onlyView)}</div>`;
   }
   const done = recentDone();
-  h += `<details class="donebox"${S.openDone ? ' open' : ''}><summary>최근 7일 완료 ${done.length}개</summary><div class="col">${done.length ? done.map(t => taskRowHtml(t)).join('') : '<div class="empty">없어요</div>'}</div></details>`;
+  h += `<details class="donebox"${S.openDone ? ' open' : ''}><summary>최근 7일 정리 (완료·취소) ${done.length}개</summary><div class="col">${done.length ? done.map(t => taskRowHtml(t)).join('') : '<div class="empty">없어요</div>'}</div></details>`;
   return h;
 }
 
@@ -669,7 +736,7 @@ function projectsHtml() {
   <div class="pgrid">${ps.map(p => {
     const d = staleDays(p);
     const stale = d !== null && d > STALE_DAYS;
-    const n = b => S.data.tasks.filter(t => t.project === p.id && t.bucket === b).length;
+    const n = v => tasksIn(v, p.id).length;
     return `<button class="pcard${stale ? ' stale' : ''}" data-act="open-project" data-id="${esc(p.id)}">
       <div class="pcard-h"><i style="background:${esc(p.color || '#999')}"></i>${esc(p.name)} ${p.kind ? `<span class="kind">${esc(p.kind)}</span>` : ''}</div>
       <div class="pstatus">${p.status ? esc(p.status) : '<span class="muted">현재 상태 없음</span>'}</div>
@@ -682,9 +749,8 @@ function projectsHtml() {
 function projectDetailHtml(id) {
   const p = projOf(id);
   if (!p) { S.project = null; return projectsHtml(); }
-  const open = S.data.tasks.filter(t => t.project === p.id && t.bucket !== 'done');
-  const order = { today: 0, week: 1, month: 2, inbox: 3 };
-  open.sort((a, b) => (order[a.bucket] ?? 9) - (order[b.bucket] ?? 9) || (a.due || '9999').localeCompare(b.due || '9999'));
+  const open = S.data.tasks.filter(t => t.project === p.id && (t.bucket === 'open' || t.bucket === 'inbox'));
+  open.sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
   const log = (p.log || []).map((l, i) => ({ ...l, i })).sort((a, b) => (b.d || '').localeCompare(a.d || ''));
   return `<div class="pd-head"><button class="btn ghost small" data-act="back-projects">← 프로젝트</button>
     <h2><i style="width:12px;height:12px;border-radius:50%;display:inline-block;background:${esc(p.color || '#999')}"></i>${esc(p.name)}</h2></div>
@@ -701,7 +767,7 @@ function projectDetailHtml(id) {
     </div>
     <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
       <div class="col"><div class="col-h"><h2>할 일</h2><button class="btn small" data-act="add-in-project" data-id="${esc(p.id)}">+ 추가</button></div>
-        ${open.length ? open.map(t => taskRowHtml(t, { hideProject: true, showBucket: true })).join('') : '<div class="empty">없어요</div>'}</div>
+        ${open.length ? open.map(t => taskRowHtml(t, { hideProject: true })).join('') : '<div class="empty">없어요</div>'}</div>
       <div class="col"><div class="col-h"><h2>결정 기록</h2></div>
         <div class="row" style="flex-wrap:nowrap;margin-bottom:8px"><input class="input" id="pd-log" placeholder="결정·접은 것 한 줄 (Enter)"><button class="btn small" data-act="add-log" data-id="${esc(p.id)}">추가</button></div>
         ${log.length ? `<ul class="log">${log.map(l => `<li><b>${esc(l.d ? md(l.d) : '')}</b><span>${esc(l.t)}</span><button class="x" data-act="del-log" data-id="${esc(p.id)}" data-i="${l.i}" aria-label="삭제">×</button></li>`).join('')}</ul>` : '<div class="empty">아직 없어요</div>'}
@@ -740,29 +806,70 @@ function bindChips(bg, state) {
   }));
 }
 const projChipItems = () => [['', '없음'], ...projects().map(p => [p.id, p.name, p.color])];
-const bucketChipItems = () => BUCKETS.map(b => [b.key, b.label]);
+// 날짜 빠른 선택: 오늘 · 내일 · 이번 주말 · 다음 주 월 · 날짜 없음(받은함)
+function dateChoices() {
+  const today = kstToday();
+  const sun = endOfWeek(today);
+  const sat = addDays(sun, -1) >= today ? addDays(sun, -1) : sun;
+  return [[today, '오늘'], [addDays(today, 1), '내일'], [sat, '이번 주말'], [addDays(sun, 1), '다음 주 월'], ['', '날짜 없음']];
+}
+function datePickHtml(cur) {
+  const ch = dateChoices();
+  const known = ch.some(([v]) => v === cur);
+  return `${chipsHtml('date', ch, known ? cur : '__x')}<input class="input" id="pick-date" type="date" value="${esc(cur && !known ? cur : '')}" style="margin-top:8px" aria-label="날짜 직접 고르기">`;
+}
+function bindDatePick(bg, st) {
+  const inp = bg.querySelector('#pick-date');
+  inp.addEventListener('change', () => { st.date = inp.value; bg.querySelectorAll('[data-chips="date"] .chip').forEach(x => x.classList.remove('on')); });
+  bg.querySelectorAll('[data-chips="date"] .chip').forEach(c => c.addEventListener('click', () => { inp.value = ''; }));
+}
+function repeatPickHtml(rep) {
+  const every = rep && rep.every || '';
+  const wd = (rep && rep.wd) || [];
+  return `${chipsHtml('every', [['', '없음'], ['day', '매일'], ['week', '매주'], ['month', '매월']], every)}
+    <div id="rp-week" class="chips${every === 'week' ? '' : ' hidden'}" style="margin-top:8px">${[1, 2, 3, 4, 5, 6, 0].map(w => `<button type="button" class="chip${wd.includes(w) ? ' on' : ''}" data-wd="${w}">${WD[w]}</button>`).join('')}</div>
+    <div id="rp-month" class="row${every === 'month' ? '' : ' hidden'}" style="margin-top:8px"><select class="input" id="rp-md" style="width:auto">${[...Array(28)].map((_, i) => `<option value="${i + 1}"${rep && +rep.md === i + 1 ? ' selected' : ''}>${i + 1}일</option>`).join('')}<option value="last"${rep && rep.md === 'last' ? ' selected' : ''}>말일</option></select></div>
+    <div class="muted" style="font-size:12.5px;margin-top:6px">반복은 완료하면 다음 회차가 생기고, 이번 주·이번 달에 겹쳐 보이지 않아요.</div>`;
+}
+function bindRepeat(bg, st) {
+  bg.querySelectorAll('[data-chips="every"] .chip').forEach(c => c.addEventListener('click', () => {
+    bg.querySelector('#rp-week').classList.toggle('hidden', c.dataset.v !== 'week');
+    bg.querySelector('#rp-month').classList.toggle('hidden', c.dataset.v !== 'month');
+  }));
+  bg.querySelectorAll('#rp-week .chip').forEach(c => c.onclick = () => c.classList.toggle('on'));
+}
+function readRepeat(bg, st) {
+  if (!st.every) return null;
+  if (st.every === 'week') {
+    const wd = [...bg.querySelectorAll('#rp-week .chip.on')].map(c => +c.dataset.wd);
+    return wd.length ? { every: 'week', wd } : null;
+  }
+  if (st.every === 'month') { const v = bg.querySelector('#rp-md').value; return { every: 'month', md: v === 'last' ? 'last' : +v }; }
+  return { every: 'day' };
+}
 
 function openAddSheet(preset = {}) {
-  const st = { project: preset.project || '', bucket: preset.bucket || 'inbox' };
-  const expanded = !!(preset.project || preset.bucket);
+  const st = { project: preset.project || '', date: preset.date || '', every: '' };
+  const expanded = !!(preset.project || preset.date);
   sheet(`<h3>할 일 추가<button class="x" data-close aria-label="닫기">×</button></h3>
-    <div class="field"><input class="input" id="a-title" placeholder="한 줄만 써도 돼요 — 받은함으로 들어가요" autocomplete="off"></div>
-    <button class="more" id="a-more"${expanded ? ' style="display:none"' : ''}>프로젝트·칸 지정 ▾</button>
+    <div class="field"><input class="input" id="a-title" placeholder="한 줄만 써도 돼요 — 날짜 없으면 받은함으로" autocomplete="off"></div>
+    <button class="more" id="a-more"${expanded ? ' style="display:none"' : ''}>프로젝트·날짜·반복 지정 ▾</button>
     <div id="a-detail"${expanded ? '' : ' class="hidden"'}>
       <div class="field"><label>프로젝트</label>${chipsHtml('project', projChipItems(), st.project)}</div>
-      <div class="field"><label>칸</label>${chipsHtml('bucket', bucketChipItems(), st.bucket)}</div>
-      <div class="field"><label>기한 (선택)</label><input class="input" id="a-due" type="date"></div>
+      <div class="field"><label>할 날</label>${datePickHtml(st.date)}</div>
+      <div class="field"><label>반복</label>${repeatPickHtml(null)}</div>
     </div>
     <div class="sheet-actions"><button class="btn ghost" data-close>닫기</button><button class="btn" id="a-ok">저장</button></div>`, bg => {
-    bindChips(bg, st);
+    bindChips(bg, st); bindDatePick(bg, st); bindRepeat(bg, st);
     const title = bg.querySelector('#a-title');
     bg.querySelector('#a-more').onclick = e => { e.target.style.display = 'none'; bg.querySelector('#a-detail').classList.remove('hidden'); };
     const ok = () => {
       const v = title.value.trim(); if (!v) { title.focus(); return; }
-      const project = st.project || null;
-      const bucket = st.bucket === 'inbox' || !st.bucket ? 'inbox' : st.bucket;
-      createTask({ title: v, project: bucket === 'inbox' && !project ? null : project, bucket, due: bg.querySelector('#a-due').value || '' });
-      closeSheet(); toast(bucket === 'inbox' ? '받은함에 넣었어요' : `${BUCKET_LABEL[bucket]}에 넣었어요`);
+      const repeat = readRepeat(bg, st);
+      let date = st.date;
+      if (repeat && !date) date = repeat.every === 'day' ? kstToday() : nextRepeat(repeat, addDays(kstToday(), -1));
+      createTask({ title: v, project: st.project || null, date, bucket: date ? 'open' : 'inbox', repeat });
+      closeSheet(); toast(date ? `${dateLabel(date)}에 넣었어요` : '받은함에 넣었어요');
     };
     bg.querySelector('#a-ok').onclick = ok;
     title.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) ok(); });
@@ -772,62 +879,93 @@ function openAddSheet(preset = {}) {
 
 function openEditSheet(id) {
   const t = S.data.tasks.find(x => x.id === id); if (!t) return;
-  const st = { project: t.project || '', bucket: t.bucket === 'done' ? (t.prev_bucket || 'week') : t.bucket };
+  const closed = t.bucket === 'done' || t.bucket === 'canceled';
+  const st = { project: t.project || '', date: t.date || '', every: (t.repeat && t.repeat.every) || '' };
   sheet(`<h3>할 일 수정<button class="x" data-close aria-label="닫기">×</button></h3>
     <div class="field"><label>제목</label><textarea class="input" id="e-title" style="min-height:64px">${esc(t.title)}</textarea></div>
     <div class="field"><label>프로젝트</label>${chipsHtml('project', projChipItems(), st.project)}</div>
-    ${t.bucket === 'done' ? '<div class="field muted" style="font-size:13.5px">완료된 할 일이에요. 체크를 풀면 원래 칸으로 돌아가요.</div>' : `<div class="field"><label>칸</label>${chipsHtml('bucket', bucketChipItems(), st.bucket)}</div>`}
-    <div class="field"><label>기한</label><input class="input" id="e-due" type="date" value="${esc(t.due || '')}"></div>
+    ${closed ? `<div class="field"><label>${t.bucket === 'done' ? '처리한 날' : '취소한 날'}</label><input class="input" id="e-closed" type="date" value="${esc(ymdOf(t.done_at || t.canceled_at))}"></div>`
+      : `<div class="field"><label>할 날</label>${datePickHtml(st.date)}</div>
+         <div class="field"><label>마감 (선택)</label><input class="input" id="e-due" type="date" value="${esc(t.due || '')}"></div>
+         <div class="field"><label>반복</label>${repeatPickHtml(t.repeat)}</div>
+         <div class="field"><label>예전에 이미 처리했다면</label><div class="row" style="flex-wrap:nowrap"><input class="input" id="e-donedate" type="date" value="${kstToday()}"><button class="btn ghost" id="e-done">이 날 처리함</button></div></div>`}
     ${t.upload ? `<div class="field muted" style="font-size:13px">업로드 후속: ${esc(t.upload)}</div>` : ''}
-    <div class="sheet-actions"><button class="btn danger" id="e-del">삭제</button><div class="row"><button class="btn ghost" data-close>취소</button><button class="btn" id="e-ok">저장</button></div></div>`, bg => {
+    <div class="sheet-actions"><div class="row">${closed ? '' : '<button class="btn ghost" id="e-cancel">취소(잘못 등록)</button>'}<button class="btn danger" id="e-del">삭제</button></div><div class="row"><button class="btn ghost" data-close>닫기</button><button class="btn" id="e-ok">저장</button></div></div>`, bg => {
     bindChips(bg, st);
+    if (!closed) { bindDatePick(bg, st); bindRepeat(bg, st); }
     bg.querySelector('#e-ok').onclick = () => {
       const f = {};
       const title = bg.querySelector('#e-title').value.trim();
       if (title && title !== t.title) f.title = title;
       const project = st.project || null;
       if (project !== (t.project || null)) f.project = project;
-      const due = bg.querySelector('#e-due').value || '';
-      if (due !== (t.due || '')) f.due = due;
-      if (t.bucket !== 'done' && st.bucket !== t.bucket) { f.bucket = st.bucket; f.today_date = st.bucket === 'today' ? kstToday() : ''; }
+      if (closed) {
+        const d = bg.querySelector('#e-closed').value;
+        if (d && d !== ymdOf(t.done_at || t.canceled_at)) f[t.bucket === 'done' ? 'done_at' : 'canceled_at'] = d + 'T12:00:00+09:00';
+      } else {
+        if (st.date !== (t.date || '')) { f.date = st.date; f.bucket = st.date ? 'open' : 'inbox'; }
+        const due = bg.querySelector('#e-due').value || '';
+        if (due !== (t.due || '')) f.due = due;
+        const repeat = readRepeat(bg, st);
+        if (JSON.stringify(repeat) !== JSON.stringify(t.repeat || null)) {
+          f.repeat = repeat;
+          if (repeat && !(f.date ?? t.date)) { f.date = nextRepeat(repeat, addDays(kstToday(), -1)); f.bucket = 'open'; }
+        }
+      }
       closeSheet();
       if (Object.keys(f).length) upsertTask(t.id, f);
     };
-    bg.querySelector('#e-del').onclick = () => askConfirm('이 할 일을 지울까요?', '삭제', () => op({ t: 'delete', coll: 'tasks', id: t.id }));
+    if (!closed) {
+      bg.querySelector('#e-done').onclick = () => { const d = bg.querySelector('#e-donedate').value || kstToday(); closeSheet(); toggleDone(t, d); };
+      bg.querySelector('#e-cancel').onclick = () => { closeSheet(); cancelTask(t); };
+    }
+    bg.querySelector('#e-del').onclick = () => askConfirm('이 할 일을 완전히 지울까요? (기록을 남기려면 \'취소\')', '삭제', () => op({ t: 'delete', coll: 'tasks', id: t.id }));
+  });
+}
+
+function openDateSheet(id) {
+  const t = S.data.tasks.find(x => x.id === id); if (!t) return;
+  sheet(`<h3>언제 할까요?<button class="x" data-close aria-label="닫기">×</button></h3>
+    <div class="field" style="font-size:15px">${esc(t.title)}</div>
+    <div class="chips" id="d-chips">${dateChoices().map(([v, l]) => `<button type="button" class="chip${v === (t.date || '') ? ' on' : ''}" data-v="${esc(v)}">${l}</button>`).join('')}</div>
+    <input class="input" id="d-pick" type="date" value="${esc(t.date || '')}" style="margin-top:10px">
+    <div class="sheet-actions"><button class="btn ghost" data-close>닫기</button><button class="btn" id="d-ok">이 날로</button></div>`, bg => {
+    bg.querySelectorAll('#d-chips .chip').forEach(c => c.onclick = () => { closeSheet(); setDate(t, c.dataset.v); });
+    bg.querySelector('#d-ok').onclick = () => { const v = bg.querySelector('#d-pick').value; closeSheet(); setDate(t, v); };
   });
 }
 
 function openClassifySheet(id) {
   const t = S.data.tasks.find(x => x.id === id); if (!t) return;
-  const st = { project: t.project || '', bucket: 'week' };
+  const st = { project: t.project || '', date: kstToday() };
   sheet(`<h3>분류<button class="x" data-close aria-label="닫기">×</button></h3>
     <div class="field" style="font-size:15px">${esc(t.title)}</div>
     <div class="field"><label>프로젝트</label>${chipsHtml('project', projChipItems(), st.project)}</div>
-    <div class="field"><label>칸</label>${chipsHtml('bucket', BUCKETS.filter(b => b.key !== 'inbox').map(b => [b.key, b.label]), st.bucket)}</div>
-    <div class="sheet-actions"><button class="btn ghost" data-close>취소</button><button class="btn" id="c-ok">옮기기</button></div>`, bg => {
-    bindChips(bg, st);
+    <div class="field"><label>할 날</label>${datePickHtml(st.date)}</div>
+    <div class="sheet-actions"><button class="btn ghost" data-close>닫기</button><button class="btn" id="c-ok">옮기기</button></div>`, bg => {
+    bindChips(bg, st); bindDatePick(bg, st);
     bg.querySelector('#c-ok').onclick = () => {
       closeSheet();
-      upsertTask(t.id, { project: st.project || null, bucket: st.bucket, today_date: st.bucket === 'today' ? kstToday() : '' });
+      upsertTask(t.id, { project: st.project || null, date: st.date, bucket: st.date ? 'open' : 'inbox' });
     };
   });
 }
 
 function openUploadSheet() {
   sheet(`<h3>업로드 등록<button class="x" data-close aria-label="닫기">×</button></h3>
-    <div class="muted" style="font-size:13.5px;margin-bottom:12px">콘텐츠를 올렸으면 이름과 후속 기한을 넣어 주세요. 이번 주 칸에 후속 할 일 ${UPLOAD_FOLLOWUPS.length}개가 생겨요.</div>
+    <div class="muted" style="font-size:13.5px;margin-bottom:12px">콘텐츠를 올렸으면 이름과 후속 날짜를 넣어 주세요. 후속 할 일 ${UPLOAD_FOLLOWUPS.length}개가 그 날짜로 생겨요.</div>
     <div class="field"><label>콘텐츠 이름</label><input class="input" id="u-name" autocomplete="off"></div>
-    <div class="field"><label>후속 기한</label><input class="input" id="u-due" type="date" value="${addDays(kstToday(), 3)}"></div>
+    <div class="field"><label>후속 날짜</label><input class="input" id="u-due" type="date" value="${addDays(kstToday(), 3)}"></div>
     <div class="field muted" style="font-size:13px">${UPLOAD_FOLLOWUPS.map(f => '· ' + esc(f.suffix)).join('<br>')}</div>
     <div class="sheet-actions"><button class="btn ghost" data-close>취소</button><button class="btn" id="u-ok">만들기</button></div>`, bg => {
     const name = bg.querySelector('#u-name');
     bg.querySelector('#u-ok').onclick = () => {
       const n = name.value.trim(); if (!n) { name.focus(); return; }
-      const due = bg.querySelector('#u-due').value || '';
+      const date = bg.querySelector('#u-due').value || addDays(kstToday(), 3);
       const first = projects()[0];
       closeSheet();
-      UPLOAD_FOLLOWUPS.forEach(f => createTask({ title: `${n} · ${f.suffix}`, project: projOf(f.project) ? f.project : (first ? first.id : null), bucket: 'week', due, upload: n }));
-      toast(`이번 주에 ${UPLOAD_FOLLOWUPS.length}개 만들었어요`);
+      UPLOAD_FOLLOWUPS.forEach(f => createTask({ title: `${n} · ${f.suffix}`, project: projOf(f.project) ? f.project : (first ? first.id : null), bucket: 'open', date, upload: n }));
+      toast(`${dateLabel(date)}로 ${UPLOAD_FOLLOWUPS.length}개 만들었어요`);
     };
     setTimeout(() => name.focus(), 50);
   });
@@ -851,14 +989,14 @@ function bind() {
     switch (el.dataset.act) {
       case 'retry': S.failed = ''; save(); break;
       case 'check': if (t) toggleDone(t); break;
-      case 'move': if (t) moveTask(t, el.dataset.to); break;
+      case 'date': openDateSheet(id); break;
       case 'edit': openEditSheet(id); break;
       case 'classify': openClassifySheet(id); break;
       case 'upload': openUploadSheet(); break;
       case 'quick-add': quickAdd(); break;
       case 'open-project': S.project = id; render(); window.scrollTo(0, 0); break;
       case 'back-projects': S.project = null; render(); break;
-      case 'add-in-project': openAddSheet({ project: id, bucket: 'week' }); break;
+      case 'add-in-project': openAddSheet({ project: id, date: kstToday() }); break;
       case 'new-project': newProject(); break;
       case 'save-project': saveProject(id); break;
       case 'del-project': delProject(id); break;
@@ -872,11 +1010,14 @@ function bind() {
   if (lg) lg.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) addLog(S.project); });
   const d = $('details.donebox');
   if (d) d.addEventListener('toggle', () => { S.openDone = d.open; });
+  const l = $('details.later');
+  if (l) l.addEventListener('toggle', () => { S.openLater = l.open; });
 }
 function quickAdd() {
   const v = $('#q-title').value.trim(); if (!v) { $('#q-title').focus(); return; }
   const project = $('#q-project').value || null;
-  createTask({ title: v, project, bucket: $('#q-bucket').value, due: $('#q-due').value || '' });
+  const date = $('#q-date').value || '';
+  createTask({ title: v, project, date, bucket: date ? 'open' : 'inbox' });
   setTimeout(() => { const q = $('#q-title'); if (q) q.focus(); }, 0);
 }
 function newProject() {
@@ -912,9 +1053,9 @@ function saveProject(id) {
 }
 function delProject(id) {
   const p = projOf(id); if (!p) return;
-  const open = S.data.tasks.filter(t => t.project === id && t.bucket !== 'done');
+  const open = S.data.tasks.filter(t => t.project === id && (t.bucket === 'open' || t.bucket === 'inbox'));
   askConfirm(`'${p.name}' 프로젝트를 지울까요?${open.length ? ` 남은 할 일 ${open.length}개는 받은함으로 옮겨요.` : ''}`, '삭제', () => {
-    open.forEach(t => S.ops.push({ t: 'upsert', coll: 'tasks', id: t.id, fields: { project: null, bucket: 'inbox', today_date: '', updated_at: kstNow(), by: 'admin' } }));
+    open.forEach(t => S.ops.push({ t: 'upsert', coll: 'tasks', id: t.id, fields: { project: null, bucket: 'inbox', date: '', updated_at: kstNow(), by: 'admin' } }));
     S.project = null;
     op({ t: 'delete', coll: 'projects', id });
   });

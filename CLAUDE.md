@@ -36,7 +36,7 @@ PC 대화들과 클라우드 대화는 서로 기억을 공유하지 않는다. 
 
 - `index.html` 콘텐츠 CRUD + 통계 대시보드 · `insights.html` 성과 분석 · `deals.html` 딜 보드 · `conti.html` 콘티 보드
 - `threads.html` 스레드 예약 게시 관리(쿠파스). 데이터는 **비공개 저장소 `kydxyz-git/cupas`**(글 `queue/YYYY-MM.json`·`items.json`·`config.json`) — 이 공개 저장소에 예약 글·쿠팡 링크를 넣지 말 것. cupas 전용 PAT를 localStorage `kydz_cupas_gh_token`에만 저장. Secret 암호화는 `kydzm/lib/sealedbox.js`(+`nacl-fast.min.js`)
-- `board.html` 운영판(오늘·이번 주·이번 달 할 일 + 프로젝트별 방향·상태·결정 기록, 받은함). 데이터는 **비공개 cupas `board/board.json`** — 금액·협상 내용이라 이 공개 저장소에 두지 않음. cupas 토큰으로 읽고 씀, 비밀번호는 admin과 같은 해시. 저장은 op 목록을 최신본 위에 다시 적용(채팅 Claude도 같은 파일을 고침).
+- `board.html` 운영판(오늘·이번 주·이번 달 할 일 — 날짜로 자동·겹쳐 보임, 반복·취소 + 프로젝트별 방향·상태·결정 기록, 받은함). 데이터는 **비공개 cupas `board/board.json`** — 금액·협상 내용이라 이 공개 저장소에 두지 않음. cupas 토큰으로 읽고 씀, 비밀번호는 admin과 같은 해시. 저장은 op 목록을 최신본 위에 다시 적용(채팅 Claude도 같은 파일을 고침).
 - `camp-live.html` 공대남자 캠핑사이트: 기본은 GitHub 커밋(공대남자)·Actions 실행(예약봇)을 1분마다 보여줌(쿠파스는 cupas 토큰 있을 때만), `?demo=1` 데모, `tools/camp-watch.js`로 열면 내 컴퓨터 Claude Code 작업. 비밀번호는 admin과 같은 해시(`PASSWORD_HASH`를 바꾸면 index·threads·insights·camp-live·board.html 같이 변경), 한 번 들어가면 localStorage로 유지
 - 대시보드 맨 위 **🔥 오늘의 캠핑 딜 TOP 5**(콘텐츠 소재): 비공개 `kydxyz-git/camping-search`(딜 보드 수집, 하루 3번 08·16·23시)의 어제·오늘 수집에서 브라우저가 골라 보여줌 — 최근 3일 글만(카페 글 번호로 판단), 수집 점수 + 할인율 + 진행 중 + 딜 보드 라벨(좋음/아님)로 배운 제목 단어 가중치, 라벨 아님·오래됨·잡담·지난 행사·품절·질문 글 제외, 같은 브랜드·품목은 하나. '📋 문구'는 인스타·스레드용 짧은 문구(제목·할인·카페 출처만, 지어내지 않음). Actions 시간 안 씀.
 - `#coupang` 쿠팡 실적 (대시보드 메뉴 🛒): **눌러서 들어온 링크(상품 번호 ctag) 기준** 클릭·주문(취소 뺌)·수익 + 링크가 걸린 곳(홈페이지 장비·먹거리/스레드 글) + 그 링크로 들어와 실제로 산 것. 데이터는 비공개 cupas `state/link_report.json`(report.py 매일 06:10·16:40 — 쿠팡 전일 데이터는 오후 4시 전후 반영) — 수익 숫자라 공개 저장소에 두지 않음, 쿠파스 토큰 있는 브라우저에서만.
