@@ -205,6 +205,19 @@
   .dash-groups { display: grid; gap: 12px; margin-bottom: 18px; }
   @media (min-width: 760px) { .dash-top { grid-template-columns: 3fr 2fr; } .dash-groups { grid-template-columns: repeat(3, 1fr); } }
   .dash-group { padding: 14px 16px; margin: 0; }
+  .dash-todo { padding: 12px 14px; margin: 0 0 12px; }
+  .dash-todo-head { display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: inherit; margin-bottom: 4px; font-size: 15px; }
+  .dash-todo-head span { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .dash-todo-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); text-decoration: none; color: inherit; font-size: 14px; }
+  .dash-todo-box { flex: none; width: 15px; height: 15px; border: 1.5px solid #bbb; border-radius: 4px; }
+  .dash-todo-t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dash-todo-d { flex: none; font-size: 11px; color: var(--muted); }
+  .dash-todo-late { flex: none; font-size: 11px; font-weight: 700; color: #d93025; }
+  .dash-todo-foot { margin-top: 6px; font-size: 12px; color: var(--muted); }
+  .dash-chart7 { padding: 8px 12px; margin: 8px 0 0; }
+  .dash-chart7-h { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; margin-bottom: 2px; }
+  .dash-chart7-h a { font-size: 12px; color: var(--muted); text-decoration: none; }
+  .dash-chart7 .stats-bar-chart, .money-chart .stats-bar-chart { height: 64px; }
   .dash-group-title { font-size: 13px; font-weight: 800; color: var(--muted); margin-bottom: 6px; }
   .dash-link { display: grid; grid-template-columns: 24px 1fr; column-gap: 8px; align-items: center; padding: 8px 4px; border-radius: 8px; text-decoration: none; color: inherit; }
   .dash-link:hover { background: var(--accent-soft); }
@@ -238,7 +251,7 @@
     .dash-page .today-grid { gap: 6px; }
     .dash-page .today-item { padding: 6px 4px; }
     .dash-page .today-value { font-size: 15px; }
-    .dash-page .today-top { margin-top: 6px; padding: 6px 8px; }
+    .dash-page .today-top { margin-top: 4px; padding: 4px 8px; }
     .dash-page .dash-more { margin-top: 4px; }
     .dash-page #money-container .card { padding: 12px 14px; }
     .dash-page .money-v { font-size: 18px; }
@@ -2840,15 +2853,50 @@ async function renderMoneySummary() {
       return { ...t, home: by('home'), threads: by('threads') };
     };
     const w = sumOf('7d'), m = sumOf('thisMonth');
+    // 최근 7일 날짜별 수익 막대 (대시보드 빈 곳 채우기, 사용자 요청 261103)
+    const [f7, t7] = cpRange('7d', last), { perDay } = cpAggregate(daily, map, f7, t7);
+    const d7 = [], v7 = [];
+    for (let t = Date.parse(f7 + 'T00:00:00Z'); t <= Date.parse(t7 + 'T00:00:00Z'); t += 864e5) {
+      const iso = new Date(t).toISOString().slice(0, 10);
+      d7.push(iso); v7.push(Math.round((perDay[ymd(iso)] || {}).commission || 0));
+    }
     const col = (label, v) => `<div class="money-col" style="min-width:0"><div class="today-label">${label}</div><div class="money-v">${won(v.commission)}</div>
       <div class="money-s">클릭 ${v.click.toLocaleString()} · 주문 ${v.order.toLocaleString()}</div>
       <div class="money-s">홈 ${won(v.home)} · 스레드 ${won(v.threads)}</div></div>`;
     box.innerHTML = `<div class="card" style="margin:0"><div class="money-grid">${col('최근 7일', w)}${col('이번 달', m)}</div>
+      <div class="money-chart"><div class="today-label" style="margin:10px 0 4px">최근 7일 수익 (원)</div>${renderBarChart(d7, v7, Math.max(1, ...v7))}</div>
       <div class="help" style="margin-top:8px">쿠팡 · ${escapeHtml(md2(last))}까지 반영 (전날 실적은 오후 4시 전후)</div>
       <a class="dash-more" href="#coupang">쿠팡 실적 자세히 →</a></div>`;
   } catch (e) {
     box.innerHTML = `<div class="card help" style="margin:0">아직 쿠팡 실적을 못 불러왔어요. <a href="#coupang">쿠팡 실적</a><div>${escapeHtml(e.message)}</div></div>`;
   }
+}
+// 운영판(board.html)의 오늘 칸과 같은 기준: 열린 일 중 날짜가 오늘이거나 지난 것 (예전 칸 today/week/month도 읽음)
+async function renderDashTodo() {
+  const box = document.getElementById('dash-todo');
+  if (!box || !cupasToken()) return;
+  try {
+    const r = await ghFetchRaw('/repos/kydxyz-git/cupas/contents/board/board.json?ref=main', { headers: { Accept: 'application/vnd.github.raw+json' } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json(), today = kstToday();
+    const p = new Date(Date.parse(today + 'T00:00:00Z')), wd = p.getUTCDay();
+    const sun = new Date(p.getTime() + ((7 - wd) % 7) * 864e5).toISOString().slice(0, 10);
+    const dateOf = t => t.bucket === 'open' ? (t.date || today) : t.bucket === 'today' ? (t.due || t.today_date || today)
+      : t.bucket === 'week' ? (t.due || sun) : t.bucket === 'month' ? (t.due || '9999') : null;
+    const open = (data.tasks || []).filter(t => dateOf(t));
+    const todo = open.filter(t => dateOf(t) <= today).sort((a, b) => dateOf(a).localeCompare(dateOf(b)));
+    const week = open.filter(t => dateOf(t) <= sun).length;
+    const inbox = (data.tasks || []).filter(t => t.bucket === 'inbox').length;
+    const md = d => `${+d.slice(5, 7)}/${+d.slice(8, 10)}`;
+    const MAX = 5;
+    const next = todo.length ? [] : open.filter(t => dateOf(t) <= sun).sort((a, b) => dateOf(a).localeCompare(dateOf(b))).slice(0, 2);
+    box.innerHTML = `<a class="dash-todo-head" href="board.html"><b>📋 오늘 할 일 ${todo.length}건</b><span>운영판 →</span></a>
+      ${todo.length ? todo.slice(0, MAX).map(t => `<a class="dash-todo-row" href="board.html"><span class="dash-todo-box"></span><span class="dash-todo-t">${escapeHtml(t.title || '')}</span>${dateOf(t) < today ? `<span class="dash-todo-late">${md(dateOf(t))} 지남</span>` : ''}</a>`).join('')
+        : `<div class="help" style="margin:4px 0">오늘 할 일 없음 🎉${next.length ? ' · 이번 주 다음 일' : ''}</div>${next.map(t => `<a class="dash-todo-row" href="board.html"><span class="dash-todo-box"></span><span class="dash-todo-t">${escapeHtml(t.title || '')}</span><span class="dash-todo-d">${dateOf(t) === '9999' ? '' : md(dateOf(t))}</span></a>`).join('')}`}
+      ${todo.length > MAX ? `<div class="help" style="margin:2px 0 0">+ ${todo.length - MAX}건 더</div>` : ''}
+      <div class="dash-todo-foot">받은함 ${inbox}건 · 이번 주 ${week}건</div>`;
+    box.style.display = '';
+  } catch (e) { box.style.display = 'none'; }
 }
 function md2(ymdStr) { const [, m, d] = ymdStr.split('-').map(Number); return `${m}/${d}`; }
 // 📊 홈페이지 통계 전체 (예전 대시보드 아래쪽 통계, 사용자 요청 261102로 따로 뺌)
@@ -3119,6 +3167,8 @@ function renderDashboard() {
 
     </div></section>
     <section class="dash-page"><div class="dash-fit">
+    <!-- 오늘 할 일 (운영판, 비공개 cupas에서 화면에만 — 사용자 요청 261103) -->
+    <div class="card dash-todo" id="dash-todo" style="display:none"></div>
     <!-- 메뉴 (묶음) -->
     <div class="dash-groups">
       ${grp('📌 업무 관리', [['board.html', '📋', '운영판', '오늘·이번 주·이번 달 할 일']])}
@@ -3183,6 +3233,7 @@ function renderDashboard() {
   `;
   bindDashPages();
   renderMoneySummary();   // 수익화 요약 (cupas 토큰 있을 때만 숫자)
+  renderDashTodo();       // 메뉴 장 맨 위: 운영판 오늘 할 일
   if (tokenConnected) renderDealTop();   // 오늘의 캠핑 딜 TOP 5 (비동기로 채움)
 
 
@@ -3591,34 +3642,23 @@ function renderStats(container, data, mini = false) {
   const todayContentRanking = Object.entries(todayData.pages || {})
     .filter(([p]) => isContentPathFn(p))
     .sort((a, b) => b[1] - a[1]);
-  let todayTopName = '없음';
-  let todayTopCount = 0;
-  if (todayContentRanking.length > 0) {
-    const [topPath, topCount] = todayContentRanking[0];
-    todayTopCount = topCount;
-    // path → 이름 변환 (series/camps/foods/items)
+  // 오늘 인기 콘텐츠 TOP 3 (대시보드 빈 곳 채우기, 사용자 요청 261103 — 예전엔 1위만)
+  const contentName = topPath => {
     const m = topPath.match(/^\/([^/]+)\/(.+?)\/?$/);
-    if (m) {
-      const tab = m[1], rest = decodeURIComponent(m[2]);
-      if (tab === 'series') {
-        const parts = rest.split('/');
-        if (parts.length === 2) {
-          const s = (cache.series || []).find(x => x.id === parts[0]);
-          const ep = s && (s.eps || []).find(e => e.id === parts[1]);
-          todayTopName = ep ? `🎬 ${ep.title}` : '🎬 ' + rest;
-        }
-      } else if (tab === 'camps') {
-        const c = (cache.camps || []).find(x => x.id === rest);
-        todayTopName = c ? `🏕 ${c.name}` : '🏕 ' + rest;
-      } else if (tab === 'foods') {
-        const f = (cache.foods || []).find(x => x.id === rest);
-        todayTopName = f ? `🍖 ${f.name}` : '🍖 ' + rest;
-      } else if (tab === 'items') {
-        const i = (cache.items || []).find(x => x.id === rest);
-        todayTopName = i ? `🛠 ${i.name}` : '🛠 ' + rest;
-      }
+    if (!m) return topPath;
+    const tab = m[1], rest = decodeURIComponent(m[2]);
+    if (tab === 'series') {
+      const parts = rest.split('/');
+      const sr = (cache.series || []).find(x => x.id === parts[0]);
+      const ep = sr && (sr.eps || []).find(e => e.id === parts[1]);
+      return ep ? `🎬 ${ep.title}` : '🎬 ' + rest;
     }
-  }
+    if (tab === 'camps') { const c = (cache.camps || []).find(x => x.id === rest); return c ? `🏕 ${c.name}` : '🏕 ' + rest; }
+    if (tab === 'foods') { const f = (cache.foods || []).find(x => x.id === rest); return f ? `🍖 ${f.name}` : '🍖 ' + rest; }
+    if (tab === 'items') { const i = (cache.items || []).find(x => x.id === rest); return i ? `🛠 ${i.name}` : '🛠 ' + rest; }
+    return rest;
+  };
+  const todayTop = todayContentRanking.slice(0, 3).map(([path, n]) => ({ name: contentName(path), n }));
   // 트렌드 표시 헬퍼
   function trendHtml(todayN, yesterdayN) {
     if (yesterdayN === 0 && todayN === 0) return '';
@@ -3676,10 +3716,10 @@ function renderStats(container, data, mini = false) {
           <div class="today-value">${todayExternalClicks.toLocaleString()} ${trendHtml(todayExternalClicks, yesterdayExternalClicks)}</div>
         </div>
       </div>
-      <div class="today-top">
-        <div class="today-top-label">🏆 오늘 인기 1위</div>
-        <div class="today-top-name">${todayTopName === '없음' ? '<span style="color:var(--muted);">오늘 아직 콘텐츠 클릭이 없어요</span>' : `${escapeHtml(todayTopName)} <span class="today-top-count">${todayTopCount}회</span>`}</div>
-      </div>
+      ${todayTop.length ? todayTop.map((t, i) => `<div class="today-top">
+        <div class="today-top-label">${['🥇', '🥈', '🥉'][i]} ${i + 1}위</div>
+        <div class="today-top-name">${escapeHtml(t.name)} <span class="today-top-count">${t.n}회</span></div>
+      </div>`).join('') : `<div class="today-top"><div class="today-top-label">🏆 오늘 인기</div><div class="today-top-name"><span style="color:var(--muted);">오늘 아직 콘텐츠 클릭이 없어요</span></div></div>`}
     </div>
 
     <!-- 30일 차트 -->
@@ -3825,7 +3865,8 @@ function renderStats(container, data, mini = false) {
   if (mini) {
     const keep = [container.querySelector('.stats-summary'), container.querySelector('.today-card')].filter(Boolean);
     container.replaceChildren(...keep);
-    container.insertAdjacentHTML('beforeend', '<a class="dash-more" href="#stats">홈페이지 통계 전체 보기 →</a>');
+    const d7 = chartDates.slice(-7), v7 = chartData.slice(-7);
+    container.insertAdjacentHTML('beforeend', `<div class="card dash-chart7"><div class="dash-chart7-h"><b>최근 7일 방문</b><a href="#stats">통계 전체 →</a></div>${renderBarChart(d7, v7, Math.max(1, ...v7))}</div>`);
     return;
   }
   // 📊 콘텐츠별 분석 초기화 (innerHTML 후 DOM 준비됨)
