@@ -621,8 +621,16 @@ function editing() {
 }
 function renderSoon() { if (editing() || document.querySelector('.sheet-bg')) { S.needRender = true; return; } render(); }
 document.addEventListener('focusout', () => setTimeout(() => { if (S.needRender && !editing() && !document.querySelector('.sheet-bg')) { S.needRender = false; render(); } }, 50));
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.loaded) refresh(); });
-setInterval(() => { if (document.visibilityState === 'visible' && S.loaded && !S.saving) refresh(); }, POLL_MS);
+// 대시보드 할일 장 안(embed)일 때: 그 장을 보고 있을 때만 30초 확인 — 다른 장이면 멈춤 (GitHub 요청 줄이기, 사용자 요청 261103)
+let embedActive = true;
+window.addEventListener('message', e => {
+  if (e.origin !== location.origin || !e.data || typeof e.data.kydzBoardActive !== 'boolean') return;
+  const was = embedActive; embedActive = e.data.kydzBoardActive;
+  if (embedActive && !was && S.loaded && document.visibilityState === 'visible') refresh();
+});
+const pollOn = () => document.visibilityState === 'visible' && (!EMBED || embedActive);
+document.addEventListener('visibilitychange', () => { if (pollOn() && S.loaded) refresh(); });
+setInterval(() => { if (pollOn() && S.loaded && !S.saving) refresh(); }, POLL_MS);
 window.addEventListener('beforeunload', e => { if (S.ops.length || S.saving) { e.preventDefault(); e.returnValue = ''; } });
 
 function setDot() {

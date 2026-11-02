@@ -2831,11 +2831,18 @@ function bindDashPages() {
   fitDashPages();
   if (_dashRO) box.querySelectorAll('.dash-fit').forEach(f => _dashRO.observe(f));
   const btns = [...nav.querySelectorAll('button')];
-  const mark = i => { _dashPage = i; btns.forEach((b, k) => b.classList.toggle('on', k === i)); };
+  const mark = i => {
+    _dashPage = i; btns.forEach((b, k) => b.classList.toggle('on', k === i));
+    // 할일 장(운영판 iframe)은 보고 있을 때만 30초 확인 (사용자 요청 261103)
+    const fr = box.querySelector('iframe.dash-board'), pg = fr && fr.closest('.dash-page');
+    if (fr && fr.contentWindow) fr.contentWindow.postMessage({ kydzBoardActive: [...box.children].indexOf(pg) === i }, location.origin);
+  };
   btns.forEach((b, i) => b.onclick = () => { box.scrollTo({ left: i * box.clientWidth, behavior: 'smooth' }); mark(i); });
   let t = null;
   box.addEventListener('scroll', () => { clearTimeout(t); t = setTimeout(() => mark(Math.round(box.scrollLeft / Math.max(1, box.clientWidth))), 60); }, { passive: true });
   if (_dashPage) requestAnimationFrame(() => { box.scrollLeft = _dashPage * box.clientWidth; mark(_dashPage); });
+  const fr = box.querySelector('iframe.dash-board');
+  if (fr) fr.addEventListener('load', () => mark(_dashPage));   // iframe가 다 뜨면 지금 장 기준으로 켜고/멈춤
 }
 async function cpLoad() {
   const raw = path => ghFetchRaw(`/repos/kydxyz-git/cupas/contents/state/${path}?ref=main`, { headers: { Accept: 'application/vnd.github.raw+json' } }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
