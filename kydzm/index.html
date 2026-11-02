@@ -206,6 +206,15 @@
   @media (min-width: 760px) { .dash-top { grid-template-columns: 3fr 2fr; } .dash-groups { grid-template-columns: repeat(3, 1fr); } }
   .dash-group { padding: 14px 16px; margin: 0; }
   .dash-todo { padding: 12px 14px; margin: 0 0 12px; }
+  .dash-recent { padding: 12px 14px; margin: 12px 0 0; }
+  .dash-rc { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); text-decoration: none; color: inherit; font-size: 14px; }
+  .dash-rc:first-of-type { border-top: none; }
+  .dash-rc-i { flex: none; width: 20px; text-align: center; }
+  .dash-rc-t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+  .dash-rc-d { flex: none; font-size: 11.5px; color: var(--muted); }
+  .dash-board { display: block; width: 100%; height: 100%; min-height: 420px; border: 0; border-radius: 14px; background: transparent; }
+  @media (min-width: 760px) { .dash-board { height: 560px; } }
+  .dash-todo-page { overflow: hidden !important; }
   .dash-todo-head { display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: inherit; margin-bottom: 4px; font-size: 15px; }
   .dash-todo-head span { font-size: 12px; color: var(--muted); font-weight: 600; }
   .dash-todo-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); text-decoration: none; color: inherit; font-size: 14px; }
@@ -2872,32 +2881,20 @@ async function renderMoneySummary() {
     box.innerHTML = `<div class="card help" style="margin:0">아직 쿠팡 실적을 못 불러왔어요. <a href="#coupang">쿠팡 실적</a><div>${escapeHtml(e.message)}</div></div>`;
   }
 }
-// 운영판(board.html)의 오늘 칸과 같은 기준: 열린 일 중 날짜가 오늘이거나 지난 것 (예전 칸 today/week/month도 읽음)
-async function renderDashTodo() {
-  const box = document.getElementById('dash-todo');
-  if (!box || !cupasToken()) return;
-  try {
-    const r = await ghFetchRaw('/repos/kydxyz-git/cupas/contents/board/board.json?ref=main', { headers: { Accept: 'application/vnd.github.raw+json' } });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const data = await r.json(), today = kstToday();
-    const p = new Date(Date.parse(today + 'T00:00:00Z')), wd = p.getUTCDay();
-    const sun = new Date(p.getTime() + ((7 - wd) % 7) * 864e5).toISOString().slice(0, 10);
-    const dateOf = t => t.bucket === 'open' ? (t.date || today) : t.bucket === 'today' ? (t.due || t.today_date || today)
-      : t.bucket === 'week' ? (t.due || sun) : t.bucket === 'month' ? (t.due || '9999') : null;
-    const open = (data.tasks || []).filter(t => dateOf(t));
-    const todo = open.filter(t => dateOf(t) <= today).sort((a, b) => dateOf(a).localeCompare(dateOf(b)));
-    const week = open.filter(t => dateOf(t) <= sun).length;
-    const inbox = (data.tasks || []).filter(t => t.bucket === 'inbox').length;
-    const md = d => `${+d.slice(5, 7)}/${+d.slice(8, 10)}`;
-    const MAX = 5;
-    const next = todo.length ? [] : open.filter(t => dateOf(t) <= sun).sort((a, b) => dateOf(a).localeCompare(dateOf(b))).slice(0, 2);
-    box.innerHTML = `<a class="dash-todo-head" href="board.html"><b>📋 오늘 할 일 ${todo.length}건</b><span>운영판 →</span></a>
-      ${todo.length ? todo.slice(0, MAX).map(t => `<a class="dash-todo-row" href="board.html"><span class="dash-todo-box"></span><span class="dash-todo-t">${escapeHtml(t.title || '')}</span>${dateOf(t) < today ? `<span class="dash-todo-late">${md(dateOf(t))} 지남</span>` : ''}</a>`).join('')
-        : `<div class="help" style="margin:4px 0">오늘 할 일 없음 🎉${next.length ? ' · 이번 주 다음 일' : ''}</div>${next.map(t => `<a class="dash-todo-row" href="board.html"><span class="dash-todo-box"></span><span class="dash-todo-t">${escapeHtml(t.title || '')}</span><span class="dash-todo-d">${dateOf(t) === '9999' ? '' : md(dateOf(t))}</span></a>`).join('')}`}
-      ${todo.length > MAX ? `<div class="help" style="margin:2px 0 0">+ ${todo.length - MAX}건 더</div>` : ''}
-      <div class="dash-todo-foot">받은함 ${inbox}건 · 이번 주 ${week}건</div>`;
-    box.style.display = '';
-  } catch (e) { box.style.display = 'none'; }
+// 메뉴 장: 최근 추가·수정된 캠핑장·장비·음식·EP 5개 (데이터의 created_at/updated_at)
+function renderRecentChanges() {
+  const box = document.getElementById('dash-recent');
+  if (!box) return;
+  const list = [];
+  const push = (icon, kind, x, href) => { const at = x.updated_at || x.created_at; if (at) list.push({ icon, kind, name: x.name || x.title || '', at, isNew: x.created_at && (!x.updated_at || x.updated_at.slice(0, 10) === x.created_at.slice(0, 10)), href }); };
+  (cache.camps || []).forEach((x, i) => push('🏕', '캠핑장', x, `#camps/${i}`));
+  (cache.items || []).forEach((x, i) => push('🛠', '장비', x, `#items/${i}`));
+  (cache.foods || []).forEach((x, i) => push('🍖', '음식', x, `#foods/${i}`));
+  (cache.series || []).forEach((sr, si) => (sr.eps || []).forEach((e, ei) => push('🎬', 'EP', e, `#series/${si}/${ei}`)));
+  list.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+  const top = list.slice(0, 5);
+  const when = at => { const d = kstDateStr(new Date(at)); return d === kstToday() ? '오늘' : `${+d.slice(5, 7)}/${+d.slice(8, 10)}`; };
+  box.innerHTML = `<div class="dash-group-title">🕘 최근 바뀐 것</div>${top.length ? top.map(r => `<a class="dash-rc" href="${r.href}"><span class="dash-rc-i">${r.icon}</span><span class="dash-rc-t">${escapeHtml(r.name)}</span><span class="dash-rc-d">${r.isNew ? '추가' : '수정'} · ${when(r.at)}</span></a>`).join('') : '<div class="help">아직 없어요</div>'}`;
 }
 function md2(ymdStr) { const [, m, d] = ymdStr.split('-').map(Number); return `${m}/${d}`; }
 // 📊 홈페이지 통계 전체 (예전 대시보드 아래쪽 통계, 사용자 요청 261102로 따로 뺌)
@@ -3151,7 +3148,7 @@ function renderDashboard() {
     `<a class="dash-link" href="${href}"><span class="dash-link-icon">${icon}</span><span class="dash-link-t">${t}</span><span class="dash-link-d">${d}</span></a>`).join('')}</div>`;
   c.innerHTML = `
     <!-- 폰: 3페이지를 가로로 넘김 (오늘 · 메뉴 · 캠핑딜), PC는 위아래 그대로 — 사용자 요청 261102 -->
-    <div class="dash-nav" id="dash-nav"><button data-pg="0" class="on">📊 오늘</button><button data-pg="1">📋 메뉴</button><button data-pg="2">🔥 캠핑딜</button></div>
+    <div class="dash-nav" id="dash-nav"><button data-pg="0" class="on">📊 오늘</button><button data-pg="1">✅ 할일</button><button data-pg="2">📋 메뉴</button><button data-pg="3">🔥 캠핑딜</button></div>
     <div class="dash-pages" id="dash-pages">
     <section class="dash-page"><div class="dash-fit">
     <!-- 위: 오늘 활동 · 수익화 요약 -->
@@ -3167,9 +3164,11 @@ function renderDashboard() {
     </div>
 
     </div></section>
+    <section class="dash-page dash-todo-page">
+    <!-- 할일: 운영판을 작게 넣음 (오늘 전부·이번 주 일부·이번 달 펼치기·꾹 눌러 끌기). 저장·반복·병합은 운영판 코드 그대로 — 사용자 요청 261103 -->
+    ${cupasToken() ? `<iframe class="dash-board" src="board.html?embed=1" title="할일" loading="lazy"></iframe>` : `<div class="card help">쿠파스 토큰이 이 브라우저에 없어요. <a href="threads.html">스레드 관리</a>에서 한 번 넣으면 할일이 보여요.</div>`}
+    </section>
     <section class="dash-page"><div class="dash-fit">
-    <!-- 오늘 할 일 (운영판, 비공개 cupas에서 화면에만 — 사용자 요청 261103) -->
-    <div class="card dash-todo" id="dash-todo" style="display:none"></div>
     <!-- 메뉴 (묶음) -->
     <div class="dash-groups">
       ${grp('📌 업무 관리', [['board.html', '📋', '운영판', '오늘·이번 주·이번 달 할 일']])}
@@ -3190,6 +3189,8 @@ function renderDashboard() {
         ['conti.html', '🎞', '콘티 보드', '촬영 콘티']])}
     </div>
 
+        <!-- 최근 바뀐 것 (admin 저장 기록: created_at/updated_at) — 사용자 요청 261103 -->
+    <div class="card dash-recent" id="dash-recent"></div>
     </div></section>
     <section class="dash-page"><div class="dash-fit">
     <!-- 아래: 캠핑딜 TOP 5 -->
@@ -3234,7 +3235,7 @@ function renderDashboard() {
   `;
   bindDashPages();
   renderMoneySummary();   // 수익화 요약 (cupas 토큰 있을 때만 숫자)
-  renderDashTodo();       // 메뉴 장 맨 위: 운영판 오늘 할 일
+  renderRecentChanges();  // 메뉴 장 아래: 최근 바뀐 콘텐츠
   if (tokenConnected) renderDealTop();   // 오늘의 캠핑 딜 TOP 7 (비동기로 채움)
 
 
