@@ -213,6 +213,15 @@
   .dash-link-d { font-size: 12px; color: var(--muted); }
   .dash-more { display: inline-block; font-size: 12.5px; color: var(--muted); margin-top: 8px; text-decoration: none; }
   .dash-more:hover { text-decoration: underline; }
+  .dash-nav { display: none; }
+  @media (max-width: 759px) {
+    .dash-nav { display: flex; gap: 6px; position: sticky; top: 59px; z-index: 5; background: var(--accent-soft); padding: 6px 0 10px; }
+    .dash-nav button { flex: 1; min-height: 40px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); font-size: 14px; font-weight: 700; color: inherit; cursor: pointer; }
+    .dash-nav button.on { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .dash-pages { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; align-items: flex-start; gap: 16px; scrollbar-width: none; overscroll-behavior-x: contain; }
+    .dash-pages::-webkit-scrollbar { display: none; }
+    .dash-page { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; }
+  }
   .money-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 759px) { .dash-groups { grid-template-columns: 1fr 1fr; gap: 10px; } .dash-group { padding: 12px; } .dash-link-d { display: none; } .dash-link { padding: 7px 2px; } .dash-link-icon { grid-row: auto; font-size: 16px; } }
   .money-v { font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
@@ -2739,6 +2748,18 @@ function cpChart(rows, from, to, metric) {
     ${keys.map((k, i) => i % every === 0 || i === keys.length - 1 ? `<text x="${i * bw + bw / 2}" y="${H + 15}" font-size="10" text-anchor="middle" fill="#888">${lab(k)}</text>` : '').join('')}
   </svg><div class="cp-tip" style="display:none;position:absolute;pointer-events:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-100%)"></div></div><div class="help">최고 ${fmt(Math.max(...series))} · 합계 ${fmt(series.reduce((a, b) => a + b, 0))}</div>`;
 }
+// 폰 대시보드 가로 페이지: 위 버튼 ↔ 가로 스크롤 맞추기 (마지막 페이지 기억)
+let _dashPage = 0;
+function bindDashPages() {
+  const box = document.getElementById('dash-pages'), nav = document.getElementById('dash-nav');
+  if (!box || !nav) return;
+  const btns = [...nav.querySelectorAll('button')];
+  const mark = i => { _dashPage = i; btns.forEach((b, k) => b.classList.toggle('on', k === i)); };
+  btns.forEach((b, i) => b.onclick = () => { box.scrollTo({ left: i * box.clientWidth, behavior: 'smooth' }); mark(i); });
+  let t = null;
+  box.addEventListener('scroll', () => { clearTimeout(t); t = setTimeout(() => mark(Math.round(box.scrollLeft / Math.max(1, box.clientWidth))), 60); }, { passive: true });
+  if (_dashPage) requestAnimationFrame(() => { box.scrollLeft = _dashPage * box.clientWidth; mark(_dashPage); });
+}
 async function cpLoad() {
   const raw = path => ghFetchRaw(`/repos/kydxyz-git/cupas/contents/state/${path}?ref=main`, { headers: { Accept: 'application/vnd.github.raw+json' } }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
   const [daily, map] = await Promise.all([raw('coupang_daily.json'), raw('link_map.json').catch(() => ({ map: {} }))]);
@@ -3027,6 +3048,10 @@ function renderDashboard() {
   const grp = (title, items) => `<div class="card dash-group"><div class="dash-group-title">${title}</div>${items.map(([href, icon, t, d]) =>
     `<a class="dash-link" href="${href}"><span class="dash-link-icon">${icon}</span><span class="dash-link-t">${t}</span><span class="dash-link-d">${d}</span></a>`).join('')}</div>`;
   c.innerHTML = `
+    <!-- 폰: 3페이지를 가로로 넘김 (오늘 · 메뉴 · 캠핑딜), PC는 위아래 그대로 — 사용자 요청 261102 -->
+    <div class="dash-nav" id="dash-nav"><button data-pg="0" class="on">📊 오늘</button><button data-pg="1">📋 메뉴</button><button data-pg="2">🔥 캠핑딜</button></div>
+    <div class="dash-pages" id="dash-pages">
+    <section class="dash-page">
     <!-- 위: 오늘 활동 · 수익화 요약 -->
     <div class="dash-top">
       <div>
@@ -3039,6 +3064,8 @@ function renderDashboard() {
       </div>
     </div>
 
+    </section>
+    <section class="dash-page">
     <!-- 메뉴 (묶음) -->
     <div class="dash-groups">
       ${grp('📌 업무 관리', [['board.html', '📋', '운영판', '오늘·이번 주·이번 달 할 일']])}
@@ -3059,6 +3086,8 @@ function renderDashboard() {
         ['conti.html', '🎞', '콘티 보드', '촬영 콘티']])}
     </div>
 
+    </section>
+    <section class="dash-page">
     <!-- 아래: 캠핑딜 TOP 5 -->
     <!-- 오늘의 캠핑 딜 TOP 5 (camping-search 수집 + 딜 보드 라벨로 고름) -->
     <div class="card" id="deal-top-card" ${tokenConnected ? '' : 'style="display:none"'}><div class="section-title" style="margin:0">🔥 오늘의 캠핑 딜 TOP 5</div><div class="help">불러오는 중...</div></div>
@@ -3096,7 +3125,10 @@ function renderDashboard() {
     <div style="margin-top:24px;font-size:11px;color:var(--muted);text-align:center;">
       데이터 로드 ${new Date(cache.loadedAt).toLocaleTimeString('ko-KR')}
     </div>
+    </section>
+    </div>
   `;
+  bindDashPages();
   renderMoneySummary();   // 수익화 요약 (cupas 토큰 있을 때만 숫자)
   if (tokenConnected) renderDealTop();   // 오늘의 캠핑 딜 TOP 5 (비동기로 채움)
 
