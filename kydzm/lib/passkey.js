@@ -111,6 +111,6 @@
     document.body.appendChild(box);
   }
 
-  window.kydzPasskey = { supported, has, register, verify, mountLogin, offer,
+  window.kydzPasskey = { supported, has, register, verify, mountLogin, offer, isPhone,
     forget() { ls.del(KEY); ls.del(SKIP); ls.del(BAD); } };
 })();

@@ -2882,6 +2882,19 @@ async function renderMoneySummary() {
     box.innerHTML = `<div class="card money-msg" style="margin:0">아직 쿠팡 실적을 못 불러왔어요. <a href="#coupang">쿠팡 실적</a><div>${escapeHtml(e.message)}</div></div>`;
   }
 }
+// 지문 로그인 상태 (폰): 이 브라우저가 지원하는지 · 등록됐는지 · 바로 등록 — 로그인된 채로도 등록하게 (사용자 요청 261103)
+async function renderPasskeySlot() {
+  const el = document.getElementById('passkey-slot');
+  if (!el || !window.kydzPasskey || !kydzPasskey.isPhone()) return;
+  const ok = await kydzPasskey.supported();
+  if (!ok) { el.textContent = '👆 이 브라우저는 지문 로그인을 지원하지 않아요 (크롬·삼성 인터넷은 돼요)'; return; }
+  el.innerHTML = kydzPasskey.has() ? '👆 지문 로그인 켜짐 · <a href="#" id="pk-reg">다시 등록</a>' : '👆 <a href="#" id="pk-reg">이 폰에서 지문으로 열기 등록</a>';
+  document.getElementById('pk-reg').onclick = async e => {
+    e.preventDefault();
+    try { await kydzPasskey.register(); showToast('지문 등록 완료 — 다음부터 지문으로 열려요', 'success'); renderPasskeySlot(); }
+    catch (err) { showToast('등록이 안 됐어요 (' + (err && err.name || '오류') + ')', 'error'); }
+  };
+}
 // 메뉴 장: 최근 추가·수정된 캠핑장·장비·음식·EP 5개 (데이터의 created_at/updated_at)
 function renderRecentChanges() {
   const box = document.getElementById('dash-recent');
@@ -3231,6 +3244,7 @@ function renderDashboard() {
     <div style="margin-top:24px;font-size:11px;color:var(--muted);text-align:center;">
       데이터 로드 ${new Date(cache.loadedAt).toLocaleTimeString('ko-KR')}
     </div>
+    <div id="passkey-slot" style="margin-top:8px;font-size:12px;color:var(--muted);text-align:center;"></div>
     </div></section>
     </div>
   `;
@@ -3250,6 +3264,7 @@ function renderDashboard() {
     };
   }
 
+  renderPasskeySlot();
   // 통계 비동기 로드 (오늘 요약만) + 새로고침 버튼
   loadAndRenderStats(false, true);
   document.getElementById('stats-refresh').onclick = (e) => {
