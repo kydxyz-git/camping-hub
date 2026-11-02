@@ -200,6 +200,23 @@
   .menu-item-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
   .menu-item-desc { font-size: 12px; color: var(--muted); }
 
+  /* ── 대시보드 묶음 (261102 정리) ── */
+  .dash-top { display: grid; gap: 14px; margin-bottom: 18px; }
+  .dash-groups { display: grid; gap: 12px; margin-bottom: 18px; }
+  @media (min-width: 760px) { .dash-top { grid-template-columns: 3fr 2fr; } .dash-groups { grid-template-columns: repeat(3, 1fr); } }
+  .dash-group { padding: 14px 16px; margin: 0; }
+  .dash-group-title { font-size: 13px; font-weight: 800; color: var(--muted); margin-bottom: 6px; }
+  .dash-link { display: grid; grid-template-columns: 24px 1fr; column-gap: 8px; align-items: center; padding: 8px 4px; border-radius: 8px; text-decoration: none; color: inherit; }
+  .dash-link:hover { background: var(--accent-soft); }
+  .dash-link-icon { grid-row: span 2; font-size: 18px; text-align: center; }
+  .dash-link-t { font-size: 14px; font-weight: 700; }
+  .dash-link-d { font-size: 12px; color: var(--muted); }
+  .dash-more { display: inline-block; font-size: 12.5px; color: var(--muted); margin-top: 8px; text-decoration: none; }
+  .dash-more:hover { text-decoration: underline; }
+  .money-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 759px) { .dash-groups { grid-template-columns: 1fr 1fr; gap: 10px; } .dash-group { padding: 12px; } .dash-link-d { display: none; } .dash-link { padding: 7px 2px; } .dash-link-icon { grid-row: auto; font-size: 16px; } }
+  .money-v { font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+  .money-s { font-size: 12px; color: var(--muted); }
   /* ── 통계 섹션 ── */
   .btn-tiny {
     background: transparent; border: 1px solid var(--line); cursor: pointer;
@@ -2615,6 +2632,8 @@ async function router() {
     else renderItemList();
   } else if (parts[0] === 'coupang') {
     renderCoupangReport();
+  } else if (parts[0] === 'stats') {
+    renderStatsPage();
   } else {
     renderDashboard();
   }
@@ -2720,6 +2739,56 @@ function cpChart(rows, from, to, metric) {
     ${keys.map((k, i) => i % every === 0 || i === keys.length - 1 ? `<text x="${i * bw + bw / 2}" y="${H + 15}" font-size="10" text-anchor="middle" fill="#888">${lab(k)}</text>` : '').join('')}
   </svg><div class="cp-tip" style="display:none;position:absolute;pointer-events:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-100%)"></div></div><div class="help">최고 ${fmt(Math.max(...series))} · 합계 ${fmt(series.reduce((a, b) => a + b, 0))}</div>`;
 }
+async function cpLoad() {
+  const raw = path => ghFetchRaw(`/repos/kydxyz-git/cupas/contents/state/${path}?ref=main`, { headers: { Accept: 'application/vnd.github.raw+json' } }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  const [daily, map] = await Promise.all([raw('coupang_daily.json'), raw('link_map.json').catch(() => ({ map: {} }))]);
+  _cpData = { at: Date.now(), daily, map: map.map || {} };
+  return _cpData;
+}
+// 대시보드 💰 수익화 요약: 쿠팡 최근 7일·이번 달 (클릭·주문·수익) — 숫자는 비공개 cupas에서 읽어 화면에만
+async function renderMoneySummary() {
+  const box = document.getElementById('money-container');
+  if (!box) return;
+  if (!cupasToken()) {
+    box.innerHTML = '<div class="card help" style="margin:0">쿠파스 토큰이 이 브라우저에 없어요. <a href="threads.html">스레드 관리</a>에서 한 번 넣으면 보여요.</div>';
+    return;
+  }
+  try {
+    if (!_cpData || Date.now() - _cpData.at > 10 * 60e3) await cpLoad();
+    const { daily, map } = _cpData;
+    const last = dash(daily.to || ymd(kstToday()));
+    const won = n => `${Math.round(n).toLocaleString()}원`;
+    const sumOf = period => {
+      const [from, to] = cpRange(period, last);
+      const { rows } = cpAggregate(daily, map, from, to);
+      const t = rows.reduce((a, r) => ({ click: a.click + r.click, order: a.order + r.order, commission: a.commission + r.commission }), { click: 0, order: 0, commission: 0 });
+      const by = g => rows.filter(r => cpGroup(r) === g).reduce((a, r) => a + r.commission, 0);
+      return { ...t, home: by('home'), threads: by('threads') };
+    };
+    const w = sumOf('7d'), m = sumOf('thisMonth');
+    const col = (label, v) => `<div class="money-col"><div class="today-label">${label}</div><div class="money-v">${won(v.commission)}</div>
+      <div class="money-s">클릭 ${v.click.toLocaleString()} · 주문 ${v.order.toLocaleString()}</div>
+      <div class="money-s">홈페이지 ${won(v.home)} · 스레드 ${won(v.threads)}</div></div>`;
+    box.innerHTML = `<div class="card" style="margin:0"><div class="money-grid">${col('최근 7일', w)}${col('이번 달', m)}</div>
+      <div class="help" style="margin-top:8px">쿠팡 · ${escapeHtml(md2(last))}까지 반영 (전날 실적은 오후 4시 전후)</div>
+      <a class="dash-more" href="#coupang">쿠팡 실적 자세히 →</a></div>`;
+  } catch (e) {
+    box.innerHTML = `<div class="card help" style="margin:0">아직 쿠팡 실적을 못 불러왔어요. <a href="#coupang">쿠팡 실적</a><div>${escapeHtml(e.message)}</div></div>`;
+  }
+}
+function md2(ymdStr) { const [, m, d] = ymdStr.split('-').map(Number); return `${m}/${d}`; }
+// 📊 홈페이지 통계 전체 (예전 대시보드 아래쪽 통계, 사용자 요청 261102로 따로 뺌)
+function renderStatsPage() {
+  hideContentTabs();
+  document.getElementById('topbar-title').innerHTML = '📊 홈페이지 통계';
+  const c = document.getElementById('app-content');
+  c.innerHTML = `<div class="page-header"><button class="page-back" id="back-btn">← 대시보드</button>
+    <button class="btn-tiny" id="stats-refresh" title="새로고침">↻</button></div>
+    <div id="stats-container"><div class="stats-loading">통계 불러오는 중...</div></div>`;
+  document.getElementById('back-btn').onclick = () => location.hash = '';
+  document.getElementById('stats-refresh').onclick = e => { e.preventDefault(); loadAndRenderStats(true); };
+  loadAndRenderStats();
+}
 async function renderCoupangReport() {
   document.getElementById('topbar-title').innerHTML = '🛒 쿠팡 실적';
   const c = document.getElementById('app-content');
@@ -2730,9 +2799,7 @@ async function renderCoupangReport() {
   if (!_cpData || Date.now() - _cpData.at > 10 * 60e3) {   // 기간·펼치기마다 다시 받지 않게 (10분)
     c.innerHTML = '<div class="loading">쿠팡 실적 불러오는 중...</div>';
     try {
-      const raw = path => ghFetchRaw(`/repos/kydxyz-git/cupas/contents/state/${path}?ref=main`, { headers: { Accept: 'application/vnd.github.raw+json' } }).then(r => r.json());
-      const [daily, map] = await Promise.all([raw('coupang_daily.json'), raw('link_map.json').catch(() => ({ map: {} }))]);
-      _cpData = { at: Date.now(), daily, map: map.map || {} };
+      await cpLoad();
     } catch (e) {
       c.innerHTML = `<div class="card">아직 날짜별 실적이 없어요 (매일 06:10에 만들어져요).<div class="help">${escapeHtml(e.message)}</div></div>`;
       return;
@@ -2956,7 +3023,43 @@ function renderDashboard() {
   const tokenConnected = !!token;
   // 토큰 있으면 기본 접힌 상태, 없으면 펼친 상태 (입력 유도)
   const tokenExpanded = _tokenCardExpanded || !tokenConnected;
+  const cnt = (n, u) => `${n}${u}`;
+  const grp = (title, items) => `<div class="card dash-group"><div class="dash-group-title">${title}</div>${items.map(([href, icon, t, d]) =>
+    `<a class="dash-link" href="${href}"><span class="dash-link-icon">${icon}</span><span class="dash-link-t">${t}</span><span class="dash-link-d">${d}</span></a>`).join('')}</div>`;
   c.innerHTML = `
+    <!-- 위: 오늘 활동 · 수익화 요약 -->
+    <div class="dash-top">
+      <div>
+        <div class="section-title" style="margin-top:0">📊 오늘 홈페이지 <button class="btn-tiny" id="stats-refresh" title="새로고침">↻</button></div>
+        <div id="stats-container"><div class="stats-loading">통계 불러오는 중...</div></div>
+      </div>
+      <div>
+        <div class="section-title" style="margin-top:0">💰 수익화 요약</div>
+        <div id="money-container"><div class="card stats-loading">불러오는 중...</div></div>
+      </div>
+    </div>
+
+    <!-- 메뉴 (묶음) -->
+    <div class="dash-groups">
+      ${grp('📌 업무 관리', [['board.html', '📋', '운영판', '오늘·이번 주·이번 달 할 일']])}
+      ${grp('🎬 콘텐츠 관리', [
+        ['#series', '🎬', '시리즈 EP', cnt(cache.series.reduce((s, x) => s + x.eps.length, 0), '편')],
+        ['#camps', '🏕', '캠핑장', cnt(cache.camps.length, '곳')],
+        ['#foods', '🍖', '음식', cnt(cache.foods.length, '개')],
+        ['#items', '🛠', '장비', cnt(cache.items.length, '개')]])}
+      ${grp('🧵 스레드 관리', [['threads.html', '🧵', '스레드 예약', '쿠파스 글·아이템·게시주기']])}
+      ${grp('🔥 딜보드 관리', [['deals.html', '🔥', '딜 보드', '카페 할인정보 수집·라벨']])}
+      ${grp('📈 성과 분석', [
+        ['insights.html', '📈', '성과 분석', '인스타 분석 리포트'],
+        ['#coupang', '🛒', '쿠팡 실적', '클릭·주문·수익'],
+        ['#stats', '📊', '홈페이지 통계', '방문·인기·유입·검색']])}
+      ${grp('🗂 기타', [
+        ['pipeline.html', '🗺️', '운영 지도', '채널·자동화 한눈에'],
+        ['camp-live.html', '🏕️', '캠핑사이트', '작업 실시간 보기'],
+        ['conti.html', '🎞', '콘티 보드', '촬영 콘티']])}
+    </div>
+
+    <!-- 아래: 캠핑딜 TOP 5 -->
     <!-- 오늘의 캠핑 딜 TOP 5 (camping-search 수집 + 딜 보드 라벨로 고름) -->
     <div class="card" id="deal-top-card" ${tokenConnected ? '' : 'style="display:none"'}><div class="section-title" style="margin:0">🔥 오늘의 캠핑 딜 TOP 5</div><div class="help">불러오는 중...</div></div>
     <!-- 토큰 카드 -->
@@ -2990,84 +3093,11 @@ function renderDashboard() {
       </div>
     </div>
 
-    <!-- 메뉴 -->
-    <div class="section-title">📋 콘텐츠 관리</div>
-    <div class="menu-grid">
-      <a class="card menu-item" href="#series">
-        <span class="menu-item-icon">🎬</span>
-        <div class="menu-item-title">시리즈 EP</div>
-        <div class="menu-item-desc">${cache.series.length}개 시리즈 / ${cache.series.reduce((s,x)=>s+x.eps.length,0)}편</div>
-      </a>
-      <a class="card menu-item" href="#camps">
-        <span class="menu-item-icon">🏕</span>
-        <div class="menu-item-title">캠핑장</div>
-        <div class="menu-item-desc">${cache.camps.length}개</div>
-      </a>
-      <a class="card menu-item" href="#foods">
-        <span class="menu-item-icon">🍖</span>
-        <div class="menu-item-title">음식</div>
-        <div class="menu-item-desc">${cache.foods.length}개</div>
-      </a>
-      <a class="card menu-item" href="#items">
-        <span class="menu-item-icon">🛠</span>
-        <div class="menu-item-title">장비</div>
-        <div class="menu-item-desc">${cache.items.length}개</div>
-      </a>
-      <a class="card menu-item" href="board.html">
-        <span class="menu-item-icon">📋</span>
-        <div class="menu-item-title">운영판</div>
-        <div class="menu-item-desc">오늘·이번 주·이번 달 할 일</div>
-      </a>
-      <a class="card menu-item" href="insights.html">
-        <span class="menu-item-icon">📈</span>
-        <div class="menu-item-title">성과 분석</div>
-        <div class="menu-item-desc">인스타 분석 리포트</div>
-      </a>
-      <a class="card menu-item" href="conti.html">
-        <span class="menu-item-icon">🎞</span>
-        <div class="menu-item-title">콘티 보드</div>
-        <div class="menu-item-desc">촬영 콘티 (비밀번호 보호)</div>
-      </a>
-      <a class="card menu-item" href="deals.html">
-        <span class="menu-item-icon">🔥</span>
-        <div class="menu-item-title">딜 보드</div>
-        <div class="menu-item-desc">카페 할인정보 수집</div>
-      </a>
-      <a class="card menu-item" href="threads.html">
-        <span class="menu-item-icon">🧵</span>
-        <div class="menu-item-title">스레드 예약</div>
-        <div class="menu-item-desc">쿠파스 글·아이템·게시주기</div>
-      </a>
-      <a class="card menu-item" href="#coupang">
-        <span class="menu-item-icon">🛒</span>
-        <div class="menu-item-title">쿠팡 실적</div>
-        <div class="menu-item-desc">눌러서 들어온 링크 기준 클릭·주문·수익</div>
-      </a>
-      <a class="card menu-item" href="pipeline.html">
-        <span class="menu-item-icon">🗺️</span>
-        <div class="menu-item-title">운영 지도</div>
-        <div class="menu-item-desc">채널·자동화·수익 경로 한눈에</div>
-      </a>
-      <a class="card menu-item" href="camp-live.html">
-        <span class="menu-item-icon">🏕️</span>
-        <div class="menu-item-title">캠핑사이트</div>
-        <div class="menu-item-desc">작업·자동 작업 실시간 보기</div>
-      </a>
-    </div>
-
-    <!-- 통계 -->
-    <div class="section-title" style="margin-top:28px;">
-      📊 사이트 통계
-      <button class="btn-tiny" id="stats-refresh" title="새로고침">↻</button>
-    </div>
-    <div id="stats-container">
-      <div class="stats-loading">통계 불러오는 중...</div>
-    </div>
-
     <div style="margin-top:24px;font-size:11px;color:var(--muted);text-align:center;">
-      Phase 2 · 데이터 로드 ${new Date(cache.loadedAt).toLocaleTimeString('ko-KR')}
+      데이터 로드 ${new Date(cache.loadedAt).toLocaleTimeString('ko-KR')}
     </div>
   `;
+  renderMoneySummary();   // 수익화 요약 (cupas 토큰 있을 때만 숫자)
   if (tokenConnected) renderDealTop();   // 오늘의 캠핑 딜 TOP 5 (비동기로 채움)
 
 
@@ -3081,11 +3111,11 @@ function renderDashboard() {
     };
   }
 
-  // 통계 비동기 로드 + 새로고침 버튼
-  loadAndRenderStats();
+  // 통계 비동기 로드 (오늘 요약만) + 새로고침 버튼
+  loadAndRenderStats(false, true);
   document.getElementById('stats-refresh').onclick = (e) => {
     e.preventDefault();
-    loadAndRenderStats();
+    loadAndRenderStats(true, true);
   };
 
   // 토큰 핸들러 바인딩
@@ -3135,14 +3165,14 @@ const CATEGORY_META = {
 let _statsCache = null;
 let _statsCacheAt = 0;
 
-async function loadAndRenderStats(forceRefresh = false) {
+async function loadAndRenderStats(forceRefresh = false, mini = false) {
   const container = document.getElementById('stats-container');
   if (!container) return;
 
   // 30초 캐시 (대시보드 새로 들어와도 너무 자주 호출 안 함)
   const now = Date.now();
   if (!forceRefresh && _statsCache && (now - _statsCacheAt < 30000)) {
-    renderStats(container, _statsCache);
+    renderStats(container, _statsCache, mini);
     return;
   }
 
@@ -3153,14 +3183,14 @@ async function loadAndRenderStats(forceRefresh = false) {
     const data = await resp.json();
     _statsCache = data;
     _statsCacheAt = Date.now();
-    renderStats(container, data);
+    renderStats(container, data, mini);
   } catch (e) {
     // Worker가 막혔을 때(예: KV 하루 쓰기 한도 261027) — 매시간 저장소에 남긴 사본 data/stats.json으로 대신 보여줌
     try {
       const r2 = await ghFetchRaw(`/repos/${GH_OWNER}/${GH_REPO}/contents/data/stats.json?ref=main`, { headers: { Accept: 'application/vnd.github.raw+json' } });
       if (!r2.ok) throw new Error('HTTP ' + r2.status);
       const snap = await r2.json();
-      renderStats(container, snap);
+      renderStats(container, snap, mini);
       container.insertAdjacentHTML('afterbegin', `<div class="card" style="font-size:12px;color:#8a5a00;background:#fff8e1;border:1px solid #ffe08a;margin-bottom:10px">⚠️ 통계 서버 응답 없음 (${escapeHtml(e.message)}) — 저장소 사본(${escapeHtml(kstDateStr(Date.parse(snap.updated_at)) + ' ' + new Date(Date.parse(snap.updated_at) + 9 * 3600e3).toISOString().slice(11, 16))} 기준)을 보여주고 있어요. 그 뒤 방문은 서버가 돌아오면 반영돼요.</div>`);
       return;
     } catch (e2) { /* 사본도 못 읽으면 아래 실패 표시 */ }
@@ -3174,7 +3204,7 @@ async function loadAndRenderStats(forceRefresh = false) {
   }
 }
 
-function renderStats(container, data) {
+function renderStats(container, data, mini = false) {
   // ── 1. 기간별 카운트 계산 (KST 기준) ──
   const today = kstToday();
   const now = new Date();
@@ -3706,6 +3736,13 @@ function renderStats(container, data) {
     </div>
   `;
 
+  // 대시보드는 요약 숫자 + 오늘 활동만 (전체는 #stats 홈페이지 통계 페이지, 사용자 요청 261102)
+  if (mini) {
+    const keep = [container.querySelector('.stats-summary'), container.querySelector('.today-card')].filter(Boolean);
+    container.replaceChildren(...keep);
+    container.insertAdjacentHTML('beforeend', '<a class="dash-more" href="#stats">홈페이지 통계 전체 보기 →</a>');
+    return;
+  }
   // 📊 콘텐츠별 분석 초기화 (innerHTML 후 DOM 준비됨)
   initContentAnalysis(data);
   if (heatmapMissing.size) fillHeatmapFromEvents(heatmap, heatmapMissing);
