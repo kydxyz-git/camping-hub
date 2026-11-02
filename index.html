@@ -144,13 +144,14 @@
       font-weight: 500; line-height: 1.6;
       word-break: keep-all;
     }
+    /* 한 줄: 인스타·페이스북·클립·블로그·그래가 순서 (사용자 결정 261103). 좁은 폰은 fitHeaderBadges()가 줄임 */
     .header-badges {
-      display: flex; flex-wrap: wrap; gap: 5px;
-      justify-content: center; padding: 10px 20px 0;
+      display: flex; flex-wrap: nowrap; gap: 4px;
+      justify-content: center; padding: 10px 12px 0;
     }
     .header-badge {
       display: inline-flex; align-items: center;
-      padding: 3px 9px;
+      padding: 3px 7px; flex: none;
       background: #1a1a1a; color: #fff;
       font-size: 10px; font-weight: 700;
       letter-spacing: -0.01em;
@@ -166,12 +167,13 @@
     .header-badge-icon {
       display: inline-block;
       width: 12px; height: 12px;
-      margin-right: 4px;
+      margin-right: 3px;
       vertical-align: -1px;
     }
     a.header-badge.header-badge-naver:hover { background: #02b551; }
     .header-badge-blog { background: #03C75A; }
-    .header-badge-break { flex-basis: 100%; height: 0; }   /* 2줄 2개씩: 네이버(클립·블로그) / 페이스북·그래가 — 261103 */
+    .header-badge-insta { background: linear-gradient(45deg, #f09433, #dc2743 50%, #bc1888); }
+    a.header-badge.header-badge-insta:hover { filter: brightness(.95); }
     a.header-badge.header-badge-blog:hover { background: #02b551; }
     .header-badge-facebook {
       background: #1877F2;
@@ -1378,11 +1380,11 @@ async function loadData() {
   </a>
 
   <!-- 채널 배지 -->
-  <div class="header-badges">
+  <div class="header-badges" id="header-badges">
+    <a class="header-badge header-badge-insta" id="header-badge-insta" data-track-target="인스타 프로필" data-track-external="1" target="_blank" rel="noopener"></a>
+    <a class="header-badge header-badge-facebook" id="header-badge-facebook" data-track-target="Facebook" data-track-external="1" target="_blank" rel="noopener"></a>
     <a class="header-badge header-badge-naver" id="header-badge-naver" data-track-target="Clip Creators" data-track-external="1" target="_blank" rel="noopener"></a>
     <a class="header-badge header-badge-blog" id="header-badge-blog" data-track-target="네이버 블로그" data-track-external="1" target="_blank" rel="noopener"></a>
-    <span class="header-badge-break" aria-hidden="true"></span>
-    <a class="header-badge header-badge-facebook" id="header-badge-facebook" data-track-target="Facebook" data-track-external="1" target="_blank" rel="noopener"></a>
     <a class="header-badge" id="header-badge" data-track-target="그래가파트너스" data-track-external="1" target="_blank" rel="noopener"></a>
   </div>
 
@@ -1540,6 +1542,17 @@ const IG_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.
 const PH_SVG = `<svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9l4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="14.5" r="1.5"/></svg>`;
 const ARROW_SVG = `<svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>`;
 
+/* 위 뱃지 한 줄 유지: 화면이 좁으면 뱃지 줄 전체를 비율대로 줄임 (사용자 결정 261103) */
+function fitHeaderBadges() {
+  const box = document.getElementById('header-badges');
+  if (!box) return;
+  box.style.zoom = '';
+  const cs = getComputedStyle(box);
+  const avail = box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const need = [...box.children].filter(a => a.offsetParent).reduce((w, a) => w + a.offsetWidth, 0) + parseFloat(cs.columnGap || 0) * (box.children.length - 1);
+  if (need > avail) box.style.zoom = Math.max(0.7, avail / need).toFixed(3);
+}
+window.addEventListener('resize', () => fitHeaderBadges());
 /* ─── siteConfig 렌더 ─── */
 function renderConfig() {
   document.getElementById('header-title').innerHTML = siteConfig.headerTitle.replace(/\n/g, '<br>');
@@ -1577,6 +1590,13 @@ function renderConfig() {
     'header-badge-naver-icon'
   );
   renderBadge(
+    document.getElementById('header-badge-insta'),
+    siteConfig.headerBadgeInsta,
+    siteConfig.headerBadgeInstaIcon,
+    siteConfig.headerBadgeInstaUrl || siteConfig.footerInstaUrl,
+    'header-badge-naver-icon'
+  );
+  renderBadge(
     document.getElementById('header-badge-blog'),
     siteConfig.headerBadgeBlog,
     siteConfig.headerBadgeBlogIcon,
@@ -1590,6 +1610,7 @@ function renderConfig() {
     siteConfig.headerBadgeFacebookUrl,
     'header-badge-icon'
   );
+  fitHeaderBadges();
   document.getElementById('tab-btn-1').textContent  = siteConfig.tab1;
   document.getElementById('tab-btn-2').textContent  = siteConfig.tab2;
   document.getElementById('tab-btn-3').textContent  = siteConfig.tab3;

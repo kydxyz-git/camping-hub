@@ -197,6 +197,7 @@ const WEB=`<svg viewBox="0 0 24 24" fill="none" stroke="#3F5346" stroke-width="1
   stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/>
   <path d="M3 12h18M12 3c2.4 2.6 2.4 15.4 0 18M12 3c-2.4 2.6-2.4 15.4 0 18"/></svg>`;
 const FB=`<svg viewBox="0 0 24 24"><path fill="#1877F2" d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z"/></svg>`;
+const BLOG=`<svg viewBox="0 0 24 24"><path fill="#03C75A" d="M4 3h16a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-5.2L12 22l-2.8-3H4a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z"/><path fill="#fff" d="M8 6.5h1.9v3.1c.5-.6 1.2-.9 2-.9 1.8 0 3.1 1.4 3.1 3.3S13.7 15.3 11.9 15.3c-.8 0-1.5-.3-2-.9v.8H8V6.5zm3.5 3.9c-.9 0-1.6.7-1.6 1.6s.7 1.6 1.6 1.6 1.6-.7 1.6-1.6-.7-1.6-1.6-1.6z"/></svg>`;
 const CLIP=`<svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="16" rx="4.5" fill="#03C75A"/><path d="M10 9.2v5.6l4.6-2.8Z" fill="#fff"/></svg>`;
 
 (async function(){
@@ -216,6 +217,8 @@ const CLIP=`<svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="16" 
      desc:'릴스 교차 게시 · 도달 확장', url:cfg.headerBadgeFacebookUrl},
     {ico:CLIP, name:'네이버 클립',
      desc:'Clip Creators 활동', url:cfg.headerBadgeNaverUrl},
+    {ico:BLOG, name:'네이버 블로그',
+     desc:'공대남자의 캠핑 기록 · 캠핑장·장비·요리 글', url:cfg.headerBadgeBlogUrl},
     {ico:WEB, name:'kydz.kr', desc:'다녀온 캠핑장·용품 아카이브', url:BASE},
   ].filter(x=>x.url);
 
