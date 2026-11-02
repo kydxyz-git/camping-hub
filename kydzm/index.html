@@ -319,9 +319,10 @@
     display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
     height: 100%; position: relative;
   }
+  .money-msg { font-size: 13px; color: var(--muted); line-height: 1.6; }
   .stats-bar {
     width: 100%; max-width: 14px;
-    background: linear-gradient(to top, var(--text), #555);
+    background: linear-gradient(to top, #2d8f4c, #5fb87a);   /* 초록: 브라우저 강제 다크 모드에서도 보이게 (261103) */
     border-radius: 2px 2px 0 0;
     min-height: 1px;
   }
@@ -2847,7 +2848,7 @@ async function renderMoneySummary() {
   const box = document.getElementById('money-container');
   if (!box) return;
   if (!cupasToken()) {
-    box.innerHTML = '<div class="card help" style="margin:0">쿠파스 토큰이 이 브라우저에 없어요. <a href="threads.html">스레드 관리</a>에서 한 번 넣으면 보여요.</div>';
+    box.innerHTML = '<div class="card money-msg" style="margin:0">이 브라우저에는 쿠파스 토큰이 아직 없어요 (브라우저마다 따로 저장돼요). <a href="threads.html">스레드 관리</a>에서 한 번 넣으면 수익화 요약·할일이 보여요.</div>';
     return;
   }
   try {
@@ -2878,7 +2879,7 @@ async function renderMoneySummary() {
       <div class="help" style="margin-top:8px">쿠팡 · ${escapeHtml(md2(last))}까지 반영 (전날 실적은 오후 4시 전후)</div>
       <a class="dash-more" href="#coupang">쿠팡 실적 자세히 →</a></div>`;
   } catch (e) {
-    box.innerHTML = `<div class="card help" style="margin:0">아직 쿠팡 실적을 못 불러왔어요. <a href="#coupang">쿠팡 실적</a><div>${escapeHtml(e.message)}</div></div>`;
+    box.innerHTML = `<div class="card money-msg" style="margin:0">아직 쿠팡 실적을 못 불러왔어요. <a href="#coupang">쿠팡 실적</a><div>${escapeHtml(e.message)}</div></div>`;
   }
 }
 // 메뉴 장: 최근 추가·수정된 캠핑장·장비·음식·EP 5개 (데이터의 created_at/updated_at)
