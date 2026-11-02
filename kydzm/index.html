@@ -220,7 +220,30 @@
     .dash-nav button.on { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .dash-pages { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; align-items: flex-start; gap: 16px; scrollbar-width: none; overscroll-behavior-x: contain; }
     .dash-pages::-webkit-scrollbar { display: none; }
-    .dash-page { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; }
+    .dash-page { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; height: 100%; overflow-y: auto; overscroll-behavior: contain; }
+    .dash-pages { height: var(--dash-h, calc(100dvh - 130px)); }
+    body.dash-lock { overflow: hidden; height: 100dvh; }
+    body.dash-lock #app-content { padding-bottom: 0; }
+    /* 첫 페이지(오늘)가 한 화면에 들어가게 촘촘하게 */
+    .dash-page .section-title { margin: 0 0 6px; font-size: 15px; }
+    .dash-top { gap: 10px; margin-bottom: 0; }
+    .dash-page .stats-summary { grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; }
+    .dash-page .stats-card { padding: 8px 4px; }
+    .dash-page .stats-card-label { font-size: 10.5px; margin-bottom: 2px; white-space: nowrap; }
+    .dash-page .stats-trend { display: none; }
+    .dash-page .stats-card-value { font-size: 15px; }
+    .dash-page .today-card { padding: 10px 12px; margin-bottom: 0; }
+    .dash-page .today-card .stats-section-title { margin-bottom: 6px; font-size: 13px; }
+    .dash-page .today-grid { gap: 6px; }
+    .dash-page .today-item { padding: 6px 4px; }
+    .dash-page .today-value { font-size: 15px; }
+    .dash-page .today-top { margin-top: 6px; padding: 6px 8px; }
+    .dash-page .dash-more { margin-top: 4px; }
+    .dash-page #money-container .card { padding: 12px 14px; }
+    .dash-page .money-v { font-size: 18px; }
+    .dash-page #money-container .help { display: none; }
+    .dash-page .money-s { font-size: 11.5px; }
+    .dash-page #stats-container > .card:not(.today-card) { font-size: 11px !important; padding: 6px 10px !important; margin-bottom: 6px !important; }
   }
   .money-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 759px) { .dash-groups { grid-template-columns: 1fr 1fr; gap: 10px; } .dash-group { padding: 12px; } .dash-link-d { display: none; } .dash-link { padding: 7px 2px; } .dash-link-icon { grid-row: auto; font-size: 16px; } }
@@ -2595,6 +2618,7 @@ function epLabelOf(ep) {
 // ════════════════════════════════════════════════════════════════════
 async function router() {
   if (!isAuthed()) return; // 로그인 안 됐으면 라우터 무시
+  document.body.classList.remove('dash-lock');   // 대시보드 폰 가로판의 세로 스크롤 잠금은 대시보드에서만
 
   const content = document.getElementById('app-content');
   content.innerHTML = '<div class="loading">로딩 중...</div>';
@@ -2750,9 +2774,20 @@ function cpChart(rows, from, to, metric) {
 }
 // 폰 대시보드 가로 페이지: 위 버튼 ↔ 가로 스크롤 맞추기 (마지막 페이지 기억)
 let _dashPage = 0;
+function fitDashPages() {
+  const box = document.getElementById('dash-pages');
+  const phone = window.matchMedia('(max-width: 759px)').matches;
+  document.body.classList.toggle('dash-lock', !!box && phone);
+  if (!box || !phone) return;
+  window.scrollTo(0, 0);
+  const h = window.innerHeight - box.getBoundingClientRect().top - 8;   // 화면 아래까지 딱 (세로로 안 끌리게, 사용자 요청 261103)
+  box.style.setProperty('--dash-h', Math.max(300, h) + 'px');
+}
+window.addEventListener('resize', () => { if (document.getElementById('dash-pages')) fitDashPages(); });
 function bindDashPages() {
   const box = document.getElementById('dash-pages'), nav = document.getElementById('dash-nav');
   if (!box || !nav) return;
+  fitDashPages();
   const btns = [...nav.querySelectorAll('button')];
   const mark = i => { _dashPage = i; btns.forEach((b, k) => b.classList.toggle('on', k === i)); };
   btns.forEach((b, i) => b.onclick = () => { box.scrollTo({ left: i * box.clientWidth, behavior: 'smooth' }); mark(i); });
