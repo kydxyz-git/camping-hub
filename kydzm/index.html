@@ -260,6 +260,7 @@
     .dash-page .money-s, .dash-page .deal-meta, .dash-page .today-top-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .dash-page .money-col { min-width: 0; }
     .dash-page .deal-sub { display: none !important; }
+    .dash-page #deal-top-card { margin-bottom: 14px; }
     .dash-page #deal-top-card a > b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .dash-page .stats-card-value, .dash-page .today-value { white-space: nowrap; }
     .dash-page #stats-container > .card:not(.today-card) { font-size: 11px !important; padding: 6px 10px !important; margin-bottom: 6px !important; }
@@ -3047,7 +3048,7 @@ function hideContentTabs() {
 }
 
 // ════════════════════════════════════════════════════════════════════
-// 오늘의 캠핑 딜 TOP 5 — camping-search(비공개) 최근 수집에서 콘텐츠(인스타·스레드) 소재로 쓸 딜만 골라 대시보드 맨 위에 (사용자 요청 261026)
+// 오늘의 캠핑 딜 TOP 7 — camping-search(비공개) 최근 수집에서 콘텐츠(인스타·스레드) 소재로 쓸 딜만 골라 대시보드 맨 위에 (사용자 요청 261026)
 // 고르는 법: 수집 점수 + 할인율 + 진행 중(live) + 딜 보드에서 직접 매긴 라벨(좋음/아님 871개)로 배운 제목 단어 가중치
 //            − 라벨 '아님·오래됨·잡담', 지난 행사(past), 제목에 품절·종료, 할인 신호 없는 소식, 같은 브랜드·상품 겹치면 하나만
 // ════════════════════════════════════════════════════════════════════
@@ -3101,7 +3102,7 @@ async function loadDealTop() {
   for (const r of rows) {   // 같은 브랜드+품목/같은 제목 앞부분은 하나만
     const k = ((r.brands || [])[0] || '') + '|' + ((r.items || [])[0] || String(r.title || '').replace(/\s+/g, '').slice(0, 10));
     if (keys.has(k)) continue; keys.add(k); pick.push(r);
-    if (pick.length >= 5) break;
+    if (pick.length >= 7) break;   // 5 → 7 (폰 한 화면에 들어감, 사용자 요청 261103)
   }
   _dealTop = { at: Date.now(), pick, total: rows.length, records: recs.length };
   return _dealTop;
@@ -3117,7 +3118,7 @@ async function renderDealTop() {
   try {
     const { pick, total, records } = await loadDealTop();
     card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <div class="section-title" style="margin:0;white-space:nowrap">🔥 오늘의 캠핑 딜 TOP 5 <span class="help deal-sub" style="display:inline">· 콘텐츠 소재</span></div>
+        <div class="section-title" style="margin:0;white-space:nowrap">🔥 오늘의 캠핑 딜 TOP 7 <span class="help deal-sub" style="display:inline">· 콘텐츠 소재</span></div>
         <a class="btn btn-sm btn-ghost" href="deals.html" style="white-space:nowrap;flex:none">딜 보드 →</a></div>
       <div class="help" style="margin:4px 0 8px">어제·오늘 모은 카페 글 ${records}개 중 딜 후보 ${total}개에서 골랐어요. 딜 보드에서 좋음/아님을 매길수록 더 잘 골라요.</div>
       ${pick.length ? pick.map((r, i) => `<div style="padding:8px 0;border-top:1px solid var(--line, #eee)">
@@ -3133,7 +3134,7 @@ async function renderDealTop() {
       catch (e) { prompt('복사해서 쓰세요', dealCaption(r)); }
     });
   } catch (e) {
-    card.innerHTML = `<div class="section-title" style="margin:0">🔥 오늘의 캠핑 딜 TOP 5</div><div class="help">딜을 못 불러왔어요 — 토큰에 camping-search 접근 권한이 있는지 확인해 주세요. (${escapeHtml(e.message)})</div>`;
+    card.innerHTML = `<div class="section-title" style="margin:0">🔥 오늘의 캠핑 딜 TOP 7</div><div class="help">딜을 못 불러왔어요 — 토큰에 camping-search 접근 권한이 있는지 확인해 주세요. (${escapeHtml(e.message)})</div>`;
   }
 }
 
@@ -3192,8 +3193,8 @@ function renderDashboard() {
     </div></section>
     <section class="dash-page"><div class="dash-fit">
     <!-- 아래: 캠핑딜 TOP 5 -->
-    <!-- 오늘의 캠핑 딜 TOP 5 (camping-search 수집 + 딜 보드 라벨로 고름) -->
-    <div class="card" id="deal-top-card" ${tokenConnected ? '' : 'style="display:none"'}><div class="section-title" style="margin:0">🔥 오늘의 캠핑 딜 TOP 5</div><div class="help">불러오는 중...</div></div>
+    <!-- 오늘의 캠핑 딜 TOP 7 (camping-search 수집 + 딜 보드 라벨로 고름) -->
+    <div class="card" id="deal-top-card" ${tokenConnected ? '' : 'style="display:none"'}><div class="section-title" style="margin:0">🔥 오늘의 캠핑 딜 TOP 7</div><div class="help">불러오는 중...</div></div>
     <!-- 토큰 카드 -->
     <div class="card token-card ${tokenExpanded ? 'is-expanded' : 'is-collapsed'}" id="token-card">
       <div class="token-card-header" id="token-card-toggle">
@@ -3234,7 +3235,7 @@ function renderDashboard() {
   bindDashPages();
   renderMoneySummary();   // 수익화 요약 (cupas 토큰 있을 때만 숫자)
   renderDashTodo();       // 메뉴 장 맨 위: 운영판 오늘 할 일
-  if (tokenConnected) renderDealTop();   // 오늘의 캠핑 딜 TOP 5 (비동기로 채움)
+  if (tokenConnected) renderDealTop();   // 오늘의 캠핑 딜 TOP 7 (비동기로 채움)
 
 
   // 토큰 카드 헤더 클릭 → 펼침/접힘 토글 (연결된 상태일 때만)

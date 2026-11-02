@@ -13,8 +13,11 @@
   const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   const unb64u = s => { s = s.replace(/-/g, '+').replace(/_/g, '/'); s += '='.repeat((4 - s.length % 4) % 4); return Uint8Array.from(atob(s), c => c.charCodeAt(0)); };
 
+  // 폰에서만 (PC는 지문 필요 없음, 사용자 결정 261103)
+  const isPhone = () => /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (window.matchMedia && matchMedia('(pointer: coarse)').matches && !matchMedia('(hover: hover)').matches);
   let _sup = null;
   function supported() {
+    if (!isPhone()) return Promise.resolve(false);
     if (_sup) return _sup;
     const ok = window.isSecureContext && location.hostname && window.PublicKeyCredential && navigator.credentials
       && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable;
@@ -48,6 +51,16 @@
 
   // 로그인 화면에 '👆 지문으로 열기' 버튼 — 등록돼 있으면 화면이 뜰 때 한 번 바로 물어봄
   async function mountLogin(onOk) {
+    if (isPhone() && !(await supported())) {   // 네이버 앱 같은 앱 안 브라우저는 지문(패스키)을 막아 둠 → 안내만
+      const sub = document.getElementById('login-submit');
+      if (sub && !document.getElementById('login-passkey-note')) {
+        const n = document.createElement('div'); n.id = 'login-passkey-note';
+        n.style.cssText = 'margin-top:10px;font-size:12.5px;line-height:1.5;color:#888;text-align:center';
+        n.textContent = '👆 지문 로그인은 이 브라우저에서 안 돼요 — 크롬이나 삼성 인터넷에서 열면 쓸 수 있어요';
+        (sub.parentElement && sub.parentElement.id !== 'login-screen' && sub.parentElement.children.length === 1 ? sub.parentElement : sub).insertAdjacentElement('afterend', n);
+      }
+      return;
+    }
     if (!has() || !(await supported())) return;
     const submit = document.getElementById('login-submit');
     if (!submit || document.getElementById('login-passkey')) return;
