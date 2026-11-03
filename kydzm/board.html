@@ -137,6 +137,18 @@
   /* 프로젝트 */
   .col.overdue, .emb-sec.overdue { border: 1.5px solid var(--danger); background: var(--danger-soft); }
   .col.overdue .col-h h2, .emb-sec.overdue .emb-h { color: var(--danger); }
+  .ymd { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .review { background: #fff8e1; border: 1.5px solid #f2c94c; border-radius: 14px; padding: 10px 14px; margin-bottom: 12px; }
+  .review summary { cursor: pointer; font-size: 14px; font-weight: 800; }
+  .review summary .muted { font-weight: 500; font-size: 12px; }
+  .rv-list { max-height: 220px; overflow-y: auto; overscroll-behavior: contain; }
+  .rv-row { display: flex; align-items: center; gap: 8px; border-top: 1px solid #f0e2b0; padding: 3px 0; }
+  .rv-row .mv { min-height: 30px; padding: 0 10px; font-size: 12px; }
+  .rv-k { font-size: 11.5px; color: var(--muted); flex-shrink: 0; width: 52px; }
+  .rv-t { flex: 1; min-width: 0; text-align: left; background: none; border: none; font-size: 13.5px; cursor: pointer; color: var(--text); padding: 0; word-break: break-word; }
+  .rv-btn { font-size: 11px; border: 1px solid #f2c94c; background: #fff8e1; border-radius: 999px; padding: 1px 7px; cursor: pointer; color: #8a6d00; }
+  .deal-ty { font-size: 11px; font-weight: 800; border: 1.5px solid; border-radius: 999px; padding: 0 7px; flex-shrink: 0; }
+  .pfbar.dealtype { margin: 4px 0 10px; }
   .pfbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
   .pf { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text); }
   .pf i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
@@ -367,7 +379,7 @@ function addDays(ymd, n) { const d = new Date(ymd + 'T00:00:00Z'); d.setUTCDate(
 function daysBetween(a, b) { return Math.round((new Date(b + 'T00:00:00Z') - new Date(a + 'T00:00:00Z')) / 864e5); }
 function ymdOf(iso) { return iso ? kstParts(new Date(iso)).iso.slice(0, 10) : ''; }
 function md(ymd) { const [, m, d] = ymd.split('-').map(Number); return `${m}/${d}`; }
-function todayLabel() { const p = kstParts(); return `${p.m}월 ${p.d}일 (${WD[p.wd]})`; }
+function todayLabel() { const p = kstParts(); return `${p.m}월 ${p.d}일 (${WD[p.wd]}) · ${kstToday()}`; }
 
 // ════════════════════════════════════════════════════════════════════
 // GitHub API — threads.html 과 같은 함수
@@ -479,7 +491,11 @@ function op(o) {
   render();
   scheduleSave();
 }
-function upsertTask(id, fields) { op({ t: 'upsert', coll: 'tasks', id, fields }); }
+function upsertTask(id, fields) {
+  const t = S.data.tasks.find(x => x.id === id);
+  if (t && t.review === 'pending' && !('review' in fields)) fields = { ...fields, review: '' };   // 사용자가 손댄 것 = 확인함
+  op({ t: 'upsert', coll: 'tasks', id, fields });
+}
 function createTask(fields) {
   const now = kstNow();
   const t = { title: '', project: null, bucket: 'inbox', date: '', due: '', repeat: null, prev_bucket: '', done_at: '', canceled_at: '', upload: '', created_at: now, ...fields };
@@ -775,14 +791,21 @@ function render() {
 // ════════════════════════════════════════════════════════════════════
 // 협찬 — 할 일 탭 안에 (노션 협찬관리대장 대신, 사용자 결정 261103). 금액·협상 내용이라 비공개 cupas에만.
 // ════════════════════════════════════════════════════════════════════
-const DEAL_OPEN = ['진행중', '협상중', '회신대기', '제안 수신'];
-const DEAL_CLOSED = ['종결', '미선정', '거절', '단순인사'];
+// 업로드 완료 = 올렸고 입금 기다림(진행 칸에 남음), 입금 완료 = 끝 (261103, 예전 '종결'은 입금 완료로 봄)
+const DEAL_OPEN = ['업로드 완료', '진행중', '협상중', '회신대기', '제안 수신'];
+const DEAL_CLOSED = ['입금 완료', '종결', '미선정', '거절', '단순인사'];
+const DEAL_STATUS_PICK = ['제안 수신', '회신대기', '협상중', '진행중', '업로드 완료', '입금 완료', '미선정', '거절', '단순인사'];
+// 종류: 광고(원고료 있음) · 협찬(제품만) · 공구 (사용자 요청 261103)
+const DEAL_TYPES = ['광고', '협찬', '공구'];
+const DEAL_TYPE_COLOR = { '광고': '#e8590c', '협찬': '#2d8f4c', '공구': '#5f3dc4' };
+const DEAL_PROJECT = 'ad';   // 협찬은 광고영상 프로젝트로 (사용자 결정 261103)
+const dealProject = d => d.project || DEAL_PROJECT;
 // 거절 = 내가 거절, 미선정 = 상대가 거절·탈락 (사용자 요청 261103)
 const DEAL_LABEL = { '거절': '거절(내가)', '미선정': '미선정(상대)' };
 const dealLabel = st => DEAL_LABEL[st] || st;
-const DEAL_COLOR = { '제안 수신': '#e05591', '회신대기': '#2f80ed', '협상중': '#d4a017', '진행중': '#2d8f4c', '종결': '#9e9e9e', '미선정': '#8e44ad', '거절': '#d93025', '단순인사': '#bdbdbd' };
+const DEAL_COLOR = { '제안 수신': '#e05591', '회신대기': '#2f80ed', '협상중': '#d4a017', '진행중': '#2d8f4c', '업로드 완료': '#0b7285', '입금 완료': '#868e96', '종결': '#9e9e9e', '미선정': '#8e44ad', '거절': '#d93025', '단순인사': '#bdbdbd' };
 const DEAL_KINDS = ['인바운드', '아웃바운드', '이벤트'];
-const deals = () => S.data.deals || [];
+const deals = () => (S.data.deals || []).filter(d => (!S.dealType || d.type === S.dealType) && (!curPf() || dealProject(d) === curPf()));
 function dealSort(a, b) {
   const r = x => DEAL_OPEN.indexOf(x.status);
   return r(a) - r(b) || (a.due || '9999').localeCompare(b.due || '9999') || (b.updated_at || '').localeCompare(a.updated_at || '');
@@ -791,38 +814,47 @@ const openDeals = () => deals().filter(d => !DEAL_CLOSED.includes(d.status)).sor
 const closedDeals = () => deals().filter(d => DEAL_CLOSED.includes(d.status)).sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || ''));
 function dealCardHtml(d) {
   const today = kstToday();
-  const due = d.due ? (d.due < today ? `<span class="late">기한 ${md(d.due)} 지남</span>` : `<span>기한 ${md(d.due)}</span>`) : '';
+  const left = d.due ? daysBetween(today, d.due) : null;
+  const doneUp = d.uploaded || DEAL_CLOSED.includes(d.status) || d.status === '업로드 완료';
+  const due = d.due && !doneUp ? (left < 0 ? `<span class="late">업로드 기한 ${md(d.due)} 지남</span>` : `<span class="${left <= 3 ? 'late' : ''}">업로드 D-${left} (${md(d.due)})</span>`) : '';
+  const dates = (d.uploaded ? `<span>📤 ${md(d.uploaded)}</span>` : '') + (d.paid ? `<span>💰 ${md(d.paid)}</span>` : '');
   const openTasks = S.data.tasks.filter(t => t.deal === d.id && !['done', 'canceled'].includes(t.bucket)).length;
   return `<button class="deal-card" data-act="deal" data-id="${esc(d.id)}">
-    <div class="deal-top"><span class="deal-st" style="background:${DEAL_COLOR[d.status] || '#999'}">${esc(dealLabel(d.status || '제안 수신'))}</span><b>${esc(d.company || '(업체 없음)')}</b></div>
+    <div class="deal-top"><span class="deal-st" style="background:${DEAL_COLOR[d.status] || '#999'}">${esc(dealLabel(d.status || '제안 수신'))}</span>${d.type ? `<span class="deal-ty" style="color:${DEAL_TYPE_COLOR[d.type] || '#666'};border-color:${DEAL_TYPE_COLOR[d.type] || '#666'}">${esc(d.type)}</span>` : ''}<b>${esc(d.company || '(업체 없음)')}</b>${d.review === 'pending' ? '<span class="rv-dot" title="확인 필요">🤖</span>' : ''}</div>
     ${d.product ? `<div class="deal-line">${esc(d.product)}</div>` : ''}
     ${d.terms ? `<div class="deal-line muted">${esc(d.terms)}</div>` : ''}
-    <div class="t-meta">${due}${openTasks ? `<span>할 일 ${openTasks}</span>` : ''}${d.by === 'claude' ? '<span title="Claude가 마지막으로 바꿈">🤖</span>' : ''}<span>${esc(ymdOf(d.updated_at) ? md(ymdOf(d.updated_at)) : '')} 업데이트</span></div>
+    <div class="t-meta">${due}${dates}${openTasks ? `<span>할 일 ${openTasks}</span>` : ''}${d.by === 'claude' ? '<span title="Claude가 마지막으로 바꿈">🤖</span>' : ''}<span>${esc(ymdOf(d.updated_at) ? md(ymdOf(d.updated_at)) : '')} 업데이트</span></div>
   </button>`;
 }
 function dealsHtml() {
   const open = openDeals(), closed = closedDeals();
+  const all = (S.data.deals || []).filter(d => !DEAL_CLOSED.includes(d.status) && (!curPf() || dealProject(d) === curPf()));
+  const tf = `<div class="pfbar dealtype">${[['', '전체'], ...DEAL_TYPES.map(t => [t, t])].map(([v, l]) => `<button class="pf${(S.dealType || '') === v ? ' on' : ''}" data-act="dealtype" data-id="${v}">${l} <b>${v ? all.filter(d => d.type === v).length : all.length}</b></button>`).join('')}</div>`;
   return `<div class="deal-box">
-    <div class="col-h"><h2>🤝 협찬 <span class="n">${open.length}건 진행</span></h2><button class="btn small" data-act="new-deal">+ 협찬</button></div>
+    <div class="col-h"><h2>🤝 광고·협찬·공구 <span class="n">${open.length}건 진행</span></h2><button class="btn small" data-act="new-deal">+ 추가</button></div>${tf}
     ${open.length ? `<div class="deal-grid">${open.map(dealCardHtml).join('')}</div>` : '<div class="empty">진행 중인 협찬 없음</div>'}
-    <details class="later"${S.openDeals ? ' open' : ''} id="closed-deals"><summary>지난 협찬 ${closed.length}건 (종결·미선정·거절)</summary>
+    <details class="later"${S.openDeals ? ' open' : ''} id="closed-deals"><summary>끝난 것 ${closed.length}건 (입금 완료·미선정·거절)</summary>
       <div class="deal-grid">${closed.map(dealCardHtml).join('')}</div></details>
   </div>`;
 }
 function newDealId() { return 'deal_' + hex(5); }
 function openDealSheet(id) {
-  const d = id ? deals().find(x => x.id === id) : null;
+  const d = id ? (S.data.deals || []).find(x => x.id === id) : null;
   if (id && !d) return;
-  const st = { status: (d && d.status) || '제안 수신', kind: (d && d.kind) || '인바운드' };
+  const st = { status: (d && (d.status === '종결' ? '입금 완료' : d.status)) || '제안 수신', kind: (d && d.kind) || '인바운드', type: (d && d.type) || '협찬' };
   const tasks = d ? S.data.tasks.filter(t => t.deal === d.id && !['done', 'canceled'].includes(t.bucket)) : [];
   sheet(`<h3>${d ? '협찬' : '새 협찬'}<button class="x" data-close aria-label="닫기">×</button></h3>
     <div class="field"><label>업체·캠페인</label><input class="input" id="d-company" value="${esc((d && d.company) || '')}" autocomplete="off"></div>
-    <div class="field"><label>상태</label>${chipsHtml('status', [...DEAL_OPEN.slice().reverse(), ...DEAL_CLOSED].map(v => [v, dealLabel(v), DEAL_COLOR[v]]), st.status)}</div>
-    <div class="field"><label>유형</label>${chipsHtml('kind', DEAL_KINDS.map(v => [v, v]), st.kind)}</div>
+    <div class="field"><label>종류</label>${chipsHtml('type', DEAL_TYPES.map(v => [v, v, DEAL_TYPE_COLOR[v]]), st.type)}</div>
+    <div class="field"><label>상태</label>${chipsHtml('status', DEAL_STATUS_PICK.map(v => [v, dealLabel(v), DEAL_COLOR[v]]), st.status)}</div>
+    <div class="field"><label>들어온 길</label>${chipsHtml('kind', DEAL_KINDS.map(v => [v, v]), st.kind)}</div>
     <div class="field"><label>제품 / 제안 내용</label><textarea class="input" id="d-product" style="min-height:56px">${esc((d && d.product) || '')}</textarea></div>
     <div class="field"><label>조건 / 원고료</label><textarea class="input" id="d-terms" style="min-height:56px">${esc((d && d.terms) || '')}</textarea></div>
-    <div class="row" style="gap:8px;flex-wrap:nowrap"><div class="field" style="flex:1"><label>기한 (회신·신청·업로드)</label><input class="input" id="d-due" type="date" value="${esc((d && d.due) || '')}"></div>
-      <div class="field" style="flex:1"><label>받은 날</label><input class="input" id="d-received" type="date" value="${esc((d && d.received) || kstToday())}"></div></div>
+    <div class="row" style="gap:8px;flex-wrap:nowrap"><div class="field" style="flex:1"><label>받은 날</label><input class="input" id="d-received" type="date" value="${esc((d && d.received) || kstToday())}"></div>
+      <div class="field" style="flex:1"><label>📅 업로드 기한</label><input class="input" id="d-due" type="date" value="${esc((d && d.due) || '')}"></div></div>
+    <div class="row" style="gap:8px;flex-wrap:nowrap"><div class="field" style="flex:1"><label>📤 업로드한 날</label><input class="input" id="d-uploaded" type="date" value="${esc((d && d.uploaded) || '')}"></div>
+      <div class="field" style="flex:1"><label>💰 입금된 날</label><input class="input" id="d-paid" type="date" value="${esc((d && d.paid) || '')}"></div></div>
+    <div class="muted" style="font-size:12px;margin:-4px 0 8px">업로드한 날을 넣으면 '업로드 완료', 입금된 날을 넣으면 '입금 완료'로 바뀌어요</div>
     <div class="field"><label>메모 (새 소식은 맨 앞에 'MM/DD …')</label><textarea class="input" id="d-memo" style="min-height:140px">${esc((d && d.memo) || '')}</textarea></div>
     <div class="field"><label>메일 링크</label><input class="input" id="d-gmail" value="${esc((d && d.gmail) || '')}" placeholder="Gmail 스레드 주소 (선택)"></div>
     ${d && d.gmail ? `<a class="btn ghost small" href="${esc(d.gmail)}" target="_blank" rel="noopener">✉ 메일 열기</a> ` : ''}${d && d.notion ? `<a class="btn ghost small" href="${esc(d.notion)}" target="_blank" rel="noopener">노션 예전 기록</a>` : ''}
@@ -833,15 +865,19 @@ function openDealSheet(id) {
     const v = sel => bg.querySelector(sel).value.trim();
     bg.querySelector('#d-ok').onclick = () => {
       const company = v('#d-company'); if (!company) { bg.querySelector('#d-company').focus(); return; }
-      const f = { company, status: st.status, kind: st.kind, product: v('#d-product'), terms: v('#d-terms'), due: v('#d-due'), received: v('#d-received'), memo: bg.querySelector('#d-memo').value.trim(), gmail: v('#d-gmail') };
+      const f = { company, status: st.status, kind: st.kind, type: st.type, product: v('#d-product'), terms: v('#d-terms'), due: v('#d-due'), received: v('#d-received'), uploaded: v('#d-uploaded'), paid: v('#d-paid'), memo: bg.querySelector('#d-memo').value.trim(), gmail: v('#d-gmail') };
+      // 날짜를 넣으면 상태 자동: 입금된 날 → 입금 완료, 업로드한 날 → 업로드 완료 (진행 중일 때만)
+      if (f.paid && !['미선정', '거절', '단순인사'].includes(f.status)) f.status = '입금 완료';
+      else if (f.uploaded && ['진행중', '협상중', '회신대기', '제안 수신'].includes(f.status)) f.status = '업로드 완료';
+      if (d && d.review === 'pending') f.review = '';   // 사용자가 열어 저장 = 확인함
       closeSheet();
       if (d) {
         const ch = {}; Object.keys(f).forEach(k => { if ((d[k] || '') !== f[k]) ch[k] = f[k]; });
         if (Object.keys(ch).length) op({ t: 'upsert', coll: 'deals', id: d.id, fields: ch });
-      } else op({ t: 'upsert', coll: 'deals', id: newDealId(), fields: { ...f, notion: '', created_at: kstNow() }, create: true });
+      } else op({ t: 'upsert', coll: 'deals', id: newDealId(), fields: { ...f, project: curPf() || DEAL_PROJECT, notion: '', created_at: kstNow() }, create: true });
     };
     if (d) {
-      bg.querySelector('#d-del').onclick = () => askConfirm(`'${d.company}' 협찬 기록을 지울까요? (끝난 건은 '종결'로 두는 게 좋아요)`, '삭제', () => op({ t: 'delete', coll: 'deals', id: d.id }));
+      bg.querySelector('#d-del').onclick = () => askConfirm(`'${d.company}' 협찬 기록을 지울까요? (끝난 건은 '입금 완료'로 두는 게 좋아요)`, '삭제', () => op({ t: 'delete', coll: 'deals', id: d.id }));
       bg.querySelector('#d-task').onclick = () => { closeSheet(); openAddSheet({ title: `[협찬] ${d.company} · `, deal: d.id }); };
     }
   });
@@ -855,8 +891,9 @@ function renderEmbed(m) {
   let h = '';
   if (S.failed) h += `<div class="banner err savefail"><span>저장 못 함: ${esc(S.failed)}</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
   h += `<div class="emb-hint">꾹 눌러서 다른 칸으로 끌면 날짜가 바뀌어요</div>`;
+  h += reviewHtml();
   if (overdue.length) h += `<div class="emb-sec overdue"><div class="emb-h">지난 일정 <span class="n">${overdue.length}개 · 체크 안 함</span></div>${rows(overdue)}</div>`;
-  h += `<div class="emb-sec" data-drop="today"><div class="emb-h">오늘 <span class="n">${today.length}개</span></div>${today.length ? rows(today) : '<div class="empty">오늘 할 일 없음 🎉</div>'}</div>`;
+  h += `<div class="emb-sec" data-drop="today"><div class="emb-h">오늘 <span class="ymd">(${kstToday()})</span> <span class="n">${today.length}개</span></div>${today.length ? rows(today) : '<div class="empty">오늘 할 일 없음 🎉</div>'}</div>`;
   const wl = S.weekAll ? week : week.slice(0, WEEK_N);
   h += `<div class="emb-sec" data-drop="week"><div class="emb-h">7일 안 <span class="n">${week.length}개</span></div>${week.length ? rows(wl) : '<div class="empty">비어 있어요</div>'}
     ${week.length > WEEK_N ? `<button class="emb-more" data-act="emb-week">${S.weekAll ? '접기' : `${week.length - WEEK_N}개 더 보기`}</button>` : ''}</div>`;
@@ -945,7 +982,8 @@ function taskRowHtml(t, opts = {}) {
   if (t.bucket === 'done' && t.done_at) meta.push(`<span>${md(ymdOf(t.done_at))} 완료</span>`);
   if (t.bucket === 'canceled') meta.push(`<span>취소됨</span>`);
   if (t.deal) { const dl = (S.data.deals || []).find(x => x.id === t.deal); if (dl) meta.push(`<span class="deal-chip">🤝 ${esc(dl.company)}</span>`); }
-  if (t.by === 'claude') meta.push('<span title="Claude가 마지막으로 바꿈">🤖</span>');
+  if (t.review === 'pending') meta.push(`<button class="rv-btn" data-act="review-ok" data-coll="tasks" data-id="${esc(t.id)}" title="Claude가 한 일 — 맞으면 눌러 확인">🤖 확인</button>`);
+  else if (t.by === 'claude') meta.push('<span title="Claude가 마지막으로 바꿈">🤖</span>');
   let mv = '';
   if (closed) mv = `<button class="mv" data-act="check" data-id="${esc(t.id)}">되돌리기</button>`;
   else if (t.bucket === 'inbox') mv = `<button class="mv" data-act="classify" data-id="${esc(t.id)}">분류</button>`;
@@ -967,7 +1005,7 @@ function colHtml(view, opts = {}) {
     if (l.length) later = `<details class="later"${S.openLater ? ' open' : ''}><summary>30일 뒤 ${l.length}개</summary>${l.map(t => taskRowHtml(t, opts)).join('')}</details>`;
   }
   const empty = view === 'inbox' ? '던져 둔 게 없어요' : '비어 있어요';
-  return `<div class="col${view === 'overdue' ? ' overdue' : ''}"${view === 'overdue' ? '' : ` data-drop="${view}"`}><div class="col-h"><h2>${VIEW_LABEL[view]}${view === 'inbox' && list.length ? ` <span class="badge">${list.length}</span>` : ''} ${over}</h2><span class="n">${list.length}개</span></div>
+  return `<div class="col${view === 'overdue' ? ' overdue' : ''}"${view === 'overdue' ? '' : ` data-drop="${view}"`}><div class="col-h"><h2>${VIEW_LABEL[view]}${view === 'today' ? ` <span class="ymd">(${kstToday()})</span>` : ''}${view === 'inbox' && list.length ? ` <span class="badge">${list.length}</span>` : ''} ${over}</h2><span class="n">${list.length}개</span></div>
     ${list.length ? (opts.scroll ? `<div class="tlist">${list.map(t => taskRowHtml(t, opts)).join('')}</div>` : list.map(t => taskRowHtml(t, opts)).join('')) : `<div class="empty">${empty}</div>`}${later}</div>`;
 }
 // 할 일 탭 네 칸은 5개 높이까지만 보이고 안에서 스크롤 — 아래 협찬이 밀리지 않게 (사용자 요청 261103)
@@ -1023,9 +1061,33 @@ function projectPanelHtml(id) {
     </details>
   </div>`;
 }
+// 🤖 Claude가 만든·바꾼·끝낸 것 — 사용자가 최종 확인 (사용자 요청 261103). review: 'pending' → [확인] 누르면 ''
+function reviewItems() {
+  const t = S.data.tasks.filter(x => x.review === 'pending').map(x => ({ coll: 'tasks', x }));
+  const d = (S.data.deals || []).filter(x => x.review === 'pending').map(x => ({ coll: 'deals', x }));
+  return [...d, ...t];
+}
+function reviewHtml() {
+  const items = reviewItems(); if (!items.length) return '';
+  return `<details class="review"${S.openReview !== false ? ' open' : ''} id="review-box"><summary>🤖 확인 필요 <b>${items.length}</b> <span class="muted">— Claude가 만들거나 바꾼 것, 맞으면 확인</span></summary>
+    <div class="rv-list">${items.map(({ coll, x }) => `<div class="rv-row">
+      <span class="rv-k">${coll === 'deals' ? '🤝 협찬' : x.bucket === 'done' ? '✅ 끝냄' : '📝 할 일'}</span>
+      <button class="rv-t" data-act="${coll === 'deals' ? 'deal' : 'edit'}" data-id="${esc(x.id)}">${esc(coll === 'deals' ? `${x.company} · ${dealLabel(x.status || '')}` : x.title)}${x.review_note ? `<span class="muted"> — ${esc(x.review_note)}</span>` : ''}</button>
+      <button class="mv" data-act="review-ok" data-coll="${coll}" data-id="${esc(x.id)}">확인</button></div>`).join('')}</div>
+    ${items.length > 1 ? `<button class="btn ghost small" data-act="review-all" style="margin-top:8px">모두 확인</button>` : ''}</details>`;
+}
+function reviewOk(coll, id) { op({ t: 'upsert', coll: coll === 'deals' ? 'deals' : 'tasks', id, fields: { review: '', review_note: '' } }); }
+function reviewAll() {
+  const items = reviewItems();
+  askConfirm(`${items.length}개를 모두 확인할까요?`, '모두 확인', () => {
+    items.forEach(({ coll, x }) => S.ops.push({ t: 'upsert', coll, id: x.id, fields: stamp({ review: '', review_note: '', by: 'admin' }) }));
+    recompute(); render(); scheduleSave();
+  });
+}
 function tasksHtml(onlyView) {
   let h = staleWarnHtml();
   const pf = curPf(), po = pf ? { project: pf, hideProject: true } : {};
+  h += reviewHtml();
   h += pfHtml();
   if (pf) h += projectPanelHtml(pf);
   if (!onlyView) {
@@ -1038,7 +1100,7 @@ function tasksHtml(onlyView) {
     h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
     const od = tasksIn('overdue', po.project).length;
     h += `<div class="cols board${od ? ' five' : ''}">${colHtml('inbox', { ...po, scroll: true })}${od ? colHtml('overdue', { ...po, scroll: true }) : ''}${colHtml('today', { ...po, scroll: true })}${colHtml('week', { ...po, scroll: true })}${colHtml('month', { ...po, withLater: true, scroll: true })}</div>`;
-    h += dealsHtml();   // 협찬은 할 일 탭 안에 (261103)
+    if (!pf || pf === DEAL_PROJECT) h += dealsHtml();   // 협찬은 할 일 탭 안에, 광고영상 프로젝트를 고르면 그 건만 (261103)
   } else {
     if (onlyView === 'week') h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
     h += `<div class="cols">${colHtml(onlyView, po)}</div>`;
@@ -1172,11 +1234,11 @@ function openAddSheet(preset = {}) {
   const expanded = !!(preset.project || preset.date);
   sheet(`<h3>할 일 추가<button class="x" data-close aria-label="닫기">×</button></h3>
     <div class="field"><input class="input" id="a-title" placeholder="한 줄만 써도 돼요 — 날짜 없으면 받은함으로" autocomplete="off"></div>
-    <button class="more" id="a-more"${expanded ? ' style="display:none"' : ''}>프로젝트·날짜·반복 지정 ▾</button>
+    <div class="field"><label>🔁 반복 (매일·매주는 체크하면 다음 회차가 생겨요)</label>${repeatPickHtml(null)}</div>
+    <button class="more" id="a-more"${expanded ? ' style="display:none"' : ''}>프로젝트·날짜 지정 ▾</button>
     <div id="a-detail"${expanded ? '' : ' class="hidden"'}>
       <div class="field"><label>프로젝트</label>${chipsHtml('project', projChipItems(), st.project)}</div>
       <div class="field"><label>할 날</label>${datePickHtml(st.date)}</div>
-      <div class="field"><label>반복</label>${repeatPickHtml(null)}</div>
     </div>
     <div class="sheet-actions"><button class="btn ghost" data-close>닫기</button><button class="btn" id="a-ok">저장</button></div>`, bg => {
     bindChips(bg, st); bindDatePick(bg, st); bindRepeat(bg, st);
@@ -1353,6 +1415,9 @@ function bind() {
       case 'retry': S.failed = ''; save(); break;
       case 'emb-week': S.weekAll = !S.weekAll; render(); break;
       case 'deal': openDealSheet(id); break;
+      case 'dealtype': S.dealType = id || ''; render(); break;
+      case 'review-ok': reviewOk(el.dataset.coll, id); break;
+      case 'review-all': reviewAll(); break;
       case 'new-deal': openDealSheet(null); break;
       case 'check': if (t) toggleDone(t); break;
       case 'date': openDateSheet(id); break;
@@ -1382,6 +1447,7 @@ function bind() {
     if ($('#q-title')) { $('#q-title').value = t; $('#q-title').focus(); }
     if ($('#q-date')) $('#q-date').value = d;
   });
+  const rb = $('#review-box'); if (rb) rb.addEventListener('toggle', () => { S.openReview = rb.open; });
   const pe = document.querySelector('.pp-edit');
   if (pe) pe.addEventListener('toggle', () => { S.openPanel = pe.open; });
   const d = $('details.donebox');
