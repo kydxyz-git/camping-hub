@@ -195,16 +195,21 @@ def check_naver(url):
     hosts = " → ".join(urllib.parse.urlparse(u).netloc for u in chain if u.startswith("http"))
     if not pm:
         if status in (429, 490, 403):
-            return {"status": "unknown", "af": "", "product_id": "", "detail": f"네이버가 막음 (응답 {status}) · {hosts}"}
+            return {"status": "unknown", "af": "", "product_id": "", "detail": f"네이버가 자동 확인을 막음 (응답 {status}) · {hosts}"}
         if status == 404:
             return {"status": "broken", "af": "", "product_id": "", "detail": f"링크 없음 (404) · {hosts}"}
+        if status == 200 and "brandconnect.naver.com" in hosts:
+            # 브랜드 커넥트 중간 페이지는 화면을 자바스크립트로 그려서(숨은 API) 상품·종료 여부를 못 봄 — 숨은 API 직접 호출은 안 함(CLAUDE.md)
+            return {"status": "unknown", "af": "", "product_id": "",
+                    "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가"}
         return {"status": "unknown" if status == 200 else "broken", "af": "", "product_id": "",
                 "detail": f"상품 주소를 못 찾음 (응답 {status or '연결 오류'}) · {hosts}", "_nbody": body[:3000]}
     pid = pm.group(3)
     if status == 404:
         return {"status": "broken", "af": "", "product_id": pid, "detail": "상품 페이지 404 (삭제된 상품)"}
     if status != 200 or not body:
-        return {"status": "unknown", "af": "", "product_id": pid, "detail": f"상품 페이지 확인 불가 (응답 {status or '연결 오류'}) — 링크는 상품으로 넘어감"}
+        return {"status": "unknown", "af": "", "product_id": pid,
+                "detail": f"링크는 상품으로 넘어감 · 판매 여부는 확인 불가 (네이버가 막음, 응답 {status or '연결 오류'})"}
     st = (re.search(r'"productStatusType"\s*:\s*"([A-Z_]+)"', body) or [None, ""])[1]
     if st:
         return {"status": NAVER_STATUS.get(st, "unknown"), "af": "", "product_id": pid,
@@ -289,7 +294,7 @@ def main():
         with open(summary, "a", encoding="utf-8") as f:
             f.write(f"## 링크 점검(쿠팡·컬리·네이버) — 문제 {len(bad)}개 / {len(results)}개\n\n")
             for r in results.values():
-                if r["shop"] == "naver":   # 네이버는 시작 단계라 전부 보여줌
+                if r["shop"] == "naver" and r["status"] != "unknown":   # 네이버는 문제 있는 것만
                     f.write(f"- 네이버 {r['status']} · **{r['name']}** — {r['detail'] or '판매중'}\n")
             f.write("\n")
             for r in bad:
