@@ -852,7 +852,6 @@ function openDealSheet(id) {
     <div class="field"><label>업체·캠페인</label><input class="input" id="d-company" value="${esc((d && d.company) || '')}" autocomplete="off"></div>
     <div class="field"><label>종류</label>${chipsHtml('type', DEAL_TYPES.map(v => [v, v, DEAL_TYPE_COLOR[v]]), st.type)}</div>
     <div class="field"><label>상태</label>${chipsHtml('status', DEAL_STATUS_PICK.map(v => [v, dealLabel(v), DEAL_COLOR[v]]), st.status)}</div>
-    <div class="field"><label>들어온 길</label>${chipsHtml('kind', DEAL_KINDS.map(v => [v, v]), st.kind)}</div>
     <div class="field"><label>제품 / 제안 내용</label><textarea class="input" id="d-product" style="min-height:56px">${esc((d && d.product) || '')}</textarea></div>
     <div class="field"><label>조건 / 원고료</label><textarea class="input" id="d-terms" style="min-height:56px">${esc((d && d.terms) || '')}</textarea></div>
     <div class="row" style="gap:8px;flex-wrap:nowrap"><div class="field" style="flex:1"><label>받은 날</label><input class="input" id="d-received" type="date" value="${esc((d && d.received) || kstToday())}"></div>
