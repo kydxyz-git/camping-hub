@@ -2,7 +2,7 @@
   "checked_at": "2026-11-02T14:59:34+09:00",
   "main_af": "AF7202884",
   "counts": {
-    "unknown": 61,
+    "unknown": 94,
     "ok": 6,
     "soldout": 1
   },
@@ -686,7 +686,339 @@
       "af": "AF7202884",
       "product_id": "8582607379",
       "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_b8ba2f7683": {
+      "type": "items",
+      "name": "폴러투맨 퓨리카모4P",
+      "url": "https://naver.me/xqb7aalH",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_d7822bf823": {
+      "type": "items",
+      "name": "캠빌 고동",
+      "url": "https://naver.me/G1pVxpBN",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_6f2ecec479": {
+      "type": "items",
+      "name": "어반포레스트 헥사타프",
+      "url": "https://naver.me/GhwKql3v",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_bbc507958e": {
+      "type": "items",
+      "name": "노스페이스 스타프5",
+      "url": "https://naver.me/GhwKql3v",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_3e09fe35cb": {
+      "type": "items",
+      "name": "N.I.P 슬라이드폴대",
+      "url": "https://naver.me/GYD067W8",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_f94eb6d3e5": {
+      "type": "items",
+      "name": "N.I.P 슬라이드폴대 가방",
+      "url": "https://naver.me/Fpw3atLp",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_6e0210eba9": {
+      "type": "items",
+      "name": "N.I.P 타프 스트링",
+      "url": "https://naver.me/F05U6uiU",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_3a7d4dd061": {
+      "type": "items",
+      "name": "N.I.P 막대스토퍼",
+      "url": "https://naver.me/GM32acuW",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_90f00d1c73": {
+      "type": "items",
+      "name": "헬리녹스 카페체어",
+      "url": "https://naver.me/xqb7KPx3",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_7daa20fbb6": {
+      "type": "items",
+      "name": "N.I.P 멀티 컴팩트 스탠드 M",
+      "url": "https://naver.me/5Yom5Ngw",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_239d48d277": {
+      "type": "items",
+      "name": "N.I.P 팩가방",
+      "url": "https://naver.me/FoX7J6mA",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_b85f78de84": {
+      "type": "items",
+      "name": "웨버 라이터 큐브",
+      "url": "https://naver.me/G5kDTyut",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_960c2ff01c": {
+      "type": "items",
+      "name": "울란지 오즈모포켓용 브라켓 (PM01)",
+      "url": "https://naver.me/50BeWhG5",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_200bd59067": {
+      "type": "items",
+      "name": "텔레신 실리콘 넥마운트 (MNM-001)",
+      "url": "https://naver.me/GFsAAKGG",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_8249efe8be": {
+      "type": "items",
+      "name": "텔레신 HNB-09 SE2.0",
+      "url": "https://naver.me/GhwBVW6X",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_32e1cc5f58": {
+      "type": "items",
+      "name": "마크제트 1.7M 맥세이프 삼각대",
+      "url": "https://naver.me/GdTSAjoJ",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_8eb9a307f9": {
+      "type": "items",
+      "name": "울란지 플라스틱 보호 케이스(PK-07)",
+      "url": "https://naver.me/GP2UT8Q9",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_1778659979": {
+      "type": "items",
+      "name": "키녹스 포트 주전자",
+      "url": "https://naver.me/x523i4cu",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_94632ff456": {
+      "type": "items",
+      "name": "꾸버스 비장탄 1+1kg",
+      "url": "https://naver.me/xLNAPZBy",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_c061180185": {
+      "type": "items",
+      "name": "미니맥스 MX9",
+      "url": "https://smartstore.naver.com/minimaxstore/products/11355222013",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "11355222013",
+      "detail": "상품 페이지 확인 불가 (응답 429) — 링크는 상품으로 넘어감"
+    },
+    "item_a85f326087": {
+      "type": "items",
+      "name": "Insta360 넥 마운트",
+      "url": "https://naver.me/x52u7oL1",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_acffd21489": {
+      "type": "items",
+      "name": "미니맥스 타닥",
+      "url": "https://smartstore.naver.com/minimaxstore/products/8308294082",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "8308294082",
+      "detail": "상품 페이지 확인 불가 (응답 429) — 링크는 상품으로 넘어감"
+    },
+    "item_5508746f3b": {
+      "type": "items",
+      "name": "800도씨 거북선 화로대",
+      "url": "https://smartstore.naver.com/gayamy/products/8482764871",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "8482764871",
+      "detail": "상품 페이지 확인 불가 (응답 429) — 링크는 상품으로 넘어감"
+    },
+    "item_4a438a15fc": {
+      "type": "items",
+      "name": "캠핑문 2WAY 파일드라이버",
+      "url": "https://naver.me/Ghwg6YLE",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_b0e2d50dcb": {
+      "type": "items",
+      "name": "캠핑투게더 카시오페아 (M)",
+      "url": "https://naver.me/5o0rbXlr",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_891c2d40e9": {
+      "type": "items",
+      "name": "캠핑투게더 카시오페아 (L)",
+      "url": "https://naver.me/5B0eg4fl",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "item_3c3812808a": {
+      "type": "items",
+      "name": "도쿄크래프트 그래프 암",
+      "url": "https://m.brand.naver.com/tokyocraftskorea/products/11137134219",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "11137134219",
+      "detail": "상품 페이지 확인 불가 (응답 429) — 링크는 상품으로 넘어감"
+    },
+    "item_11070d51cb": {
+      "type": "items",
+      "name": "포레스트유 더블체크 일산화탄소 경보기",
+      "url": "https://naver.me/5K6MAERx",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "food_592752e317": {
+      "type": "foods",
+      "name": "[토리야] 모듬꼬치",
+      "url": "https://naver.me/xrzyoskO",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "food_b099891fb5": {
+      "type": "foods",
+      "name": "[토리야] 쇼가야끼",
+      "url": "https://naver.me/xD8wDZ6K",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "food_44a4d0e976": {
+      "type": "foods",
+      "name": "대왕 손질 갑오징어",
+      "url": "https://naver.me/56XT3QaX",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "food_b033c6e85b": {
+      "type": "foods",
+      "name": "카리 토리야 (일본식 카레)",
+      "url": "https://naver.me/5nhroDKF",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
+    },
+    "food_bb488094b5": {
+      "type": "foods",
+      "name": "소바 토리야(전통 야끼소바)",
+      "url": "https://naver.me/xaT2fP8K",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "",
+      "detail": "상품 주소를 못 찾음 (응답 200) · naver.me → brandconnect.naver.com"
     }
   },
-  "sample_html": ""
+  "sample_html": "",
+  "sample_html_naver": "<!DOCTYPE html>\n<html lang=\"ko\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"https://brandconnect.pstatic.net/bridge/2026.10.28-1/favicon-32x32.png\" />\n    <link rel=\"icon\" type=\"image/png\" sizes=\"96x96\" href=\"https://brandconnect.pstatic.net/bridge/2026.10.28-1/favicon-96x96.png\" />\n    <link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"https://brandconnect.pstatic.net/bridge/2026.10.28-1/favicon-16x16.png\" />\n    <meta\n      name=\"viewport\"\n      content=\"width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no\"\n    />\n    <title>네이버 브랜드 커넥트</title>\n    <script type=\"module\" crossorigin src=\"https://brandconnect.pstatic.net/bridge/2026.10.28-1/assets/index-C-Bu7rXr.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"https://brandconnect.pstatic.net/bridge/2026.10.28-1/assets/index-8ywa5DQs.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+  "checked_at_naver": "2026-11-03T10:35:01+09:00"
 }
