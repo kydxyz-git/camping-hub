@@ -110,6 +110,8 @@
   details.later summary { cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 700; padding: 4px 0; }
   .empty { font-size: 13.5px; color: var(--muted); padding: 10px 2px; }
   .task { display: flex; align-items: center; gap: 6px; padding: 4px 0; border-top: 1px solid var(--line); }
+  .tlist { position: relative; }
+  .tlist.scrolls { overflow-y: auto; overscroll-behavior: contain; border-bottom: 1px solid var(--line); box-shadow: inset 0 -10px 8px -8px rgba(0,0,0,.12); }
   .task:first-of-type { border-top: none; }
   .chk { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; }
   .chk span { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--muted); display: block; }
@@ -726,7 +728,11 @@ function render() {
   if (tab === 'projects') h += S.project ? projectDetailHtml(S.project) : projectsHtml();
   else if (tab === 'deals') h += dealsHtml();
   else h += tasksHtml(pc ? null : tab);
+  const keep = {};   // 다시 그려도 칸 안 스크롤 위치 유지
+  m.querySelectorAll('.tlist').forEach(el => { const k = el.closest('[data-drop]'); if (k) keep[k.dataset.drop] = el.scrollTop; });
   m.innerHTML = h;
+  fitTaskLists(m);
+  m.querySelectorAll('.tlist').forEach(el => { const k = el.closest('[data-drop]'); if (k && keep[k.dataset.drop]) el.scrollTop = keep[k.dataset.drop]; });
   let fab = $('#fab');
   if (!fab) { fab = document.createElement('button'); fab.id = 'fab'; fab.className = 'fab phone-only'; fab.textContent = '+'; fab.setAttribute('aria-label', '할 일 추가'); document.body.appendChild(fab); fab.onclick = () => openAddSheet(); }
   bind();
@@ -931,7 +937,18 @@ function colHtml(view, opts = {}) {
   }
   const empty = view === 'inbox' ? '던져 둔 게 없어요' : '비어 있어요';
   return `<div class="col" data-drop="${view}"><div class="col-h"><h2>${VIEW_LABEL[view]}${view === 'inbox' && list.length ? ` <span class="badge">${list.length}</span>` : ''} ${over}</h2><span class="n">${list.length}개</span></div>
-    ${list.length ? list.map(t => taskRowHtml(t, opts)).join('') : `<div class="empty">${empty}</div>`}${later}</div>`;
+    ${list.length ? (opts.scroll ? `<div class="tlist">${list.map(t => taskRowHtml(t, opts)).join('')}</div>` : list.map(t => taskRowHtml(t, opts)).join('')) : `<div class="empty">${empty}</div>`}${later}</div>`;
+}
+// 할 일 탭 네 칸은 5개 높이까지만 보이고 안에서 스크롤 — 아래 협찬이 밀리지 않게 (사용자 요청 261103)
+const TLIST_ROWS = 5;
+window.addEventListener('resize', () => fitTaskLists());
+function fitTaskLists(root) {
+  (root || document).querySelectorAll('.tlist').forEach(el => {
+    const rows = el.children;
+    if (rows.length <= TLIST_ROWS) { el.style.maxHeight = ''; el.classList.remove('scrolls'); return; }
+    el.style.maxHeight = (rows[TLIST_ROWS].offsetTop - 1) + "px";   // .tlist가 position:relative라 offsetTop은 목록 안 기준
+    el.classList.add('scrolls');
+  });
 }
 
 function tasksHtml(onlyView) {
@@ -944,7 +961,7 @@ function tasksHtml(onlyView) {
       <button class="btn" data-act="quick-add">추가</button>
     </div>`;
     h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
-    h += `<div class="cols board">${colHtml('inbox')}${colHtml('today')}${colHtml('week')}${colHtml('month', { withLater: true })}</div>`;
+    h += `<div class="cols board">${colHtml('inbox', { scroll: true })}${colHtml('today', { scroll: true })}${colHtml('week', { scroll: true })}${colHtml('month', { withLater: true, scroll: true })}</div>`;
     h += dealsHtml();   // 협찬은 할 일 탭 안에 (261103)
   } else {
     if (onlyView === 'week') h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
