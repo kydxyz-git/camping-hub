@@ -135,6 +135,26 @@
   details.donebox .col { margin-top: 8px; }
 
   /* 프로젝트 */
+  .col.overdue, .emb-sec.overdue { border: 1.5px solid var(--danger); background: var(--danger-soft); }
+  .col.overdue .col-h h2, .emb-sec.overdue .emb-h { color: var(--danger); }
+  .pfbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .pf { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text); }
+  .pf i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .pf b { font-weight: 600; color: var(--muted); font-size: 12px; }
+  .pf.on { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .pf.on b { color: #ccc; }
+  .pf.stale:not(.on) { border-color: var(--danger); }
+  .pf.add { color: var(--muted); border-style: dashed; }
+  .ppanel { background: var(--bg); border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+  .pp-h { display: flex; align-items: center; gap: 8px; font-size: 15.5px; margin-bottom: 6px; flex-wrap: wrap; }
+  .pp-h i { width: 10px; height: 10px; border-radius: 50%; }
+  .pp-h .kind { font-size: 11.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; }
+  .pp-h .stale-t { font-size: 12px; color: var(--danger); font-weight: 700; }
+  .pp-l { font-size: 13.5px; line-height: 1.5; margin-top: 3px; white-space: pre-wrap; }
+  .pp-l > span:first-child { display: inline-block; min-width: 64px; color: var(--muted); font-size: 12px; font-weight: 700; margin-right: 6px; }
+  .pp-edit { margin-top: 8px; }
+  .pp-edit summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--muted); padding: 4px 0; }
+  .pp-edit .pd-grid { margin-top: 8px; }
   .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
   .pcard { background: var(--bg); border-radius: 14px; padding: 14px; border: 2px solid transparent; cursor: pointer; text-align: left;
     box-shadow: 0 2px 10px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
@@ -209,6 +229,7 @@
     .pc-only { display: block; }
     .phone-only { display: none !important; }
     .cols.board { grid-template-columns: 1fr 1fr 1fr 1fr; align-items: start; gap: 12px; }
+    .cols.board.five { grid-template-columns: repeat(5, 1fr); gap: 10px; }
     /* PC: 글자·버튼을 줄여 제목이 한두 줄에 들어가게 (사용자 요청 261103) */
     .cols.board .col { padding: 12px 10px; }
     .cols.board .t-title { font-size: 13.5px; line-height: 1.45; }
@@ -233,6 +254,9 @@
     .mv { min-height: 34px; min-width: 0; padding: 0 9px; font-size: 12px; }
     .mv.more { min-width: 30px; padding: 0 4px; border: none; }
     .col-h h2 { font-size: 15px; }
+    .pfbar { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -2px 10px; padding: 0 2px; }
+    .pfbar::-webkit-scrollbar { display: none; }
+    .pf { flex-shrink: 0; padding: 5px 10px; font-size: 12.5px; }
   }
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
@@ -284,11 +308,11 @@ const TODAY_LIMIT = 3;
 const EMBED = new URLSearchParams(location.search).has('embed');
 if (EMBED) document.documentElement.classList.add('embed');
 
-// 칸 = 날짜로 자동 (사용자 결정 261102): 오늘 ⊂ 이번 주 ⊂ 이번 달 — 겹쳐서 보임, 반복 일정만 자기 칸 하나에
+// 칸 = 날짜로 자동 (사용자 결정 261102), 261103부터 겹치지 않음: 지난 일정(날짜 지났는데 안 끝냄) · 오늘 · 이번 주(내일~일) · 이번 달(그 뒤~말일) · 나중
 //  task.bucket: inbox(날짜 없음) | open | done | canceled · task.date: 할 날 'YYYY-MM-DD'
 // PC(마우스)만 끌어서 옮기기 — 폰은 스크롤과 겹쳐서 '날짜' 버튼 (사용자 요청 261103)
 const CAN_DRAG = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-const VIEW_LABEL = { inbox: '받은함', today: '오늘', week: '이번 주', month: '이번 달', later: '나중' };
+const VIEW_LABEL = { inbox: '받은함', overdue: '지난 일정', today: '오늘', week: '이번 주', month: '이번 달', later: '나중' };
 const REPEAT_LABEL = { day: '매일', week: '매주', month: '매월' };
 const KINDS = ['마감', '구축', '운영', '후속'];
 // 업로드 등록 → 이번 주에 생기는 후속 할 일 (프로젝트 id가 없으면 첫 프로젝트로)
@@ -675,19 +699,17 @@ function viewOf(t) {
   if (t.bucket === 'inbox') return 'inbox';
   if (t.bucket !== 'open') return '';
   const today = kstToday();
-  if (!t.date || t.date <= today) return 'today';
+  if (t.date && t.date < today) return 'overdue';   // 날짜 지났는데 체크 안 한 것 (사용자 요청 261103)
+  if (!t.date || t.date === today) return 'today';
   if (t.date <= endOfWeek(today)) return 'week';
   if (t.date <= endOfMonth(today)) return 'month';
   return 'later';
 }
-const RANK = { today: 0, week: 1, month: 2, later: 3 };
+// 칸은 겹치지 않음 (사용자 요청 261103: 오늘 것은 이번 주에, 이번 주 것은 이번 달에 안 나옴)
+// 이번 주 = 내일~이번 주 일요일, 이번 달 = 그 뒤~말일
 function inView(t, view) {
   const v = viewOf(t);
-  if (!v) return false;
-  if (view === 'inbox' || v === 'inbox') return v === view;
-  if (t.repeat && t.repeat.every) return v === view;              // 반복은 겹치지 않음
-  if (view === 'later') return v === 'later';
-  return RANK[v] <= RANK[view];
+  return !!v && v === view;
 }
 function tasksIn(view, projectId) {
   return S.data.tasks.filter(t => inView(t, view) && (projectId === undefined || t.project === projectId))
@@ -726,17 +748,19 @@ function render() {
   if (EMBED) { renderEmbed(m); return; }
   const pc = lastPc;
   let tab = S.tab;
-  if (pc && ['today', 'week', 'month', 'later', 'inbox', 'deals'].includes(tab)) tab = 'tasks';
+  if (pc && ['overdue', 'today', 'week', 'month', 'later', 'inbox', 'deals'].includes(tab)) tab = 'tasks';
   if (!pc && tab === 'tasks') tab = 'today';
   const inboxN = tasksIn('inbox').length;
+  // 할 일·프로젝트 탭을 합침: 위의 프로젝트 고르기로 그 프로젝트 일만 + 프로젝트 정보 (사용자 요청 261103)
+  if (tab === 'projects') tab = pc ? 'tasks' : 'today';
   const tabs = pc
-    ? [['tasks', '할 일'], ['projects', '프로젝트']]
-    : [['today', '오늘'], ['week', '이번 주'], ['month', '이번 달'], ['later', '나중'], ['inbox', '받은함'], ['deals', '협찬'], ['projects', '프로젝트']];
+    ? []
+    : [...(tasksIn('overdue').length || tab === 'overdue' ? [['overdue', '지난 일정']] : []), ['today', '오늘'], ['week', '이번 주'], ['month', '이번 달'], ['later', '나중'], ['inbox', '받은함'], ['deals', '협찬']];
+  const overN = tasksIn('overdue').length;
   let h = '';
   if (S.failed) h += `<div class="banner err savefail"><span>저장하지 못했어요: ${esc(S.failed)} (바꾼 내용은 이 화면에 남아 있어요)</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
-  h += `<div class="tabs">${tabs.map(([k, l]) => `<button class="tab${tab === k ? ' on' : ''}" data-tab="${k}">${l}${(k === 'inbox' || (pc && k === 'tasks')) && inboxN ? ` <span class="badge">${inboxN}</span>` : ''}</button>`).join('')}</div>`;
-  if (tab === 'projects') h += S.project ? projectDetailHtml(S.project) : projectsHtml();
-  else if (tab === 'deals') h += dealsHtml();
+  if (tabs.length) h += `<div class="tabs">${tabs.map(([k, l]) => `<button class="tab${tab === k ? ' on' : ''}" data-tab="${k}">${l}${(k === 'inbox' || (pc && k === 'tasks')) && inboxN ? ` <span class="badge">${inboxN}</span>` : ''}${k === 'overdue' && overN ? ` <span class="badge">${overN}</span>` : ''}</button>`).join('')}</div>`;
+  if (tab === 'deals') h += dealsHtml();
   else h += tasksHtml(pc ? null : tab);
   const keep = {};   // 다시 그려도 칸 안 스크롤 위치 유지
   m.querySelectorAll('.tlist').forEach(el => { const k = el.closest('[data-drop]'); if (k) keep[k.dataset.drop] = el.scrollTop; });
@@ -824,17 +848,14 @@ function openDealSheet(id) {
 }
 
 function renderEmbed(m) {
-  const today = tasksIn('today');
-  const inT = new Set(today.map(t => t.id));
-  const week = tasksIn('week').filter(t => !inT.has(t.id));
-  week.forEach(t => inT.add(t.id));
-  const month = tasksIn('month').filter(t => !inT.has(t.id));
+  const overdue = tasksIn('overdue'), today = tasksIn('today'), week = tasksIn('week'), month = tasksIn('month');
   const inbox = tasksIn('inbox');
   const WEEK_N = 3;
   const rows = l => l.map(t => taskRowHtml(t)).join('');
   let h = '';
   if (S.failed) h += `<div class="banner err savefail"><span>저장 못 함: ${esc(S.failed)}</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
   h += `<div class="emb-hint">꾹 눌러서 다른 칸으로 끌면 날짜가 바뀌어요</div>`;
+  if (overdue.length) h += `<div class="emb-sec overdue"><div class="emb-h">지난 일정 <span class="n">${overdue.length}개 · 체크 안 함</span></div>${rows(overdue)}</div>`;
   h += `<div class="emb-sec" data-drop="today"><div class="emb-h">오늘 <span class="n">${today.length}개</span></div>${today.length ? rows(today) : '<div class="empty">오늘 할 일 없음 🎉</div>'}</div>`;
   const wl = S.weekAll ? week : week.slice(0, WEEK_N);
   h += `<div class="emb-sec" data-drop="week"><div class="emb-h">이번 주 <span class="n">${week.length}개</span></div>${week.length ? rows(wl) : '<div class="empty">비어 있어요</div>'}
@@ -942,11 +963,11 @@ function colHtml(view, opts = {}) {
   const over = view === 'today' && list.length > TODAY_LIMIT ? `<span class="over">${TODAY_LIMIT}개 넘음</span>` : '';
   let later = '';
   if (view === 'month' && opts.withLater) {
-    const l = tasksIn('later');
+    const l = tasksIn('later', opts.project);
     if (l.length) later = `<details class="later"${S.openLater ? ' open' : ''}><summary>다음 달 이후 ${l.length}개</summary>${l.map(t => taskRowHtml(t, opts)).join('')}</details>`;
   }
   const empty = view === 'inbox' ? '던져 둔 게 없어요' : '비어 있어요';
-  return `<div class="col" data-drop="${view}"><div class="col-h"><h2>${VIEW_LABEL[view]}${view === 'inbox' && list.length ? ` <span class="badge">${list.length}</span>` : ''} ${over}</h2><span class="n">${list.length}개</span></div>
+  return `<div class="col${view === 'overdue' ? ' overdue' : ''}"${view === 'overdue' ? '' : ` data-drop="${view}"`}><div class="col-h"><h2>${VIEW_LABEL[view]}${view === 'inbox' && list.length ? ` <span class="badge">${list.length}</span>` : ''} ${over}</h2><span class="n">${list.length}개</span></div>
     ${list.length ? (opts.scroll ? `<div class="tlist">${list.map(t => taskRowHtml(t, opts)).join('')}</div>` : list.map(t => taskRowHtml(t, opts)).join('')) : `<div class="empty">${empty}</div>`}${later}</div>`;
 }
 // 할 일 탭 네 칸은 5개 높이까지만 보이고 안에서 스크롤 — 아래 협찬이 밀리지 않게 (사용자 요청 261103)
@@ -961,23 +982,68 @@ function fitTaskLists(root) {
   });
 }
 
+function pfHtml() {
+  const pf = curPf();
+  const n = id => S.data.tasks.filter(t => (t.bucket === 'open' || t.bucket === 'inbox') && (id ? t.project === id : true)).length;
+  return `<div class="pfbar"><button class="pf${pf ? '' : ' on'}" data-act="pf" data-id="">전체 <b>${n('')}</b></button>${projects().map(p => {
+    const d = staleDays(p), stale = d !== null && d > STALE_DAYS;
+    return `<button class="pf${pf === p.id ? ' on' : ''}${stale ? ' stale' : ''}" data-act="pf" data-id="${esc(p.id)}"><i style="background:${esc(p.color || '#999')}"></i>${esc(p.name)} <b>${n(p.id)}</b></button>`;
+  }).join('')}<button class="pf add" data-act="new-project">+ 프로젝트</button></div>`;
+}
+function curPf() { return S.pf && projOf(S.pf) ? S.pf : ''; }
+function setPf(id) { S.pf = id || ''; try { localStorage.setItem('kydz_board_pf', S.pf); } catch (e) {} render(); }
+// 프로젝트를 고르면 위에 그 프로젝트 정보(상태·방향·결정 기록) — 펼쳐서 고침
+function projectPanelHtml(id) {
+  const p = projOf(id); if (!p) return '';
+  const log = (p.log || []).map((l, i) => ({ ...l, i })).sort((a, b) => (b.d || '').localeCompare(a.d || ''));
+  const d = staleDays(p);
+  return `<div class="ppanel">
+    <div class="pp-h"><i style="background:${esc(p.color || '#999')}"></i><b>${esc(p.name)}</b>${p.kind ? `<span class="kind">${esc(p.kind)}</span>` : ''}${d !== null && d > STALE_DAYS ? `<span class="stale-t">${d}일째 손 안 댐</span>` : ''}</div>
+    <div class="pp-l"><span>현재 상태</span>${p.status ? esc(p.status) : '<span class="muted">없음</span>'}</div>
+    ${p.direction ? `<div class="pp-l"><span>방향</span>${esc(p.direction)}</div>` : ''}
+    ${log.length ? `<div class="pp-l"><span>최근 결정</span>${esc(log[0].d ? md(log[0].d) + ' ' : '')}${esc(log[0].t)}</div>` : ''}
+    <details class="pp-edit"${S.openPanel ? ' open' : ''}><summary>프로젝트 정보·결정 기록 고치기</summary>
+      <div class="pd-grid">
+      <div>
+        <div class="grid-basic row" style="align-items:flex-end">
+          <div class="field" style="flex:2;min-width:150px"><label>이름</label><input class="input" id="pd-name" value="${esc(p.name)}"></div>
+          <div class="field" style="flex:1;min-width:100px"><label>성격</label><select class="input" id="pd-kind">${KINDS.map(k => `<option${k === p.kind ? ' selected' : ''}>${k}</option>`).join('')}</select></div>
+          <div class="field" style="width:64px"><label>색</label><input class="input" id="pd-color" type="color" value="${esc(p.color || '#999999')}" style="padding:2px;height:44px"></div>
+        </div>
+        <div class="field"><label>방향 — 이 프로젝트를 어떻게 할지</label><textarea class="input" id="pd-direction">${esc(p.direction || '')}</textarea></div>
+        <div class="field"><label>현재 상태 — 지금 어디까지 왔는지</label><textarea class="input" id="pd-status">${esc(p.status || '')}</textarea></div>
+        <div class="row" style="justify-content:space-between"><button class="btn" data-act="save-project" data-id="${esc(p.id)}">저장</button><button class="btn danger small" data-act="del-project" data-id="${esc(p.id)}">프로젝트 삭제</button></div>
+      </div>
+      <div>
+        <div class="col-h"><h2>결정 기록</h2></div>
+        <div class="row" style="flex-wrap:nowrap;margin-bottom:8px"><input class="input" id="pd-log" placeholder="결정·접은 것 한 줄 (Enter)"><button class="btn small" data-act="add-log" data-id="${esc(p.id)}">추가</button></div>
+        ${log.length ? `<ul class="log">${log.map(l => `<li><b>${esc(l.d ? md(l.d) : '')}</b><span>${esc(l.t)}</span><button class="x" data-act="del-log" data-id="${esc(p.id)}" data-i="${l.i}" aria-label="삭제">×</button></li>`).join('')}</ul>` : '<div class="empty">아직 없어요</div>'}
+      </div>
+      </div>
+    </details>
+  </div>`;
+}
 function tasksHtml(onlyView) {
   let h = staleWarnHtml();
+  const pf = curPf(), po = pf ? { project: pf, hideProject: true } : {};
+  h += pfHtml();
+  if (pf) h += projectPanelHtml(pf);
   if (!onlyView) {
     h += `<div class="quick">
       <input class="input" id="q-title" placeholder="할 일 빠르게 추가 (Enter) — 날짜 없으면 받은함">
-      <select class="input" id="q-project"><option value="">프로젝트 없음</option>${projects().map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select>
+      <select class="input" id="q-project"><option value="">전체 (프로젝트 없음)</option>${projects().map(p => `<option value="${esc(p.id)}"${pf === p.id ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}</select>
       <input class="input" id="q-date" type="date" title="할 날">
       <button class="btn" data-act="quick-add">추가</button>
     </div>`;
     h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
-    h += `<div class="cols board">${colHtml('inbox', { scroll: true })}${colHtml('today', { scroll: true })}${colHtml('week', { scroll: true })}${colHtml('month', { withLater: true, scroll: true })}</div>`;
+    const od = tasksIn('overdue', po.project).length;
+    h += `<div class="cols board${od ? ' five' : ''}">${colHtml('inbox', { ...po, scroll: true })}${od ? colHtml('overdue', { ...po, scroll: true }) : ''}${colHtml('today', { ...po, scroll: true })}${colHtml('week', { ...po, scroll: true })}${colHtml('month', { ...po, withLater: true, scroll: true })}</div>`;
     h += dealsHtml();   // 협찬은 할 일 탭 안에 (261103)
   } else {
     if (onlyView === 'week') h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
-    h += `<div class="cols">${colHtml(onlyView)}</div>`;
+    h += `<div class="cols">${colHtml(onlyView, po)}</div>`;
   }
-  const done = recentDone();
+  const done = recentDone().filter(t => !pf || t.project === pf);
   h += `<details class="donebox"${S.openDone ? ' open' : ''}><summary>최근 7일 정리 (완료·취소) ${done.length}개</summary><div class="col" data-drop="done">${done.length ? done.map(t => taskRowHtml(t)).join('') : '<div class="empty">없어요</div>'}</div></details>`;
   return h;
 }
@@ -1296,7 +1362,8 @@ function bind() {
       case 'classify': openClassifySheet(id); break;
       case 'upload': openUploadSheet(); break;
       case 'quick-add': quickAdd(); break;
-      case 'open-project': S.project = id; render(); window.scrollTo(0, 0); break;
+      case 'open-project': setPf(id); window.scrollTo(0, 0); break;
+      case 'pf': setPf(id); break;
       case 'back-projects': S.project = null; render(); break;
       case 'add-in-project': openAddSheet({ project: id, date: kstToday() }); break;
       case 'new-project': newProject(); break;
@@ -1309,7 +1376,16 @@ function bind() {
   const q = $('#q-title');
   if (q) q.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) quickAdd(); });
   const lg = $('#pd-log');
-  if (lg) lg.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) addLog(S.project); });
+  if (lg) lg.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) addLog(curPf() || S.project); });
+  const qp = $('#q-project');   // 프로젝트를 고르면 그 프로젝트 일만 아래에 (쓰던 제목·날짜는 그대로)
+  if (qp) qp.addEventListener('change', () => {
+    const t = $('#q-title') ? $('#q-title').value : '', d = $('#q-date') ? $('#q-date').value : '';
+    setPf(qp.value);
+    if ($('#q-title')) { $('#q-title').value = t; $('#q-title').focus(); }
+    if ($('#q-date')) $('#q-date').value = d;
+  });
+  const pe = document.querySelector('.pp-edit');
+  if (pe) pe.addEventListener('toggle', () => { S.openPanel = pe.open; });
   const d = $('details.donebox');
   if (d) d.addEventListener('toggle', () => { S.openDone = d.open; });
   const l = $('details.later:not(#closed-deals)');
@@ -1336,7 +1412,7 @@ function newProject() {
       const id = 'p_' + hex(4);
       closeSheet();
       upsertProject(id, { name: n, kind: bg.querySelector('#np-kind').value, color: '#7a7a70', order, direction: '', status: '', log: [] }, true);
-      S.tab = 'projects'; S.project = id; render();
+      S.openPanel = true; setPf(id);
     };
     setTimeout(() => nm.focus(), 50);
   });
@@ -1360,7 +1436,7 @@ function delProject(id) {
   const open = S.data.tasks.filter(t => t.project === id && (t.bucket === 'open' || t.bucket === 'inbox'));
   askConfirm(`'${p.name}' 프로젝트를 지울까요?${open.length ? ` 남은 할 일 ${open.length}개는 받은함으로 옮겨요.` : ''}`, '삭제', () => {
     open.forEach(t => S.ops.push({ t: 'upsert', coll: 'tasks', id: t.id, fields: { project: null, bucket: 'inbox', date: '', updated_at: kstNow(), by: 'admin' } }));
-    S.project = null;
+    S.project = null; S.pf = '';
     op({ t: 'delete', coll: 'projects', id });
   });
 }
@@ -1384,7 +1460,7 @@ function isAuthed() { try { return sessionStorage.getItem(AUTH_KEY) === '1'; } c
 async function start() {
   $('#app').classList.add('is-active');
   $('#today-label').textContent = todayLabel();
-  try { S.tab = localStorage.getItem(TAB_KEY) || 'today'; } catch (e) {}
+  try { S.tab = localStorage.getItem(TAB_KEY) || 'today'; S.pf = localStorage.getItem('kydz_board_pf') || ''; } catch (e) {}
   if (!getToken()) { render(); return; }
   $('#main').innerHTML = '<div class="card muted">불러오는 중...</div>';
   try { await load(); render(); }
