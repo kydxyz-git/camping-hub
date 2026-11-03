@@ -228,6 +228,14 @@
   .dash-chart7-h a { font-size: 12px; color: var(--muted); text-decoration: none; }
   .dash-chart7 .stats-bar-chart, .money-chart .stats-bar-chart { height: 64px; }
   .dash-group-title { font-size: 13px; font-weight: 800; color: var(--muted); margin-bottom: 6px; }
+  /* PC: 메뉴 묶음만 어두운 판으로 — 위 숫자·아래 딜 사이에서 눈에 띄게 (사용자 요청 261103) */
+  @media (min-width: 760px) {
+    .dash-groups { background: #1f2421; border-radius: 16px; padding: 16px; }
+    .dash-groups .dash-group { background: #2b312d; border: 1px solid #39413b; box-shadow: none; color: #f2f2ee; }
+    .dash-groups .dash-group-title { color: #b9c2bb; }
+    .dash-groups .dash-link:hover { background: #39413b; }
+    .dash-groups .dash-link-d { color: #a3aca5; }
+  }
   .dash-link { display: grid; grid-template-columns: 24px 1fr; column-gap: 8px; align-items: center; padding: 8px 4px; border-radius: 8px; text-decoration: none; color: inherit; }
   .dash-link:hover { background: var(--accent-soft); }
   .dash-link-icon { grid-row: span 2; font-size: 18px; text-align: center; }
