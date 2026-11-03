@@ -179,6 +179,9 @@ def naver_product(pid, purl):
     hops = 0
     while st_code in (301, 302, 303, 307, 308) and loc and hops < 4:
         purl = urllib.parse.urljoin(purl, loc)
+        if "nid.naver.com" in purl:
+            # 로그인 화면으로 넘김 = 네이버가 자동 확인을 막은 것 (상품이 없는 게 아님, 261103 PC 시험에서 28개 오판)
+            return None
         if not re.search(r"naver\.com/[^/?#]+/products/\d+", purl):
             # 상품 주소가 아닌 곳(에러·메인)으로 넘어감 = 상품 없음
             return {"status": "broken", "af": "", "product_id": pid, "detail": f"상품 페이지가 다른 곳으로 넘어감 (사라진 상품?) · {urllib.parse.urlparse(purl).netloc}{urllib.parse.urlparse(purl).path[:40]}"}
