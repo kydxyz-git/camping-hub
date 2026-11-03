@@ -166,10 +166,36 @@ def check_kurly(url):
     return {"status": "ok", "af": "", "product_id": gid, "detail": ""}
 
 
-NAVER_STATUS = {"SALE": "ok", "OUTOFSTOCK": "soldout", "SUSPENSION": "soldout", "CLOSE": "soldout",
-                "WAIT": "soldout", "PROHIBITION": "broken", "DELETE": "broken", "UNADMISSION": "broken", "REJECTION": "broken"}
+# 네이버: 사라진 상품(판매종료·중지·삭제)은 깨짐, 품절은 품절 — PC에서 돌릴 때만 보임 (261103)
+NAVER_STATUS = {"SALE": "ok", "OUTOFSTOCK": "soldout", "WAIT": "ok", "SUSPENSION": "broken", "CLOSE": "broken",
+                "PROHIBITION": "broken", "DELETE": "broken", "UNADMISSION": "broken", "REJECTION": "broken"}
 NAVER_STATUS_KO = {"SALE": "판매중", "OUTOFSTOCK": "품절", "SUSPENSION": "판매중지", "CLOSE": "판매종료", "WAIT": "판매대기",
                    "PROHIBITION": "판매금지", "DELETE": "삭제", "UNADMISSION": "미승인", "REJECTION": "승인거부"}
+
+
+def naver_product(pid, purl):
+    """상품 페이지 한 번 열어 사라졌는지 판정. 막히면(429 등) None — 호출한 쪽이 '확인 불가'로"""
+    st_code, loc, body = get(purl, read=True)
+    hops = 0
+    while st_code in (301, 302, 303, 307, 308) and loc and hops < 4:
+        purl = urllib.parse.urljoin(purl, loc)
+        if not re.search(r"naver\.com/[^/?#]+/products/\d+", purl):
+            # 상품 주소가 아닌 곳(에러·메인)으로 넘어감 = 상품 없음
+            return {"status": "broken", "af": "", "product_id": pid, "detail": f"상품 페이지가 다른 곳으로 넘어감 (사라진 상품?) · {urllib.parse.urlparse(purl).netloc}{urllib.parse.urlparse(purl).path[:40]}"}
+        st_code, loc, body = get(purl, read=True)
+        hops += 1
+    if st_code == 404:
+        return {"status": "broken", "af": "", "product_id": pid, "detail": "상품 페이지 404 (사라진 상품)"}
+    if st_code != 200 or not body:
+        return None
+    st = (re.search(r'"productStatusType"\s*:\s*"([A-Z_]+)"', body) or [None, ""])[1]
+    if st:
+        return {"status": NAVER_STATUS.get(st, "unknown"), "af": "", "product_id": pid,
+                "detail": "" if st == "SALE" else f"네이버 상품 상태: {NAVER_STATUS_KO.get(st, st)}" + (" (사라진 상품)" if NAVER_STATUS.get(st) == "broken" else "")}
+    gone = next((w for w in ("존재하지 않는 상품", "상품을 찾을 수 없", "삭제된 상품", "판매가 종료", "판매종료", "판매중지") if w in body), "")
+    if gone:
+        return {"status": "broken", "af": "", "product_id": pid, "detail": f"상품 페이지에 '{gone}' 문구 (사라진 상품)"}
+    return None
 
 
 def check_naver(url):
@@ -198,6 +224,12 @@ def check_naver(url):
             return {"status": "unknown", "af": "", "product_id": "", "detail": f"네이버가 자동 확인을 막음 (응답 {status}) · {hosts}"}
         if status == 404:
             return {"status": "broken", "af": "", "product_id": "", "detail": f"링크 없음 (404) · {hosts}"}
+        cpn = (re.search(r"channelProductNo=(\d+)", joined) or [None, ""])[1]
+        if status == 200 and "brandconnect.naver.com" in hosts and cpn:
+            # 중간 페이지는 숨은 API로 그려져서 못 봄 → 주소에 실린 상품 번호로 상품 페이지를 한 번만 열어 봄 (261103)
+            r = naver_product(cpn, f"https://smartstore.naver.com/main/products/{cpn}")
+            if r:
+                return r
         if status == 200 and "brandconnect.naver.com" in hosts:
             # 브랜드 커넥트 중간 페이지는 화면을 자바스크립트로 그려서(숨은 API) 상품·종료 여부를 못 봄 — 숨은 API 직접 호출은 안 함(CLAUDE.md)
             return {"status": "unknown", "af": "", "product_id": (re.search(r"channelProductNo=(\d+)", joined) or [None, ""])[1],
@@ -214,10 +246,10 @@ def check_naver(url):
     st = (re.search(r'"productStatusType"\s*:\s*"([A-Z_]+)"', body) or [None, ""])[1]
     if st:
         return {"status": NAVER_STATUS.get(st, "unknown"), "af": "", "product_id": pid,
-                "detail": "" if st == "SALE" else f"네이버 상품 상태: {NAVER_STATUS_KO.get(st, st)}"}
-    hit = next((w for w in SOLDOUT if w in body), "")
-    if hit:
-        return {"status": "soldout", "af": "", "product_id": pid, "detail": f"상품 페이지에 '{hit}' 문구"}
+                "detail": "" if st == "SALE" else f"네이버 상품 상태: {NAVER_STATUS_KO.get(st, st)}" + (" (사라진 상품)" if NAVER_STATUS.get(st) == "broken" else "")}
+    gone = next((w for w in ("존재하지 않는 상품", "상품을 찾을 수 없", "삭제된 상품", "판매가 종료", "판매종료", "판매중지") if w in body), "")
+    if gone:
+        return {"status": "broken", "af": "", "product_id": pid, "detail": f"상품 페이지에 '{gone}' 문구 (사라진 상품)"}
     return {"status": "unknown", "af": "", "product_id": pid, "detail": "상품 페이지는 열리는데 판매 상태를 못 읽음 — 링크는 상품으로 넘어감", "_nbody": body[:3000]}
 
 
@@ -237,7 +269,10 @@ def main():
                 url = (it.get("url") or "").strip()
                 if shop_of(url) and it.get("id"):
                     rows.append((kind, it))
+    import sys
     only = os.environ.get("LINK_CHECK_ONLY", "")   # 시험용: naver 만 등 (비우면 전부)
+    if "--only" in sys.argv:   # PC에서: python tools/check_links.py --only naver
+        only = sys.argv[sys.argv.index("--only") + 1]
     if only:
         rows = [r for r in rows if shop_of(r[1]["url"].strip()) == only]
     results, sample, nsample = {}, "", ""
