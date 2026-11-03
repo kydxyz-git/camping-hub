@@ -184,6 +184,16 @@
   .emb-hint { font-size: 11.5px; color: var(--muted); text-align: center; margin: 2px 0 8px; }
   html.embed .task { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   .drag-ghost { position: fixed; left: 0; top: 0; z-index: 95; pointer-events: none; background: var(--bg); border-radius: 10px; box-shadow: 0 10px 28px rgba(0,0,0,.28); opacity: .95; padding: 2px 8px; }
+  .deal-box { margin-top: 16px; background: var(--bg); border-radius: 14px; padding: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+  .deal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin-top: 6px; }
+  .deal-card { text-align: left; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: 10px 12px; cursor: pointer; font: inherit; color: inherit; min-width: 0; }
+  .deal-card:hover { border-color: var(--muted); }
+  .deal-top { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .deal-top b { font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .deal-st { flex: none; color: #fff; font-size: 11px; font-weight: 700; border-radius: 999px; padding: 2px 8px; }
+  .deal-line { font-size: 13px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .deal-chip { color: #8a5a00; }
+  html.embed .deal-grid { grid-template-columns: 1fr; }
   .toast.act { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
   .toast.act button { border: 1px solid rgba(255,255,255,.35); background: none; color: #fff; border-radius: 8px; padding: 6px 10px; font-size: 13px; font-weight: 700; cursor: pointer; min-height: 34px; }
   .mv.more { min-width: 36px; padding: 0 6px; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; }
@@ -399,12 +409,14 @@ async function commitFiles(mutators, message) {
 
 // ════════════════════════════════════════════════════════════════════
 // 데이터 · op
-//  op = { t: 'upsert', coll: 'tasks'|'projects', id, fields, create } | { t: 'delete', coll, id }
+//  op = { t: 'upsert', coll: 'tasks'|'projects'|'deals', id, fields, create } | { t: 'delete', coll, id }
+//  deals = 협찬 (노션 협찬관리대장에서 옮김 261103): { id, company, kind, status, product, terms, due, received, memo, gmail, notion, created_at, updated_at, by }
 //  upsert는 바꾼 필드만 덮어씀. create가 아닌데 최신본에 그 id가 없으면(다른 곳에서 지움) 건너뛰고 알림.
 // ════════════════════════════════════════════════════════════════════
 function normBoard(b) {
   b = b && typeof b === 'object' ? b : {};
-  return { ...b, version: b.version || 1, projects: Array.isArray(b.projects) ? b.projects : [], tasks: Array.isArray(b.tasks) ? b.tasks : [] };
+  return { ...b, version: b.version || 1, projects: Array.isArray(b.projects) ? b.projects : [], tasks: Array.isArray(b.tasks) ? b.tasks : [],
+    deals: Array.isArray(b.deals) ? b.deals : [] };
 }
 function applyOps(board, ops, skipped) {
   const b = normBoard(board);
@@ -424,7 +436,7 @@ function stamp(fields) { const now = kstNow(); return { ...fields, updated_at: n
 function op(o) {
   if (o.t === 'upsert') {
     o.fields = stamp(o.fields);
-    if (o.coll === 'tasks') o.fields.by = 'admin';
+    if (o.coll === 'tasks' || o.coll === 'deals') o.fields.by = 'admin';
   }
   S.ops.push(o);
   recompute();
@@ -529,9 +541,10 @@ async function load() {
 }
 
 function commitMessage(ops) {
-  const c = { add: 0, edit: 0, del: 0, proj: 0 };
+  const c = { add: 0, edit: 0, del: 0, proj: 0, deal: 0 };
   ops.forEach(o => {
     if (o.coll === 'projects') c.proj++;
+    else if (o.coll === 'deals') c.deal++;
     else if (o.t === 'delete') c.del++;
     else if (o.create) c.add++;
     else c.edit++;
@@ -542,6 +555,7 @@ function commitMessage(ops) {
   if (c.del) parts.push(`삭제 ${c.del}`);
   let msg = parts.length ? `할 일 ${parts.join('·')}건` : '';
   if (c.proj) msg += (msg ? ', ' : '') + `프로젝트 ${c.proj}건 수정`;
+  if (c.deal) msg += (msg ? ', ' : '') + `협찬 ${c.deal}건 수정`;
   return `board(admin): ${msg || '정리'}`;
 }
 
@@ -700,21 +714,94 @@ function render() {
   if (EMBED) { renderEmbed(m); return; }
   const pc = lastPc;
   let tab = S.tab;
-  if (pc && ['today', 'week', 'month', 'later', 'inbox'].includes(tab)) tab = 'tasks';
+  if (pc && ['today', 'week', 'month', 'later', 'inbox', 'deals'].includes(tab)) tab = 'tasks';
   if (!pc && tab === 'tasks') tab = 'today';
   const inboxN = tasksIn('inbox').length;
   const tabs = pc
     ? [['tasks', '할 일'], ['projects', '프로젝트']]
-    : [['today', '오늘'], ['week', '이번 주'], ['month', '이번 달'], ['later', '나중'], ['inbox', '받은함'], ['projects', '프로젝트']];
+    : [['today', '오늘'], ['week', '이번 주'], ['month', '이번 달'], ['later', '나중'], ['inbox', '받은함'], ['deals', '협찬'], ['projects', '프로젝트']];
   let h = '';
   if (S.failed) h += `<div class="banner err savefail"><span>저장하지 못했어요: ${esc(S.failed)} (바꾼 내용은 이 화면에 남아 있어요)</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
   h += `<div class="tabs">${tabs.map(([k, l]) => `<button class="tab${tab === k ? ' on' : ''}" data-tab="${k}">${l}${(k === 'inbox' || (pc && k === 'tasks')) && inboxN ? ` <span class="badge">${inboxN}</span>` : ''}</button>`).join('')}</div>`;
   if (tab === 'projects') h += S.project ? projectDetailHtml(S.project) : projectsHtml();
+  else if (tab === 'deals') h += dealsHtml();
   else h += tasksHtml(pc ? null : tab);
   m.innerHTML = h;
   let fab = $('#fab');
   if (!fab) { fab = document.createElement('button'); fab.id = 'fab'; fab.className = 'fab phone-only'; fab.textContent = '+'; fab.setAttribute('aria-label', '할 일 추가'); document.body.appendChild(fab); fab.onclick = () => openAddSheet(); }
   bind();
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 협찬 — 할 일 탭 안에 (노션 협찬관리대장 대신, 사용자 결정 261103). 금액·협상 내용이라 비공개 cupas에만.
+// ════════════════════════════════════════════════════════════════════
+const DEAL_OPEN = ['진행중', '협상중', '회신대기', '제안 수신'];
+const DEAL_CLOSED = ['종결', '거절', '단순인사'];
+const DEAL_COLOR = { '제안 수신': '#e05591', '회신대기': '#2f80ed', '협상중': '#d4a017', '진행중': '#2d8f4c', '종결': '#9e9e9e', '거절': '#d93025', '단순인사': '#bdbdbd' };
+const DEAL_KINDS = ['인바운드', '아웃바운드', '이벤트'];
+const deals = () => S.data.deals || [];
+function dealSort(a, b) {
+  const r = x => DEAL_OPEN.indexOf(x.status);
+  return r(a) - r(b) || (a.due || '9999').localeCompare(b.due || '9999') || (b.updated_at || '').localeCompare(a.updated_at || '');
+}
+const openDeals = () => deals().filter(d => !DEAL_CLOSED.includes(d.status)).sort(dealSort);
+const closedDeals = () => deals().filter(d => DEAL_CLOSED.includes(d.status)).sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || ''));
+function dealCardHtml(d) {
+  const today = kstToday();
+  const due = d.due ? (d.due < today ? `<span class="late">기한 ${md(d.due)} 지남</span>` : `<span>기한 ${md(d.due)}</span>`) : '';
+  const openTasks = S.data.tasks.filter(t => t.deal === d.id && !['done', 'canceled'].includes(t.bucket)).length;
+  return `<button class="deal-card" data-act="deal" data-id="${esc(d.id)}">
+    <div class="deal-top"><span class="deal-st" style="background:${DEAL_COLOR[d.status] || '#999'}">${esc(d.status || '제안 수신')}</span><b>${esc(d.company || '(업체 없음)')}</b></div>
+    ${d.product ? `<div class="deal-line">${esc(d.product)}</div>` : ''}
+    ${d.terms ? `<div class="deal-line muted">${esc(d.terms)}</div>` : ''}
+    <div class="t-meta">${due}${openTasks ? `<span>할 일 ${openTasks}</span>` : ''}${d.by === 'claude' ? '<span title="Claude가 마지막으로 바꿈">🤖</span>' : ''}<span>${esc(ymdOf(d.updated_at) ? md(ymdOf(d.updated_at)) : '')} 업데이트</span></div>
+  </button>`;
+}
+function dealsHtml() {
+  const open = openDeals(), closed = closedDeals();
+  return `<div class="deal-box">
+    <div class="col-h"><h2>🤝 협찬 <span class="n">${open.length}건 진행</span></h2><button class="btn small" data-act="new-deal">+ 협찬</button></div>
+    ${open.length ? `<div class="deal-grid">${open.map(dealCardHtml).join('')}</div>` : '<div class="empty">진행 중인 협찬 없음</div>'}
+    <details class="later"${S.openDeals ? ' open' : ''} id="closed-deals"><summary>지난 협찬 ${closed.length}건 (종결·거절)</summary>
+      <div class="deal-grid">${closed.map(dealCardHtml).join('')}</div></details>
+  </div>`;
+}
+function newDealId() { return 'deal_' + hex(5); }
+function openDealSheet(id) {
+  const d = id ? deals().find(x => x.id === id) : null;
+  if (id && !d) return;
+  const st = { status: (d && d.status) || '제안 수신', kind: (d && d.kind) || '인바운드' };
+  const tasks = d ? S.data.tasks.filter(t => t.deal === d.id && !['done', 'canceled'].includes(t.bucket)) : [];
+  sheet(`<h3>${d ? '협찬' : '새 협찬'}<button class="x" data-close aria-label="닫기">×</button></h3>
+    <div class="field"><label>업체·캠페인</label><input class="input" id="d-company" value="${esc((d && d.company) || '')}" autocomplete="off"></div>
+    <div class="field"><label>상태</label>${chipsHtml('status', [...DEAL_OPEN.slice().reverse(), ...DEAL_CLOSED].map(v => [v, v, DEAL_COLOR[v]]), st.status)}</div>
+    <div class="field"><label>유형</label>${chipsHtml('kind', DEAL_KINDS.map(v => [v, v]), st.kind)}</div>
+    <div class="field"><label>제품 / 제안 내용</label><textarea class="input" id="d-product" style="min-height:56px">${esc((d && d.product) || '')}</textarea></div>
+    <div class="field"><label>조건 / 원고료</label><textarea class="input" id="d-terms" style="min-height:56px">${esc((d && d.terms) || '')}</textarea></div>
+    <div class="row" style="gap:8px;flex-wrap:nowrap"><div class="field" style="flex:1"><label>기한 (회신·신청·업로드)</label><input class="input" id="d-due" type="date" value="${esc((d && d.due) || '')}"></div>
+      <div class="field" style="flex:1"><label>받은 날</label><input class="input" id="d-received" type="date" value="${esc((d && d.received) || kstToday())}"></div></div>
+    <div class="field"><label>메모 (새 소식은 맨 앞에 'MM/DD …')</label><textarea class="input" id="d-memo" style="min-height:140px">${esc((d && d.memo) || '')}</textarea></div>
+    <div class="field"><label>메일 링크</label><input class="input" id="d-gmail" value="${esc((d && d.gmail) || '')}" placeholder="Gmail 스레드 주소 (선택)"></div>
+    ${d && d.gmail ? `<a class="btn ghost small" href="${esc(d.gmail)}" target="_blank" rel="noopener">✉ 메일 열기</a> ` : ''}${d && d.notion ? `<a class="btn ghost small" href="${esc(d.notion)}" target="_blank" rel="noopener">노션 예전 기록</a>` : ''}
+    ${d ? `<div class="field" style="margin-top:12px"><label>이 협찬의 할 일 ${tasks.length}개</label>${tasks.map(t => `<div class="muted" style="font-size:13.5px;padding:3px 0">· ${esc(t.title)}${t.date ? ` (${md(t.date)})` : ''}</div>`).join('')}
+      <button class="btn ghost small" id="d-task" style="margin-top:6px">+ 이 협찬 할 일 추가</button></div>` : ''}
+    <div class="sheet-actions"><div class="row">${d ? '<button class="btn danger" id="d-del">삭제</button>' : ''}</div><div class="row"><button class="btn ghost" data-close>닫기</button><button class="btn" id="d-ok">저장</button></div></div>`, bg => {
+    bindChips(bg, st);
+    const v = sel => bg.querySelector(sel).value.trim();
+    bg.querySelector('#d-ok').onclick = () => {
+      const company = v('#d-company'); if (!company) { bg.querySelector('#d-company').focus(); return; }
+      const f = { company, status: st.status, kind: st.kind, product: v('#d-product'), terms: v('#d-terms'), due: v('#d-due'), received: v('#d-received'), memo: bg.querySelector('#d-memo').value.trim(), gmail: v('#d-gmail') };
+      closeSheet();
+      if (d) {
+        const ch = {}; Object.keys(f).forEach(k => { if ((d[k] || '') !== f[k]) ch[k] = f[k]; });
+        if (Object.keys(ch).length) op({ t: 'upsert', coll: 'deals', id: d.id, fields: ch });
+      } else op({ t: 'upsert', coll: 'deals', id: newDealId(), fields: { ...f, notion: '', created_at: kstNow() }, create: true });
+    };
+    if (d) {
+      bg.querySelector('#d-del').onclick = () => askConfirm(`'${d.company}' 협찬 기록을 지울까요? (끝난 건은 '종결'로 두는 게 좋아요)`, '삭제', () => op({ t: 'delete', coll: 'deals', id: d.id }));
+      bg.querySelector('#d-task').onclick = () => { closeSheet(); openAddSheet({ title: `[협찬] ${d.company} · `, deal: d.id }); };
+    }
+  });
 }
 
 function renderEmbed(m) {
@@ -734,10 +821,12 @@ function renderEmbed(m) {
   h += `<div class="emb-sec" data-drop="week"><div class="emb-h">이번 주 <span class="n">${week.length}개</span></div>${week.length ? rows(wl) : '<div class="empty">비어 있어요</div>'}
     ${week.length > WEEK_N ? `<button class="emb-more" data-act="emb-week">${S.weekAll ? '접기' : `${week.length - WEEK_N}개 더 보기`}</button>` : ''}</div>`;
   h += `<details class="emb-sec" data-drop="month"${S.openMonth ? ' open' : ''}><summary class="emb-h">이번 달 ▾ <span class="n">${month.length}개</span></summary>${month.length ? rows(month) : '<div class="empty">비어 있어요</div>'}</details>`;
+  const od = openDeals();
+  h += `<details class="emb-sec"${S.openDealsEmb ? ' open' : ''} id="emb-deals"><summary class="emb-h">🤝 협찬 ▾ <span class="n">${od.length}건 진행</span></summary>${od.length ? `<div class="deal-grid">${od.map(dealCardHtml).join('')}</div>` : '<div class="empty">진행 중인 협찬 없음</div>'}</details>`;
   h += `<details class="emb-sec" data-drop="inbox"${S.openInbox ? ' open' : ''}><summary class="emb-h">받은함 ▾ <span class="n">${inbox.length}개</span></summary>${inbox.length ? rows(inbox) : '<div class="empty">던져 둔 게 없어요</div>'}</details>`;
   h += `<div class="emb-hint"><a href="board.html" target="_top" style="color:inherit">운영판 전체 열기 →</a></div>`;
   m.innerHTML = h;
-  m.querySelectorAll('details.emb-sec').forEach(d => d.addEventListener('toggle', () => { if (d.dataset.drop === 'month') S.openMonth = d.open; else S.openInbox = d.open; }));
+  m.querySelectorAll('details.emb-sec').forEach(d => d.addEventListener('toggle', () => { if (d.id === 'emb-deals') S.openDealsEmb = d.open; else if (d.dataset.drop === 'month') S.openMonth = d.open; else S.openInbox = d.open; }));
   let fab = $('#fab');
   if (!fab) { fab = document.createElement('button'); fab.id = 'fab'; fab.className = 'fab'; fab.textContent = '+'; fab.setAttribute('aria-label', '할 일 추가'); document.body.appendChild(fab); fab.onclick = () => openAddSheet(); }
   bind();
@@ -815,6 +904,7 @@ function taskRowHtml(t, opts = {}) {
   if (t.repeat && t.repeat.every) meta.push(`<span class="rep">🔁 ${esc(repeatText(t.repeat))}</span>`);
   if (t.bucket === 'done' && t.done_at) meta.push(`<span>${md(ymdOf(t.done_at))} 완료</span>`);
   if (t.bucket === 'canceled') meta.push(`<span>취소됨</span>`);
+  if (t.deal) { const dl = (S.data.deals || []).find(x => x.id === t.deal); if (dl) meta.push(`<span class="deal-chip">🤝 ${esc(dl.company)}</span>`); }
   if (t.by === 'claude') meta.push('<span title="Claude가 마지막으로 바꿈">🤖</span>');
   let mv = '';
   if (closed) mv = `<button class="mv" data-act="check" data-id="${esc(t.id)}">되돌리기</button>`;
@@ -852,6 +942,7 @@ function tasksHtml(onlyView) {
     </div>`;
     h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
     h += `<div class="cols board">${colHtml('inbox')}${colHtml('today')}${colHtml('week')}${colHtml('month', { withLater: true })}</div>`;
+    h += dealsHtml();   // 협찬은 할 일 탭 안에 (261103)
   } else {
     if (onlyView === 'week') h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
     h += `<div class="cols">${colHtml(onlyView)}</div>`;
@@ -981,6 +1072,7 @@ function readRepeat(bg, st) {
 
 function openAddSheet(preset = {}) {
   const st = { project: preset.project || '', date: preset.date || '', every: '' };
+  setTimeout(() => { const ti = document.getElementById('a-title'); if (ti && preset.title && !ti.value) { ti.value = preset.title; ti.setSelectionRange(ti.value.length, ti.value.length); } }, 60);
   const expanded = !!(preset.project || preset.date);
   sheet(`<h3>할 일 추가<button class="x" data-close aria-label="닫기">×</button></h3>
     <div class="field"><input class="input" id="a-title" placeholder="한 줄만 써도 돼요 — 날짜 없으면 받은함으로" autocomplete="off"></div>
@@ -999,7 +1091,7 @@ function openAddSheet(preset = {}) {
       const repeat = readRepeat(bg, st);
       let date = st.date;
       if (repeat && !date) date = repeat.every === 'day' ? kstToday() : nextRepeat(repeat, addDays(kstToday(), -1));
-      createTask({ title: v, project: st.project || null, date, bucket: date ? 'open' : 'inbox', repeat });
+      createTask({ title: v, project: st.project || null, date, bucket: date ? 'open' : 'inbox', repeat, ...(preset.deal ? { deal: preset.deal } : {}) });
       closeSheet(); toast(date ? `${dateLabel(date)}에 넣었어요` : '받은함에 넣었어요');
     };
     bg.querySelector('#a-ok').onclick = ok;
@@ -1166,6 +1258,8 @@ function bind() {
     switch (el.dataset.act) {
       case 'retry': S.failed = ''; save(); break;
       case 'emb-week': S.weekAll = !S.weekAll; render(); break;
+      case 'deal': openDealSheet(id); break;
+      case 'new-deal': openDealSheet(null); break;
       case 'check': if (t) toggleDone(t); break;
       case 'date': openDateSheet(id); break;
       case 'edit': openEditSheet(id); break;
@@ -1188,8 +1282,10 @@ function bind() {
   if (lg) lg.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) addLog(S.project); });
   const d = $('details.donebox');
   if (d) d.addEventListener('toggle', () => { S.openDone = d.open; });
-  const l = $('details.later');
+  const l = $('details.later:not(#closed-deals)');
   if (l) l.addEventListener('toggle', () => { S.openLater = l.open; });
+  const cd = $('#closed-deals');
+  if (cd) cd.addEventListener('toggle', () => { S.openDeals = cd.open; });
 }
 function quickAdd() {
   const v = $('#q-title').value.trim(); if (!v) { $('#q-title').focus(); return; }
