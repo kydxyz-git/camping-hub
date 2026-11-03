@@ -2,6 +2,8 @@
 링크 점검 — data/items.json · data/foods.json의 쿠팡 링크를 하나씩 따라가서
 내 파트너스 코드(AF…)가 붙어 있는지, 상품이 판매 중인지 확인해 data/link_check.json에 기록한다.
 컬리 링크(lounge.kurly.com · kurly.com/goods)는 판매 여부만 본다 — 상품 페이지 안의 상품 데이터(isSoldOut) 기준 (261031).
+네이버 링크(naver.me 브랜드 커넥트 짧은 링크 · 스마트스토어 · 브랜드스토어)는 ① 짧은 링크가 상품으로 넘어가는지 ② 상품 페이지의
+판매 상태(productStatusType)를 본다 — 링크마다 한 번씩만 열고, 네이버가 막으면(429·490 등) '확인 불가'로 둔다(우회·재시도 안 함, 261103).
 링크는 고치지 않는다 (고치는 건 사용자가 파트너스에서 직접 — 사용자 결정 261022).
 .github/workflows/link-check.yml이 매주 월요일 + 수동으로 실행. 표준 라이브러리만 사용.
 
@@ -164,23 +166,86 @@ def check_kurly(url):
     return {"status": "ok", "af": "", "product_id": gid, "detail": ""}
 
 
+NAVER_STATUS = {"SALE": "ok", "OUTOFSTOCK": "soldout", "SUSPENSION": "soldout", "CLOSE": "soldout",
+                "WAIT": "soldout", "PROHIBITION": "broken", "DELETE": "broken", "UNADMISSION": "broken", "REJECTION": "broken"}
+NAVER_STATUS_KO = {"SALE": "판매중", "OUTOFSTOCK": "품절", "SUSPENSION": "판매중지", "CLOSE": "판매종료", "WAIT": "판매대기",
+                   "PROHIBITION": "판매금지", "DELETE": "삭제", "UNADMISSION": "미승인", "REJECTION": "승인거부"}
+
+
+def check_naver(url):
+    """네이버: 넘김을 따라가 상품 주소(스마트스토어·브랜드스토어 /products/번호)를 찾고, 상품 페이지의 판매 상태를 읽는다"""
+    chain, cur, status, body = [url], url, 0, ""
+    for _ in range(8):
+        status, loc, body = get(cur, read=True)
+        if status in (301, 302, 303, 307, 308) and loc:
+            cur = urllib.parse.urljoin(cur, loc)
+            chain.append(cur)
+            continue
+        if status == 200 and not re.search(r"naver\.com/[^/?#]+/products/\d+", cur):
+            # 브랜드 커넥트 중간 페이지가 자바스크립트로 넘기는 경우 → 본문에서 상품 주소 찾기
+            t = decode_page(body).replace("\\/", "/")
+            m = re.search(r"https?://(?:m\.)?(?:smartstore|brand)\.naver\.com/[^/\"'\s<>]+/products/\d+", t)
+            if m and m.group(0) not in chain:
+                cur = m.group(0)
+                chain.append(cur)
+                continue
+        break
+    joined = " ".join(urllib.parse.unquote(u) for u in chain)
+    pm = re.search(r"(smartstore|brand)\.naver\.com/([^/?#\s]+)/products/(\d+)", joined)
+    hosts = " → ".join(urllib.parse.urlparse(u).netloc for u in chain if u.startswith("http"))
+    if not pm:
+        if status in (429, 490, 403):
+            return {"status": "unknown", "af": "", "product_id": "", "detail": f"네이버가 막음 (응답 {status}) · {hosts}"}
+        if status == 404:
+            return {"status": "broken", "af": "", "product_id": "", "detail": f"링크 없음 (404) · {hosts}"}
+        return {"status": "unknown" if status == 200 else "broken", "af": "", "product_id": "",
+                "detail": f"상품 주소를 못 찾음 (응답 {status or '연결 오류'}) · {hosts}", "_nbody": body[:3000]}
+    pid = pm.group(3)
+    if status == 404:
+        return {"status": "broken", "af": "", "product_id": pid, "detail": "상품 페이지 404 (삭제된 상품)"}
+    if status != 200 or not body:
+        return {"status": "unknown", "af": "", "product_id": pid, "detail": f"상품 페이지 확인 불가 (응답 {status or '연결 오류'}) — 링크는 상품으로 넘어감"}
+    st = (re.search(r'"productStatusType"\s*:\s*"([A-Z_]+)"', body) or [None, ""])[1]
+    if st:
+        return {"status": NAVER_STATUS.get(st, "unknown"), "af": "", "product_id": pid,
+                "detail": "" if st == "SALE" else f"네이버 상품 상태: {NAVER_STATUS_KO.get(st, st)}"}
+    hit = next((w for w in SOLDOUT if w in body), "")
+    if hit:
+        return {"status": "soldout", "af": "", "product_id": pid, "detail": f"상품 페이지에 '{hit}' 문구"}
+    return {"status": "unknown", "af": "", "product_id": pid, "detail": "상품 페이지는 열리는데 판매 상태를 못 읽음 — 링크는 상품으로 넘어감", "_nbody": body[:3000]}
+
+
+def shop_of(url):
+    if "kurly.com" in url:
+        return "kurly"
+    if "naver.me" in url or re.search(r"(smartstore|brand)\.naver\.com", url):
+        return "naver"
+    return "coupang" if "coupang" in url else ""
+
+
 def main():
     rows = []
     for kind in ("items", "foods"):
         with open(os.path.join(ROOT, "data", f"{kind}.json"), encoding="utf-8") as f:
             for it in json.load(f):
                 url = (it.get("url") or "").strip()
-                if ("coupang" in url or "kurly.com" in url) and it.get("id"):
+                if shop_of(url) and it.get("id"):
                     rows.append((kind, it))
-    results, sample = {}, ""
+    only = os.environ.get("LINK_CHECK_ONLY", "")   # 시험용: naver 만 등 (비우면 전부)
+    if only:
+        rows = [r for r in rows if shop_of(r[1]["url"].strip()) == only]
+    results, sample, nsample = {}, "", ""
     for n, (kind, it) in enumerate(rows, 1):
         url = it["url"].strip()
-        r = check_kurly(url) if "kurly.com" in url else check(url)
+        shop = shop_of(url)
+        r = check_kurly(url) if shop == "kurly" else check_naver(url) if shop == "naver" else check(url)
         body = r.pop("_body", "")
         if body and not sample:
             sample = body
-        results[it["id"]] = {"type": kind, "name": it.get("name", ""), "url": url,
-                             "shop": "kurly" if "kurly.com" in url else "coupang", **r}
+        nb = r.pop("_nbody", "")
+        if nb and not nsample:
+            nsample = nb
+        results[it["id"]] = {"type": kind, "name": it.get("name", ""), "url": url, "shop": shop, **r}
         print(f"[{n}/{len(rows)}] {r['status']:8} {it.get('name', '')} {r['af']} {r['detail']}")
         time.sleep(1.5)
 
@@ -197,7 +262,21 @@ def main():
     out = {"checked_at": datetime.now(KST).isoformat(timespec="seconds"), "main_af": main_af,
            "counts": dict(Counter(r["status"] for r in results.values())), "results": results,
            # 점검 방식 손볼 때 참고 — 넘어가는 주소를 못 찾은 짧은 링크 페이지 앞부분 (쿠팡 공개 페이지)
-           "sample_html": sample[:3000]}
+           "sample_html": sample[:3000],
+           # 네이버 점검 방식 손볼 때 참고 — 상품 상태를 못 읽은 네이버 페이지 앞부분 (공개 페이지)
+           "sample_html_naver": nsample[:3000]}
+    if only:   # 시험 실행: 기존 결과는 두고 그 가게 것만 덮어씀
+        try:
+            with open(OUT, encoding="utf-8") as f:
+                prev = json.load(f)
+            prev_res = {k: v for k, v in prev.get("results", {}).items() if v.get("shop") != only}
+            prev_res.update(results)
+            out["results"], out["main_af"] = prev_res, prev.get("main_af", main_af)
+            out["counts"] = dict(Counter(r["status"] for r in prev_res.values()))
+            out["checked_at"] = prev.get("checked_at", out["checked_at"])
+            out["checked_at_" + only] = datetime.now(KST).isoformat(timespec="seconds")
+        except (OSError, ValueError):
+            pass
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
         f.write("\n")
@@ -208,9 +287,15 @@ def main():
     if summary:
         bad = [r for r in results.values() if r["status"] not in ("ok", "unknown")]
         with open(summary, "a", encoding="utf-8") as f:
-            f.write(f"## 링크 점검(쿠팡·컬리) — 문제 {len(bad)}개 / {len(results)}개\n\n")
+            f.write(f"## 링크 점검(쿠팡·컬리·네이버) — 문제 {len(bad)}개 / {len(results)}개\n\n")
+            for r in results.values():
+                if r["shop"] == "naver":   # 네이버는 시작 단계라 전부 보여줌
+                    f.write(f"- 네이버 {r['status']} · **{r['name']}** — {r['detail'] or '판매중'}\n")
+            f.write("\n")
             for r in bad:
                 f.write(f"- **{r['name']}** ({r['type']}) — {r['detail']}\n")
+            if nsample:
+                f.write("\n<details><summary>네이버 페이지 예시</summary>\n\n```html\n" + nsample.replace("```", "") + "\n```\n</details>\n")
             if sample:  # 점검 방식 손볼 때 참고용 (짧은 링크 페이지 앞부분)
                 f.write("\n<details><summary>짧은 링크 페이지 예시</summary>\n\n```html\n" + sample.replace("```", "") + "\n```\n</details>\n")
 
