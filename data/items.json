@@ -147,16 +147,21 @@
     "updated_at": "2026-08-13T14:10:48.777Z"
   },
   {
-    "name": "노스페이스 스타프5",
-    "desc": "",
-    "url": "https://naver.me/GhwKql3v",
-    "source": "네이버",
-    "thumb": "./images/products/07204a9df7e1.jpg",
-    "published": true,
     "id": "item_bbc507958e",
+    "name": "노스페이스 스타프5",
+    "cat": "tarp",
+    "video": "",
+    "desc": "",
+    "url": "https://link.coupang.com/a/imMKO3p6rc",
+    "source": "쿠팡",
+    "thumb": "./images/products/07204a9df7e1.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
     "created_at": "2026-08-12T00:30:37.151846+00:00",
-    "updated_at": "2026-08-13T14:10:48.777Z",
-    "cat": "tarp"
+    "updated_at": "2026-11-03T01:43:48.217Z"
   },
   {
     "id": "item_3e09fe35cb",
