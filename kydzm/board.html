@@ -736,8 +736,11 @@ function render() {
 // 협찬 — 할 일 탭 안에 (노션 협찬관리대장 대신, 사용자 결정 261103). 금액·협상 내용이라 비공개 cupas에만.
 // ════════════════════════════════════════════════════════════════════
 const DEAL_OPEN = ['진행중', '협상중', '회신대기', '제안 수신'];
-const DEAL_CLOSED = ['종결', '거절', '단순인사'];
-const DEAL_COLOR = { '제안 수신': '#e05591', '회신대기': '#2f80ed', '협상중': '#d4a017', '진행중': '#2d8f4c', '종결': '#9e9e9e', '거절': '#d93025', '단순인사': '#bdbdbd' };
+const DEAL_CLOSED = ['종결', '미선정', '거절', '단순인사'];
+// 거절 = 내가 거절, 미선정 = 상대가 거절·탈락 (사용자 요청 261103)
+const DEAL_LABEL = { '거절': '거절(내가)', '미선정': '미선정(상대)' };
+const dealLabel = st => DEAL_LABEL[st] || st;
+const DEAL_COLOR = { '제안 수신': '#e05591', '회신대기': '#2f80ed', '협상중': '#d4a017', '진행중': '#2d8f4c', '종결': '#9e9e9e', '미선정': '#8e44ad', '거절': '#d93025', '단순인사': '#bdbdbd' };
 const DEAL_KINDS = ['인바운드', '아웃바운드', '이벤트'];
 const deals = () => S.data.deals || [];
 function dealSort(a, b) {
@@ -751,7 +754,7 @@ function dealCardHtml(d) {
   const due = d.due ? (d.due < today ? `<span class="late">기한 ${md(d.due)} 지남</span>` : `<span>기한 ${md(d.due)}</span>`) : '';
   const openTasks = S.data.tasks.filter(t => t.deal === d.id && !['done', 'canceled'].includes(t.bucket)).length;
   return `<button class="deal-card" data-act="deal" data-id="${esc(d.id)}">
-    <div class="deal-top"><span class="deal-st" style="background:${DEAL_COLOR[d.status] || '#999'}">${esc(d.status || '제안 수신')}</span><b>${esc(d.company || '(업체 없음)')}</b></div>
+    <div class="deal-top"><span class="deal-st" style="background:${DEAL_COLOR[d.status] || '#999'}">${esc(dealLabel(d.status || '제안 수신'))}</span><b>${esc(d.company || '(업체 없음)')}</b></div>
     ${d.product ? `<div class="deal-line">${esc(d.product)}</div>` : ''}
     ${d.terms ? `<div class="deal-line muted">${esc(d.terms)}</div>` : ''}
     <div class="t-meta">${due}${openTasks ? `<span>할 일 ${openTasks}</span>` : ''}${d.by === 'claude' ? '<span title="Claude가 마지막으로 바꿈">🤖</span>' : ''}<span>${esc(ymdOf(d.updated_at) ? md(ymdOf(d.updated_at)) : '')} 업데이트</span></div>
@@ -762,7 +765,7 @@ function dealsHtml() {
   return `<div class="deal-box">
     <div class="col-h"><h2>🤝 협찬 <span class="n">${open.length}건 진행</span></h2><button class="btn small" data-act="new-deal">+ 협찬</button></div>
     ${open.length ? `<div class="deal-grid">${open.map(dealCardHtml).join('')}</div>` : '<div class="empty">진행 중인 협찬 없음</div>'}
-    <details class="later"${S.openDeals ? ' open' : ''} id="closed-deals"><summary>지난 협찬 ${closed.length}건 (종결·거절)</summary>
+    <details class="later"${S.openDeals ? ' open' : ''} id="closed-deals"><summary>지난 협찬 ${closed.length}건 (종결·미선정·거절)</summary>
       <div class="deal-grid">${closed.map(dealCardHtml).join('')}</div></details>
   </div>`;
 }
@@ -774,7 +777,7 @@ function openDealSheet(id) {
   const tasks = d ? S.data.tasks.filter(t => t.deal === d.id && !['done', 'canceled'].includes(t.bucket)) : [];
   sheet(`<h3>${d ? '협찬' : '새 협찬'}<button class="x" data-close aria-label="닫기">×</button></h3>
     <div class="field"><label>업체·캠페인</label><input class="input" id="d-company" value="${esc((d && d.company) || '')}" autocomplete="off"></div>
-    <div class="field"><label>상태</label>${chipsHtml('status', [...DEAL_OPEN.slice().reverse(), ...DEAL_CLOSED].map(v => [v, v, DEAL_COLOR[v]]), st.status)}</div>
+    <div class="field"><label>상태</label>${chipsHtml('status', [...DEAL_OPEN.slice().reverse(), ...DEAL_CLOSED].map(v => [v, dealLabel(v), DEAL_COLOR[v]]), st.status)}</div>
     <div class="field"><label>유형</label>${chipsHtml('kind', DEAL_KINDS.map(v => [v, v]), st.kind)}</div>
     <div class="field"><label>제품 / 제안 내용</label><textarea class="input" id="d-product" style="min-height:56px">${esc((d && d.product) || '')}</textarea></div>
     <div class="field"><label>조건 / 원고료</label><textarea class="input" id="d-terms" style="min-height:56px">${esc((d && d.terms) || '')}</textarea></div>
