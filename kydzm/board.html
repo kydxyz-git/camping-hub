@@ -308,11 +308,11 @@ const TODAY_LIMIT = 3;
 const EMBED = new URLSearchParams(location.search).has('embed');
 if (EMBED) document.documentElement.classList.add('embed');
 
-// 칸 = 날짜로 자동 (사용자 결정 261102), 261103부터 겹치지 않음: 지난 일정(날짜 지났는데 안 끝냄) · 오늘 · 이번 주(내일~일) · 이번 달(그 뒤~말일) · 나중
+// 칸 = 날짜로 자동 (사용자 결정 261102), 261103부터 겹치지 않음: 지난 일정(날짜 지났는데 안 끝냄) · 오늘 · 7일 안 · 30일 안 · 30일 뒤
 //  task.bucket: inbox(날짜 없음) | open | done | canceled · task.date: 할 날 'YYYY-MM-DD'
 // PC(마우스)만 끌어서 옮기기 — 폰은 스크롤과 겹쳐서 '날짜' 버튼 (사용자 요청 261103)
 const CAN_DRAG = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-const VIEW_LABEL = { inbox: '받은함', overdue: '지난 일정', today: '오늘', week: '이번 주', month: '이번 달', later: '나중' };
+const VIEW_LABEL = { inbox: '받은함', overdue: '지난 일정', today: '오늘', week: '7일 안', month: '30일 안', later: '30일 뒤' };
 const REPEAT_LABEL = { day: '매일', week: '매주', month: '매월' };
 const KINDS = ['마감', '구축', '운영', '후속'];
 // 업로드 등록 → 이번 주에 생기는 후속 할 일 (프로젝트 id가 없으면 첫 프로젝트로)
@@ -694,19 +694,19 @@ function setDot() {
 // ════════════════════════════════════════════════════════════════════
 function projects() { return S.data.projects.slice().sort((a, b) => (a.order ?? 999) - (b.order ?? 999)); }
 function projOf(id) { return S.data.projects.find(p => p.id === id) || null; }
-// 칸 계산: 오늘 ⊂ 이번 주 ⊂ 이번 달 (겹침). 반복 일정은 가장 가까운 칸 하나에만.
+// 칸 계산: 날짜로 한 칸에만.
 function viewOf(t) {
   if (t.bucket === 'inbox') return 'inbox';
   if (t.bucket !== 'open') return '';
   const today = kstToday();
   if (t.date && t.date < today) return 'overdue';   // 날짜 지났는데 체크 안 한 것 (사용자 요청 261103)
   if (!t.date || t.date === today) return 'today';
-  if (t.date <= endOfWeek(today)) return 'week';
-  if (t.date <= endOfMonth(today)) return 'month';
+  if (t.date <= addDays(today, 7)) return 'week';    // 7일 안 (내일~7일 뒤)
+  if (t.date <= addDays(today, 30)) return 'month';  // 30일 안 (8~30일 뒤) — 사용자 결정 261103 (이번 주·이번 달 대신)
   return 'later';
 }
 // 칸은 겹치지 않음 (사용자 요청 261103: 오늘 것은 이번 주에, 이번 주 것은 이번 달에 안 나옴)
-// 이번 주 = 내일~이번 주 일요일, 이번 달 = 그 뒤~말일
+// 7일 = 내일~7일 뒤, 30일 = 8~30일 뒤, 나중 = 그 뒤 (261103: 이번 주·이번 달 대신 7일·30일)
 function inView(t, view) {
   const v = viewOf(t);
   return !!v && v === view;
@@ -755,7 +755,7 @@ function render() {
   if (tab === 'projects') tab = pc ? 'tasks' : 'today';
   const tabs = pc
     ? []
-    : [...(tasksIn('overdue').length || tab === 'overdue' ? [['overdue', '지난 일정']] : []), ['today', '오늘'], ['week', '이번 주'], ['month', '이번 달'], ['later', '나중'], ['inbox', '받은함'], ['deals', '협찬']];
+    : [...(tasksIn('overdue').length || tab === 'overdue' ? [['overdue', '지난 일정']] : []), ['today', '오늘'], ['week', '7일'], ['month', '30일'], ['later', '30일 뒤'], ['inbox', '받은함'], ['deals', '협찬']];
   const overN = tasksIn('overdue').length;
   let h = '';
   if (S.failed) h += `<div class="banner err savefail"><span>저장하지 못했어요: ${esc(S.failed)} (바꾼 내용은 이 화면에 남아 있어요)</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
@@ -858,9 +858,9 @@ function renderEmbed(m) {
   if (overdue.length) h += `<div class="emb-sec overdue"><div class="emb-h">지난 일정 <span class="n">${overdue.length}개 · 체크 안 함</span></div>${rows(overdue)}</div>`;
   h += `<div class="emb-sec" data-drop="today"><div class="emb-h">오늘 <span class="n">${today.length}개</span></div>${today.length ? rows(today) : '<div class="empty">오늘 할 일 없음 🎉</div>'}</div>`;
   const wl = S.weekAll ? week : week.slice(0, WEEK_N);
-  h += `<div class="emb-sec" data-drop="week"><div class="emb-h">이번 주 <span class="n">${week.length}개</span></div>${week.length ? rows(wl) : '<div class="empty">비어 있어요</div>'}
+  h += `<div class="emb-sec" data-drop="week"><div class="emb-h">7일 안 <span class="n">${week.length}개</span></div>${week.length ? rows(wl) : '<div class="empty">비어 있어요</div>'}
     ${week.length > WEEK_N ? `<button class="emb-more" data-act="emb-week">${S.weekAll ? '접기' : `${week.length - WEEK_N}개 더 보기`}</button>` : ''}</div>`;
-  h += `<details class="emb-sec" data-drop="month"${S.openMonth ? ' open' : ''}><summary class="emb-h">이번 달 ▾ <span class="n">${month.length}개</span></summary>${month.length ? rows(month) : '<div class="empty">비어 있어요</div>'}</details>`;
+  h += `<details class="emb-sec" data-drop="month"${S.openMonth ? ' open' : ''}><summary class="emb-h">30일 안 ▾ <span class="n">${month.length}개</span></summary>${month.length ? rows(month) : '<div class="empty">비어 있어요</div>'}</details>`;
   const od = openDeals();
   h += `<details class="emb-sec"${S.openDealsEmb ? ' open' : ''} id="emb-deals"><summary class="emb-h">🤝 협찬 ▾ <span class="n">${od.length}건 진행</span></summary>${od.length ? `<div class="deal-grid">${od.map(dealCardHtml).join('')}</div>` : '<div class="empty">진행 중인 협찬 없음</div>'}</details>`;
   h += `<details class="emb-sec" data-drop="inbox"${S.openInbox ? ' open' : ''}><summary class="emb-h">받은함 ▾ <span class="n">${inbox.length}개</span></summary>${inbox.length ? rows(inbox) : '<div class="empty">던져 둔 게 없어요</div>'}</details>`;
@@ -964,7 +964,7 @@ function colHtml(view, opts = {}) {
   let later = '';
   if (view === 'month' && opts.withLater) {
     const l = tasksIn('later', opts.project);
-    if (l.length) later = `<details class="later"${S.openLater ? ' open' : ''}><summary>다음 달 이후 ${l.length}개</summary>${l.map(t => taskRowHtml(t, opts)).join('')}</details>`;
+    if (l.length) later = `<details class="later"${S.openLater ? ' open' : ''}><summary>30일 뒤 ${l.length}개</summary>${l.map(t => taskRowHtml(t, opts)).join('')}</details>`;
   }
   const empty = view === 'inbox' ? '던져 둔 게 없어요' : '비어 있어요';
   return `<div class="col${view === 'overdue' ? ' overdue' : ''}"${view === 'overdue' ? '' : ` data-drop="${view}"`}><div class="col-h"><h2>${VIEW_LABEL[view]}${view === 'inbox' && list.length ? ` <span class="badge">${list.length}</span>` : ''} ${over}</h2><span class="n">${list.length}개</span></div>
@@ -1058,7 +1058,7 @@ function projectsHtml() {
     return `<button class="pcard${stale ? ' stale' : ''}" data-act="open-project" data-id="${esc(p.id)}">
       <div class="pcard-h"><i style="background:${esc(p.color || '#999')}"></i>${esc(p.name)} ${p.kind ? `<span class="kind">${esc(p.kind)}</span>` : ''}</div>
       <div class="pstatus">${p.status ? esc(p.status) : '<span class="muted">현재 상태 없음</span>'}</div>
-      <div class="pcount">오늘 ${n('today')} · 이번 주 ${n('week')} · 이번 달 ${n('month')}</div>
+      <div class="pcount">오늘 ${n('today')} · 7일 ${n('week')} · 30일 ${n('month')}</div>
       ${stale ? `<div class="stale-t">${d}일째 손 안 댐</div>` : ''}
     </button>`;
   }).join('')}</div>`;
@@ -1147,7 +1147,7 @@ function repeatPickHtml(rep) {
   return `${chipsHtml('every', [['', '없음'], ['day', '매일'], ['week', '매주'], ['month', '매월']], every)}
     <div id="rp-week" class="chips${every === 'week' ? '' : ' hidden'}" style="margin-top:8px">${[1, 2, 3, 4, 5, 6, 0].map(w => `<button type="button" class="chip${wd.includes(w) ? ' on' : ''}" data-wd="${w}">${WD[w]}</button>`).join('')}</div>
     <div id="rp-month" class="row${every === 'month' ? '' : ' hidden'}" style="margin-top:8px"><select class="input" id="rp-md" style="width:auto">${[...Array(28)].map((_, i) => `<option value="${i + 1}"${rep && +rep.md === i + 1 ? ' selected' : ''}>${i + 1}일</option>`).join('')}<option value="last"${rep && rep.md === 'last' ? ' selected' : ''}>말일</option></select></div>
-    <div class="muted" style="font-size:12.5px;margin-top:6px">반복은 완료하면 다음 회차가 생기고, 이번 주·이번 달에 겹쳐 보이지 않아요.</div>`;
+    <div class="muted" style="font-size:12.5px;margin-top:6px">반복은 완료하면 다음 회차가 생기고, 한 칸에만 보여요.</div>`;
 }
 function bindRepeat(bg, st) {
   bg.querySelectorAll('[data-chips="every"] .chip').forEach(c => c.addEventListener('click', () => {
@@ -1249,18 +1249,16 @@ function dropTask(id, view) {
   if (view === 'inbox') { if (t.bucket !== 'inbox') setDate(t, ''); return; }
   if (view === 'today') { if (t.date !== today || t.bucket !== 'open') setDate(t, today); return; }
   if (view === 'done') { toggleDone(t); return; }
-  const end = view === 'week' ? endOfWeek(today) : endOfMonth(today);
+  const start = view === 'week' ? addDays(today, 1) : view === 'month' ? addDays(today, 8) : addDays(today, 31);
+  const end = view === 'week' ? addDays(today, 7) : view === 'month' ? addDays(today, 30) : addDays(today, 365);
   const days = [];
-  if (view === 'week') for (let d = today; d <= end; d = addDays(d, 1)) days.push([d, d === today ? '오늘' : `${WD[new Date(d + 'T00:00:00Z').getUTCDay()]} ${md(d)}`]);
-  else {
-    const nmon = addDays(endOfWeek(today), 1);
-    [[nmon, '다음 주 월'], [addDays(nmon, 4), '다음 주 금'], [addDays(nmon, 7), '다다음 주 월'], [end, '이달 말']]
-      .forEach(([d, l]) => { if (d <= end && !days.some(x => x[0] === d)) days.push([d, `${l} ${md(d)}`]); });
-  }
+  if (view === 'week') for (let d = start; d <= end; d = addDays(d, 1)) days.push([d, `${WD[new Date(d + 'T00:00:00Z').getUTCDay()]} ${md(d)}`]);
+  else [[start, view === 'month' ? '8일 뒤' : '31일 뒤'], [addDays(start, 7), '+1주'], [addDays(start, 14), '+2주'], [view === 'month' ? end : addDays(start, 30), view === 'month' ? '30일 뒤' : '+1달']]
+    .forEach(([d, l]) => { if (d <= end && !days.some(x => x[0] === d)) days.push([d, `${l} ${md(d)}`]); });
   sheet(`<h3>${VIEW_LABEL[view]} — 언제 할까요?<button class="x" data-close aria-label="닫기">×</button></h3>
     <div class="field" style="font-size:15px">${esc(t.title)}</div>
     <div class="chips" id="dd-chips">${days.map(([v, l]) => `<button type="button" class="chip${v === t.date ? ' on' : ''}" data-v="${esc(v)}">${esc(l)}</button>`).join('')}</div>
-    <input class="input" id="dd-pick" type="date" min="${today}" max="${end}" value="${esc(t.date && t.date >= today && t.date <= end ? t.date : '')}" style="margin-top:10px">
+    <input class="input" id="dd-pick" type="date" min="${start}" max="${end}" value="${esc(t.date && t.date >= start && t.date <= end ? t.date : '')}" style="margin-top:10px">
     <div class="sheet-actions"><button class="btn ghost" data-close>닫기</button><button class="btn" id="dd-ok">이 날로</button></div>`, bg => {
     bg.querySelectorAll('#dd-chips .chip').forEach(c => c.onclick = () => { closeSheet(); setDate(t, c.dataset.v); });
     bg.querySelector('#dd-ok').onclick = () => { const v = bg.querySelector('#dd-pick').value; if (!v) return; closeSheet(); setDate(t, v); };
