@@ -200,7 +200,7 @@ def check_naver(url):
             return {"status": "broken", "af": "", "product_id": "", "detail": f"링크 없음 (404) · {hosts}"}
         if status == 200 and "brandconnect.naver.com" in hosts:
             # 브랜드 커넥트 중간 페이지는 화면을 자바스크립트로 그려서(숨은 API) 상품·종료 여부를 못 봄 — 숨은 API 직접 호출은 안 함(CLAUDE.md)
-            return {"status": "unknown", "af": "", "product_id": "",
+            return {"status": "unknown", "af": "", "product_id": (re.search(r"channelProductNo=(\d+)", joined) or [None, ""])[1],
                     "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
                     "chain": chain[1:4]}   # 넘어간 주소 (공개 링크) — 사라진 상품을 구분할 단서 찾기용 (261103)
         return {"status": "unknown" if status == 200 else "broken", "af": "", "product_id": "",
