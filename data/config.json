@@ -47,12 +47,12 @@
       "label": "침구"
     },
     {
-      "key": "tent",
-      "label": "텐트"
-    },
-    {
       "key": "kitchen",
       "label": "주방용품"
+    },
+    {
+      "key": "tent",
+      "label": "텐트"
     },
     {
       "key": "tarp",
