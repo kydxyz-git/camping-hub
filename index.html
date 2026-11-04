@@ -1991,7 +1991,9 @@ function renderRecentSection(sectionId, gridId, dataArr, trackCategory, title) {
   const section = document.getElementById(sectionId);
   const grid = document.getElementById(gridId);
   if (!section || !grid) return;
-  const news = (dataArr || []).filter(x => x.published !== false && x.is_new);
+  // 등록일 최신순 (파일 순서는 관리 화면에서 넣은 자리라 날짜와 안 맞음, 261104 사용자)
+  const news = (dataArr || []).filter(x => x.published !== false && x.is_new)
+    .sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
   if (!news.length) { section.style.display = 'none'; return; }
   section.style.display = '';
   grid.innerHTML = news.map(item => productCardHtml(item, trackCategory)).join('');
@@ -3771,7 +3773,8 @@ function renderPcPin(sel, idsRaw, rows, cat){
 function renderPcRecent(sel, rows, cat, title){
   const el=$(sel);
   if(!el) return;
-  const news=pub(rows).filter(x=>x.is_new);
+  // 등록일 최신순 (모바일 renderRecentSection과 같음)
+  const news=pub(rows).filter(x=>x.is_new).sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
   if(!news.length){ el.innerHTML=''; el.style.display='none'; return; }
   el.style.display='';
   el.innerHTML=`<div class="pc-recent-head"><span class="pc-recent-badge">NEW</span><span class="pc-recent-title">${esc(title)}</span></div>
