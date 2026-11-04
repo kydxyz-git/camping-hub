@@ -47,12 +47,12 @@
       "label": "텐트"
     },
     {
-      "key": "tarp",
-      "label": "타프"
-    },
-    {
       "key": "sleep",
       "label": "침구"
+    },
+    {
+      "key": "tarp",
+      "label": "타프"
     },
     {
       "key": "table",
