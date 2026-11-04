@@ -39,12 +39,12 @@
   "tab5": "캠핑여지도",
   "itemCats": [
     {
-      "key": "tent",
-      "label": "텐트"
-    },
-    {
       "key": "fire",
       "label": "화로·난방"
+    },
+    {
+      "key": "tent",
+      "label": "텐트"
     },
     {
       "key": "tarp",
