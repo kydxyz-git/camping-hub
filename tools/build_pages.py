@@ -436,11 +436,7 @@ def camp_page(c, slug, by_region, slugs, eps_by_camp, products):
     if len(imgs) > 1:
         body.append('<h2>사진</h2><div class="pics">' + ''.join(
             f'<img src="{e(abs_img(p))}" alt="{e(name)} 사진 {i + 2}" loading="lazy">' for i, p in enumerate(imgs[1:])) + '</div>')
-    # 9) 같은 지역
-    near = [x for x in by_region.get(region, []) if x['id'] != c['id']][:12]
-    if near:
-        body.append(f'<h2>{e(region)}의 다른 캠핑장</h2><ul class="cols">' + ''.join(
-            f'<li><a href="{url_of("camps", slugs[x["id"]])}">{e(x["name"])}</a></li>' for x in near) + '</ul>')
+    # 9) 같은 지역 목록은 넣지 않는다 (261104 사용자)
     # 10) DM 안내 (가이드가 없을 때만)
     if c.get('dm') and not guide:
         kw = (c.get('dm_keyword') or '').strip()

@@ -129,8 +129,6 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .pcard .pth img{object-fit:contain}
 .pcard .pth i{position:absolute;right:5px;bottom:5px;font-style:normal;font-size:10px;font-weight:700;color:#fff;padding:2px 7px;border-radius:999px}
 .pcard b{display:block;font-size:12.5px;font-weight:600;line-height:1.4;margin-top:6px}
-.near{display:flex;flex-wrap:wrap;gap:6px}
-.near a{font-size:13px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px}
 .dmbox{display:block;padding:14px 16px;border:1px solid var(--line);background:#fff;border-radius:6px;font-size:14px}
 footer{border-top:1px solid var(--line);padding:30px 0;margin-top:20px;font-size:12.5px;color:var(--stone)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -298,7 +296,6 @@ function orderedImgs(c){
   const links=campLinks(c);
   const rows=infoRows(c);
   const src=(c.info&&c.info.source)||{};
-  const near=(camps||[]).filter(x=>x.id!==c.id&&x.published!==false&&(x.region||'')===(c.region||'')).slice(0,12);
   const kw=String(c.dm_keyword||'').trim();
 
   root.innerHTML=`
@@ -372,11 +369,6 @@ function orderedImgs(c){
         <h2>NOTE</h2>
         <ul class="notes">${String(c.notes).split('\n').filter(x=>x.trim())
           .map(x=>`<li>${esc(x.trim())}</li>`).join('')}</ul>
-      </div>`:''}
-
-      ${near.length?`<div class="block">
-        <h2>${esc(c.region)} 다른 캠핑장</h2>
-        <div class="near">${near.map(x=>`<a href="/camp.html?id=${encodeURIComponent(x.id)}">${esc(x.name)}</a>`).join('')}</div>
       </div>`:''}
 
       ${(c.dm&&!guide.length)?`<div class="block">
