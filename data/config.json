@@ -51,12 +51,12 @@
       "label": "텐트"
     },
     {
-      "key": "tarp",
-      "label": "타프"
-    },
-    {
       "key": "kitchen",
       "label": "주방용품"
+    },
+    {
+      "key": "tarp",
+      "label": "타프"
     },
     {
       "key": "table",
