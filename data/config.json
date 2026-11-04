@@ -43,12 +43,12 @@
       "label": "텐트"
     },
     {
-      "key": "tarp",
-      "label": "타프"
-    },
-    {
       "key": "fire",
       "label": "화로·난방"
+    },
+    {
+      "key": "tarp",
+      "label": "타프"
     },
     {
       "key": "table",
