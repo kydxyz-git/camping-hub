@@ -77,7 +77,7 @@
     background: #1a1a1a; color: #fff; padding: 12px 16px; padding-top: max(12px, env(safe-area-inset-top));
     display: flex; align-items: center; justify-content: space-between; gap: 10px; position: sticky; top: 0; z-index: 20;
   }
-  .topbar-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .topbar-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; min-width: 0; word-break: keep-all; }
   .topbar-title .date { font-weight: 500; opacity: .8; font-size: 13.5px; }
   .save-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
   .save-dot.pending { background: var(--brand); }
@@ -85,6 +85,11 @@
   .save-dot.fail { background: var(--danger); }
   @keyframes blink { 50% { opacity: .3; } }
   .topbar-link { font-size: 13px; opacity: .75; text-decoration: none; white-space: nowrap; }
+  .topbar-r { display: flex; align-items: center; gap: 10px; }
+  .push-btn { font-size: 12.5px; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: inherit; cursor: pointer; white-space: nowrap; }
+  .push-btn.on { opacity: .7; }
+  html.embed .push-btn { display: none !important; }
+  @media (max-width: 599px) { .push-btn .pt { display: none; } .push-btn { padding: 3px 7px; } .topbar-r { gap: 8px; } }
   .wrap { max-width: 1400px; margin: 0 auto; padding: 14px 16px 110px; }
   .tabs { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; scrollbar-width: none; }
   .tabs::-webkit-scrollbar { display: none; }
@@ -295,11 +300,13 @@
 <div class="app" id="app">
   <div class="topbar">
     <div class="topbar-title"><span class="save-dot" id="save-dot" title="저장됨"></span>운영판 <span class="date" id="today-label"></span></div>
-    <a class="topbar-link" href="./">← 관리자 홈</a>
+    <div class="topbar-r"><button class="push-btn" id="push-btn" style="display:none"></button><a class="topbar-link" href="./">← 관리자 홈</a></div>
   </div>
   <div class="wrap" id="main"></div>
 </div>
 
+<script src="lib/nacl-fast.min.js"></script>
+<script src="lib/sealedbox.js"></script>
 <script>
 // ════════════════════════════════════════════════════════════════════
 // 운영판 — 오늘·이번 주·이번 달 할 일 + 프로젝트별 방향·상태 (사용자 확정 261102)
@@ -1543,6 +1550,96 @@ function delLog(id, i) {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// 크롬 알림 (사용자 요청 261105) — Claude가 운영판을 바꾸면(확인 필요가 새로 생기면) 웹 푸시
+//  · 이 기기 구독 정보는 비공개 cupas state/push_subs.json, 보내는 건 cupas board-notify 액션
+//  · VAPID 개인키는 이 브라우저에서 만들어 cupas Secret(VAPID_PRIVATE_KEY)에만 암호화해 넣음 — 저장소·화면에 안 남김
+// ════════════════════════════════════════════════════════════════════
+const PUSH_PATH = 'state/push_subs.json', PUSH_SECRET = 'VAPID_PRIVATE_KEY';
+const PUSH_OK = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window && !EMBED;
+const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64u = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - s.length % 4) % 4)), c => c.charCodeAt(0));
+function utf8ToB64(t) { const a = new TextEncoder().encode(t); let s = ''; for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode(...a.subarray(i, i + 0x8000)); return btoa(s); }
+function pushDevice() {
+  const u = navigator.userAgent;
+  const os = /Android/.test(u) ? '폰(안드로이드)' : /iPhone|iPad/.test(u) ? '아이폰' : /Mac/.test(u) ? 'Mac' : /Windows/.test(u) ? 'PC(윈도우)' : '기타';
+  const br = /SamsungBrowser/.test(u) ? '삼성 인터넷' : /Edg\//.test(u) ? '엣지' : /Chrome\//.test(u) ? '크롬' : /Firefox/.test(u) ? '파이어폭스' : /Safari/.test(u) ? '사파리' : '';
+  return (os + ' ' + br).trim();
+}
+async function pushFileRead() {
+  try {
+    const r = await gh(`${RP}/contents/${PUSH_PATH}?ref=${BRANCH}`);
+    return { data: JSON.parse(b64ToUtf8(r.content)), sha: r.sha };
+  } catch (e) { if (e.status === 404) return { data: { public_key: '', subs: [] }, sha: null }; throw e; }
+}
+// 읽고 → 고치고 → 쓰기, 겹치면 한 번 더
+async function pushFileUpdate(fn, message) {
+  for (let i = 0; i < 3; i++) {
+    const f = await pushFileRead();
+    f.data.subs = f.data.subs || [];
+    await fn(f.data);
+    try {
+      await gh(`${RP}/contents/${PUSH_PATH}`, { method: 'PUT', body: { message, content: utf8ToB64(jsonText(f.data)), branch: BRANCH, ...(f.sha ? { sha: f.sha } : {}) } });
+      return f.data;
+    } catch (e) { if (e.status !== 409 && e.status !== 422) throw e; }
+  }
+  throw new Error('알림 설정 저장이 계속 겹쳐요. 잠시 뒤 다시 눌러 주세요.');
+}
+async function pushReg() { const r = await navigator.serviceWorker.register('push-sw.js'); await navigator.serviceWorker.ready; return r; }
+async function pushState() {
+  if (!PUSH_OK || Notification.permission !== 'granted') return false;
+  const r = await navigator.serviceWorker.getRegistration('push-sw.js'); if (!r) return false;
+  return !!(await r.pushManager.getSubscription());
+}
+async function pushButton() {
+  const b = $('#push-btn'); if (!b) return;
+  if (!PUSH_OK || !getToken()) { b.style.display = 'none'; return; }
+  const on = await pushState().catch(() => false);
+  b.style.display = ''; b.classList.toggle('on', on);
+  b.innerHTML = on ? '🔔<span class="pt"> 알림 켜짐</span>' : '🔕<span class="pt"> 알림 켜기</span>';
+  b.title = on ? 'Claude가 운영판을 바꾸면 이 기기로 알림 — 누르면 끄기' : 'Claude가 운영판을 바꾸면(확인 필요) 이 기기로 크롬 알림';
+  b.onclick = () => (on ? pushOff() : pushOn()).catch(e => toast(e.message || String(e), true)).finally(pushButton);
+}
+async function pushOn() {
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted') { toast('알림이 막혀 있어요 — 주소창 왼쪽 자물쇠 → 알림 허용 후 다시 눌러 주세요', true); return; }
+  const reg = await pushReg();
+  // 보내는 열쇠(VAPID): 없으면 이 브라우저에서 만들어 개인키는 cupas Secret에만
+  let { data } = await pushFileRead();
+  let haveSecret = true;
+  try { await gh(`${RP}/actions/secrets/${PUSH_SECRET}`); } catch (e) { if (e.status === 404) haveSecret = false; else throw e; }
+  let pub = data.public_key, fresh = false;
+  if (!pub || !haveSecret) {
+    const kp = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+    const jwk = await crypto.subtle.exportKey('jwk', kp.privateKey);
+    pub = b64u(await crypto.subtle.exportKey('raw', kp.publicKey));
+    const k = await gh(`${RP}/actions/secrets/public-key`);
+    await gh(`${RP}/actions/secrets/${PUSH_SECRET}`, { method: 'PUT', body: { encrypted_value: window.sealSecret(jwk.d, k.key), key_id: k.key_id } });
+    fresh = true;
+  }
+  const old = await reg.pushManager.getSubscription();
+  if (old && (fresh || !old.options.applicationServerKey || b64u(old.options.applicationServerKey) !== pub)) await old.unsubscribe();
+  const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: unb64u(pub) });
+  const j = sub.toJSON();
+  await pushFileUpdate(d => {
+    if (fresh) { d.public_key = pub; d.subs = []; }   // 열쇠가 바뀌면 예전 기기 구독은 못 씀
+    d.subs = d.subs.filter(s => s.endpoint !== j.endpoint);
+    d.subs.push({ endpoint: j.endpoint, keys: j.keys, device: pushDevice(), added_at: kstNow() });
+  }, 'chore(push): 운영판 알림 기기 등록');
+  reg.showNotification('운영판 알림 켜짐', { body: 'Claude가 운영판을 바꾸면(🤖 확인 필요) 이 기기로 알려요', tag: 'board-on' });
+  toast('알림 켜짐' + (fresh ? ' (다른 기기는 다시 켜 주세요)' : ''));
+}
+async function pushOff() {
+  const r = await navigator.serviceWorker.getRegistration('push-sw.js');
+  const sub = r && await r.pushManager.getSubscription();
+  if (sub) {
+    const ep = sub.endpoint;
+    await pushFileUpdate(d => { d.subs = d.subs.filter(s => s.endpoint !== ep); }, 'chore(push): 운영판 알림 기기 해제');
+    await sub.unsubscribe();
+  }
+  toast('이 기기 알림 꺼짐');
+}
+
+// ════════════════════════════════════════════════════════════════════
 // 시작
 // ════════════════════════════════════════════════════════════════════
 function isAuthed() { try { return sessionStorage.getItem(AUTH_KEY) === '1'; } catch (e) { return false; } }
@@ -1552,6 +1649,7 @@ async function start() {
   try { S.tab = localStorage.getItem(TAB_KEY) || 'today'; S.pf = localStorage.getItem('kydz_board_pf') || ''; } catch (e) {}
   if (!getToken()) { render(); return; }
   $('#main').innerHTML = '<div class="card muted">불러오는 중...</div>';
+  pushButton();
   try { await load(); render(); }
   catch (e) { $('#main').innerHTML = `<div class="banner err">${esc(e.message)}</div><a class="btn ghost small" href="threads.html">스레드 관리에서 토큰 확인</a>`; }
 }
