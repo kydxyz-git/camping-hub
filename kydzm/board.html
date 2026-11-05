@@ -798,17 +798,17 @@ function render() {
 const DEAL_OPEN = ['입금대기', '업로드 예정', '영상 컨펌중', '콘티 컨펌중', '진행중', '협상중', '회신대기', '제안 수신'];
 // 누구 차례인지: 🙋 나 / ⏳ 상대
 const DEAL_TURN = { '제안 수신': '🙋', '회신대기': '⏳', '협상중': '⏳', '진행중': '🙋', '콘티 컨펌중': '⏳', '영상 컨펌중': '⏳', '업로드 예정': '🙋', '입금대기': '⏳' };
-const DEAL_CLOSED = ['종결', '미선정', '거절', '단순인사'];
-const DEAL_STATUS_PICK = ['제안 수신', '회신대기', '협상중', '진행중', '콘티 컨펌중', '영상 컨펌중', '업로드 예정', '입금대기', '종결', '미선정', '거절', '단순인사'];
+const DEAL_CLOSED = ['종결', '협상결렬', '미선정', '거절', '단순인사'];
+const DEAL_STATUS_PICK = ['제안 수신', '회신대기', '협상중', '진행중', '콘티 컨펌중', '영상 컨펌중', '업로드 예정', '입금대기', '종결', '협상결렬', '거절', '단순인사'];
 // 종류: 광고(원고료 있음) · 협찬(제품만) · 공구 (사용자 요청 261103)
 const DEAL_TYPES = ['광고', '협찬', '공구'];
 const DEAL_TYPE_COLOR = { '광고': '#e8590c', '협찬': '#2d8f4c', '공구': '#5f3dc4' };
 const DEAL_PROJECT = 'ad';   // 협찬은 광고영상 프로젝트로 (사용자 결정 261103)
 const dealProject = d => d.project || DEAL_PROJECT;
-// 거절 = 내가 거절, 미선정 = 상대가 거절·탈락 (사용자 요청 261103)
-const DEAL_LABEL = { '거절': '거절(내가)', '미선정': '미선정(상대)' };
+// 거절 = 내가 거절, 협상결렬 = 상대가 거절·탈락·답 없음 (261103 '미선정' → 261105 이름 바꿈, 사용자 요청 — 예전 '미선정' 값도 협상결렬로 보임)
+const DEAL_LABEL = { '거절': '거절(내가)', '미선정': '협상결렬' };
 const dealLabel = st => DEAL_LABEL[st] || st;
-const DEAL_COLOR = { '제안 수신': '#e05591', '회신대기': '#2f80ed', '협상중': '#d4a017', '진행중': '#2d8f4c', '콘티 컨펌중': '#7048e8', '영상 컨펌중': '#9c36b5', '업로드 예정': '#1c7ed6', '입금대기': '#0b7285', '종결': '#868e96', '미선정': '#8e44ad', '거절': '#d93025', '단순인사': '#bdbdbd' };
+const DEAL_COLOR = { '제안 수신': '#e05591', '회신대기': '#2f80ed', '협상중': '#d4a017', '진행중': '#2d8f4c', '콘티 컨펌중': '#7048e8', '영상 컨펌중': '#9c36b5', '업로드 예정': '#1c7ed6', '입금대기': '#0b7285', '종결': '#868e96', '협상결렬': '#8e44ad', '미선정': '#8e44ad', '거절': '#d93025', '단순인사': '#bdbdbd' };
 const DEAL_KINDS = ['인바운드', '아웃바운드', '이벤트'];
 const deals = () => (S.data.deals || []).filter(d => (!S.dealType || d.type === S.dealType) && (!curPf() || dealProject(d) === curPf()));
 function dealSort(a, b) {
@@ -838,7 +838,7 @@ function dealsHtml() {
   return `<div class="deal-box">
     <div class="col-h"><h2>🤝 광고·협찬·공구 <span class="n">${open.length}건 진행</span></h2><button class="btn small" data-act="new-deal">+ 추가</button></div>${tf}
     ${open.length ? `<div class="deal-grid">${open.map(dealCardHtml).join('')}</div>` : '<div class="empty">진행 중인 협찬 없음</div>'}
-    <details class="later"${S.openDeals ? ' open' : ''} id="closed-deals"><summary>끝난 것 ${closed.length}건 (종결·미선정·거절)</summary>
+    <details class="later"${S.openDeals ? ' open' : ''} id="closed-deals"><summary>끝난 것 ${closed.length}건 (종결·협상결렬·거절)</summary>
       <div class="deal-grid">${closed.map(dealCardHtml).join('')}</div></details>
   </div>`;
 }
@@ -871,7 +871,7 @@ function openDealSheet(id) {
       const company = v('#d-company'); if (!company) { bg.querySelector('#d-company').focus(); return; }
       const f = { company, status: st.status, kind: st.kind, type: st.type, product: v('#d-product'), terms: v('#d-terms'), due: v('#d-due'), received: v('#d-received'), uploaded: v('#d-uploaded'), paid: v('#d-paid'), memo: bg.querySelector('#d-memo').value.trim(), gmail: v('#d-gmail') };
       // 날짜를 넣으면 상태 자동: 입금된 날 → 종결, 업로드한 날 → 광고·공구 입금대기 / 협찬(제품만) 종결 (진행 중일 때만)
-      if (f.paid && !['미선정', '거절', '단순인사'].includes(f.status)) f.status = '종결';
+      if (f.paid && !['협상결렬', '미선정', '거절', '단순인사'].includes(f.status)) f.status = '종결';
       else if (f.uploaded && ['진행중', '콘티 컨펌중', '영상 컨펌중', '업로드 예정', '협상중', '회신대기', '제안 수신'].includes(f.status)) f.status = f.type === '협찬' ? '종결' : '입금대기';
       if (d && d.review === 'pending') f.review = '';   // 사용자가 열어 저장 = 확인함
       closeSheet();
