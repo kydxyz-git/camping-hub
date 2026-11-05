@@ -416,7 +416,7 @@ async function gh(path, opts = {}) {
 async function headCommit() {
   const ref = await gh(`${RP}/git/ref/heads/${BRANCH}`);
   const commit = await gh(`${RP}/git/commits/${ref.object.sha}`);
-  return { sha: ref.object.sha, tree: commit.tree.sha };
+  return { sha: ref.object.sha, tree: commit.tree.sha, date: commit.committer && commit.committer.date };
 }
 async function readTree(treeSha) {
   const t = await gh(`${RP}/git/trees/${treeSha}?recursive=1`);
@@ -435,20 +435,21 @@ async function commitFiles(mutators, message) {
   for (let attempt = 0; attempt < 5; attempt++) {
     const head = await headCommit();
     const files = await readTree(head.tree);
-    const tree = [];
+    const tree = [], saved = {};
     for (const [path, fn] of Object.entries(mutators)) {
       const cur = files[path] ? await readBlobJson(files[path]) : null;
       const next = fn(cur === null ? null : JSON.parse(JSON.stringify(cur)));
       if (next === undefined) continue;
       if (cur !== null && jsonText(cur) === jsonText(next)) continue;
       tree.push({ path, mode: '100644', type: 'blob', content: jsonText(next) });
+      saved[path] = next;
     }
-    if (!tree.length) return false;
+    if (!tree.length) return { sha: head.sha, saved: {}, same: true };
     const newTree = await gh(`${RP}/git/trees`, { method: 'POST', body: { base_tree: head.tree, tree } });
     const commit = await gh(`${RP}/git/commits`, { method: 'POST', body: { message, tree: newTree.sha, parents: [head.sha] } });
     try {
       await gh(`${RP}/git/refs/heads/${BRANCH}`, { method: 'PATCH', body: { sha: commit.sha, force: false } });
-      return true;
+      return { sha: commit.sha, saved, date: commit.committer && commit.committer.date };
     } catch (e) {
       if (e.status !== 422 && e.status !== 409) throw e;
       await new Promise(r => setTimeout(r, 800 * (attempt + 1)));
@@ -587,7 +588,7 @@ async function load() {
   const board = files[BOARD_PATH] ? await readBlobJson(files[BOARD_PATH]) : null;
   if (!board) throw new Error(`cupas에 ${BOARD_PATH} 가 없어요.`);
   S.base = normBoard(board);
-  S.sha = head.sha;
+  S.sha = head.sha; S.commitDate = head.date || '';
   recompute();
   const mig = migrateOps();
   if (mig.length) { S.ops.push(...mig); recompute(); scheduleSave(); }
@@ -651,10 +652,15 @@ async function save() {
     };
   });
   try {
-    await commitFiles(mutators, commitMessage(ops));
+    const res = await commitFiles(mutators, commitMessage(ops));
     S.ops = S.ops.slice(ops.length);           // 저장 중에 새로 생긴 op는 남김
     if (skipped.length) toast(`다른 곳에서 지운 항목 ${skipped.length}개는 건너뛰었어요.`, true);
-    await refresh(true);
+    // 방금 저장한 내용을 그대로 기준으로 — 저장 직후 GitHub가 잠깐 예전 버전을 돌려줘서 확인한 게 되살아나던 문제(사용자 261105)
+    if (res && res.saved && res.saved[BOARD_PATH]) {
+      S.base = normBoard(res.saved[BOARD_PATH]);
+      S.sha = res.sha; if (res.date) S.commitDate = res.date;
+      recompute(); renderSoon();
+    } else await refresh(true);
   } catch (e) {
     S.failed = e.message || '저장 실패';
   } finally {
@@ -672,11 +678,13 @@ async function refresh(force) {
     if (!force && ref.object.sha === S.sha) return;
     if (S.saving && !force) return;
     const commit = await gh(`${RP}/git/commits/${ref.object.sha}`);
+    const cdate = commit.committer && commit.committer.date;
+    if (S.commitDate && cdate && cdate < S.commitDate) return;   // 예전 버전(읽기 지연)이면 무시
     const files = await readTree(commit.tree.sha);
     const board = files[BOARD_PATH] ? await readBlobJson(files[BOARD_PATH]) : null;
     if (!board) return;
     S.base = normBoard(board);
-    S.sha = ref.object.sha;
+    S.sha = ref.object.sha; if (cdate) S.commitDate = cdate;
     recompute();
     const mig = migrateOps();
     if (mig.length) { S.ops.push(...mig); recompute(); scheduleSave(); }
