@@ -29,6 +29,8 @@ FONT_URL = 'https://raw.githubusercontent.com/orioncactus/pretendard/main/packag
 
 # 썸네일 틀 — 블로그 타이틀(남색 밤 사진)과 같은 톤
 NAVY, INK, SUB, MUTED, YEL = (16, 22, 38), (245, 242, 235), (170, 176, 190), (120, 128, 145), (255, 232, 115)
+# 카테고리별 썸네일 띠 색 — 블로그 목록에서 한눈에 구분되게 (없는 카테고리는 남색)
+BAND = {'캠핑장 후기': NAVY, '캠핑 장비': (20, 46, 36), '캠핑 요리': (66, 28, 26)}
 PHOTO_LONG = 1600   # 본문 사진 긴 변 (네이버 본문 폭보다 충분히 큼)
 SPEC_DIR = ROOT     # 원고 JSON 폴더 — main()에서 정함
 
@@ -59,9 +61,10 @@ def cover(im, w, h, fy=0.5, fx=0.5):
     return im.crop((x, y, x + w, y + h))
 
 
-def make_thumb(t):
-    """1080×1080: 위 사진 + 아래 남색 띠(이름·한 줄 설명·블로그 이름)."""
+def make_thumb(t, category='캠핑장 후기'):
+    """1080×1080: 위 사진 + 아래 색 띠(이름·한 줄 설명·블로그 이름). 띠 색은 카테고리별(BAND)."""
     S, PH = 1080, 800
+    NAVY = tuple(t['band']) if t.get('band') else BAND.get(category, globals()['NAVY'])
     im = Image.new('RGB', (S, S), NAVY)
     im.paste(cover(load(t['photo']), S, PH, t.get('focus_y', 0.5), t.get('focus_x', 0.5)), (0, 0))
     fade = Image.new('RGBA', (S, 140))
@@ -114,7 +117,7 @@ def pieces(spec, out):
 
     n = 0
     if spec.get('thumb'):
-        res.append({'k': 'img', 'src': jpeg(make_thumb(spec['thumb']), out / '00_대표.jpg'), 'label': '대표 썸네일'})
+        res.append({'k': 'img', 'src': jpeg(make_thumb(spec['thumb'], spec.get('category', '캠핑장 후기')), out / '00_대표.jpg'), 'label': '대표 썸네일'})
     for b in spec['blocks']:
         if 'img' in b or 'imgs' in b:
             flush()
