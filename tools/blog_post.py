@@ -114,7 +114,8 @@ def make_comment(c):
     src = []
     for l in links:
         u = l['url']
-        n = '쿠팡 파트너스' if 'coupang' in u else '컬리' if 'kurly' in u else '네이버' if 'naver' in u else '제휴'
+        n = ('쿠팡 파트너스' if 'coupang' in u else '컬리' if 'kurly' in u else '네이버' if 'naver' in u
+             else '알리익스프레스' if 'aliexpress' in u else 'Insta360' if 'insta360' in u else '제휴')
         if n not in src:
             src.append(n)
     if '쿠팡 파트너스' in src:
