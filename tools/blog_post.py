@@ -144,6 +144,11 @@ def pieces(spec, out):
             text.clear()
 
     n = 0
+    # 대가성 고지 이미지(_공통/대가성고지.png)는 대표 썸네일보다 위, 글 맨 처음에 (261110 사용자)
+    top = [b for b in spec['blocks'] if '대가성고지' in str(b.get('img', ''))]
+    for b in top:
+        res.append({'k': 'img', 'src': jpeg(fit(load(b['img'])), out / '00_고지.jpg'), 'label': '대가성 고지 (맨 위)'})
+    spec = {**spec, 'blocks': [b for b in spec['blocks'] if b not in top]}
     if spec.get('thumb'):
         res.append({'k': 'img', 'src': jpeg(make_thumb(spec['thumb'], spec.get('category', '캠핑장 후기')), out / '00_대표.jpg'), 'label': '대표 썸네일'})
     for b in spec['blocks']:
