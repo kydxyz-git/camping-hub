@@ -1,8 +1,8 @@
 {
-  "checked_at": "2026-11-02T14:59:34+09:00",
+  "checked_at": "2026-11-09T15:23:46+09:00",
   "main_af": "AF7202884",
   "counts": {
-    "unknown": 94,
+    "unknown": 95,
     "ok": 6,
     "soldout": 1
   },
@@ -16,6 +16,107 @@
       "af": "AF7202884",
       "product_id": "9355265730",
       "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_b8ba2f7683": {
+      "type": "items",
+      "name": "폴러투맨 퓨리카모4P",
+      "url": "https://naver.me/xqb7aalH",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "10638116718",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/984320875728256?channelProductNo=10638116718"
+      ]
+    },
+    "item_d7822bf823": {
+      "type": "items",
+      "name": "캠빌 고동",
+      "url": "https://naver.me/G1pVxpBN",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "8638489177",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/984375454408672?channelProductNo=8638489177"
+      ]
+    },
+    "item_6f2ecec479": {
+      "type": "items",
+      "name": "어반포레스트 헥사타프",
+      "url": "https://naver.me/GhwKql3v",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "10357143886",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/984375834029760?channelProductNo=10357143886"
+      ]
+    },
+    "item_bbc507958e": {
+      "type": "items",
+      "name": "노스페이스 스타프5",
+      "url": "https://link.coupang.com/a/imMKO3p6rc",
+      "shop": "coupang",
+      "status": "unknown",
+      "af": "AF7202884",
+      "product_id": "9421207241",
+      "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_3e09fe35cb": {
+      "type": "items",
+      "name": "N.I.P 슬라이드폴대",
+      "url": "https://naver.me/GYD067W8",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "10370013455",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/984377832635744?channelProductNo=10370013455"
+      ]
+    },
+    "item_f94eb6d3e5": {
+      "type": "items",
+      "name": "N.I.P 슬라이드폴대 가방",
+      "url": "https://naver.me/Fpw3atLp",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "13655827223",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/984376329067968?channelProductNo=13655827223"
+      ]
+    },
+    "item_6e0210eba9": {
+      "type": "items",
+      "name": "N.I.P 타프 스트링",
+      "url": "https://naver.me/F05U6uiU",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "4917488735",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/984378648600672?channelProductNo=4917488735"
+      ]
+    },
+    "item_3a7d4dd061": {
+      "type": "items",
+      "name": "N.I.P 막대스토퍼",
+      "url": "https://naver.me/GM32acuW",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "4906696713",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/984378518204192?channelProductNo=4906696713"
+      ]
     },
     "item_7bd1dc6926": {
       "type": "items",
@@ -56,6 +157,19 @@
       "af": "AF7202884",
       "product_id": "7482448970",
       "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_90f00d1c73": {
+      "type": "items",
+      "name": "헬리녹스 카페체어",
+      "url": "https://naver.me/xqb7KPx3",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "10463743168",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/984381330378528?channelProductNo=10463743168"
+      ]
     },
     "item_f54ab947bf": {
       "type": "items",
@@ -197,6 +311,19 @@
       "product_id": "6513778340",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
+    "item_7daa20fbb6": {
+      "type": "items",
+      "name": "N.I.P 멀티 컴팩트 스탠드 M",
+      "url": "https://naver.me/5Yom5Ngw",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "9154531752",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/984396903575392?channelProductNo=9154531752"
+      ]
+    },
     "item_48f6974ac5": {
       "type": "items",
       "name": "포레스트유 데크팩SET",
@@ -206,6 +333,32 @@
       "af": "AF7202884",
       "product_id": "6684943223",
       "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_239d48d277": {
+      "type": "items",
+      "name": "N.I.P 팩가방",
+      "url": "https://naver.me/FoX7J6mA",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "4910598098",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/984400046792256?channelProductNo=4910598098"
+      ]
+    },
+    "item_b85f78de84": {
+      "type": "items",
+      "name": "웨버 라이터 큐브",
+      "url": "https://naver.me/G5kDTyut",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "6416001856",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/982581099544768?channelProductNo=6416001856"
+      ]
     },
     "item_6f79a0aa62": {
       "type": "items",
@@ -227,6 +380,58 @@
       "product_id": "9009382553",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
+    "item_960c2ff01c": {
+      "type": "items",
+      "name": "울란지 오즈모포켓용 브라켓 (PM01)",
+      "url": "https://naver.me/50BeWhG5",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "12265521588",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/949347172784960?channelProductNo=12265521588"
+      ]
+    },
+    "item_200bd59067": {
+      "type": "items",
+      "name": "텔레신 실리콘 넥마운트 (MNM-001)",
+      "url": "https://naver.me/GFsAAKGG",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "10968427710",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/959760214449760?channelProductNo=10968427710"
+      ]
+    },
+    "item_8249efe8be": {
+      "type": "items",
+      "name": "텔레신 HNB-09 SE2.0",
+      "url": "https://naver.me/GhwBVW6X",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "11558961864",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/988535727950144?channelProductNo=11558961864"
+      ]
+    },
+    "item_32e1cc5f58": {
+      "type": "items",
+      "name": "마크제트 1.7M 맥세이프 삼각대",
+      "url": "https://naver.me/GdTSAjoJ",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "12602042785",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/968945755977696?channelProductNo=12602042785"
+      ]
+    },
     "item_1e78eeb29a": {
       "type": "items",
       "name": "신지모루 방수 포켓백",
@@ -246,6 +451,19 @@
       "af": "AF7202884",
       "product_id": "7330566805",
       "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_8eb9a307f9": {
+      "type": "items",
+      "name": "울란지 플라스틱 보호 케이스(PK-07)",
+      "url": "https://naver.me/GP2UT8Q9",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "11281643654",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/988536922220320?channelProductNo=11281643654"
+      ]
     },
     "item_206667db4d": {
       "type": "items",
@@ -267,6 +485,19 @@
       "product_id": "8438884995",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
+    "item_1778659979": {
+      "type": "items",
+      "name": "키녹스 포트 주전자",
+      "url": "https://naver.me/x523i4cu",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "10217694884",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/998838001383712?channelProductNo=10217694884"
+      ]
+    },
     "item_6e1cb49823": {
       "type": "items",
       "name": "키친아트 3단 찜",
@@ -276,6 +507,29 @@
       "af": "AF7202884",
       "product_id": "1173296780",
       "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_94632ff456": {
+      "type": "items",
+      "name": "꾸버스 비장탄 1+1kg",
+      "url": "https://naver.me/xLNAPZBy",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "8676023379",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/1000805575634240?channelProductNo=8676023379"
+      ]
+    },
+    "item_c061180185": {
+      "type": "items",
+      "name": "미니맥스 MX9",
+      "url": "https://smartstore.naver.com/minimaxstore/products/11355222013",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "11355222013",
+      "detail": "링크는 상품으로 넘어감 · 판매 여부는 확인 불가 (네이버가 막음, 응답 429)"
     },
     "item_29089de9b3": {
       "type": "items",
@@ -367,6 +621,32 @@
       "product_id": "7853897945",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
+    "item_bdc80b92bf": {
+      "type": "items",
+      "name": "포레스트유 파이어쉘터",
+      "url": "https://naver.me/GNJmNNta",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "8939584569",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/1013749317746688?channelProductNo=8939584569"
+      ]
+    },
+    "item_a85f326087": {
+      "type": "items",
+      "name": "Insta360 넥 마운트",
+      "url": "https://naver.me/x52u7oL1",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "13471358589",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/1004099491508896?channelProductNo=13471358589"
+      ]
+    },
     "item_5f7e0b21f7": {
       "type": "items",
       "name": "Insta360 플렉시 클립",
@@ -437,6 +717,26 @@
       "product_id": "8533718171",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
+    "item_acffd21489": {
+      "type": "items",
+      "name": "미니맥스 타닥",
+      "url": "https://smartstore.naver.com/minimaxstore/products/8308294082",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "8308294082",
+      "detail": "링크는 상품으로 넘어감 · 판매 여부는 확인 불가 (네이버가 막음, 응답 429)"
+    },
+    "item_5508746f3b": {
+      "type": "items",
+      "name": "800도씨 거북선 화로대",
+      "url": "https://smartstore.naver.com/gayamy/products/8482764871",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "8482764871",
+      "detail": "링크는 상품으로 넘어감 · 판매 여부는 확인 불가 (네이버가 막음, 응답 429)"
+    },
     "item_293174049b": {
       "type": "items",
       "name": "코베아 매직2",
@@ -446,6 +746,19 @@
       "af": "AF7202884",
       "product_id": "182086",
       "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_4a438a15fc": {
+      "type": "items",
+      "name": "캠핑문 2WAY 파일드라이버",
+      "url": "https://naver.me/Ghwg6YLE",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "6803786210",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/1004656076079904?channelProductNo=6803786210"
+      ]
     },
     "item_3d9e53d801": {
       "type": "items",
@@ -486,6 +799,55 @@
       "af": "AF7202884",
       "product_id": "8502676621",
       "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_b0e2d50dcb": {
+      "type": "items",
+      "name": "캠핑투게더 카시오페아 (M)",
+      "url": "https://naver.me/5o0rbXlr",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "12412449043",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/1010453428785696?channelProductNo=12412449043"
+      ]
+    },
+    "item_891c2d40e9": {
+      "type": "items",
+      "name": "캠핑투게더 카시오페아 (L)",
+      "url": "https://naver.me/5B0eg4fl",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "10330180599",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/1006223578058304?channelProductNo=10330180599"
+      ]
+    },
+    "item_3c3812808a": {
+      "type": "items",
+      "name": "도쿄크래프트 그래프 암",
+      "url": "https://m.brand.naver.com/tokyocraftskorea/products/11137134219",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "11137134219",
+      "detail": "링크는 상품으로 넘어감 · 판매 여부는 확인 불가 (네이버가 막음, 응답 429)"
+    },
+    "item_11070d51cb": {
+      "type": "items",
+      "name": "포레스트유 더블체크 일산화탄소 경보기",
+      "url": "https://naver.me/5K6MAERx",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "12743086543",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/1007535950651168?channelProductNo=12743086543"
+      ]
     },
     "item_62da25abbd": {
       "type": "items",
@@ -542,20 +904,20 @@
       "name": "[부산 이가네] 이가네 떡볶이",
       "url": "https://lounge.kurly.com/link/TNwe-lUVo",
       "shop": "kurly",
-      "status": "soldout",
+      "status": "ok",
       "af": "",
       "product_id": "1001415117",
-      "detail": "컬리 품절"
+      "detail": ""
     },
     "food_790525d8a8": {
       "type": "foods",
       "name": "[전주 베테랑] 김치만두",
       "url": "https://lounge.kurly.com/link/tbku-uJpL",
       "shop": "kurly",
-      "status": "ok",
+      "status": "soldout",
       "af": "",
       "product_id": "5072984",
-      "detail": ""
+      "detail": "컬리 품절"
     },
     "food_464525ea11": {
       "type": "foods",
@@ -566,6 +928,19 @@
       "af": "",
       "product_id": "1000942597",
       "detail": ""
+    },
+    "food_592752e317": {
+      "type": "foods",
+      "name": "[토리야] 모듬꼬치",
+      "url": "https://naver.me/xrzyoskO",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "5877653966",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/946636857826048?channelProductNo=5877653966"
+      ]
     },
     "food_b7f447dd02": {
       "type": "foods",
@@ -617,6 +992,32 @@
       "product_id": "9685208345",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
+    "food_b099891fb5": {
+      "type": "foods",
+      "name": "[토리야] 쇼가야끼",
+      "url": "https://naver.me/xD8wDZ6K",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "13694353980",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/998529735784992?channelProductNo=13694353980"
+      ]
+    },
+    "food_44a4d0e976": {
+      "type": "foods",
+      "name": "대왕 손질 갑오징어",
+      "url": "https://naver.me/56XT3QaX",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "10968743794",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/1000664265124416?channelProductNo=10968743794"
+      ]
+    },
     "food_66a2bcc0ba": {
       "type": "foods",
       "name": "단디잇 매콤찬 고추다짐이",
@@ -636,6 +1037,32 @@
       "af": "AF7202884",
       "product_id": "1798072264",
       "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "food_b033c6e85b": {
+      "type": "foods",
+      "name": "카리 토리야 (일본식 카레)",
+      "url": "https://naver.me/5nhroDKF",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "12763538708",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/1003371362386848?channelProductNo=12763538708"
+      ]
+    },
+    "food_bb488094b5": {
+      "type": "foods",
+      "name": "소바 토리야(전통 야끼소바)",
+      "url": "https://naver.me/xaT2fP8K",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "13109853191",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/1003371644642112?channelProductNo=13109853191"
+      ]
     },
     "food_ad685c6af0": {
       "type": "foods",
@@ -686,426 +1113,8 @@
       "af": "AF7202884",
       "product_id": "8582607379",
       "detail": "상품 페이지 확인 불가 (응답 403)"
-    },
-    "item_b8ba2f7683": {
-      "type": "items",
-      "name": "폴러투맨 퓨리카모4P",
-      "url": "https://naver.me/xqb7aalH",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/984320875728256?channelProductNo=10638116718"
-      ]
-    },
-    "item_d7822bf823": {
-      "type": "items",
-      "name": "캠빌 고동",
-      "url": "https://naver.me/G1pVxpBN",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/984375454408672?channelProductNo=8638489177"
-      ]
-    },
-    "item_6f2ecec479": {
-      "type": "items",
-      "name": "어반포레스트 헥사타프",
-      "url": "https://naver.me/GhwKql3v",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/984375834029760?channelProductNo=10357143886"
-      ]
-    },
-    "item_bbc507958e": {
-      "type": "items",
-      "name": "노스페이스 스타프5",
-      "url": "https://naver.me/GhwKql3v",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/984375834029760?channelProductNo=10357143886"
-      ]
-    },
-    "item_3e09fe35cb": {
-      "type": "items",
-      "name": "N.I.P 슬라이드폴대",
-      "url": "https://naver.me/GYD067W8",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/984377832635744?channelProductNo=10370013455"
-      ]
-    },
-    "item_f94eb6d3e5": {
-      "type": "items",
-      "name": "N.I.P 슬라이드폴대 가방",
-      "url": "https://naver.me/Fpw3atLp",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/984376329067968?channelProductNo=13655827223"
-      ]
-    },
-    "item_6e0210eba9": {
-      "type": "items",
-      "name": "N.I.P 타프 스트링",
-      "url": "https://naver.me/F05U6uiU",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/984378648600672?channelProductNo=4917488735"
-      ]
-    },
-    "item_3a7d4dd061": {
-      "type": "items",
-      "name": "N.I.P 막대스토퍼",
-      "url": "https://naver.me/GM32acuW",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/984378518204192?channelProductNo=4906696713"
-      ]
-    },
-    "item_90f00d1c73": {
-      "type": "items",
-      "name": "헬리녹스 카페체어",
-      "url": "https://naver.me/xqb7KPx3",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/984381330378528?channelProductNo=10463743168"
-      ]
-    },
-    "item_7daa20fbb6": {
-      "type": "items",
-      "name": "N.I.P 멀티 컴팩트 스탠드 M",
-      "url": "https://naver.me/5Yom5Ngw",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/984396903575392?channelProductNo=9154531752"
-      ]
-    },
-    "item_239d48d277": {
-      "type": "items",
-      "name": "N.I.P 팩가방",
-      "url": "https://naver.me/FoX7J6mA",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/984400046792256?channelProductNo=4910598098"
-      ]
-    },
-    "item_b85f78de84": {
-      "type": "items",
-      "name": "웨버 라이터 큐브",
-      "url": "https://naver.me/G5kDTyut",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/982581099544768?channelProductNo=6416001856"
-      ]
-    },
-    "item_960c2ff01c": {
-      "type": "items",
-      "name": "울란지 오즈모포켓용 브라켓 (PM01)",
-      "url": "https://naver.me/50BeWhG5",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/949347172784960?channelProductNo=12265521588"
-      ]
-    },
-    "item_200bd59067": {
-      "type": "items",
-      "name": "텔레신 실리콘 넥마운트 (MNM-001)",
-      "url": "https://naver.me/GFsAAKGG",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/959760214449760?channelProductNo=10968427710"
-      ]
-    },
-    "item_8249efe8be": {
-      "type": "items",
-      "name": "텔레신 HNB-09 SE2.0",
-      "url": "https://naver.me/GhwBVW6X",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/988535727950144?channelProductNo=11558961864"
-      ]
-    },
-    "item_32e1cc5f58": {
-      "type": "items",
-      "name": "마크제트 1.7M 맥세이프 삼각대",
-      "url": "https://naver.me/GdTSAjoJ",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/968945755977696?channelProductNo=12602042785"
-      ]
-    },
-    "item_8eb9a307f9": {
-      "type": "items",
-      "name": "울란지 플라스틱 보호 케이스(PK-07)",
-      "url": "https://naver.me/GP2UT8Q9",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/988536922220320?channelProductNo=11281643654"
-      ]
-    },
-    "item_1778659979": {
-      "type": "items",
-      "name": "키녹스 포트 주전자",
-      "url": "https://naver.me/x523i4cu",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/998838001383712?channelProductNo=10217694884"
-      ]
-    },
-    "item_94632ff456": {
-      "type": "items",
-      "name": "꾸버스 비장탄 1+1kg",
-      "url": "https://naver.me/xLNAPZBy",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/1000805575634240?channelProductNo=8676023379"
-      ]
-    },
-    "item_c061180185": {
-      "type": "items",
-      "name": "미니맥스 MX9",
-      "url": "https://smartstore.naver.com/minimaxstore/products/11355222013",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "11355222013",
-      "detail": "링크는 상품으로 넘어감 · 판매 여부는 확인 불가 (네이버가 막음, 응답 429)"
-    },
-    "item_a85f326087": {
-      "type": "items",
-      "name": "Insta360 넥 마운트",
-      "url": "https://naver.me/x52u7oL1",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/1004099491508896?channelProductNo=13471358589"
-      ]
-    },
-    "item_acffd21489": {
-      "type": "items",
-      "name": "미니맥스 타닥",
-      "url": "https://smartstore.naver.com/minimaxstore/products/8308294082",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "8308294082",
-      "detail": "링크는 상품으로 넘어감 · 판매 여부는 확인 불가 (네이버가 막음, 응답 429)"
-    },
-    "item_5508746f3b": {
-      "type": "items",
-      "name": "800도씨 거북선 화로대",
-      "url": "https://smartstore.naver.com/gayamy/products/8482764871",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "8482764871",
-      "detail": "링크는 상품으로 넘어감 · 판매 여부는 확인 불가 (네이버가 막음, 응답 429)"
-    },
-    "item_4a438a15fc": {
-      "type": "items",
-      "name": "캠핑문 2WAY 파일드라이버",
-      "url": "https://naver.me/Ghwg6YLE",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/1004656076079904?channelProductNo=6803786210"
-      ]
-    },
-    "item_b0e2d50dcb": {
-      "type": "items",
-      "name": "캠핑투게더 카시오페아 (M)",
-      "url": "https://naver.me/5o0rbXlr",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/1010453428785696?channelProductNo=12412449043"
-      ]
-    },
-    "item_891c2d40e9": {
-      "type": "items",
-      "name": "캠핑투게더 카시오페아 (L)",
-      "url": "https://naver.me/5B0eg4fl",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/1006223578058304?channelProductNo=10330180599"
-      ]
-    },
-    "item_3c3812808a": {
-      "type": "items",
-      "name": "도쿄크래프트 그래프 암",
-      "url": "https://m.brand.naver.com/tokyocraftskorea/products/11137134219",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "11137134219",
-      "detail": "링크는 상품으로 넘어감 · 판매 여부는 확인 불가 (네이버가 막음, 응답 429)"
-    },
-    "item_11070d51cb": {
-      "type": "items",
-      "name": "포레스트유 더블체크 일산화탄소 경보기",
-      "url": "https://naver.me/5K6MAERx",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/1007535950651168?channelProductNo=12743086543"
-      ]
-    },
-    "food_592752e317": {
-      "type": "foods",
-      "name": "[토리야] 모듬꼬치",
-      "url": "https://naver.me/xrzyoskO",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/946636857826048?channelProductNo=5877653966"
-      ]
-    },
-    "food_b099891fb5": {
-      "type": "foods",
-      "name": "[토리야] 쇼가야끼",
-      "url": "https://naver.me/xD8wDZ6K",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/998529735784992?channelProductNo=13694353980"
-      ]
-    },
-    "food_44a4d0e976": {
-      "type": "foods",
-      "name": "대왕 손질 갑오징어",
-      "url": "https://naver.me/56XT3QaX",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/1000664265124416?channelProductNo=10968743794"
-      ]
-    },
-    "food_b033c6e85b": {
-      "type": "foods",
-      "name": "카리 토리야 (일본식 카레)",
-      "url": "https://naver.me/5nhroDKF",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/1003371362386848?channelProductNo=12763538708"
-      ]
-    },
-    "food_bb488094b5": {
-      "type": "foods",
-      "name": "소바 토리야(전통 야끼소바)",
-      "url": "https://naver.me/xaT2fP8K",
-      "shop": "naver",
-      "status": "unknown",
-      "af": "",
-      "product_id": "",
-      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
-      "chain": [
-        "https://brandconnect.naver.com/affiliates/1003371644642112?channelProductNo=13109853191"
-      ]
     }
   },
   "sample_html": "",
-  "sample_html_naver": "",
-  "checked_at_naver": "2026-11-03T10:43:32+09:00"
+  "sample_html_naver": ""
 }
