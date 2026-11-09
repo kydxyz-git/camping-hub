@@ -106,6 +106,33 @@ def jpeg(im, path):
     return 'data:image/jpeg;base64,' + base64.b64encode(buf.getvalue()).decode()
 
 
+def make_comment(c):
+    """고정댓글 글자: 맨 윗줄 대가성 고지(링크 출처에 맞춰) + 메뉴·상품별 링크. 쿠팡 링크가 있으면 쿠팡 지정 문구 그대로."""
+    if not c:
+        return ''
+    links = c.get('links', [])
+    src = []
+    for l in links:
+        u = l['url']
+        n = '쿠팡 파트너스' if 'coupang' in u else '컬리' if 'kurly' in u else '네이버' if 'naver' in u else '제휴'
+        if n not in src:
+            src.append(n)
+    if '쿠팡 파트너스' in src:
+        head = ['이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.']
+        rest = [n for n in src if n != '쿠팡 파트너스']
+        if rest:
+            head.append(f'{"·".join(rest)} 링크도 구매 시 일정액의 수수료를 받는 제휴 링크입니다.')
+    else:
+        head = [f'이 포스팅은 {"·".join(src)} 제휴 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.']
+    out = head + ['']
+    if c.get('intro'):
+        out += [c['intro'], '']
+    for l in links:
+        out.append('▶ ' + (f"{l['menu']} – {l['name']}" if l.get('menu') else l['name']))
+        out.append(l['url'])
+    return '\n'.join(out).strip()
+
+
 def pieces(spec, out):
     """붙여넣을 조각 목록: 이어진 글 블록은 하나로 묶고, 사진은 한 장씩."""
     res, text = [], []
@@ -167,7 +194,7 @@ button{font:inherit;font-size:14px;border:1px solid var(--line);background:#fff;
 .toast.on{opacity:1}
 </style></head><body>
 <div class="bar"><div class="bar-in"><b>__TITLE_ESC__</b>
-<button id="cpTitle">제목 복사</button><button id="cpTags">태그 복사</button>
+<button id="cpTitle">제목 복사</button><button id="cpTags">태그 복사</button><button id="cpCmt" hidden>고정댓글 복사</button>
 <span id="state"></span><button id="next">다음 복사 ▶</button></div></div>
 <div class="wrap">
 <div class="guide">브라우저와 네이버 에디터를 <b>창 두 개로 나란히</b> 띄우고: <b>다음 복사</b> → 에디터에 <b>Ctrl+V</b> 반복.
@@ -210,6 +237,12 @@ $('next').onclick = copy;
 const plain = (t, m) => navigator.clipboard.writeText(t).then(() => toast(m), () => toast('복사가 막혔어요'));
 $('cpTitle').onclick = () => plain(D.title, '제목 복사');
 $('cpTags').onclick = () => plain(D.tags, '태그 복사');
+if (D.comment) {
+  $('cpCmt').hidden = false; $('cpCmt').onclick = () => plain(D.comment, '고정댓글 복사 — 발행 후 댓글에 붙이고 고정');
+  const el = document.createElement('div'); el.className = 'pc';
+  el.innerHTML = '<div class="no">고정댓글 (발행 후 댓글로 달고 고정)</div><div class="t">' + D.comment.split('\n').map(l => l ? l.replace(/&/g,'&amp;').replace(/</g,'&lt;') : '&nbsp;').map(l => '<p>' + l + '</p>').join('') + '</div>';
+  el.onclick = () => plain(D.comment, '고정댓글 복사'); list.appendChild(el);
+}
 mark();
 </script></body></html>'''
 
@@ -231,7 +264,10 @@ def main():
     out = SPEC_DIR if camp_dir else SPEC_DIR / spec['slug']
     out.mkdir(parents=True, exist_ok=True)
     ps = pieces(spec, out)
-    data = json.dumps({'title': spec['title'], 'tags': spec.get('tags', ''), 'pieces': ps}, ensure_ascii=False)
+    cmt = make_comment(spec.get('comment'))
+    if cmt:
+        (out / '고정댓글.txt').write_text(cmt + '\n', encoding='utf-8')
+    data = json.dumps({'title': spec['title'], 'tags': spec.get('tags', ''), 'pieces': ps, 'comment': cmt}, ensure_ascii=False)
     page = (PAGE.replace('__DATA__', data).replace('__TITLE_ESC__', html.escape(spec['title']))
             .replace('__TITLE__', html.escape(spec['slug'] + ' 원고')).replace('__CAT__', html.escape(spec.get('category', '캠핑장 후기'))))
     (out / 'post.html').write_text(page, encoding='utf-8')
