@@ -6,7 +6,18 @@
     "color": "#4A90E2",
     "published": true,
     "sort": "ep_desc",
-    "eps": [],
+    "eps": [
+      {
+        "id": "ep_6bba1246e2",
+        "ep": 1,
+        "title": "겨울 캠핑 행복을 위한 8분",
+        "url": "https://www.instagram.com/reel/DfWwBhdhZ4u/?dlrf=aTdnZW1la3ZxM2cy",
+        "thumb": "./images/series/series-ep01.jpg",
+        "published": true,
+        "created_at": "2026-11-09T12:06:19.853Z",
+        "updated_at": "2026-11-09T12:06:19.853Z"
+      }
+    ],
     "created_at": "2026-11-09T12:04:53.000Z",
     "updated_at": "2026-11-09T12:04:53.000Z"
   },
