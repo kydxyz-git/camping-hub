@@ -140,6 +140,7 @@
   .done-row { background: var(--bg); border-radius: 12px; padding: 10px 14px; display: flex; gap: 10px; align-items: center; font-size: 13.5px; }
   .done-row .nm { flex: 1; min-width: 0; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .done-row .tm { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+  .done-row .sent-at { color: var(--text, inherit); font-weight: 600; }
   .done-row a.go { font-weight: 700; color: var(--info); text-decoration: none; white-space: nowrap; }
   /* 폰: 첫 줄 글 제목, 둘째 줄 배지·숫자·링크·버튼 (한 줄에 다 넣으면 제목이 사라지고 오른쪽이 넘침) */
   @media (max-width: 640px) {
@@ -1060,7 +1061,8 @@ function renderComments() {
   const rows = (S.replies || []).slice().sort((a, b) => String(b.timestamp || b.created_at || '').localeCompare(String(a.timestamp || a.created_at || '')));
   const fresh = rows.filter(r => r.status === '새댓글' || r.status === '실패');
   const queued = rows.filter(r => r.status === '보낼것');
-  const done = rows.filter(r => r.status === '보냄' || r.status === '건너뜀');
+  const done = rows.filter(r => r.status === '보냄' || r.status === '건너뜀')
+    .sort((a, b) => String(b.sent_at || b.updated_at || '').localeCompare(String(a.sent_at || a.updated_at || '')));   // 최근에 보낸 게 위
   const postOf = r => S.posts.find(p => p.id === r.post_qid) || {};
   const card = r => {
     const p = postOf(r);
@@ -1078,14 +1080,14 @@ function renderComments() {
     </div>`;
   };
   $('#view').innerHTML = `
-    <div class="banner warn small">매시 35분쯤 새 댓글을 모아 AI가 답글 초안을 달아 둬요. 고칠 건 고치고 '보내기'를 누르면 1~2분 안에 올라가요.
+    <div class="banner warn small">새 댓글을 모아 AI가 답글 초안을 달아 둬요. 고칠 건 고치고 '보내기'를 누르면 몰아 달지 않게 9~23시 사이에 한 번에 하나씩, 35~110분 간격으로 올라가요(261105).
       처음엔 메타 앱에 <b>threads_read_replies</b> 권한을 추가하고 토큰을 새로 받아 '토큰·실행'에 넣어야 댓글이 보여요.</div>
     <div class="list-head"><div class="sum">답할 댓글 <b>${fresh.length}</b>개${queued.length ? ` · 보내는 중 ${queued.length}개` : ''}</div>
       <button class="btn small ghost" id="c-fetch">지금 댓글 확인</button></div>
     <div class="posts">${fresh.map(card).join('') || '<div class="card small muted">새 댓글이 없어요.</div>'}</div>
-    ${queued.length ? `<div class="section-title">보내는 중</div><div class="posts">${queued.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)} ← ${esc(r.reply_text)}</span><span class="tm">${r.auto ? '자동 · 곧 보냄' : '대기'}</span></div>`).join('')}</div>` : ''}
+    ${queued.length ? `<div class="section-title">보내는 중</div><div class="posts">${queued.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)} ← ${esc(r.reply_text)}</span><span class="tm">${r.auto ? '자동 · ' + (r.send_after ? esc(fmtDT(r.send_after).slice(5)) + ' 이후' : '곧 보냄') : '대기 · 다음 차례'}</span></div>`).join('')}</div>` : ''}
     ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center">지난 댓글 ${done.length}개 <button class="btn small ghost" id="c-toggle">${S.showDoneC ? '접기' : '펼치기'}</button></div>
-      ${S.showDoneC ? `<div class="posts">${done.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)}: ${esc(r.text)}</span><span class="tm">${r.status === '보냄' ? (r.auto ? '🤖 자동 ↳ ' : '↳ ') + esc(r.reply_text) : '건너뜀'}</span></div>`).join('')}</div>` : ''}` : ''}`;
+      ${S.showDoneC ? `<div class="posts">${done.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)}: ${esc(r.text)}</span><span class="tm">${r.status === '보냄' ? (r.auto ? '🤖 자동 ↳ ' : '↳ ') + esc(r.reply_text) + (r.sent_at ? ` <span class="sent-at">· ${esc(fmtDT(r.sent_at).slice(5))}</span>` : '') : '건너뜀'}</span></div>`).join('')}</div>` : ''}` : ''}`;
   const t = $('#c-toggle'); if (t) t.onclick = () => { S.showDoneC = !S.showDoneC; renderComments(); };
   $('#c-fetch').onclick = async () => {
     try { await runWorkflow('replies.yml', { mode: 'all' }); toast('댓글 확인을 요청했어요. 2~3분 뒤 새로고침해 주세요.'); }
