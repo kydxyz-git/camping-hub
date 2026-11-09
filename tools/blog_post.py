@@ -148,7 +148,25 @@ def pieces(spec, out):
     top = [b for b in spec['blocks'] if '대가성고지' in str(b.get('img', ''))]
     for b in top:
         res.append({'k': 'img', 'src': jpeg(fit(load(b['img'])), out / '00_고지.jpg'), 'label': '대가성 고지 (맨 위)'})
-    spec = {**spec, 'blocks': [b for b in spec['blocks'] if b not in top]}
+    blocks = [dict(b) for b in spec['blocks'] if b not in top]
+    # 이어진 상품 링크가 같은 종류(재료/밀키트/제품)면 라벨은 첫 줄에 한 번만: '재료: A · B' + 카드 A, 카드 B (261110)
+    k = 0
+    while k < len(blocks):
+        b = blocks[k]
+        if b.get('link') and b.get('label') and ': ' in b['label']:
+            kind = b['label'].split(': ', 1)[0]
+            g = k + 1
+            while g < len(blocks) and blocks[g].get('link') and str(blocks[g].get('label', '')).startswith(kind + ': '):
+                g += 1
+            if g - k > 1:
+                b['label'] = kind + ': ' + ' · '.join(x['label'].split(': ', 1)[1] for x in blocks[k:g])
+                for x in blocks[k + 1:g]:
+                    x['label'] = None
+                    x['card_only'] = True
+            k = g
+        else:
+            k += 1
+    spec = {**spec, 'blocks': blocks}
     if spec.get('thumb'):
         res.append({'k': 'img', 'src': jpeg(make_thumb(spec['thumb'], spec.get('category', '캠핑장 후기')), out / '00_대표.jpg'), 'label': '대표 썸네일'})
     for b in spec['blocks']:
@@ -165,6 +183,16 @@ def pieces(spec, out):
             text.append((f'<p><b>{html.escape(b["h"])}</b></p><p><br></p>', b['h'] + '\n'))
         elif 'link' in b:
             # 주소는 글자 그대로 붙여야 네이버가 링크 카드(미리보기)를 만든다
+            if b.get('card_only') or b.get('label'):
+                # 상품 링크는 따로 떼지 않고 앞 글과 한 조각으로 복사 (261110 사용자).
+                # 재료 줄 바로 아래(빈 줄 없이)에 '제품: 이름'(굵게, 있으면) + 주소. 카드가 안 생기면 주소 끝에서 Enter.
+                if text and text[-1][0].endswith('<p><br></p>'):
+                    h0, p0 = text[-1]
+                    text[-1] = (h0[:-len('<p><br></p>')], p0)
+                lab = f'<p><b>{html.escape(b["label"])}</b></p>' if b.get('label') else ''
+                text.append((lab + f'<p>{html.escape(b["link"])}</p><p><br></p>',
+                             (b['label'] + '\n' if b.get('label') else '') + b['link'] + '\n'))
+                continue
             flush()
             t = b.get('text') or b['link']
             plain = t if b['link'] in t else f'{t}\n{b["link"]}'
