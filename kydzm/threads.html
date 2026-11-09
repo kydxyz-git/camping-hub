@@ -244,7 +244,7 @@ const PH = '{링크}';
 const WD = ['월', '화', '수', '목', '금', '토', '일'];   // 0=월 (post.py와 동일)
 const STATUSES = ['초안', '대기', '게시중', '게시완료', '댓글실패', '실패', '확인필요'];
 const KINDS = ['일상', '정보', '팔로워', '수익화', '특가'];
-const KIND_LABEL = { 일상: '잡담', 정보: '정보성', 팔로워: '팔로우 모으기', 수익화: '추천템', '': '순서대로' };
+const KIND_LABEL = { 일상: '잡담', 정보: '정보성', 팔로워: '팔로우 모으기', 수익화: '추천템', 섞기: '정보·잡담 섞기', '': '순서대로' };
 // post.py FALLBACK_KINDS와 같게 — 그 시각 종류의 대기 글이 없으면 이 순서로 대신
 const FALLBACK_KINDS = { 정보: ['일상'], 일상: ['정보'], 팔로워: ['일상', '정보'], 수익화: ['일상', '정보'] };
 const DEFAULT_CONFIG = { paused: false, weekdays: [0, 1, 2, 3, 4, 5, 6], hours: ['07', '12', '22'] };
@@ -432,6 +432,7 @@ function normalizeConfig(c) {
 // post.py want_kind / choose / plan과 같은 계산
 function wantKind(key) {
   const k = S.config.kinds[key.slice(11, 13)] || '';
+  if (k === '섞기') { let h = 0; for (let i = 0; i < key.length; i++) h += (i + 1) * key.charCodeAt(i); return h % 2 ? '정보' : '일상'; }   // post.py want_kind와 같게 (261109)
   if (k === '수익화' && S.config.monetize_from && key.slice(0, 10) < S.config.monetize_from) return '일상';
   // 특가 요일(config deal_weekdays)엔 링크 하루 1개를 지키려고 추천템 자리를 정보성으로 (post.py와 같게, 261028)
   const dw = S.config.deal_weekdays || [];
@@ -1136,7 +1137,7 @@ function renderCycle() {
 
       <div class="section-title">하루 게시 시각 (${c.hours.length}개)</div>
       <div class="small muted" style="margin-bottom:10px">시각마다 글 목록 위에서부터 하나씩 올라가요. 실제 게시는 그 시각 5분쯤 시작하고, 깃허브 사정으로 최대 1시간 정도 늦을 수 있어요. 3시간 넘게 지난 몫은 건너뛰어요(몰아서 올라가지 않게).</div>
-      <div class="row" id="c-hours">${c.hours.map((h, i) => `<span class="row" style="gap:4px;flex-wrap:nowrap"><select class="input" data-h="${i}" style="width:auto">${hourOpts(h)}</select><select class="input" data-k="${h}" style="width:auto">${['', '일상', '정보', '팔로워', '수익화'].map(k => `<option value="${k}"${(c.kinds[h] || '') === k ? ' selected' : ''}>${KIND_LABEL[k]}</option>`).join('')}</select><button class="icon-btn" data-rm="${i}" title="삭제">×</button></span>`).join('')}
+      <div class="row" id="c-hours">${c.hours.map((h, i) => `<span class="row" style="gap:4px;flex-wrap:nowrap"><select class="input" data-h="${i}" style="width:auto">${hourOpts(h)}</select><select class="input" data-k="${h}" style="width:auto">${['', '섞기', '일상', '정보', '팔로워', '수익화'].map(k => `<option value="${k}"${(c.kinds[h] || '') === k ? ' selected' : ''}>${KIND_LABEL[k]}</option>`).join('')}</select><button class="icon-btn" data-rm="${i}" title="삭제">×</button></span>`).join('')}
         <button class="btn ghost small" id="c-add">+ 시각 추가</button></div>
       <div class="small muted" style="margin-top:6px">시각마다 그 종류의 대기 글 중 맨 위 글이 올라가요. 그 종류가 없으면 잡담·정보성 순서로 대신해요.</div>
       <div class="section-title">특가 글 시각</div>
