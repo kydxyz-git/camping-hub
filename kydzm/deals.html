@@ -145,6 +145,7 @@
 <div class="topbar">
   <div class="topbar-title">🔥 딜 보드</div>
   <div style="display:flex;gap:6px">
+    <button class="topbar-btn" id="tune-btn" title="매주 월요일 자동 점검이 바꾼 점수 규칙">📈 규칙 <span id="tune-date" style="opacity:.75;font-weight:600"></span></button>
     <button class="topbar-btn" id="reload">↻</button>
     <button class="topbar-btn" onclick="location.href='index.html'">← 관리자</button>
   </div>
@@ -193,6 +194,14 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<div id="tune-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:60;padding:24px 12px;overflow-y:auto">
+  <div style="max-width:720px;margin:0 auto;background:var(--bg);color:var(--text);border-radius:14px;padding:18px 18px 22px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <b>📈 딜 거르기 규칙 개선 기록</b><button class="topbar-btn" id="tune-close">닫기</button></div>
+    <div class="small" style="opacity:.7;margin-bottom:10px">매주 월요일 아침 자동 점검이 지난주 라벨(✓/✗/⏱)을 보고 점수 규칙을 고친 기록이에요. 최근 것이 위.</div>
+    <div id="tune-body" style="font-size:14px;line-height:1.6">불러오는 중…</div>
+  </div>
+</div>
 
 <script>
 // 수집 리포는 Private → 관리자 GitHub 토큰으로 API 경유 조회
@@ -239,6 +248,38 @@ async function getJSON(path){
   if (!r.ok) throw new Error(`GitHub API ${r.status}`);
   return r.json();
 }
+
+// 주간 규칙 개선 기록 (camping-search docs/deal-tuning.md) — 사용자 요청 261109: 알고리즘이 바뀌었는지 직접 확인
+let TUNE = null;
+async function loadTune(){
+  const r = await fetch(`${GH_API}/repos/kydxyz-git/camping-search/contents/docs/deal-tuning.md?ref=main&t=${Date.now()}`, {
+    headers:{'Accept':'application/vnd.github.raw+json','Authorization':`Bearer ${getToken()}`,'X-GitHub-Api-Version':'2022-11-28'}});
+  if (!r.ok) throw new Error('기록을 못 읽었어요 (' + r.status + ')');
+  const md = await r.text();
+  const parts = md.split(/\n(?=## )/).filter(x => x.startsWith('## '));
+  TUNE = parts.reverse();
+  const m = TUNE[0] && TUNE[0].match(/##\s*(\d{4})-(\d{2})-(\d{2})/);
+  $('tune-date').textContent = m ? `${+m[2]}/${+m[3]}` : '';
+}
+function mdLite(t){
+  const e = x => x.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  return t.split('\n').map(l => {
+    let h = e(l).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`(.+?)`/g,'<code>$1</code>');
+    if (/^## /.test(l)) return `<div style="font-weight:800;font-size:15px;margin:14px 0 6px">${h.slice(3)}</div>`;
+    const ind = (l.match(/^(\s*)- /) || [])[1];
+    if (ind !== undefined) return `<div style="padding-left:${8 + ind.length * 8}px">• ${h.replace(/^\s*- /,'')}</div>`;
+    return h ? `<div>${h}</div>` : '';
+  }).join('');
+}
+async function openTune(){
+  $('tune-modal').style.display = 'block';
+  try { if (!TUNE) await loadTune(); $('tune-body').innerHTML = TUNE.length ? TUNE.map(mdLite).join('<hr style="border:none;border-top:1px solid rgba(128,128,128,.25);margin:12px 0">') : '아직 기록이 없어요.'; }
+  catch(e){ $('tune-body').textContent = e.message; }
+}
+$('tune-btn').onclick = openTune;
+$('tune-close').onclick = () => { $('tune-modal').style.display = 'none'; };
+$('tune-modal').onclick = ev => { if (ev.target.id === 'tune-modal') $('tune-modal').style.display = 'none'; };
+loadTune().catch(()=>{});
 
 async function loadLabels(){
   try {
