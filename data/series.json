@@ -8,6 +8,17 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_77c25c2101",
+        "ep": 2,
+        "title": "장박, 텐트 3동 넣었습니다",
+        "url": "https://www.instagram.com/p/Dfg5rc-E0oZ/?psln=M284eGZsODhncnZ0",
+        "thumb": "./images/series/series-ep02.jpg",
+        "published": true,
+        "created_at": "2026-11-09T12:07:23.700Z",
+        "updated_at": "2026-11-09T12:07:23.700Z",
+        "camp_id": "camp_b8d29b3f00"
+      },
+      {
         "id": "ep_6bba1246e2",
         "ep": 1,
         "title": "겨울 캠핑 행복을 위한 8분",
