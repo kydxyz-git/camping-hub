@@ -1778,5 +1778,23 @@
     "published": true,
     "created_at": "2026-10-18T00:18:10.954Z",
     "updated_at": "2026-10-22T13:48:25.968Z"
+  },
+  {
+    "id": "item_afc1b02177",
+    "name": "포레몽 프리미엄 온수매트 퀸(분리난방)",
+    "cat": "fire",
+    "video": "",
+    "pick": true,
+    "desc": "",
+    "url": "https://naver.me/5reS7x2O",
+    "source": "네이버",
+    "thumb": "./images/products/860d66a87e5e.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-11-10T15:54:34.566Z",
+    "updated_at": "2026-11-10T15:54:34.566Z"
   }
 ]
