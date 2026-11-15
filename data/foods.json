@@ -182,7 +182,7 @@
   {
     "id": "food_44a4d0e976",
     "name": "대왕 손질 갑오징어",
-    "desc": "",
+    "desc": "석쇠 하나를 채우는 크기, 숯불에 구워 먹음",
     "url": "https://naver.me/56XT3QaX",
     "source": "네이버",
     "thumb": "./images/products/c9408e751bad.jpg",
@@ -192,13 +192,13 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-09-28T13:54:34.208Z",
-    "updated_at": "2026-09-28T13:54:34.208Z",
+    "updated_at": "2026-11-15T22:15:37.000Z",
     "is_new": false
   },
   {
     "id": "food_66a2bcc0ba",
     "name": "단디잇 매콤찬 고추다짐이",
-    "desc": "",
+    "desc": "밥에 비비거나 김밥 속으로 쓰는 멸치 고추다짐",
     "url": "https://link.coupang.com/a/hraNX5dn4K",
     "source": "쿠팡",
     "thumb": "./images/products/3ccafd04b7c1.jpg",
@@ -208,14 +208,14 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-09-29T08:39:33.855Z",
-    "updated_at": "2026-09-29T08:39:33.855Z",
+    "updated_at": "2026-11-15T22:15:37.000Z",
     "is_new": false,
     "pick": 1
   },
   {
     "id": "food_c74981a2ee",
     "name": "곰곰 미니 버터크로와상 생지",
-    "desc": "",
+    "desc": "와플팬에 구워 크로플로 먹는 생지",
     "url": "https://link.coupang.com/a/hr7rKyATIG",
     "source": "쿠팡",
     "thumb": "./images/products/9ab1f95d37a8.jpg",
@@ -225,13 +225,13 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-09-29T22:21:31.231Z",
-    "updated_at": "2026-09-29T22:21:31.231Z",
+    "updated_at": "2026-11-15T22:15:37.000Z",
     "is_new": false
   },
   {
     "id": "food_b033c6e85b",
     "name": "카리 토리야 (일본식 카레)",
-    "desc": "",
+    "desc": "중탕이나 전자레인지로 데워 밥에 붓는 카레",
     "url": "https://naver.me/5nhroDKF",
     "source": "네이버",
     "thumb": "./images/products/e78346185141.jpg",
@@ -241,14 +241,14 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-06T05:29:14.917Z",
-    "updated_at": "2026-10-06T05:29:14.917Z",
+    "updated_at": "2026-11-15T22:15:37.000Z",
     "is_new": false,
     "pick": 1
   },
   {
     "id": "food_bb488094b5",
     "name": "소바 토리야(전통 야끼소바)",
-    "desc": "",
+    "desc": "2인분 야끼소바 밀키트, 빵에 넣어 먹어도 됨",
     "url": "https://naver.me/xaT2fP8K",
     "source": "네이버",
     "thumb": "./images/products/a0faa3af2500.jpg",
@@ -258,13 +258,13 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-06T05:30:32.241Z",
-    "updated_at": "2026-10-06T05:30:32.241Z",
+    "updated_at": "2026-11-15T22:15:37.000Z",
     "is_new": false
   },
   {
     "id": "food_ad685c6af0",
     "name": "소팔소곱창 260g 디핑소스 50g",
-    "desc": "",
+    "desc": "돌돌 말아 굽고 그 기름에 채소를 굽는 곱창",
     "url": "https://link.coupang.com/a/iiFlUzPUZM",
     "source": "쿠팡",
     "thumb": "./images/products/88237c8f2ddf.jpg",
@@ -274,13 +274,13 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-31T14:10:29.823Z",
-    "updated_at": "2026-10-31T14:19:59.000Z",
+    "updated_at": "2026-11-15T22:15:37.000Z",
     "is_new": false
   },
   {
     "id": "food_4b26940fcc",
     "name": "하림 자연실록 무항생제 인증 닭윙 아랫날개 (냉장)",
-    "desc": "",
+    "desc": "화로대 위 팬에서 직화로 굽는 닭날개",
     "url": "https://link.coupang.com/a/iiFuSnhoHZ",
     "source": "쿠팡",
     "thumb": "./images/products/a50f4969a308.jpg",
@@ -290,13 +290,13 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-31T14:12:47.605Z",
-    "updated_at": "2026-10-31T14:19:59.000Z",
+    "updated_at": "2026-11-15T22:15:37.000Z",
     "is_new": false
   },
   {
     "id": "food_1cfd7a589e",
     "name": "한돈 등갈비 찜용/구이용",
-    "desc": "",
+    "desc": "한 번 삶아 숯불에 굽는 등갈비",
     "url": "https://link.coupang.com/a/iiFOrqlmx2",
     "source": "쿠팡",
     "thumb": "./images/products/25784f9e1747.jpg",
@@ -306,13 +306,13 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-31T14:16:17.650Z",
-    "updated_at": "2026-10-31T14:19:59.000Z",
+    "updated_at": "2026-11-15T22:15:37.000Z",
     "is_new": false
   },
   {
     "id": "food_37545be408",
     "name": "신 마포갈매기 매운 야식 양념 오돌뼈, 3개, 300g",
-    "desc": "",
+    "desc": "주먹밥에 곁들이는 매운 오돌뼈",
     "url": "https://link.coupang.com/a/iiFVLh11SC",
     "source": "쿠팡",
     "thumb": "./images/products/a8e0b9a4456d.jpg",
@@ -322,13 +322,13 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-31T14:18:26.876Z",
-    "updated_at": "2026-10-31T14:30:39.000Z",
+    "updated_at": "2026-11-15T22:15:37.000Z",
     "is_new": false
   },
   {
     "id": "food_a3cfa7326a",
     "name": "곰곰 양꼬치 시즈닝",
-    "desc": "",
+    "desc": "구운 닭날개 마지막에 뿌리는 시즈닝",
     "url": "https://link.coupang.com/a/ijiZZuZV6W",
     "source": "쿠팡",
     "thumb": "./images/products/58df806a8d3c.jpg",
@@ -338,7 +338,7 @@
     "discount_rate": null,
     "published": true,
     "created_at": "2026-10-31T23:25:41.439Z",
-    "updated_at": "2026-10-31T23:25:41.439Z",
+    "updated_at": "2026-11-15T22:15:37.000Z",
     "is_new": false
   }
 ]
