@@ -212,6 +212,7 @@
   .dash-rc-i { flex: none; width: 20px; text-align: center; }
   .dash-rc-t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
   .dash-rc-d { flex: none; font-size: 11.5px; color: var(--muted); }
+  .dash-cal { display: block; width: 100%; height: 100%; min-height: 420px; border: 0; background: transparent; }
   .dash-board { display: block; width: 100%; height: 100%; min-height: 420px; border: 0; border-radius: 14px; background: transparent; }
   @media (min-width: 760px) { .dash-board { height: 560px; } }
   .dash-todo-page { overflow: hidden !important; }
@@ -3221,7 +3222,7 @@ function renderDashboard() {
   const dashPhone = window.matchMedia('(max-width: 759px)').matches;   // 할일 장은 폰 가로판에서만 (PC는 메뉴 → 운영판, 261103)
   c.innerHTML = `
     <!-- 폰: 3페이지를 가로로 넘김 (오늘 · 메뉴 · 캠핑딜), PC는 위아래 그대로 — 사용자 요청 261102 -->
-    <div class="dash-nav" id="dash-nav"><button data-pg="0" class="on">📊 오늘</button><button data-pg="1">✅ 할일</button><button data-pg="2">📋 메뉴</button><button data-pg="3">🔥 캠핑딜</button></div>
+    <div class="dash-nav" id="dash-nav"><button data-pg="0" class="on">📊 오늘</button><button data-pg="1">✅ 할일</button><button data-pg="2">📅 달력</button><button data-pg="3">📋 메뉴</button><button data-pg="4">🔥 캠핑딜</button></div>
     <div class="dash-pages" id="dash-pages">
     <section class="dash-page"><div class="dash-fit">
     <!-- 위: 오늘 활동 · 수익화 요약 -->
@@ -3240,11 +3241,15 @@ function renderDashboard() {
 ${dashPhone ? `    <section class="dash-page dash-todo-page">
     <!-- 할일: 운영판을 작게 넣음 (오늘 전부·이번 주 일부·이번 달 펼치기·꾹 눌러 끌기). 저장·반복·병합은 운영판 코드 그대로 — 사용자 요청 261103 -->
     ${cupasToken() ? `<iframe class="dash-board" src="board.html?embed=1" title="할일" loading="lazy"></iframe>` : `<div class="card help">쿠파스 토큰이 이 브라우저에 없어요. <a href="threads.html">스레드 관리</a>에서 한 번 넣으면 할일이 보여요.</div>`}
+    </section>
+    <section class="dash-page dash-todo-page">
+    <!-- 달력: 언제 뭐 올렸는지 (인스타 릴스·피드 + 유튜브 롱폼·쇼츠) — 운영판 '올린 글'을 작게, 사용자 요청 261117 -->
+    ${cupasToken() ? `<iframe class="dash-cal" src="board.html?embed=1&cal=1" title="달력" loading="lazy"></iframe>` : `<div class="card help">쿠파스 토큰이 이 브라우저에 없어요. <a href="threads.html">스레드 관리</a>에서 한 번 넣으면 달력이 보여요.</div>`}
     </section>` : ''}
     <section class="dash-page"><div class="dash-fit">
     <!-- 메뉴 (묶음) -->
     <div class="dash-groups">
-      ${grp('📌 업무 관리', [['board.html', '📋', '운영판', '오늘·이번 주·이번 달 할 일']])}
+      ${grp('📌 업무 관리', [['board.html', '📋', '운영판', '오늘·이번 주·이번 달 할 일'], ['board.html?tab=posts', '📅', '올린 글 달력', '인스타·유튜브 날짜별']])}
       ${grp('🎬 콘텐츠 관리', [
         ['#series', '🎬', '시리즈 EP', cnt(cache.series.reduce((s, x) => s + x.eps.length, 0), '편')],
         ['#camps', '🏕', '캠핑장', cnt(cache.camps.length, '곳')],

@@ -304,7 +304,9 @@
   .plist .when, .plist .ph, .plist .sp { white-space: nowrap; flex: none; }
   .plist .when { color: var(--muted); font-size: 12.5px; }
   .plist .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  @media (max-width: 700px) { .cal .day { min-height: 58px; } .pchip .k { display: none; } .pchip img, .pchip .ph { width: 22px; height: 30px; } }
+  html.embed .cal-head { position: sticky; top: 0; z-index: 2; background: var(--accent-soft); padding: 4px 0; margin-bottom: 6px; }
+  @media (max-width: 700px) { .cal .day { min-height: 58px; } .pchip .k { display: none; } .pchip { padding: 0; } .pchip img, .pchip .ph { width: 100%; height: 38px; border-radius: 5px 5px 0 0; } }
+  .pk-REELS { border-bottom: 3px solid #e05591; } .pk-FEED { border-bottom: 3px solid #2f80ed; } .pk-SHORTS { border-bottom: 3px solid #f03e3e; } .pk-LONG { border-bottom: 3px solid #862e2e; }
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
 </head>
@@ -356,6 +358,8 @@ const TODAY_LIMIT = 3;
 // 대시보드 '할일' 탭 안에 들어가는 작은 화면 (board.html?embed=1, 사용자 요청 261103): 오늘 전부 · 이번 주 일부 · 이번 달 펼치기 · 꾹 눌러 끌기
 const EMBED = new URLSearchParams(location.search).has('embed');
 if (EMBED) document.documentElement.classList.add('embed');
+// 대시보드 '📅 달력' 장 (board.html?embed=1&cal=1, 사용자 요청 261117): 올린 글 달력만
+const CAL = new URLSearchParams(location.search).has('cal');
 
 // 칸 = 날짜로 자동 (사용자 결정 261102), 261103부터 겹치지 않음: 지난 일정(날짜 지났는데 안 끝냄) · 오늘 · 7일 안 · 30일 안 · 30일 뒤
 //  task.bucket: inbox(날짜 없음) | open | done | canceled · task.date: 할 날 'YYYY-MM-DD'
@@ -739,7 +743,7 @@ window.addEventListener('message', e => {
   const was = embedActive; embedActive = e.data.kydzBoardActive;
   if (embedActive && !was && S.loaded && document.visibilityState === 'visible') refresh();
 });
-const pollOn = () => document.visibilityState === 'visible' && (!EMBED || embedActive);
+const pollOn = () => document.visibilityState === 'visible' && (!EMBED || embedActive) && !CAL;   // 달력 장은 할 일 확인 안 함
 document.addEventListener('visibilitychange', () => { if (pollOn() && S.loaded) refresh(); });
 setInterval(() => { if (pollOn() && S.loaded && !S.saving) refresh(); }, POLL_MS);
 window.addEventListener('beforeunload', e => { if (S.ops.length || S.saving) { e.preventDefault(); e.returnValue = ''; } });
@@ -806,6 +810,7 @@ function render() {
     return;
   }
   if (!S.loaded) return;
+  if (CAL) { m.innerHTML = postsHtml(); bind(); return; }
   if (EMBED) { renderEmbed(m); return; }
   const pc = lastPc;
   let tab = S.tab;
@@ -916,7 +921,7 @@ const postLabel = p => POST_KIND[postKind(p)];
 function postChip(p) {
   const ph = `<span class="ph ptype-${postKind(p)}">${postLabel(p)}</span>`;
   const img = p.thumb ? `<img src="${esc(p.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=this.dataset.ph" data-ph="${esc(ph)}">` : ph;
-  return `<a class="pchip" href="${esc(p.permalink)}" target="_blank" rel="noopener" title="${esc(p.at.slice(11, 16) + ' ' + (p.title || ''))}">${img}<span class="k">${postLabel(p)}${p.sponsored ? ' <span class="sp">협</span>' : ''}</span></a>`;
+  return `<a class="pchip pk-${postKind(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener" title="${esc(p.at.slice(11, 16) + ' ' + (p.title || ''))}">${img}<span class="k">${postLabel(p)}${p.sponsored ? ' <span class="sp">협</span>' : ''}</span></a>`;
 }
 function postsHtml() {
   if (!S.posts) { if (!S.postsErr) loadPosts(); return `<div class="card">${S.postsErr ? '게시물 목록을 못 읽었어요: ' + esc(S.postsErr) : '올린 글 불러오는 중…'}</div>`; }
@@ -1748,7 +1753,7 @@ function isAuthed() { try { return sessionStorage.getItem(AUTH_KEY) === '1'; } c
 async function start() {
   $('#app').classList.add('is-active');
   $('#today-label').textContent = todayLabel();
-  try { S.tab = localStorage.getItem(TAB_KEY) || 'today'; S.pf = localStorage.getItem('kydz_board_pf') || ''; } catch (e) {}
+  try { S.tab = new URLSearchParams(location.search).get('tab') || localStorage.getItem(TAB_KEY) || 'today'; S.pf = localStorage.getItem('kydz_board_pf') || ''; } catch (e) {}
   if (!getToken()) { render(); return; }
   $('#main').innerHTML = '<div class="card muted">불러오는 중...</div>';
   pushButton();
