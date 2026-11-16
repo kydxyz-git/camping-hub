@@ -297,7 +297,7 @@
   .ph { display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: 700; }
   .pchip .k { font-weight: 700; white-space: nowrap; }
   .sp { color: #2d8f4c; font-weight: 800; }
-  .ptype-REELS { background: #e05591; } .ptype-FEED { background: #2f80ed; }
+  .ptype-REELS { background: #e05591; } .ptype-FEED { background: #2f80ed; } .ptype-SHORTS { background: #f03e3e; } .ptype-LONG { background: #862e2e; }
   .plist { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
   .plist a { display: flex; gap: 10px; align-items: center; background: var(--bg); border-radius: 10px; padding: 8px; color: var(--text); text-decoration: none; font-size: 14px; }
   .plist .ph { width: auto; height: auto; padding: 1px 6px; font-size: 11px; }
@@ -890,6 +890,7 @@ function dealCardHtml(d) {
 // 올린 글 달력 (사용자 요청 261117 "내가 언제 뭐 올렸는지도 달력화") — 인스타 게시물
 //  · 데이터: cupas state/ig_posts.json (ig-media 액션이 매일 04:00 받아 쌓음, 지우지 않음). 없으면 state/ig_media.json(최근 120일)
 //  · 썸네일 주소는 며칠 뒤 만료 → 안 뜨면 색 칸(릴스 분홍·피드 파랑)
+//  · 유튜브(AI 시말서): cupas state/yt_posts.json — 같은 액션이 공개 RSS로 매일 이어 붙임(261117). 쇼츠 빨강·롱폼 밤색
 // ════════════════════════════════════════════════════════════════════
 function addMonth(ym, n) { let [y, m] = ym.split('-').map(Number); m += n; while (m < 1) { m += 12; y--; } while (m > 12) { m -= 12; y++; } return `${y}-${String(m).padStart(2, '0')}`; }
 async function loadPosts() {
@@ -903,12 +904,15 @@ async function loadPosts() {
       title: (String(m.caption || '').split('\n').find(x => x.trim()) || '').trim().slice(0, 80),
       sponsored: /\((협찬|광고)\)|#광고|#협찬|유료광고/.test(String(m.caption || '').slice(0, 200)),
       thumb: m.thumb || (m.type === 'IMAGE' ? m.url : '') || ((m.children || []).find(c => c.type === 'IMAGE') || {}).url || '' }));
+    posts.forEach(p => { p.src = 'ig'; });
+    if (f['state/yt_posts.json']) ((await readBlobJson(f['state/yt_posts.json'])).posts || []).forEach(p => posts.push({ ...p, src: 'yt' }));
     S.posts = posts.filter(p => p.at);
   } catch (e) { S.postsErr = e.message; }
   S.postsLoading = false; renderSoon();
 }
-const postKind = p => p.product === 'REELS' ? 'REELS' : 'FEED';
-const postLabel = p => p.product === 'REELS' ? '릴스' : '피드';
+const POST_KIND = { REELS: '릴스', FEED: '피드', SHORTS: '쇼츠', LONG: '롱폼' };
+const postKind = p => POST_KIND[p.product] ? p.product : 'FEED';
+const postLabel = p => POST_KIND[postKind(p)];
 function postChip(p) {
   const ph = `<span class="ph ptype-${postKind(p)}">${postLabel(p)}</span>`;
   const img = p.thumb ? `<img src="${esc(p.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=this.dataset.ph" data-ph="${esc(ph)}">` : ph;
@@ -921,13 +925,13 @@ function postsHtml() {
   S.posts.forEach(p => { const d = p.at.slice(0, 10); (byDay[d] = byDay[d] || []).push(p); });
   Object.values(byDay).forEach(a => a.sort((x, y) => x.at < y.at ? -1 : 1));
   const inMonth = S.posts.filter(p => p.at.startsWith(ym)).sort((a, b) => a.at < b.at ? 1 : -1);
-  const reels = inMonth.filter(p => p.product === 'REELS').length, sp = inMonth.filter(p => p.sponsored).length;
+  const cnt = k => inMonth.filter(p => postKind(p) === k).length, sp = inMonth.filter(p => p.sponsored).length;
   const [y, m] = ym.split('-').map(Number);
   const startWd = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
   const start = addDays(`${ym}-01`, -startWd), today = kstToday();
   const oldest = S.posts.reduce((a, p) => p.at < a ? p.at : a, S.posts.length ? S.posts[0].at : '').slice(0, 10);
   let h = `<div class="cal-head"><button class="cal-nav" data-pm="-1" aria-label="이전 달">‹</button><span class="ttl">${y}년 ${m}월</span><button class="cal-nav" data-pm="1" aria-label="다음 달">›</button>`
-    + `<span class="sum">릴스 ${reels} · 피드 ${inMonth.length - reels}${sp ? ` · 협찬 ${sp}` : ''} · 인스타${oldest ? ` · ${oldest.slice(2, 4)}/${md(oldest)}부터 기록` : ''}</span></div>`;
+    + `<span class="sum">인스타 릴스 ${cnt('REELS')} · 피드 ${cnt('FEED')}${sp ? ` · 협찬 ${sp}` : ''} | 유튜브 롱폼 ${cnt('LONG')} · 쇼츠 ${cnt('SHORTS')}${oldest ? ` · ${oldest.slice(2, 4)}/${md(oldest)}부터 기록` : ''}</span></div>`;
   h += `<div class="cal">${WD.map(w => `<div class="wd">${w}</div>`).join('')}`;
   for (let i = 0; i < 42; i++) {
     const d = addDays(start, i);
