@@ -394,7 +394,7 @@ async function commitFiles(mutators, message) {
 async function loadAll() {
   const head = await headCommit();
   const files = await readTree(head.tree);
-  const [queue, config, token, replies, insights, cpReport, weekly, followers, linkReport] = await Promise.all([
+  const [queue, config, token, replies, insights, cpReport, weekly, followers, linkReport, tuning] = await Promise.all([
     files['queue.json'] ? readBlobJson(files['queue.json']) : [],
     files['config.json'] ? readBlobJson(files['config.json']) : null,
     files['state/token.json'] ? readBlobJson(files['state/token.json']) : null,
@@ -404,7 +404,9 @@ async function loadAll() {
     files['state/weekly_report.json'] ? readBlobJson(files['state/weekly_report.json']) : null,
     files['state/followers.json'] ? readBlobJson(files['state/followers.json']) : null,
     files['state/link_report.json'] ? readBlobJson(files['state/link_report.json']) : null,
+    files['state/tuning.json'] ? readBlobJson(files['state/tuning.json']) : null,
   ]);
+  S.tuning = tuning || {};   // 주간 튜닝 (post.py run_tune — 일상 비율·주제 점수, 261116)
   S.cpReport = cpReport; S.weekly = weekly; S.followers = followers; S.linkReport = linkReport;
   S.replies = (replies || []).filter(r => r && r.id);
   S.insights = insights || {};
@@ -430,18 +432,45 @@ function normalizeConfig(c) {
     ...(c.auto_per_day !== undefined ? { auto_per_day: Number(c.auto_per_day) } : {}) };
 }
 // post.py want_kind / choose / plan과 같은 계산
+function mixPct() {
+  const r = Number(((S.tuning || {}).mix || {})['일상']);
+  return Math.round(Math.min(0.8, Math.max(0.2, Number.isFinite(r) ? r : 0.5)) * 100);
+}
 function wantKind(key) {
   const k = S.config.kinds[key.slice(11, 13)] || '';
-  if (k === '섞기') { let h = 0; for (let i = 0; i < key.length; i++) h += (i + 1) * key.charCodeAt(i); return h % 2 ? '정보' : '일상'; }   // post.py want_kind와 같게 (261109)
+  // post.py want_kind와 같게 — 일상 비율은 주간 튜닝(state/tuning.json mix), 없으면 반반 (261116)
+  if (k === '섞기') { let h = 0; for (let i = 0; i < key.length; i++) h += (i + 1) * key.charCodeAt(i); return h % 100 < mixPct() ? '일상' : '정보'; }
   if (k === '수익화' && S.config.monetize_from && key.slice(0, 10) < S.config.monetize_from) return '일상';
   // 특가 요일(config deal_weekdays)엔 링크 하루 1개를 지키려고 추천템 자리를 정보성으로 (post.py와 같게, 261028)
   const dw = S.config.deal_weekdays || [];
   if (k === '수익화' && dw.length < 7 && dw.includes((new Date(key.slice(0, 10) + 'T00:00:00Z').getUTCDay() + 6) % 7)) return '정보';
   return k;
 }
-function chooseFor(cands, kind) {
+// post.py topic_of / topic_score / rank_pool / choose와 같은 계산 (주간 튜닝, 261116)
+const TUNE_WINDOW = 5, POLL_GAP_HOURS = 48;
+const postText = p => `${p.name || ''} ${p.body || ''}`;
+const isPoll = p => String(p.body || '').includes('①');
+function topicOf(p) {
+  const w = (S.tuning || {}).words || {}, t = postText(p);
+  let best = '';
+  for (const k of Object.keys(w)) if (t.includes(k) && (best === '' || w[k] > w[best])) best = k;
+  return best;
+}
+function topicScore(p) {
+  const w = (S.tuning || {}).words || {}, t = postText(p);
+  return Object.keys(w).reduce((a, k) => a + (t.includes(k) ? w[k] : 0), 0);
+}
+function rankPool(pool, lastTopic) {
+  pool = pool.slice(0, TUNE_WINDOW);
+  if (!pool.length || !Object.keys((S.tuning || {}).words || {}).length) return pool[0] || null;
+  const order = pool.map((_, i) => i).sort((a, b) => (topicScore(pool[b]) - topicScore(pool[a])) || (a - b));
+  for (const i of order) if (!lastTopic || topicOf(pool[i]) !== lastTopic) return pool[i];
+  return pool[order[0]];
+}
+function chooseFor(cands, kind, noPoll = false, lastTopic = '') {
+  if (noPoll) cands = cands.filter(p => !isPoll(p));
   if (!kind) return cands[0] || null;
-  for (const k of [kind, ...(FALLBACK_KINDS[kind] || [])]) { const p = cands.find(x => x.kind === k); if (p) return p; }
+  for (const k of [kind, ...(FALLBACK_KINDS[kind] || [])]) { const p = rankPool(cands.filter(x => x.kind === k), lastTopic); if (p) return p; }
   return cands.find(x => x.kind !== '수익화') || null;
 }
 const livePosts = () => S.posts.filter(p => !S.deleted.has(p.id));
@@ -513,10 +542,18 @@ function scheduleMap() {
   const ready = livePosts().filter(p => (p.status || '대기') === '대기' && p.kind !== '특가' && !buildPost(p).problem);
   const slots = S.config.paused ? [] : upcomingSlots(ready.length * 2);
   const m = {}, left = [...ready];
+  // post.py plan()과 같게 — 투표 글 48시간 간격, 바로 전 글과 같은 주제 피하기
+  const done = livePosts().filter(p => ['게시완료', '댓글실패'].includes(p.status) && p.posted_at).sort((a, b) => a.posted_at < b.posted_at ? -1 : 1);
+  const polls = done.filter(isPoll);
+  let lastPoll = polls.length ? new Date(polls[polls.length - 1].posted_at) : null;
+  let lastTopic = done.length ? topicOf(done[done.length - 1]) : '';
   for (const s of slots) {
-    const p = chooseFor(left, wantKind(s));
+    const t = new Date(`${s.slice(0, 10)}T${s.slice(11, 13)}:00:00+09:00`);
+    const p = chooseFor(left, wantKind(s), !!(lastPoll && t - lastPoll < POLL_GAP_HOURS * 3600e3), lastTopic);
     if (!p) continue;
     left.splice(left.indexOf(p), 1); m[p.id] = s;
+    lastTopic = topicOf(p);
+    if (isPoll(p)) lastPoll = t;
   }
   ready.forEach(p => { if (!(p.id in m)) m[p.id] = null; });
   return m;
