@@ -1,10 +1,9 @@
 {
-  "checked_at": "2026-11-09T15:23:46+09:00",
+  "checked_at": "2026-11-16T15:26:16+09:00",
   "main_af": "AF7202884",
   "counts": {
-    "unknown": 95,
-    "ok": 6,
-    "soldout": 1
+    "unknown": 97,
+    "ok": 7
   },
   "results": {
     "item_a4b57441e0": {
@@ -879,6 +878,29 @@
       "product_id": "8515149157",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
+    "item_afc1b02177": {
+      "type": "items",
+      "name": "포레몽 프리미엄 온수매트 퀸(분리난방)",
+      "url": "https://naver.me/5reS7x2O",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "11086408173",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/1015910283411744?channelProductNo=11086408173"
+      ]
+    },
+    "item_9d15fd38b9": {
+      "type": "items",
+      "name": "루메나 가습기 MIST POT",
+      "url": "https://link.coupang.com/a/iHMd8RPj2G",
+      "shop": "coupang",
+      "status": "unknown",
+      "af": "AF7202884",
+      "product_id": "8412705233",
+      "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
     "food_6b6f5c2711": {
       "type": "foods",
       "name": "툇골 오리 주물럭",
@@ -914,10 +936,10 @@
       "name": "[전주 베테랑] 김치만두",
       "url": "https://lounge.kurly.com/link/tbku-uJpL",
       "shop": "kurly",
-      "status": "soldout",
+      "status": "ok",
       "af": "",
       "product_id": "5072984",
-      "detail": "컬리 품절"
+      "detail": ""
     },
     "food_464525ea11": {
       "type": "foods",
