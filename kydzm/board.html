@@ -280,6 +280,31 @@
     .pfbar::-webkit-scrollbar { display: none; }
     .pf { flex-shrink: 0; padding: 5px 10px; font-size: 12.5px; }
   }
+  /* 올린 글 달력 (사용자 요청 261117) — 인스타 게시물, cupas state/ig_posts.json */
+  .cal-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .cal-head .ttl { font-size: 18px; font-weight: 800; }
+  .cal-head .sum { font-size: 13px; color: var(--muted); }
+  .cal-nav { border: 1px solid var(--line); background: var(--bg); color: var(--text); border-radius: 8px; min-width: 36px; height: 34px; cursor: pointer; font-size: 16px; }
+  .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .cal .wd { font-size: 12px; color: var(--muted); text-align: center; padding: 2px 0; }
+  .cal .day { background: var(--bg); border-radius: 8px; min-height: 92px; padding: 4px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .cal .day.out { opacity: .35; }
+  .cal .day.today { outline: 2px solid var(--text); }
+  .cal .dn { font-size: 12px; color: var(--muted); }
+  .cal .day.sun .dn { color: var(--danger); }
+  .pchip { display: flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--text); text-decoration: none; border-radius: 6px; padding: 2px; background: var(--accent-soft); overflow: hidden; }
+  .pchip img, .ph { width: 30px; height: 40px; object-fit: cover; border-radius: 4px; flex: none; }
+  .ph { display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: 700; }
+  .pchip .k { font-weight: 700; white-space: nowrap; }
+  .sp { color: #2d8f4c; font-weight: 800; }
+  .ptype-REELS { background: #e05591; } .ptype-FEED { background: #2f80ed; }
+  .plist { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+  .plist a { display: flex; gap: 10px; align-items: center; background: var(--bg); border-radius: 10px; padding: 8px; color: var(--text); text-decoration: none; font-size: 14px; }
+  .plist .ph { width: auto; height: auto; padding: 1px 6px; font-size: 11px; }
+  .plist .when, .plist .ph, .plist .sp { white-space: nowrap; flex: none; }
+  .plist .when { color: var(--muted); font-size: 12.5px; }
+  .plist .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  @media (max-width: 700px) { .cal .day { min-height: 58px; } .pchip .k { display: none; } .pchip img, .pchip .ph { width: 22px; height: 30px; } }
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
 </head>
@@ -598,7 +623,7 @@ async function load() {
   const board = files[BOARD_PATH] ? await readBlobJson(files[BOARD_PATH]) : null;
   if (!board) throw new Error(`cupas에 ${BOARD_PATH} 가 없어요.`);
   S.base = normBoard(board);
-  S.sha = head.sha; S.commitDate = head.date || '';
+  S.sha = head.sha; S.commitDate = head.date || ''; S.files = files;
   recompute();
   const mig = migrateOps();
   if (mig.length) { S.ops.push(...mig); recompute(); scheduleSave(); }
@@ -790,13 +815,14 @@ function render() {
   // 할 일·프로젝트 탭을 합침: 위의 프로젝트 고르기로 그 프로젝트 일만 + 프로젝트 정보 (사용자 요청 261103)
   if (tab === 'projects') tab = pc ? 'tasks' : 'today';
   const tabs = pc
-    ? []
-    : [...(tasksIn('overdue').length || tab === 'overdue' ? [['overdue', '지난 일정']] : []), ['today', '오늘'], ['week', '7일'], ['month', '30일'], ['later', '30일 뒤'], ['inbox', '받은함'], ['deals', '협찬']];
+    ? [['tasks', '할 일'], ['posts', '올린 글']]
+    : [...(tasksIn('overdue').length || tab === 'overdue' ? [['overdue', '지난 일정']] : []), ['today', '오늘'], ['week', '7일'], ['month', '30일'], ['later', '30일 뒤'], ['inbox', '받은함'], ['deals', '협찬'], ['posts', '올린 글']];
   const overN = tasksIn('overdue').length;
   let h = '';
   if (S.failed) h += `<div class="banner err savefail"><span>저장하지 못했어요: ${esc(S.failed)} (바꾼 내용은 이 화면에 남아 있어요)</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
   if (tabs.length) h += `<div class="tabs">${tabs.map(([k, l]) => `<button class="tab${tab === k ? ' on' : ''}" data-tab="${k}">${l}${(k === 'inbox' || (pc && k === 'tasks')) && inboxN ? ` <span class="badge">${inboxN}</span>` : ''}${k === 'overdue' && overN ? ` <span class="badge">${overN}</span>` : ''}</button>`).join('')}</div>`;
   if (tab === 'deals') h += dealsHtml();
+  else if (tab === 'posts') h += postsHtml();
   else h += tasksHtml(pc ? null : tab);
   const keep = {};   // 다시 그려도 칸 안 스크롤 위치 유지
   m.querySelectorAll('.tlist').forEach(el => { const k = el.closest('[data-drop]'); if (k) keep[k.dataset.drop] = el.scrollTop; });
@@ -860,6 +886,63 @@ function dealCardHtml(d) {
     <div class="t-meta">${due}${dates}${openTasks ? `<span>할 일 ${openTasks}</span>` : ''}${d.by === 'claude' ? '<span title="Claude가 마지막으로 바꿈">🤖</span>' : ''}<span>${esc(ymdOf(d.updated_at) ? md(ymdOf(d.updated_at)) : '')} 업데이트</span></div>
   </button>`;
 }
+// ════════════════════════════════════════════════════════════════════
+// 올린 글 달력 (사용자 요청 261117 "내가 언제 뭐 올렸는지도 달력화") — 인스타 게시물
+//  · 데이터: cupas state/ig_posts.json (ig-media 액션이 매일 04:00 받아 쌓음, 지우지 않음). 없으면 state/ig_media.json(최근 120일)
+//  · 썸네일 주소는 며칠 뒤 만료 → 안 뜨면 색 칸(릴스 분홍·피드 파랑)
+// ════════════════════════════════════════════════════════════════════
+function addMonth(ym, n) { let [y, m] = ym.split('-').map(Number); m += n; while (m < 1) { m += 12; y--; } while (m > 12) { m -= 12; y++; } return `${y}-${String(m).padStart(2, '0')}`; }
+async function loadPosts() {
+  if (S.postsLoading) return; S.postsLoading = true;
+  try {
+    const f = S.files || {};
+    let posts = [];
+    if (f['state/ig_posts.json']) posts = (await readBlobJson(f['state/ig_posts.json'])).posts || [];
+    else if (f['state/ig_media.json']) posts = ((await readBlobJson(f['state/ig_media.json'])).media || []).map(m => ({
+      id: m.id, at: m.at, product: m.product, type: m.type, permalink: m.permalink,
+      title: (String(m.caption || '').split('\n').find(x => x.trim()) || '').trim().slice(0, 80),
+      sponsored: /\((협찬|광고)\)|#광고|#협찬|유료광고/.test(String(m.caption || '').slice(0, 200)),
+      thumb: m.thumb || (m.type === 'IMAGE' ? m.url : '') || ((m.children || []).find(c => c.type === 'IMAGE') || {}).url || '' }));
+    S.posts = posts.filter(p => p.at);
+  } catch (e) { S.postsErr = e.message; }
+  S.postsLoading = false; renderSoon();
+}
+const postKind = p => p.product === 'REELS' ? 'REELS' : 'FEED';
+const postLabel = p => p.product === 'REELS' ? '릴스' : '피드';
+function postChip(p) {
+  const ph = `<span class="ph ptype-${postKind(p)}">${postLabel(p)}</span>`;
+  const img = p.thumb ? `<img src="${esc(p.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=this.dataset.ph" data-ph="${esc(ph)}">` : ph;
+  return `<a class="pchip" href="${esc(p.permalink)}" target="_blank" rel="noopener" title="${esc(p.at.slice(11, 16) + ' ' + (p.title || ''))}">${img}<span class="k">${postLabel(p)}${p.sponsored ? ' <span class="sp">협</span>' : ''}</span></a>`;
+}
+function postsHtml() {
+  if (!S.posts) { if (!S.postsErr) loadPosts(); return `<div class="card">${S.postsErr ? '게시물 목록을 못 읽었어요: ' + esc(S.postsErr) : '올린 글 불러오는 중…'}</div>`; }
+  const ym = S.postsMonth || (S.postsMonth = kstToday().slice(0, 7));
+  const byDay = {};
+  S.posts.forEach(p => { const d = p.at.slice(0, 10); (byDay[d] = byDay[d] || []).push(p); });
+  Object.values(byDay).forEach(a => a.sort((x, y) => x.at < y.at ? -1 : 1));
+  const inMonth = S.posts.filter(p => p.at.startsWith(ym)).sort((a, b) => a.at < b.at ? 1 : -1);
+  const reels = inMonth.filter(p => p.product === 'REELS').length, sp = inMonth.filter(p => p.sponsored).length;
+  const [y, m] = ym.split('-').map(Number);
+  const startWd = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+  const start = addDays(`${ym}-01`, -startWd), today = kstToday();
+  const oldest = S.posts.reduce((a, p) => p.at < a ? p.at : a, S.posts.length ? S.posts[0].at : '').slice(0, 10);
+  let h = `<div class="cal-head"><button class="cal-nav" data-pm="-1" aria-label="이전 달">‹</button><span class="ttl">${y}년 ${m}월</span><button class="cal-nav" data-pm="1" aria-label="다음 달">›</button>`
+    + `<span class="sum">릴스 ${reels} · 피드 ${inMonth.length - reels}${sp ? ` · 협찬 ${sp}` : ''} · 인스타${oldest ? ` · ${oldest.slice(2, 4)}/${md(oldest)}부터 기록` : ''}</span></div>`;
+  h += `<div class="cal">${WD.map(w => `<div class="wd">${w}</div>`).join('')}`;
+  for (let i = 0; i < 42; i++) {
+    const d = addDays(start, i);
+    if (i % 7 === 0 && i >= 28 && !d.startsWith(ym)) break;
+    const cls = ['day', d.startsWith(ym) ? '' : 'out', d === today ? 'today' : '', i % 7 === 0 ? 'sun' : ''].join(' ');
+    h += `<div class="${cls}"><span class="dn">${+d.slice(8)}</span>${(byDay[d] || []).map(postChip).join('')}</div>`;
+  }
+  h += `</div><div class="plist">`;
+  h += inMonth.length ? inMonth.map(p => {
+    const d = p.at.slice(0, 10), wd = WD[new Date(d + 'T00:00:00Z').getUTCDay()];
+    return `<a href="${esc(p.permalink)}" target="_blank" rel="noopener"><span class="when">${md(d)} ${wd} ${p.at.slice(11, 16)}</span><span class="ph ptype-${postKind(p)}">${postLabel(p)}</span>${p.sponsored ? '<span class="sp">협찬</span>' : ''}<span class="t">${esc(p.title || '')}</span></a>`;
+  }).join('') : '<div class="muted">이 달에 올린 글이 없어요.</div>';
+  return h + `</div>`;
+}
+
 function dealsHtml() {
   const open = openDeals(), closed = closedDeals();
   const all = (S.data.deals || []).filter(d => !DEAL_CLOSED.includes(d.status) && (!curPf() || dealProject(d) === curPf()));
@@ -1434,6 +1517,8 @@ function bind() {
   const m = $('#main');
   if (!m._drag) { bindDrag(m); if (EMBED) bindTouchDrag(m); m._drag = true; }
   m.onclick = e => {
+    const pm = e.target.closest('[data-pm]');
+    if (pm) { S.postsMonth = addMonth(S.postsMonth || kstToday().slice(0, 7), +pm.dataset.pm); render(); return; }
     const tabBtn = e.target.closest('[data-tab]');
     if (tabBtn) {
       S.tab = tabBtn.dataset.tab; S.project = null;
