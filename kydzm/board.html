@@ -916,7 +916,12 @@ async function loadPosts() {
       thumb: m.thumb || (m.type === 'IMAGE' ? m.url : '') || ((m.children || []).find(c => c.type === 'IMAGE') || {}).url || '' }));
     posts.forEach(p => { p.src = 'ig'; });
     if (f['state/yt_posts.json']) ((await readBlobJson(f['state/yt_posts.json'])).posts || []).forEach(p => posts.push({ ...p, src: 'yt' }));
-    // 블로그: 공개 저장소 docs/blog.md '올린 글 기록' 표(| YYMMDD | 제목 | 주소 |)에서 (261117)
+    // 블로그: data/blog_posts.json(blog-rss 액션이 네이버 블로그 RSS에서 매일 2번) + 그 전 기록은 docs/blog.md '올린 글 기록' 표 (261117)
+    const blogDays = new Set();
+    try {
+      const j = await (await fetch('/data/blog_posts.json?t=' + Date.now(), { cache: 'no-store' })).json();
+      (j.posts || []).forEach(b => { blogDays.add(String(b.at).slice(0, 10)); posts.push({ id: 'blog_' + b.id, at: b.at, src: 'blog', permalink: b.url, title: b.title, thumb: '' }); });
+    } catch (e) { /* 아직 없으면 표만 */ }
     try {
       const md = await (await fetch('/docs/blog.md?t=' + Date.now(), { cache: 'no-store' })).text();
       const sec = md.split(/##\s*올린 글 기록/)[1] || '';
@@ -924,6 +929,7 @@ async function loadPosts() {
         const c = line.split(/(?<!\\)\|/).map(x => x.trim());
         if (c.length < 4 || !/^\d{6}$/.test(c[1])) return;
         const d = `20${c[1].slice(0, 2)}-${c[1].slice(2, 4)}-${c[1].slice(4, 6)}`;
+        if (blogDays.has(d)) return;   // RSS에 있는 날은 RSS 것으로
         const url = (c[3].match(/https?:\/\/\S+/) || [''])[0].replace(/[)>]+$/, '');
         posts.push({ id: 'blog_' + c[1] + '_' + posts.length, at: d + 'T12:00:00+09:00', src: 'blog', permalink: url, title: c[2].replace(/\\\|/g, '|').replace(/\s+\|\s+/, ' — '), thumb: '' });
       });
