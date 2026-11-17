@@ -42,13 +42,12 @@ def main():
     for p in found:
         by[p["id"]] = p
     posts = sorted(by.values(), key=lambda p: p["at"], reverse=True)
-    if [p["id"] for p in posts] == [p["id"] for p in old] and all(by[p["id"]] == p for p in old):
-        print(f"바뀐 것 없음 (RSS {len(found)}개)")
-        return 0
+    same = [p["id"] for p in posts] == [p["id"] for p in old] and all(by[p["id"]] == p for p in old)
+    # 새 글이 없어도 확인 시각(checked_at)은 남김 — 오늘 돌았는지 예비 실행이 이걸로 판단 (261118)
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump({"blog": BLOG_ID, "checked_at": datetime.now(KST).isoformat(timespec="minutes"), "posts": posts}, f, ensure_ascii=False, indent=1)
         f.write("\n")
-    print(f"블로그 글 {len(posts)}개 (RSS {len(found)}개)")
+    print(("바뀐 것 없음 — 확인 시각만" if same else f"블로그 글 {len(posts)}개") + f" (RSS {len(found)}개)")
     return 0
 
 
