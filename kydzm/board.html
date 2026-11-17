@@ -369,6 +369,10 @@
   .atbl .a-res { width: 1%; white-space: nowrap; font-size: 12.5px; text-align: right; } .atbl .a-res a { color: inherit; text-decoration: none; }
   .atbl .bad { color: var(--danger); font-weight: 800; }
   .atbl tr.isbad td:not(.a-grp) { background: var(--danger-soft); }
+  .atbl tr.arow2 { cursor: pointer; } .atbl tr.aopen td:not(.a-grp) { background: var(--accent-soft); }
+  .atbl tr.adetail td { font-size: 12.5px; line-height: 1.55; padding: 8px 12px 10px 34px; border-top: 0; background: var(--accent-soft); white-space: normal; }
+  .atbl .a-detail-txt { margin-top: 4px; white-space: pre-wrap; }
+  .atbl .warnc { color: #d9480f; font-weight: 800; }
   .chk-old { color: var(--muted); font-weight: 900; display: inline-block; width: 1.2em; text-align: center; }
   .arec2 { color: #d9480f; font-weight: 700; }
   @media (hover: hover) { .atbl tr:hover td:not(.a-grp) { background: var(--accent-soft); } .atbl tr.isbad:hover td:not(.a-grp) { background: var(--danger-soft); } }
@@ -1206,8 +1210,11 @@ function autoState(a) {
     // ☁️·💻 예약은 그 Claude가 automations.json last_run에 적은 시각으로 (261117)
     const due = a.freq === 'hourly' ? 0 : lastDue(a, 90);
     if (a.last_run && a.last_run.at) {
-      const last = { at: a.last_run.at, note: a.last_run.note || '', url: a.last_run.url || '' };
+      const last = { at: a.last_run.at, note: a.last_run.note || '', url: a.last_run.url || '', detail: a.last_run.detail || '', status: a.last_run.status || 'ok' };
+      // 그 Claude가 적은 결과: fail = 못 함, warn = 돌았는데 문제 있음 (사용자 261117 '실패하면 표기·상세')
+      if (last.status === 'fail') return { kind: 'fail', last };
       if (due && new Date(last.at).getTime() < due - 20 * 60e3) return { kind: 'missed', last, due };
+      if (last.status === 'warn') return { kind: 'warn', last };
       if (a.freq === 'hourly' && Date.now() - new Date(last.at).getTime() > 3 * 3600e3) return { kind: 'missed', last };
       return { kind: 'ok', last };
     }
@@ -1224,7 +1231,7 @@ function autosHtml() {
   if (!S.autos) { if (!S.autosErr) loadAutos(); return `<div class="card">${S.autosErr ? '자동화 목록을 못 읽었어요: ' + esc(S.autosErr) : '자동화 불러오는 중…'}</div>`; }
   const when = iso => `${md(ymdOf(iso))} ${kstHM(iso)}`;
   const states = Object.fromEntries(S.autos.map(a => [a.id, autoState(a)]));
-  const isBad = a => ['fail', 'missed'].includes(states[a.id].kind);
+  const isBad = a => ['fail', 'missed', 'warn'].includes(states[a.id].kind);
   const bad = S.autos.filter(isBad);
   const unk = S.autos.filter(a => states[a.id].kind === 'unk');
   // 위 버튼 한 줄로 골라 보기 (사용자 261117)
@@ -1249,7 +1256,8 @@ function autosHtml() {
   list.forEach((a, k) => {
     const st = states[a.id];
     let res;
-    if (st.kind === 'fail') res = `<a class="bad" href="${esc(st.last.url)}" target="_blank" rel="noopener">⚠️ 실패 ${when(st.last.at)}</a>`;
+    if (st.kind === 'fail') res = st.last.url ? `<a class="bad" href="${esc(st.last.url)}" target="_blank" rel="noopener">❌ 실패 ${when(st.last.at)}</a>` : `<span class="bad">❌ 실패 ${when(st.last.at)}</span>`;
+    else if (st.kind === 'warn') res = `<span class="warnc">⚠️ 문제 ${when(st.last.at)}</span>`;
     else if (st.kind === 'missed') res = `<span class="bad">⚠️ 안 돎</span> <span class="muted">마지막 ${when(st.last.at)}</span>`;
     else if (st.kind === 'ok') {   // 오른쪽 = 실제로 돈 시각. 오늘 돌았으면 ✅, 아니면 ☑️ (사용자 261117)
       const mk = ymdOf(st.last.at) === kstToday() ? `✅ ${when(st.last.at)}` : `<span class="chk-old">✔</span> ${when(st.last.at)}`;
@@ -1266,16 +1274,25 @@ function autosHtml() {
     const desc = `${esc(a.detail || '')}${rec ? (a.detail ? ' ' : '') + rec : ''}`;
     const full = `${a.detail || ''}${a.rec ? ' / 추천: ' + AUTO_WHERE[a.rec][1] + (a.rec_note ? ' — ' + a.rec_note : '') : ''}`;
     if (first) h += `<tr class="ghead"><td colspan="5">${esc(g)}</td></tr>`;
-    h += `<tr class="${first ? 'gfirst' : ''}${isBad(a) ? ' isbad' : ''}">`
+    const open = S.autoOpen === a.id;
+    h += `<tr class="arow2${first ? ' gfirst' : ''}${isBad(a) ? ' isbad' : ''}${open ? ' aopen' : ''}" data-aid="${esc(a.id)}">`
       + `<td class="a-ic" title="${wn}">${ic}</td>`
       + (first ? `<td class="a-grp" rowspan="${rows}">${esc(g)}</td>` : '')
       + `<td class="a-time">${esc(timeOf(a))}</td>`
       + `<td class="a-name">${esc(a.name)}<div class="a-time-m">${esc(timeOf(a))}</div><div class="a-desc-m">${desc}</div></td>`
       + `<td class="a-desc" title="${esc(full)}">${desc}</td>`
       + `<td class="a-res">${res}</td></tr>`;
+    // 줄을 누르면 마지막 실행 상세 (열 추가 없이 아래 한 줄로 펼침, 사용자 261117 '디자인상 열 추가 말고')
+    if (open) {
+      const L = st.last;
+      const mk = { fail: '❌ 실패', warn: '⚠️ 문제', missed: '⚠️ 안 돎', ok: '✅ 성공', unk: '❔ 기록 없음' }[st.kind] || '—';
+      const body = L ? `<b>${mk}</b> · ${when(L.at)}${L.note ? '<br>' + esc(L.note) : ''}${L.detail ? `<div class="a-detail-txt">${esc(L.detail)}</div>` : ''}${L.url ? `<br><a href="${esc(L.url)}" target="_blank" rel="noopener">실행 기록 열기 ↗</a>` : ''}`
+        : `<b>${mk}</b> · 돈 기록이 없어요${a.workflow ? '' : ' — 그 Claude가 last_run을 안 적었거나 안 돎'}`;
+      h += `<tr class="adetail"><td colspan="6">${body}${st.kind === 'missed' && st.due ? `<br><span class="muted">돌았어야 할 시각 ${when(new Date(st.due).toISOString())}</span>` : ''}</td></tr>`;
+    }
   });
   h += `</tbody></table>`;
-  h += `<div class="muted" style="font-size:12px;margin-top:10px">☁️ 클라우드 Claude · ⚙️ GitHub·워커(PC 꺼져도 됨) · 💻 PC(켜져 있어야 함) · 왼쪽 시각 = 예정, 오른쪽 = 실제로 돈 시각(✅ 오늘 · 회색 ✔ 그 전 · ❔ 기록 없음) · 설명이 잘리면 마우스를 올리면 전체 · 원본 cupas state/automations.json</div></div>`;
+  h += `<div class="muted" style="font-size:12px;margin-top:10px">☁️ 클라우드 Claude · ⚙️ GitHub·워커(PC 꺼져도 됨) · 💻 PC(켜져 있어야 함) · 왼쪽 시각 = 예정, 오른쪽 = 실제로 돈 시각(✅ 오늘 · 회색 ✔ 그 전 · ⚠️ 문제 · ❌ 실패 · ❔ 기록 없음) · 줄을 누르면 마지막 실행 상세 · 설명이 잘리면 마우스를 올리면 전체 · 원본 cupas state/automations.json</div></div>`;
   return h;
 }
 
@@ -1870,6 +1887,8 @@ function bind() {
   m.onclick = e => {
     const afq = e.target.closest('[data-afq]');
     if (afq) { S.autoFq = afq.dataset.afq; render(); return; }
+    const arow = !e.target.closest('a') && e.target.closest('tr[data-aid]');
+    if (arow) { S.autoOpen = S.autoOpen === arow.dataset.aid ? '' : arow.dataset.aid; render(); return; }
     const ppf = e.target.closest('[data-ppf]');
     if (ppf) { S.postsPf = ppf.dataset.ppf; try { localStorage.setItem('kydz_posts_pf', S.postsPf); } catch (_) {} render(); return; }
     const pm = e.target.closest('[data-pm]');
