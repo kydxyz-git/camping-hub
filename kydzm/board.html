@@ -379,10 +379,10 @@
   @media (hover: hover) { .atbl tr:hover td:not(.a-grp) { background: var(--accent-soft); } .atbl tr.isbad:hover td:not(.a-grp) { background: var(--danger-soft); } }
   @media (max-width: 700px) {
     .atbl .a-desc, .atbl .a-grp, .atbl .a-time, .atbl .a-dpad, .atbl .a-dbody { display: none; } .atbl .a-dbody-m { display: table-cell; }
-    .atbl .ghead { display: table-row; } .atbl .ghead td { font-weight: 800; font-size: 12.5px; background: var(--accent-soft); border-top: 0; padding: 5px 9px; }
+    .atbl .ghead { display: table-row; } .atbl .ghead td { font-weight: 800; font-size: 12.5px; background: rgba(110,140,255,.18); border-top: 0; padding: 6px 10px; border-radius: 6px; }   /* 묶음 제목 배경 (사용자 261117 '배경색 넣어줘야 구분') */
     .atbl tr.gfirst td { border-top: 0; }
     .atbl .a-name { width: auto; white-space: normal; } .atbl .a-time-m { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
-    .atbl .a-desc-m { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; font-weight: 400; color: var(--muted); font-size: 12px; }
+    .atbl .a-desc-m { display: none; }   /* 휴대폰은 설명 줄 뺌 — 줄 누르면 상세만 (사용자 261117 '모바일 지저분') */
   }
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
