@@ -360,11 +360,16 @@
   .arow2 .atime { font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .arow2 .aname { font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .arow2 .ares { font-size: 12.5px; white-space: nowrap; } .arow2 .ares a { color: inherit; text-decoration: none; } .arow2 .bad, .apop .bad { color: #e03131; font-weight: 800; }
+  /* 주기별 배경색 (사용자 261117) */
+  .arow2.fq-hourly { background: #e7f0ff; } .arow2.fq-multi { background: #e6f7ef; } .arow2.fq-daily { background: #fff4d6; } .arow2.fq-weekly { background: #f1e9ff; } .arow2.fq-once { background: #ffe9e0; }
+  .fqdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
+  .fqdot.fq-hourly { background: #4c8dff; } .fqdot.fq-multi { background: #22b07d; } .fqdot.fq-daily { background: #f0b400; } .fqdot.fq-weekly { background: #8e5cf0; } .fqdot.fq-once { background: #f0703c; }
+  @media (prefers-color-scheme: dark) { .arow2.fq-hourly { background: #1c2a40; } .arow2.fq-multi { background: #17332a; } .arow2.fq-daily { background: #3a3218; } .arow2.fq-weekly { background: #2c2240; } .arow2.fq-once { background: #3d2318; } }
   .arow2.isbad { box-shadow: inset 0 0 0 2px rgba(224,49,49,.55); }
   .arec-dot { color: #d9480f; font-size: 12px; }
   .apop { display: none; position: absolute; z-index: 20; left: 30px; top: calc(100% + 4px); width: min(440px, calc(100% - 40px)); background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; box-shadow: 0 6px 24px rgba(0,0,0,.25); font-size: 13px; line-height: 1.5; }
   .apop > div { margin-top: 3px; }
-  @media (hover: hover) { .arow2:hover { background: var(--accent-soft); } .arow2:hover .apop { display: block; } }
+  @media (hover: hover) { .arow2:hover { filter: brightness(.96); } .arow2:hover .apop { display: block; } }
   .arow2.open .apop { display: block; position: static; width: auto; grid-column: 1 / -1; box-shadow: none; padding: 6px 2px 2px; background: transparent; }
   @media (max-width: 700px) { .arow2 { grid-template-columns: 22px minmax(0, 1fr) auto; } .arow2 .atime { grid-column: 2; grid-row: 2; } .arow2 .aname { grid-column: 2; grid-row: 1; } .arow2 .ares { grid-column: 3; grid-row: 1 / 3; } .arow2 .aw-ic { grid-row: 1 / 3; } }
 </style>
@@ -1135,11 +1140,11 @@ function autosHtml() {
   const isBad = a => ['fail', 'missed'].includes(states[a.id].kind);
   const bad = S.autos.filter(isBad);
   // 위 버튼 한 줄로 골라 보기, 한 줄씩 짧게 — 자세한 건 마우스 올리면(폰은 탭) (사용자 261117)
-  const fq = S.autoFq !== undefined ? S.autoFq : (bad.length ? 'bad' : '');
+  const fq = S.autoFq || '';   // 기본은 전체 (사용자 261117)
   const chips = [['', '전체', S.autos.length], ...(bad.length ? [['bad', '⚠️ 문제', bad.length]] : []), ...AUTO_FREQ.map(([k, l]) => [k, l, S.autos.filter(a => a.freq === k).length]).filter(c => c[2])];
   let h = `<div class="autos">`;
   h += bad.length ? `<div class="abad">⚠️ 확인 필요 ${bad.length}개 — ${bad.map(a => esc(a.name)).join(' · ')}</div>` : `<div class="agood">✅ GitHub·워커 예약은 모두 제때 돌았어요</div>`;
-  h += `<div class="pfrow" style="margin-top:10px">${chips.map(([k, l, n]) => `<button class="pfb${fq === k ? ' on' : ''}${k === 'bad' ? ' pfbad' : ''}" data-afq="${k}">${l} <b>${n}</b></button>`).join('')}</div>`;
+  h += `<div class="pfrow" style="margin-top:10px">${chips.map(([k, l, n]) => `<button class="pfb${fq === k ? ' on' : ''}${k === 'bad' ? ' pfbad' : ''}" data-afq="${k}">${k && k !== 'bad' ? `<i class="fqdot fq-${k}"></i>` : ''}${l} <b>${n}</b></button>`).join('')}</div>`;
   const order = Object.fromEntries(AUTO_FREQ.map(([k], i) => [k, i]));
   const list = S.autos.filter(a => !fq || (fq === 'bad' ? isBad(a) : a.freq === fq))
     .sort((x, y) => (order[x.freq] - order[y.freq]) || ((x.times || [x.at || ''])[0] < (y.times || [y.at || ''])[0] ? -1 : 1));
@@ -1154,7 +1159,7 @@ function autosHtml() {
     else res = '<span class="muted">—</span>';
     const [ic, wn] = AUTO_WHERE[a.where];
     const pop = `<div class="apop"><b>${esc(a.name)}</b><div>${ic} ${wn} · ${esc(autoWhen(a))}</div>${a.detail ? `<div class="muted">${esc(a.detail)}</div>` : ''}${st.kind === 'missed' && st.last ? `<div class="bad">마지막 실행 ${when(st.last.at)}</div>` : ''}${a.workflow ? '' : '<div class="muted">결과는 화면에서 못 읽음(☁️·💻) — 문제 표시 대상 아님</div>'}${a.rec ? `<div class="arec">➡ 추천: ${AUTO_WHERE[a.rec][0]} ${AUTO_WHERE[a.rec][1]}${a.rec_note ? ' — ' + esc(a.rec_note) : ''}</div>` : ''}</div>`;
-    h += `<div class="arow2${isBad(a) ? ' isbad' : ''}${a.rec ? ' hasrec' : ''}" data-arow="${a.id}"><span class="aw-ic" title="${wn}">${ic}</span><span class="atime">${esc(shortWhen(a))}</span><span class="aname">${esc(a.name)}${a.rec ? ' <span class="arec-dot" title="옮기기 추천">➡</span>' : ''}</span><span class="ares">${res}</span>${pop}</div>`;
+    h += `<div class="arow2 fq-${a.freq}${isBad(a) ? ' isbad' : ''}${a.rec ? ' hasrec' : ''}" data-arow="${a.id}"><span class="aw-ic" title="${wn}">${ic}</span><span class="atime">${esc(shortWhen(a))}</span><span class="aname">${esc(a.name)}${a.rec ? ' <span class="arec-dot" title="옮기기 추천">➡</span>' : ''}</span><span class="ares">${res}</span>${pop}</div>`;
   });
   h += `</div><div class="muted" style="font-size:12px;margin-top:10px">☁️ 클라우드 Claude · ⚙️ GitHub·워커(PC 꺼져도 됨) · 💻 PC(켜져 있어야 함) · 마우스를 올리면 자세히(폰은 탭) · 원본 cupas state/automations.json</div></div>`;
   return h;
