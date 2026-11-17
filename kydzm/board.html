@@ -524,10 +524,9 @@ async function gh(path, opts = {}) {
   return data;
 }
 
-async function headCommit() {
-  const ref = await gh(`${RP}/git/ref/heads/${BRANCH}`);
-  const commit = await gh(`${RP}/git/commits/${ref.object.sha}`);
-  return { sha: ref.object.sha, tree: commit.tree.sha, date: commit.committer && commit.committer.date };
+async function headCommit() {   // 최신 커밋·트리를 한 번에 (예전엔 ref → commit 두 번, 261117)
+  const c = await gh(`${RP}/commits/${BRANCH}`);
+  return { sha: c.sha, tree: c.commit.tree.sha, date: c.commit.committer && c.commit.committer.date };
 }
 async function readTree(treeSha) {
   const t = await gh(`${RP}/git/trees/${treeSha}?recursive=1`);
@@ -693,13 +692,27 @@ function archiveCandidates(board) {
 // ════════════════════════════════════════════════════════════════════
 // 불러오기 · 저장
 // ════════════════════════════════════════════════════════════════════
+// 열자마자 지난번에 본 운영판을 먼저 보여 주고, 뒤에서 최신본을 받아 바꿈 (사용자 261117 '할일도 느린 거 같아')
+const SNAP_KEY = 'kydz_board_snap';
+function loadSnapshot() {
+  try {
+    const snap = JSON.parse(localStorage.getItem(SNAP_KEY) || 'null');
+    const c = snap && JSON.parse(localStorage.getItem(BLOB_CACHE + BOARD_PATH) || 'null');
+    if (!snap || !c || c.sha !== snap.files[BOARD_PATH]) return false;
+    S.files = snap.files; S.base = normBoard(c.json); S.sha = snap.sha; S.commitDate = snap.date || '';
+    recompute(); S.loaded = true; S.fromSnap = true;
+    return true;
+  } catch (e) { return false; }
+}
 async function load() {
   const head = await headCommit();
   const files = await readTree(head.tree);
-  const board = files[BOARD_PATH] ? await readBlobJson(files[BOARD_PATH]) : null;
+  S.files = files;
+  const board = files[BOARD_PATH] ? await readBlobJsonCached(BOARD_PATH) : null;   // 운영판 파일이 안 바뀌었으면 기억해 둔 것
   if (!board) throw new Error(`cupas에 ${BOARD_PATH} 가 없어요.`);
   S.base = normBoard(board);
-  S.sha = head.sha; S.commitDate = head.date || ''; S.files = files;
+  S.sha = head.sha; S.commitDate = head.date || '';
+  try { localStorage.setItem(SNAP_KEY, JSON.stringify({ sha: head.sha, date: S.commitDate, files })); } catch (e) {}
   recompute();
   const mig = migrateOps();
   if (mig.length) { S.ops.push(...mig); recompute(); scheduleSave(); }
@@ -792,10 +805,12 @@ async function refresh(force) {
     const cdate = commit.committer && commit.committer.date;
     if (S.commitDate && cdate && cdate < S.commitDate) return;   // 예전 버전(읽기 지연)이면 무시
     const files = await readTree(commit.tree.sha);
-    const board = files[BOARD_PATH] ? await readBlobJson(files[BOARD_PATH]) : null;
+    S.files = files;
+    const board = files[BOARD_PATH] ? await readBlobJsonCached(BOARD_PATH) : null;
     if (!board) return;
     S.base = normBoard(board);
     S.sha = ref.object.sha; if (cdate) S.commitDate = cdate;
+    try { localStorage.setItem(SNAP_KEY, JSON.stringify({ sha: S.sha, date: S.commitDate, files })); } catch (e) {}
     recompute();
     const mig = migrateOps();
     if (mig.length) { S.ops.push(...mig); recompute(); scheduleSave(); }
@@ -2061,8 +2076,9 @@ async function start() {
   if (!getToken()) { render(); return; }
   $('#main').innerHTML = '<div class="card muted">불러오는 중...</div>';
   pushButton();
-  try { await load(); render(); }
-  catch (e) { $('#main').innerHTML = `<div class="banner err">${esc(e.message)}</div><a class="btn ghost small" href="threads.html">스레드 관리에서 토큰 확인</a>`; }
+  if (loadSnapshot()) render();
+  try { await load(); S.fromSnap = false; render(); }
+  catch (e) { if (S.fromSnap) { toast('최신본을 못 받았어요 — 지난번 화면입니다'); return; } $('#main').innerHTML = `<div class="banner err">${esc(e.message)}</div><a class="btn ghost small" href="threads.html">스레드 관리에서 토큰 확인</a>`; }
 }
 function boot() {
   if (isAuthed()) { start(); return; }
