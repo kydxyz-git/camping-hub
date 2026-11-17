@@ -337,6 +337,20 @@
   .mday .mi .pt { color: var(--muted); font-size: 11.5px; flex: none; } .mday .mi .sp { flex: none; }
   .mday .mi .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
   .mday .mi.pk-ig { background: rgba(123,63,228,.13); border-color: #7b3fe4; } .mday .mi.pk-fb { background: rgba(24,119,242,.12); border-color: #1877f2; } .mday .mi.pk-blog { background: rgba(3,199,90,.13); border-color: #03c75a; } .mday .mi.pk-yt { background: rgba(255,0,0,.1); border-color: #ff0000; } .mday .mi.pk-clip { background: rgba(255,138,0,.15); border-color: #ff8a00; } .mday .mi.pk-tt { background: rgba(120,120,120,.15); border-color: #111; }
+  .autos .ah { font-size: 15px; margin: 16px 0 6px; } .autos .ah .muted { font-size: 12.5px; font-weight: 600; }
+  .atl { display: flex; flex-direction: column; gap: 4px; }
+  .ar { display: flex; gap: 8px; align-items: center; background: var(--bg); border-radius: 8px; padding: 6px 8px; font-size: 13.5px; }
+  .ar.past { opacity: .62; } .ar.now { box-shadow: inset 0 0 0 2px rgba(255,200,0,.55); opacity: 1; }
+  .ar .at { font-weight: 800; width: 44px; flex: none; font-variant-numeric: tabular-nums; }
+  .ar .an { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ar .am { flex: none; font-size: 12.5px; } .ar .am a, .al a { color: inherit; text-decoration: none; }
+  .aw { flex: none; font-size: 11.5px; font-weight: 700; border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
+  .aw-cloud { background: rgba(123,63,228,.15); } .aw-actions, .aw-worker { background: rgba(120,120,120,.18); } .aw-pc { background: rgba(255,138,0,.18); }
+  .atbl { display: flex; flex-direction: column; gap: 4px; }
+  .arow { display: grid; grid-template-columns: minmax(0, 2.2fr) auto minmax(0, 1.3fr) auto; gap: 8px; align-items: center; background: var(--bg); border-radius: 8px; padding: 7px 9px; font-size: 13.5px; }
+  .arow .an2 { font-weight: 700; min-width: 0; } .arow .ad { font-weight: 400; font-size: 12px; } .arow .aw2 { font-size: 12.5px; } .arow .al { font-size: 12.5px; white-space: nowrap; }
+  .arec { font-size: 12px; font-weight: 700; color: #d9480f; margin-top: 2px; }
+  @media (max-width: 700px) { .arow { grid-template-columns: minmax(0, 1fr) auto; } .arow .aw2, .arow .al { grid-column: 1 / -1; } .arow .al { margin-top: -4px; } }
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
 </head>
@@ -850,14 +864,15 @@ function render() {
   // 할 일·프로젝트 탭을 합침: 위의 프로젝트 고르기로 그 프로젝트 일만 + 프로젝트 정보 (사용자 요청 261103)
   if (tab === 'projects') tab = pc ? 'tasks' : 'today';
   const tabs = pc
-    ? [['tasks', '할 일'], ['posts', '올린 글']]
-    : [...(tasksIn('overdue').length || tab === 'overdue' ? [['overdue', '지난 일정']] : []), ['today', '오늘'], ['week', '7일'], ['month', '30일'], ['later', '30일 뒤'], ['inbox', '받은함'], ['deals', '협찬'], ['posts', '올린 글']];
+    ? [['tasks', '할 일'], ['posts', '올린 글'], ['autos', '⏰ 자동화']]
+    : [...(tasksIn('overdue').length || tab === 'overdue' ? [['overdue', '지난 일정']] : []), ['today', '오늘'], ['week', '7일'], ['month', '30일'], ['later', '30일 뒤'], ['inbox', '받은함'], ['deals', '협찬'], ['posts', '올린 글'], ['autos', '⏰ 자동화']];
   const overN = tasksIn('overdue').length;
   let h = '';
   if (S.failed) h += `<div class="banner err savefail"><span>저장하지 못했어요: ${esc(S.failed)} (바꾼 내용은 이 화면에 남아 있어요)</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
   if (tabs.length) h += `<div class="tabs">${tabs.map(([k, l]) => `<button class="tab${tab === k ? ' on' : ''}" data-tab="${k}">${l}${(k === 'inbox' || (pc && k === 'tasks')) && inboxN ? ` <span class="badge">${inboxN}</span>` : ''}${k === 'overdue' && overN ? ` <span class="badge">${overN}</span>` : ''}</button>`).join('')}</div>`;
   if (tab === 'deals') h += dealsHtml();
   else if (tab === 'posts') h += postsHtml();
+  else if (tab === 'autos') h += autosHtml();
   else h += tasksHtml(pc ? null : tab);
   const keep = {};   // 다시 그려도 칸 안 스크롤 위치 유지
   m.querySelectorAll('.tlist').forEach(el => { const k = el.closest('[data-drop]'); if (k) keep[k.dataset.drop] = el.scrollTop; });
@@ -1034,6 +1049,78 @@ function postsHtml() {
     h += `<tr${d === today ? ' class="today"' : ''}><td class="pd">${md(d)} <span class="muted">${wd}</span></td>${COLS.map(c => `<td>${cell(c)}</td>`).join('')}</tr>`;
   });
   return h + `</tbody></table></div>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// ⏰ 자동화 — 예약 목록(cupas state/automations.json) + GitHub 실행 결과 (사용자 261117)
+// ════════════════════════════════════════════════════════════════════
+const AUTO_WHERE = { cloud: ['☁️', '클라우드 Claude'], actions: ['⚙️', 'GitHub'], worker: ['⚙️', '워커'], pc: ['💻', 'PC'] };
+const AUTO_FREQ = [['hourly', '매시'], ['multi', '하루 여러 번'], ['daily', '매일'], ['weekly', '매주'], ['once', '1회']];
+async function loadAutos() {
+  if (S.autosLoading) return; S.autosLoading = true;
+  try {
+    const f = S.files || {};
+    S.autos = f['state/automations.json'] ? (await readBlobJson(f['state/automations.json'])).items || [] : [];
+    S.autoRuns = {};
+    const tok = getToken();
+    await Promise.all(S.autos.filter(a => a.workflow).map(async a => {
+      const { repo, file } = a.workflow;
+      try {
+        const r = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/${file}/runs?per_page=30`, { headers: { Accept: 'application/vnd.github+json', ...(tok ? { Authorization: 'Bearer ' + tok } : {}) } });
+        if (r.ok) S.autoRuns[a.id] = ((await r.json()).workflow_runs || []).map(x => ({ at: x.created_at, ok: x.conclusion, st: x.status, url: x.html_url }));
+      } catch (e) { /* 실행 기록 못 읽으면 '—' */ }
+    }));
+  } catch (e) { S.autosErr = e.message; }
+  S.autosLoading = false; renderSoon();
+}
+function kstHM(iso) { const p = kstParts(new Date(iso)); return p.iso.slice(11, 16); }
+function runMark(r) { return !r ? '' : r.st !== 'completed' ? '⏳' : r.ok === 'success' ? '✅' : r.ok === 'skipped' || r.ok === 'cancelled' ? '⏭' : '❌'; }
+function autoWhen(a) {
+  const wd = (a.wd || []).map(d => WD[d]).join('·');
+  if (a.freq === 'once') return `${md(a.at.slice(0, 10))} ${a.at.slice(11, 16)} 1회`;
+  if (a.freq === 'hourly') return '매시';
+  return (a.freq === 'weekly' ? `매주 ${wd} ` : '') + a.times.join(' · ');
+}
+function autosHtml() {
+  if (!S.autos) { if (!S.autosErr) loadAutos(); return `<div class="card">${S.autosErr ? '자동화 목록을 못 읽었어요: ' + esc(S.autosErr) : '자동화 불러오는 중…'}</div>`; }
+  const today = kstToday(), wdNow = kstParts().wd, nowHM = kstParts().iso.slice(11, 16);
+  const runsToday = id => (S.autoRuns[id] || []).filter(r => ymdOf(r.at) === today);
+  // 오늘 도는 것 (시간순)
+  const occ = [];
+  S.autos.forEach(a => {
+    if (a.freq === 'hourly') return;
+    if (a.freq === 'once') { if (a.at.slice(0, 10) === today) occ.push([a.at.slice(11, 16), a]); return; }
+    if (a.freq === 'weekly' && !(a.wd || []).includes(wdNow)) return;
+    a.times.forEach(t => occ.push([t, a]));
+  });
+  occ.sort((x, y) => x[0] < y[0] ? -1 : 1);
+  const whereTag = a => `<span class="aw aw-${a.where}" title="${AUTO_WHERE[a.where][1]}">${AUTO_WHERE[a.where][0]} ${AUTO_WHERE[a.where][1]}</span>`;
+  let h = `<div class="autos"><div class="muted" style="font-size:13px;margin:2px 0 10px">☁️ 클라우드 Claude = 예약 시간에 Claude가 깨어나 판단·기록 · ⚙️ GitHub·워커 = 서버에서 프로그램만 (PC 꺼져도 됨) · 💻 PC = PC가 켜져 있어야 함. 결과 확인은 할 일 탭의 '🤖' 반복 할 일.</div>`;
+  h += `<h3 class="ah">오늘 (${md(today)} ${WD[wdNow]}) 도는 예약 <span class="muted">${occ.length}번 + 매시 ${S.autos.filter(a => a.freq === 'hourly').length}개</span></h3><div class="atl">`;
+  occ.forEach(([t, a]) => {
+    const past = t <= nowHM;
+    let mark = '';
+    if (a.workflow) {
+      const rs = runsToday(a.id).filter(r => kstHM(r.at) >= t && kstHM(r.at) < (t.slice(0, 2) === '23' ? '24:00' : String(+t.slice(0, 2) + 2).padStart(2, '0') + ':00'));
+      mark = rs.length ? `<a href="${esc(rs[0].url)}" target="_blank" rel="noopener">${runMark(rs[0])} ${kstHM(rs[0].at)}</a>` : past ? '<span class="muted">기록 없음</span>' : '';
+    } else mark = past ? '<span class="muted">지남</span>' : '';
+    h += `<div class="ar${past ? ' past' : ''}${t.slice(0, 2) === nowHM.slice(0, 2) ? ' now' : ''}"><span class="at">${t}</span>${whereTag(a)}<span class="an">${esc(a.name)}</span><span class="am">${mark}</span></div>`;
+  });
+  h += `</div>`;
+  // 전체 (주기별)
+  AUTO_FREQ.forEach(([fq, label]) => {
+    const list = S.autos.filter(a => a.freq === fq);
+    if (!list.length) return;
+    h += `<h3 class="ah">${label} <span class="muted">${list.length}개</span></h3><div class="atbl">`;
+    list.forEach(a => {
+      const last = (S.autoRuns[a.id] || [])[0];
+      const lastHtml = a.workflow ? (last ? `<a href="${esc(last.url)}" target="_blank" rel="noopener">${runMark(last)} ${md(ymdOf(last.at))} ${kstHM(last.at)}</a>` : '<span class="muted">기록 없음</span>') : '<span class="muted">🤖 할 일로 확인</span>';
+      const rec = a.rec ? `<div class="arec">➡ 추천: ${AUTO_WHERE[a.rec][0]} ${AUTO_WHERE[a.rec][1]}${a.rec_note ? ' — ' + esc(a.rec_note) : ''}</div>` : '';
+      h += `<div class="arow"><div class="an2">${esc(a.name)}<div class="muted ad">${esc(a.detail || '')}</div>${rec}</div><div>${whereTag(a)}</div><div class="aw2">${esc(autoWhen(a))}</div><div class="al">${lastHtml}</div></div>`;
+    });
+    h += `</div>`;
+  });
+  return h + `<div class="muted" style="font-size:12px;margin-top:10px">목록 원본: cupas state/automations.json — 예약을 만들거나 없애는 Claude가 같이 고침</div></div>`;
 }
 
 function dealsHtml() {
