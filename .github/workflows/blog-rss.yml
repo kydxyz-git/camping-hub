@@ -1,9 +1,9 @@
-# 매일 12:20·23:20(KST) + 수동: 네이버 블로그 RSS → data/blog_posts.json (운영판 '올린 글' 달력의 블로그, 261117)
+# 매일 04:20(KST, 새벽 — 공통 기억 261116) + 수동: 네이버 블로그 RSS → data/blog_posts.json (운영판 '올린 글' 달력의 블로그, 261117)
 name: blog-rss
 
 on:
   schedule:
-    - cron: '20 3,14 * * *'
+    - cron: '20 19 * * *'
   workflow_dispatch:
 
 permissions:
