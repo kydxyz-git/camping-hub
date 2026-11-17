@@ -351,6 +351,9 @@
   .arow .an2 { font-weight: 700; min-width: 0; } .arow .ad { font-weight: 400; font-size: 12px; } .arow .aw2 { font-size: 12.5px; } .arow .al { font-size: 12.5px; white-space: nowrap; }
   .arec { font-size: 12px; font-weight: 700; color: #d9480f; margin-top: 2px; }
   @media (max-width: 700px) { .arow { grid-template-columns: minmax(0, 1fr) auto; } .arow .aw2, .arow .al { grid-column: 1 / -1; } .arow .al { margin-top: -4px; } }
+  .abad { background: rgba(224,49,49,.14); color: #c92a2a; font-weight: 800; border-radius: 10px; padding: 9px 12px; font-size: 14px; }
+  .agood { background: rgba(45,143,76,.12); color: #2d8f4c; font-weight: 800; border-radius: 10px; padding: 9px 12px; font-size: 14px; }
+  .arow.isbad { box-shadow: inset 0 0 0 2px rgba(224,49,49,.55); } .al .bad { color: #e03131; font-weight: 800; }
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
 </head>
@@ -1081,42 +1084,55 @@ function autoWhen(a) {
   if (a.freq === 'hourly') return '매시';
   return (a.freq === 'weekly' ? `매주 ${wd} ` : '') + a.times.join(' · ');
 }
+// 가장 최근에 돌았어야 할 시각(KST Date) — 예정이 지났는데(+유예) 그 뒤 실행이 없으면 '안 돎'
+function lastDue(a, graceMin = 60) {
+  const now = Date.now(), cands = [];
+  const kst = (ymd, hm) => new Date(`${ymd}T${hm}:00+09:00`).getTime();
+  for (let back = 0; back < 8; back++) {
+    const ymd = addDays(kstToday(), -back), wd = new Date(ymd + 'T00:00:00Z').getUTCDay();
+    if (a.freq === 'weekly' && !(a.wd || []).includes(wd)) continue;
+    (a.times || []).forEach(t => { if (/^\d\d:\d\d$/.test(t)) cands.push(kst(ymd, t)); });
+  }
+  if (a.freq === 'once') cands.push(new Date(a.at + ':00+09:00').getTime());
+  const due = cands.filter(t => t + graceMin * 60e3 < now).sort((x, y) => y - x)[0];
+  return due || 0;
+}
+function autoState(a) {
+  const runs = S.autoRuns[a.id] || [];
+  const last = runs.find(r => r.st === 'completed') || runs[0];
+  if (!a.workflow) return { kind: 'na', last: null };
+  if (!last) return { kind: 'none', last: null };
+  if (last.st === 'completed' && !['success', 'skipped', 'cancelled'].includes(last.ok)) return { kind: 'fail', last };
+  // GitHub 자체 예약은 1~7시간 늦게 도는 일이 잦아서(261110) 유예 8시간, 워커가 깨우는 건 1시간
+  const due = a.freq === 'hourly' ? 0 : lastDue(a, a.where === 'actions' ? 480 : 60);
+  if (due && new Date(last.at).getTime() < due - 20 * 60e3) return { kind: 'missed', last, due };
+  return { kind: 'ok', last };
+}
 function autosHtml() {
   if (!S.autos) { if (!S.autosErr) loadAutos(); return `<div class="card">${S.autosErr ? '자동화 목록을 못 읽었어요: ' + esc(S.autosErr) : '자동화 불러오는 중…'}</div>`; }
-  const today = kstToday(), wdNow = kstParts().wd, nowHM = kstParts().iso.slice(11, 16);
-  const runsToday = id => (S.autoRuns[id] || []).filter(r => ymdOf(r.at) === today);
-  // 오늘 도는 것 (시간순)
-  const occ = [];
-  S.autos.forEach(a => {
-    if (a.freq === 'hourly') return;
-    if (a.freq === 'once') { if (a.at.slice(0, 10) === today) occ.push([a.at.slice(11, 16), a]); return; }
-    if (a.freq === 'weekly' && !(a.wd || []).includes(wdNow)) return;
-    a.times.forEach(t => occ.push([t, a]));
-  });
-  occ.sort((x, y) => x[0] < y[0] ? -1 : 1);
   const whereTag = a => `<span class="aw aw-${a.where}" title="${AUTO_WHERE[a.where][1]}">${AUTO_WHERE[a.where][0]} ${AUTO_WHERE[a.where][1]}</span>`;
-  let h = `<div class="autos"><div class="muted" style="font-size:13px;margin:2px 0 10px">☁️ 클라우드 Claude = 예약 시간에 Claude가 깨어나 판단·기록 · ⚙️ GitHub·워커 = 서버에서 프로그램만 (PC 꺼져도 됨) · 💻 PC = PC가 켜져 있어야 함. 결과 확인은 할 일 탭의 '🤖' 반복 할 일.</div>`;
-  h += `<h3 class="ah">오늘 (${md(today)} ${WD[wdNow]}) 도는 예약 <span class="muted">${occ.length}번 + 매시 ${S.autos.filter(a => a.freq === 'hourly').length}개</span></h3><div class="atl">`;
-  occ.forEach(([t, a]) => {
-    const past = t <= nowHM;
-    let mark = '';
-    if (a.workflow) {
-      const rs = runsToday(a.id).filter(r => kstHM(r.at) >= t && kstHM(r.at) < (t.slice(0, 2) === '23' ? '24:00' : String(+t.slice(0, 2) + 2).padStart(2, '0') + ':00'));
-      mark = rs.length ? `<a href="${esc(rs[0].url)}" target="_blank" rel="noopener">${runMark(rs[0])} ${kstHM(rs[0].at)}</a>` : past ? '<span class="muted">기록 없음</span>' : '';
-    } else mark = past ? '<span class="muted">지남</span>' : '';
-    h += `<div class="ar${past ? ' past' : ''}${t.slice(0, 2) === nowHM.slice(0, 2) ? ' now' : ''}"><span class="at">${t}</span>${whereTag(a)}<span class="an">${esc(a.name)}</span><span class="am">${mark}</span></div>`;
-  });
-  h += `</div>`;
-  // 전체 (주기별)
+  const when = iso => `${md(ymdOf(iso))} ${kstHM(iso)}`;
+  const states = Object.fromEntries(S.autos.map(a => [a.id, autoState(a)]));
+  const bad = S.autos.filter(a => ['fail', 'missed'].includes(states[a.id].kind));
+  let h = `<div class="autos">`;
+  h += bad.length
+    ? `<div class="abad">⚠️ 확인 필요 ${bad.length}개 — ${bad.map(a => esc(a.name)).join(' · ')}</div>`
+    : `<div class="agood">✅ GitHub·워커 예약은 모두 제때 돌았어요</div>`;
+  h += `<div class="muted" style="font-size:12.5px;margin:6px 0 4px">☁️ 클라우드 Claude · ⚙️ GitHub·워커(PC 꺼져도 됨) · 💻 PC(켜져 있어야 함). ☁️·💻는 결과를 할 일 탭 '🤖' 반복 할 일로 확인.</div>`;
   AUTO_FREQ.forEach(([fq, label]) => {
     const list = S.autos.filter(a => a.freq === fq);
     if (!list.length) return;
     h += `<h3 class="ah">${label} <span class="muted">${list.length}개</span></h3><div class="atbl">`;
     list.forEach(a => {
-      const last = (S.autoRuns[a.id] || [])[0];
-      const lastHtml = a.workflow ? (last ? `<a href="${esc(last.url)}" target="_blank" rel="noopener">${runMark(last)} ${md(ymdOf(last.at))} ${kstHM(last.at)}</a>` : '<span class="muted">기록 없음</span>') : '<span class="muted">🤖 할 일로 확인</span>';
+      const st = states[a.id];
+      let res;
+      if (st.kind === 'fail') res = `<a class="bad" href="${esc(st.last.url)}" target="_blank" rel="noopener">⚠️ 실패 ${when(st.last.at)}</a>`;
+      else if (st.kind === 'missed') res = `<span class="bad">⚠️ 안 돎 (마지막 ${when(st.last.at)})</span>`;
+      else if (st.kind === 'ok') res = `<a href="${esc(st.last.url)}" target="_blank" rel="noopener">✅ ${when(st.last.at)}</a>`;
+      else if (st.kind === 'none') res = '<span class="muted">아직 기록 없음</span>';
+      else res = '<span class="muted">🤖 할 일로 확인</span>';
       const rec = a.rec ? `<div class="arec">➡ 추천: ${AUTO_WHERE[a.rec][0]} ${AUTO_WHERE[a.rec][1]}${a.rec_note ? ' — ' + esc(a.rec_note) : ''}</div>` : '';
-      h += `<div class="arow"><div class="an2">${esc(a.name)}<div class="muted ad">${esc(a.detail || '')}</div>${rec}</div><div>${whereTag(a)}</div><div class="aw2">${esc(autoWhen(a))}</div><div class="al">${lastHtml}</div></div>`;
+      h += `<div class="arow${['fail', 'missed'].includes(st.kind) ? ' isbad' : ''}"><div class="an2">${esc(a.name)}<div class="muted ad">${esc(a.detail || '')}</div>${rec}</div><div>${whereTag(a)}</div><div class="aw2">${esc(autoWhen(a))}</div><div class="al">${res}</div></div>`;
     });
     h += `</div>`;
   });
