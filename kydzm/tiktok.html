@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>틱톡 연결</title>
+<style>
+:root{--bg:#f6f6f4;--card:#fff;--text:#1d1d1f;--muted:#6b6b6b;--accent:#111}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1f1f1f;--text:#eee;--muted:#9a9a9a;--accent:#fff}}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif;line-height:1.6}
+.wrap{max-width:520px;margin:40px auto;padding:0 16px}
+.card{background:var(--card);border-radius:14px;padding:22px}
+h1{font-size:20px;margin:0 0 10px}
+.btn{display:inline-block;background:var(--accent);color:var(--bg);border:0;border-radius:10px;padding:12px 18px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none}
+.muted{color:var(--muted);font-size:13.5px}
+.ok{color:#2d8f4c;font-weight:700}.err{color:#d33;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card" id="box">불러오는 중…</div>
+<p class="muted">이 페이지는 공대남자 운영판 전용이에요. TikTok 로그인으로 받은 1회용 코드를 비공개 저장소(cupas)의 연결 작업에 넘기기만 하고, 토큰은 여기 남기지 않습니다. 이용약관 <a href="/tiktok/terms.html">보기</a> · 개인정보처리방침 <a href="/tiktok/privacy.html">보기</a></p></div>
+<script>
+// 틱톡 연결 (사용자 261117) — 샌드박스 앱 'kydz calendar'. Client key는 공개 값, secret은 cupas Secrets에만.
+const CLIENT_KEY = 'sbawnc6030u39o2lyr';
+const REDIRECT = 'https://kydz.kr/kydzm/tiktok.html';
+const SCOPES = 'user.info.basic,user.info.profile,user.info.stats,video.list,video.upload,video.manage';
+const box = document.getElementById('box');
+const tok = (() => { try { return localStorage.getItem('kydz_cupas_gh_token') || ''; } catch (e) { return ''; } })();
+const q = new URLSearchParams(location.search);
+
+function start() {
+  const state = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  try { sessionStorage.setItem('tt_state', state); } catch (e) {}
+  location.href = 'https://www.tiktok.com/v2/auth/authorize/?' + new URLSearchParams({
+    client_key: CLIENT_KEY, scope: SCOPES, response_type: 'code', redirect_uri: REDIRECT, state });
+}
+async function dispatch(code) {
+  const r = await fetch('https://api.github.com/repos/kydxyz-git/cupas/actions/workflows/tiktok.yml/dispatches', {
+    method: 'POST', headers: { Authorization: 'Bearer ' + tok, Accept: 'application/vnd.github+json' },
+    body: JSON.stringify({ ref: 'main', inputs: { code } }) });
+  if (r.status !== 204) throw new Error('연결 작업 실행 실패 (' + r.status + ')');
+}
+(async () => {
+  if (!tok) { box.innerHTML = '<h1>틱톡 연결</h1><p class="err">이 브라우저에 쿠파스 토큰이 없어요.</p><p class="muted"><a href="threads.html">스레드 관리</a>에서 한 번 넣은 브라우저(폰·PC)에서 열어 주세요.</p>'; return; }
+  if (q.get('error')) { box.innerHTML = `<h1>틱톡 연결</h1><p class="err">TikTok에서 연결을 취소했거나 막혔어요: ${q.get('error_description') || q.get('error')}</p><button class="btn" id="go">다시 연결</button>`; document.getElementById('go').onclick = start; return; }
+  const code = q.get('code');
+  if (code) {
+    history.replaceState(null, '', location.pathname);   // 주소창에서 1회용 코드 지우기
+    let saved = ''; try { saved = sessionStorage.getItem('tt_state') || ''; } catch (e) {}
+    if (saved && q.get('state') !== saved) { box.innerHTML = '<h1>틱톡 연결</h1><p class="err">확인 값이 맞지 않아요. 다시 연결해 주세요.</p><button class="btn" id="go">다시 연결</button>'; document.getElementById('go').onclick = start; return; }
+    box.innerHTML = '<h1>틱톡 연결</h1><p>연결 작업 보내는 중…</p>';
+    try {
+      await dispatch(code);
+      box.innerHTML = '<h1>틱톡 연결</h1><p class="ok">✅ 연결 요청을 보냈어요.</p><p>1~2분 뒤 cupas가 토큰을 받고 영상 목록을 가져와요. 그다음 <a href="board.html?tab=posts">올린 글 달력</a>에 TikTok(검정)이 나와요.</p><p class="muted">앞으로는 매일 새벽 04:40에 자동으로 가져와요. 1년에 한 번쯤 다시 연결이 필요할 수 있어요.</p>';
+    } catch (e) { box.innerHTML = `<h1>틱톡 연결</h1><p class="err">${e.message}</p><p class="muted">1회용 코드는 몇 분 안에 만료돼요. 다시 연결해 주세요.</p><button class="btn" id="go">다시 연결</button>`; document.getElementById('go').onclick = start; }
+    return;
+  }
+  box.innerHTML = '<h1>틱톡 연결</h1><p>TikTok 계정(@kyd_zm)으로 로그인하고 허락하면, 올린 영상·조회수·팔로워 수를 매일 운영판 달력에 가져와요.</p><p class="muted">영상을 지우는 기능은 쓰지 않아요. 영상 올리기·문구 수정은 사용자가 \'확정\'한 것만 따로 실행해요.</p><button class="btn" id="go">TikTok으로 연결</button>';
+  document.getElementById('go').onclick = start;
+})();
+</script>
+</body>
+</html>
