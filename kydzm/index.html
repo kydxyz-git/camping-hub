@@ -3173,7 +3173,11 @@ async function loadDealTop() {
     if (keys.has(k)) continue; keys.add(k); pick.push(r);
     if (pick.length >= 7) break;   // 5 → 7 (폰 한 화면에 들어감, 사용자 요청 261103)
   }
-  _dealTop = { at: Date.now(), pick, total: rows.length, records: recs.length };
+  // 마지막 수집 시각 + 그 수집에서 처음 들어온 딜은 NEW (사용자 261117)
+  const runs = (d1.runs && d1.runs.length) ? d1.runs : (d0.runs || []);
+  const lastAt = runs.length ? `${(d1.runs && d1.runs.length) ? today : yday} ${runs[runs.length - 1].at}` : '';
+  pick.forEach(r => { r.isNew = !!lastAt && String(r.found_at || '').slice(0, 16) === lastAt; });
+  _dealTop = { at: Date.now(), pick, total: rows.length, records: recs.length, lastAt };
   return _dealTop;
 }
 function dealCaption(r) {   // 인스타 스토리·스레드용 짧은 문구 (사실만: 제목·할인·카페 출처)
@@ -3185,16 +3189,16 @@ async function renderDealTop() {
   const card = document.getElementById('deal-top-card');
   if (!card) return;
   try {
-    const { pick, total, records } = await loadDealTop();
+    const { pick, total, records, lastAt } = await loadDealTop();
     card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
         <div class="section-title" style="margin:0;white-space:nowrap">🔥 오늘의 캠핑 딜 TOP 7 <span class="help deal-sub" style="display:inline">· 콘텐츠 소재</span></div>
         <a class="btn btn-sm btn-ghost" href="deals.html" style="white-space:nowrap;flex:none">딜 보드 →</a></div>
-      <div class="help" style="margin:4px 0 8px">어제·오늘 모은 카페 글 ${records}개 중 딜 후보 ${total}개에서 골랐어요. 딜 보드에서 좋음/아님을 매길수록 더 잘 골라요.</div>
+      <div class="help" style="margin:4px 0 8px">${lastAt ? `<b>마지막 수집 ${escapeHtml(lastAt.slice(5).replace('-', '/'))}</b> · ` : ''}어제·오늘 모은 카페 글 ${records}개 중 딜 후보 ${total}개에서 골랐어요. 딜 보드에서 좋음/아님을 매길수록 더 잘 골라요.</div>
       ${pick.length ? pick.map((r, i) => `<div style="padding:8px 0;border-top:1px solid var(--line, #eee)">
         <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between">
           <a href="${escapeHtml(r.link)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;min-width:0">
-            <b>${i + 1}. ${escapeHtml(r.title || '')}</b>
-            <div class="help deal-meta" style="margin-top:2px">${r.d ? `<b style="color:#d93025">${r.d}%</b> · ` : ''}${escapeHtml(((r.brands || []).concat(r.items || [])).join(' · '))}${(r.brands || []).length || (r.items || []).length ? ' · ' : ''}${escapeHtml(r.cafe || '')} · ${escapeHtml(String(r.found_at || '').slice(5, 16))}${r.date_status === 'live' ? ' · 진행 중' : r.date_status === 'future' ? ' · 예정' : ''}</div></a>
+            <b>${i + 1}. ${r.isNew ? '<span style="background:#d93025;color:#fff;border-radius:4px;padding:0 5px;font-size:11px;margin-right:4px;vertical-align:1px">NEW</span>' : ''}${escapeHtml(r.title || '')}</b>
+            <div class="help deal-meta" style="margin-top:2px">${r.d ? `<b style="color:#d93025">${r.d}%</b> · ` : ''}${escapeHtml(((r.brands || []).concat(r.items || [])).join(' · '))}${(r.brands || []).length || (r.items || []).length ? ' · ' : ''}${escapeHtml(r.cafe || '')} · 수집 ${escapeHtml(String(r.found_at || '').slice(5, 16))}${r.date_status === 'live' ? ' · 진행 중' : r.date_status === 'future' ? ' · 예정' : ''}</div></a>
           <button type="button" class="btn btn-sm btn-ghost" data-deal-copy="${i}" title="인스타 스토리·스레드용 문구 복사" style="flex:none">📋 문구</button></div></div>`).join('')
         : '<div class="help">오늘은 고를 만한 딜이 없어요.</div>'}`;
     card.querySelectorAll('[data-deal-copy]').forEach(b => b.onclick = async () => {
