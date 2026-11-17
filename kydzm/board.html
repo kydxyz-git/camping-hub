@@ -370,14 +370,15 @@
   .atbl .bad { color: var(--danger); font-weight: 800; }
   .atbl tr.isbad td:not(.a-grp) { background: var(--danger-soft); }
   .atbl tr.arow2 { cursor: pointer; } .atbl tr.aopen td:not(.a-grp) { background: var(--accent-soft); }
-  .atbl tr.adetail td { font-size: 12.5px; line-height: 1.55; padding: 8px 12px 10px 9px; border-top: 0; background: var(--accent-soft); white-space: normal; }
+  .atbl tr.adetail td { font-size: 12.5px; line-height: 1.55; padding: 4px 9px 10px 9px; border-top: 0; background: var(--accent-soft); white-space: normal; }
+  .atbl .a-dbody-m { display: none; }
   .atbl .a-detail-txt { margin-top: 4px; white-space: pre-wrap; }
   .atbl .warnc { color: #d9480f; font-weight: 800; }
   .chk-old { color: var(--muted); font-weight: 900; display: inline-block; width: 1.2em; text-align: center; }
   .arec2 { color: #d9480f; font-weight: 700; }
   @media (hover: hover) { .atbl tr:hover td:not(.a-grp) { background: var(--accent-soft); } .atbl tr.isbad:hover td:not(.a-grp) { background: var(--danger-soft); } }
   @media (max-width: 700px) {
-    .atbl .a-desc, .atbl .a-grp, .atbl .a-time { display: none; }
+    .atbl .a-desc, .atbl .a-grp, .atbl .a-time, .atbl .a-dpad, .atbl .a-dbody { display: none; } .atbl .a-dbody-m { display: table-cell; }
     .atbl .ghead { display: table-row; } .atbl .ghead td { font-weight: 800; font-size: 12.5px; background: var(--accent-soft); border-top: 0; padding: 5px 9px; }
     .atbl tr.gfirst td { border-top: 0; }
     .atbl .a-name { width: auto; white-space: normal; } .atbl .a-time-m { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
@@ -1271,12 +1272,12 @@ function autosHtml() {
     const span = first ? list.slice(k).findIndex(b => grp(b) !== g) : 0;
     const gl = first ? list.slice(k, span < 0 ? undefined : k + span) : [];
     // 펼친 상세 줄도 묶음 칸 안에 들어가야 표가 안 밀림 (사용자 261117 '표가 깨지면서')
-    const rows = first ? gl.length + (gl.some(b => b.id === S.autoOpen) ? 1 : 0) : 0;
+    const rows = first ? gl.length + gl.filter(b => (S.autoOpen || {})[b.id]).length : 0;
     const rec = a.rec ? `<span class="arec2">➡ ${AUTO_WHERE[a.rec][0]} ${AUTO_WHERE[a.rec][1]}로 옮기기 추천${a.rec_note ? ' — ' + esc(a.rec_note) : ''}</span>` : '';
     const desc = `${esc(a.detail || '')}${rec ? (a.detail ? ' ' : '') + rec : ''}`;
     const full = `${a.detail || ''}${a.rec ? ' / 추천: ' + AUTO_WHERE[a.rec][1] + (a.rec_note ? ' — ' + a.rec_note : '') : ''}`;
     if (first) h += `<tr class="ghead"><td colspan="5">${esc(g)}</td></tr>`;
-    const open = S.autoOpen === a.id;
+    const open = !!(S.autoOpen || {})[a.id];   // 여러 개 따로 열고 닫음 (사용자 261117)
     h += `<tr class="arow2${first ? ' gfirst' : ''}${isBad(a) ? ' isbad' : ''}${open ? ' aopen' : ''}" data-aid="${esc(a.id)}">`
       + `<td class="a-ic" title="${wn}">${ic}</td>`
       + (first ? `<td class="a-grp" rowspan="${rows}">${esc(g)}</td>` : '')
@@ -1290,7 +1291,7 @@ function autosHtml() {
       const mk = { fail: '❌ 실패', warn: '⚠️ 문제', missed: '⚠️ 안 돎', ok: '✅ 성공', unk: '❔ 기록 없음' }[st.kind] || '—';
       const body = L ? `<b>${mk}</b> · ${when(L.at)}${L.note ? '<br>' + esc(L.note) : ''}${L.detail ? `<div class="a-detail-txt">${esc(L.detail)}</div>` : ''}${L.url ? `<br><a href="${esc(L.url)}" target="_blank" rel="noopener">실행 기록 열기 ↗</a>` : ''}`
         : `<b>${mk}</b> · 돈 기록이 없어요${a.workflow ? '' : ' — 그 Claude가 last_run을 안 적었거나 안 돎'}`;
-      h += `<tr class="adetail"><td class="a-ic"></td><td colspan="4">${body}${st.kind === 'missed' && st.due ? `<br><span class="muted">돌았어야 할 시각 ${when(new Date(st.due).toISOString())}</span>` : ''}</td></tr>`;
+      h += `<tr class="adetail"><td class="a-ic"></td><td class="a-time"></td><td class="a-dpad"></td><td class="a-dbody" colspan="2">${body}${st.kind === 'missed' && st.due ? `<br><span class="muted">돌았어야 할 시각 ${when(new Date(st.due).toISOString())}</span>` : ''}</td><td class="a-dbody-m" colspan="2">${body}${st.kind === 'missed' && st.due ? `<br><span class="muted">돌았어야 할 시각 ${when(new Date(st.due).toISOString())}</span>` : ''}</td></tr>`;
     }
   });
   h += `</tbody></table>`;
@@ -1890,7 +1891,7 @@ function bind() {
     const afq = e.target.closest('[data-afq]');
     if (afq) { S.autoFq = afq.dataset.afq; render(); return; }
     const arow = !e.target.closest('a') && e.target.closest('tr[data-aid]');
-    if (arow) { S.autoOpen = S.autoOpen === arow.dataset.aid ? '' : arow.dataset.aid; render(); return; }
+    if (arow) { const o = S.autoOpen = S.autoOpen || {}; o[arow.dataset.aid] = !o[arow.dataset.aid]; render(); return; }
     const ppf = e.target.closest('[data-ppf]');
     if (ppf) { S.postsPf = ppf.dataset.ppf; try { localStorage.setItem('kydz_posts_pf', S.postsPf); } catch (_) {} render(); return; }
     const pm = e.target.closest('[data-pm]');
