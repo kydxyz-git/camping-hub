@@ -872,7 +872,7 @@ function render() {
   const overN = tasksIn('overdue').length;
   let h = '';
   if (S.failed) h += `<div class="banner err savefail"><span>저장하지 못했어요: ${esc(S.failed)} (바꾼 내용은 이 화면에 남아 있어요)</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
-  if (tabs.length) h += `<div class="tabs">${tabs.map(([k, l]) => `<button class="tab${tab === k ? ' on' : ''}" data-tab="${k}">${l}${(k === 'inbox' || (pc && k === 'tasks')) && inboxN ? ` <span class="badge">${inboxN}</span>` : ''}${k === 'overdue' && overN ? ` <span class="badge">${overN}</span>` : ''}</button>`).join('')}</div>`;
+  if (tabs.length) h += `<div class="tabs">${tabs.map(([k, l]) => `<button class="tab${tab === k ? ' on' : ''}" data-tab="${k}">${l}${(k === 'inbox' || (pc && k === 'tasks')) && inboxN ? ` <span class="badge">${inboxN}</span>` : ''}${k === 'overdue' && overN ? ` <span class="badge">${overN}</span>` : ''}${k === 'autos' && autoBad().length ? ` <span class="badge">⚠${autoBad().length}</span>` : ''}</button>`).join('')}</div>`;
   if (tab === 'deals') h += dealsHtml();
   else if (tab === 'posts') h += postsHtml();
   else if (tab === 'autos') h += autosHtml();
@@ -1202,6 +1202,7 @@ function renderEmbed(m) {
   const rows = l => l.map(t => taskRowHtml(t)).join('');
   let h = '';
   if (S.failed) h += `<div class="banner err savefail"><span>저장 못 함: ${esc(S.failed)}</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
+  h += autoBadHtml(true);
   h += `<div class="emb-hint">꾹 눌러서 다른 칸으로 끌면 날짜가 바뀌어요</div>`;
   if (overdue.length) h += `<div class="emb-sec overdue"><div class="emb-h">지난 일정 <span class="n">${overdue.length}개 · 체크 안 함</span></div>${rows(overdue)}</div>`;
   h += `<div class="emb-sec" data-drop="today"><div class="emb-h">오늘 <span class="ymd">(${kstToday()})</span> <span class="n">${today.length}개</span></div>${today.length ? rows(today) : '<div class="empty">오늘 할 일 없음 🎉</div>'}</div>`;
@@ -1266,6 +1267,17 @@ function bindTouchDrag(m) {
   });
   m.addEventListener('touchcancel', reset);
   m.addEventListener('contextmenu', e => { if (ghost || timer) e.preventDefault(); });
+}
+// 자동화 문제(GitHub·워커 예약 실패·제때 안 돎)가 있을 때만 할 일 화면 맨 위에 (사용자 261117 '문제가 생겼을 때만')
+function autoBad() {
+  if (!S.autos) { if (!S.autosLoading && !S.autosErr && S.files) loadAutos(); return []; }
+  return S.autos.filter(a => ['fail', 'missed'].includes(autoState(a).kind));
+}
+function autoBadHtml(embed) {
+  const bad = autoBad();
+  if (!bad.length) return '';
+  const go = embed ? `<a class="btn small" href="board.html?tab=autos" target="_top">보기</a>` : `<button class="btn small" data-tab="autos">보기</button>`;
+  return `<div class="banner err" style="display:flex;gap:8px;align-items:center;justify-content:space-between"><span>⚠️ 자동화 문제 ${bad.length}개 — ${bad.map(a => esc(a.name)).join(' · ')}</span>${go}</div>`;
 }
 function staleWarnHtml() {
   const st = projects().map(p => [p, staleDays(p)]).filter(([, d]) => d !== null && d > STALE_DAYS);
@@ -1397,7 +1409,7 @@ function reviewAll() {
   });
 }
 function tasksHtml(onlyView) {
-  let h = staleWarnHtml();
+  let h = autoBadHtml() + staleWarnHtml();
   const pf = curPf(), po = pf ? { project: pf, hideProject: true } : {};
   h += pfHtml();
   if (pf) h += projectPanelHtml(pf);
