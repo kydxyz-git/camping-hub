@@ -297,7 +297,11 @@
   .ph { display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: 700; }
   .pchip .k { font-weight: 700; white-space: nowrap; }
   .sp { color: #2d8f4c; font-weight: 800; }
-  .ptype-REELS { background: #e05591; } .ptype-FEED { background: #2f80ed; } .ptype-SHORTS { background: #f03e3e; } .ptype-LONG { background: #862e2e; }
+  /* 올린 글 달력 — 플랫폼 3색만 (사용자 261117: 릴스·피드·롱폼·쇼츠 구분 말고 인스타/블로그/유튜브) */
+  .ptype-ig { background: #e1306c; } .ptype-blog { background: #03c75a; } .ptype-yt { background: #ff0000; }
+  .pchip.pk-ig { background: rgba(225,48,108,.16); } .pchip.pk-blog { background: rgba(3,199,90,.16); } .pchip.pk-yt { background: rgba(255,0,0,.13); }
+  .plegend { display: inline-flex; gap: 10px; font-size: 12.5px; font-weight: 700; margin-left: 8px; }
+  .plegend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
   .plist { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
   .plist a { display: flex; gap: 10px; align-items: center; background: var(--bg); border-radius: 10px; padding: 8px; color: var(--text); text-decoration: none; font-size: 14px; }
   .plist .ph { width: auto; height: auto; padding: 1px 6px; font-size: 11px; }
@@ -306,7 +310,8 @@
   .plist .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   html.embed .cal-head { position: sticky; top: 0; z-index: 2; background: var(--accent-soft); padding: 4px 0; margin-bottom: 6px; }
   @media (max-width: 700px) { .cal .day { min-height: 58px; } .pchip .k { display: none; } .pchip { padding: 0; } .pchip img, .pchip .ph { width: 100%; height: 38px; border-radius: 5px 5px 0 0; } }
-  .pk-REELS { border-bottom: 3px solid #e05591; } .pk-FEED { border-bottom: 3px solid #2f80ed; } .pk-SHORTS { border-bottom: 3px solid #f03e3e; } .pk-LONG { border-bottom: 3px solid #862e2e; }
+  .pk-ig { border-left: 4px solid #e1306c; } .pk-blog { border-left: 4px solid #03c75a; } .pk-yt { border-left: 4px solid #ff0000; }
+  @media (max-width: 700px) { .pk-ig, .pk-blog, .pk-yt { border-left: 0; border-bottom: 4px solid; } .pk-ig { border-color: #e1306c; } .pk-blog { border-color: #03c75a; } .pk-yt { border-color: #ff0000; } }
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
 </head>
@@ -911,17 +916,32 @@ async function loadPosts() {
       thumb: m.thumb || (m.type === 'IMAGE' ? m.url : '') || ((m.children || []).find(c => c.type === 'IMAGE') || {}).url || '' }));
     posts.forEach(p => { p.src = 'ig'; });
     if (f['state/yt_posts.json']) ((await readBlobJson(f['state/yt_posts.json'])).posts || []).forEach(p => posts.push({ ...p, src: 'yt' }));
+    // 블로그: 공개 저장소 docs/blog.md '올린 글 기록' 표(| YYMMDD | 제목 | 주소 |)에서 (261117)
+    try {
+      const md = await (await fetch('/docs/blog.md?t=' + Date.now(), { cache: 'no-store' })).text();
+      const sec = md.split(/##\s*올린 글 기록/)[1] || '';
+      sec.split(/\r?\n/).forEach(line => {
+        const c = line.split(/(?<!\\)\|/).map(x => x.trim());
+        if (c.length < 4 || !/^\d{6}$/.test(c[1])) return;
+        const d = `20${c[1].slice(0, 2)}-${c[1].slice(2, 4)}-${c[1].slice(4, 6)}`;
+        const url = (c[3].match(/https?:\/\/\S+/) || [''])[0].replace(/[)>]+$/, '');
+        posts.push({ id: 'blog_' + c[1] + '_' + posts.length, at: d + 'T12:00:00+09:00', src: 'blog', permalink: url, title: c[2].replace(/\\\|/g, '|').replace(/\s+\|\s+/, ' — '), thumb: '' });
+      });
+    } catch (e) { /* 블로그 기록 못 읽어도 인스타·유튜브는 그대로 */ }
     S.posts = posts.filter(p => p.at);
   } catch (e) { S.postsErr = e.message; }
   S.postsLoading = false; renderSoon();
 }
-const POST_KIND = { REELS: '릴스', FEED: '피드', SHORTS: '쇼츠', LONG: '롱폼' };
-const postKind = p => POST_KIND[p.product] ? p.product : 'FEED';
-const postLabel = p => POST_KIND[postKind(p)];
+const POST_SRC = { ig: '인스타', blog: '블로그', yt: '유튜브' };   // 색은 플랫폼 3개만 (261117)
+const postKind = p => POST_SRC[p.src] ? p.src : 'ig';
+const postLabel = p => POST_SRC[postKind(p)];
 function postChip(p) {
   const ph = `<span class="ph ptype-${postKind(p)}">${postLabel(p)}</span>`;
   const img = p.thumb ? `<img src="${esc(p.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=this.dataset.ph" data-ph="${esc(ph)}">` : ph;
-  return `<a class="pchip pk-${postKind(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener" title="${esc(p.at.slice(11, 16) + ' ' + (p.title || ''))}">${img}<span class="k">${postLabel(p)}${p.sponsored ? ' <span class="sp">협</span>' : ''}</span></a>`;
+  const inner = `${img}<span class="k">${postLabel(p)}${p.sponsored ? ' <span class="sp">협</span>' : ''}</span>`;
+  const t = esc((p.src === 'blog' ? '' : p.at.slice(11, 16) + ' ') + (p.title || ''));
+  return p.permalink ? `<a class="pchip pk-${postKind(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener" title="${t}">${inner}</a>`
+    : `<div class="pchip pk-${postKind(p)}" title="${t}">${inner}</div>`;
 }
 function postsHtml() {
   if (!S.posts) { if (!S.postsErr) loadPosts(); return `<div class="card">${S.postsErr ? '게시물 목록을 못 읽었어요: ' + esc(S.postsErr) : '올린 글 불러오는 중…'}</div>`; }
@@ -936,7 +956,8 @@ function postsHtml() {
   const start = addDays(`${ym}-01`, -startWd), today = kstToday();
   const oldest = S.posts.reduce((a, p) => p.at < a ? p.at : a, S.posts.length ? S.posts[0].at : '').slice(0, 10);
   let h = `<div class="cal-head"><button class="cal-nav" data-pm="-1" aria-label="이전 달">‹</button><span class="ttl">${y}년 ${m}월</span><button class="cal-nav" data-pm="1" aria-label="다음 달">›</button>`
-    + `<span class="sum">인스타 릴스 ${cnt('REELS')} · 피드 ${cnt('FEED')}${sp ? ` · 협찬 ${sp}` : ''} | 유튜브 롱폼 ${cnt('LONG')} · 쇼츠 ${cnt('SHORTS')}${oldest ? ` · ${oldest.slice(2, 4)}/${md(oldest)}부터 기록` : ''}</span></div>`;
+    + `<span class="plegend"><span><i class="ptype-ig"></i>인스타 ${cnt('ig')}</span><span><i class="ptype-blog"></i>블로그 ${cnt('blog')}</span><span><i class="ptype-yt"></i>유튜브 ${cnt('yt')}</span></span>`
+    + `<span class="sum">${sp ? `협찬 ${sp}` : ''}${oldest ? `${sp ? ' · ' : ''}${oldest.slice(2, 4)}/${md(oldest)}부터 기록` : ''}</span></div>`;
   h += `<div class="cal">${WD.map(w => `<div class="wd">${w}</div>`).join('')}`;
   for (let i = 0; i < 42; i++) {
     const d = addDays(start, i);
@@ -947,7 +968,7 @@ function postsHtml() {
   h += `</div><div class="plist">`;
   h += inMonth.length ? inMonth.map(p => {
     const d = p.at.slice(0, 10), wd = WD[new Date(d + 'T00:00:00Z').getUTCDay()];
-    return `<a href="${esc(p.permalink)}" target="_blank" rel="noopener"><span class="when">${md(d)} ${wd} ${p.at.slice(11, 16)}</span><span class="ph ptype-${postKind(p)}">${postLabel(p)}</span>${p.sponsored ? '<span class="sp">협찬</span>' : ''}<span class="t">${esc(p.title || '')}</span></a>`;
+    return `<a href="${esc(p.permalink || '#')}" target="_blank" rel="noopener"><span class="when">${md(d)} ${wd}${p.src === 'blog' ? '' : ' ' + p.at.slice(11, 16)}</span><span class="ph ptype-${postKind(p)}">${postLabel(p)}</span>${p.sponsored ? '<span class="sp">협찬</span>' : ''}<span class="t">${esc(p.title || '')}</span></a>`;
   }).join('') : '<div class="muted">이 달에 올린 글이 없어요.</div>';
   return h + `</div>`;
 }
