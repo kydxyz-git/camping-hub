@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: '20 19 * * *'
   workflow_dispatch:
+  # 예비: 깃허브가 새벽 예약을 빼먹는 날이 있어서(261118) 매시 통계 커밋 때 05시 이후 오늘 아직 안 돌았으면 실행
+  push:
+    branches: [main]
+    paths: ['data/stats.json']
 
 permissions:
   contents: write
@@ -25,7 +29,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: 오늘 이미 돌았으면 건너뜀 (통계 커밋 예비 실행일 때)
+        if: github.event_name == 'push'
+        run: |
+          h=$(TZ=Asia/Seoul date +%H); today=$(TZ=Asia/Seoul date +%F)
+          last=$(python3 -c "import json;print(json.load(open('data/blog_posts.json')).get('checked_at',''))" 2>/dev/null || echo "")
+          if [ "$h" -lt 5 ] || [ "${last:0:10}" = "$today" ]; then echo "SKIP=1" >> "$GITHUB_ENV"; echo "건너뜀 (지금 ${h}시, 마지막 $last)"; fi
       - name: Fetch blog RSS
+        if: env.SKIP != '1'
         run: python3 tools/blog_rss.py
       - name: Commit & push
         run: |
