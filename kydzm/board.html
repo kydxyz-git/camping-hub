@@ -295,7 +295,7 @@
   .pchip { display: flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--text); text-decoration: none; border-radius: 6px; padding: 2px; background: var(--accent-soft); overflow: hidden; }
   .pchip img, .ph { width: 30px; height: 40px; object-fit: cover; border-radius: 4px; flex: none; }
   .ph { display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: 700; }
-  .pchip .k { font-weight: 700; white-space: nowrap; }
+  .pchip .k { font-weight: 700; white-space: nowrap; } .pchip .k .tm { font-weight: 500; opacity: .75; font-variant-numeric: tabular-nums; } .pchip .tm-m { display: none; }
   .sp { color: #2d8f4c; font-weight: 800; }
   /* 올린 글 달력 — 플랫폼 3색만 (사용자 261117: 릴스·피드·롱폼·쇼츠 구분 말고 인스타/블로그/유튜브) */
   .ptype-ig { background: #7b3fe4; } .ptype-blog { background: #03c75a; } .ptype-yt { background: #ff0000; } .ptype-clip { background: #ff8a00; } .ptype-fb { background: #1877f2; } .ptype-tt { background: #111; }
@@ -310,7 +310,7 @@
   .plist .when { color: var(--muted); font-size: 12.5px; }
   .plist .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   html.embed .cal-head { position: sticky; top: 0; z-index: 2; background: var(--accent-soft); padding: 4px 0; margin-bottom: 6px; }
-  @media (max-width: 700px) { .cal .day { min-height: 58px; } .pchip .k { display: none; } .pchip { padding: 0; } .pchip img, .pchip .ph { width: 100%; height: 38px; border-radius: 5px 5px 0 0; } }
+  @media (max-width: 700px) { .cal .day { min-height: 58px; } .pchip .k { display: none; } .pchip { padding: 0; } .pchip img, .pchip .ph { width: 100%; height: 38px; border-radius: 5px 5px 0 0; } .pchip { flex-direction: column; } .pchip .tm-m { display: block; font-size: 10px; line-height: 1.3; text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; } }
   .pk-ig { border-left: 4px solid #7b3fe4; } .pk-blog { border-left: 4px solid #03c75a; } .pk-yt { border-left: 4px solid #ff0000; } .pk-clip { border-left: 4px solid #ff8a00; } .pk-fb { border-left: 4px solid #1877f2; } .pk-tt { border-left: 4px solid #111; }
   @media (max-width: 700px) { .pk-ig, .pk-fb, .pk-blog, .pk-yt, .pk-clip, .pk-tt { border-left: 0; border-bottom: 4px solid; } .pk-ig { border-color: #7b3fe4; } .pk-blog { border-color: #03c75a; } .pk-yt { border-color: #ff0000; } .pk-clip { border-color: #ff8a00; } .pk-fb { border-color: #1877f2; } .pk-tt { border-color: #111; } }
   .ptable-wrap { margin-top: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -987,7 +987,7 @@ async function loadPosts() {
     if (f['state/fb_posts.json']) ((await readBlobJson(f['state/fb_posts.json'])).posts || []).forEach(p => posts.push({ ...p, src: 'fb' }));   // 페이스북 페이지 (261117)
     if (f['state/tiktok_posts.json']) ((await readBlobJson(f['state/tiktok_posts.json'])).posts || []).forEach(p => posts.push({ ...p, src: 'tt' }));   // 틱톡 (261117)
     // 네이버 클립: API·RSS가 없어 사용자가 보낸 '내 클립' 캡처를 옮긴 것 (cupas state/clip_posts.json, 261117)
-    if (f['state/clip_posts.json']) ((await readBlobJson(f['state/clip_posts.json'])).posts || []).forEach(p => posts.push({ ...p, src: 'clip', permalink: p.url || '' }));
+    if (f['state/clip_posts.json']) ((await readBlobJson(f['state/clip_posts.json'])).posts || []).forEach(p => posts.push({ ...p, src: 'clip', permalink: p.url || '', notime: true }));
     // 블로그: data/blog_posts.json(blog-rss 액션이 네이버 블로그 RSS에서 매일 2번) + 그 전 기록은 docs/blog.md '올린 글 기록' 표 (261117)
     const blogDays = new Set();
     try {
@@ -1003,7 +1003,7 @@ async function loadPosts() {
         const d = `20${c[1].slice(0, 2)}-${c[1].slice(2, 4)}-${c[1].slice(4, 6)}`;
         if (blogDays.has(d)) return;   // RSS에 있는 날은 RSS 것으로
         const url = (c[3].match(/https?:\/\/\S+/) || [''])[0].replace(/[)>]+$/, '');
-        posts.push({ id: 'blog_' + c[1] + '_' + posts.length, at: d + 'T12:00:00+09:00', src: 'blog', permalink: url, title: c[2].replace(/\\\|/g, '|').replace(/\s+\|\s+/, ' — '), thumb: '' });
+        posts.push({ id: 'blog_' + c[1] + '_' + posts.length, at: d + 'T12:00:00+09:00', notime: true, src: 'blog', permalink: url, title: c[2].replace(/\\\|/g, '|').replace(/\s+\|\s+/, ' — '), thumb: '' });
       });
     } catch (e) { /* 블로그 기록 못 읽어도 인스타·유튜브는 그대로 */ }
     S.posts = posts.filter(p => p.at);
@@ -1013,11 +1013,14 @@ async function loadPosts() {
 const POST_SRC = { ig: '인스타', fb: '페북', blog: '블로그', yt: '유튜브', clip: '클립', tt: '틱톡' };   // 색은 플랫폼 3개만 (261117)
 const postKind = p => POST_SRC[p.src] ? p.src : 'ig';
 const postLabel = p => POST_SRC[postKind(p)];
+function postTime(p) { return p.notime || !/T\d\d:\d\d/.test(p.at || '') ? '' : p.at.slice(11, 16); }
 function postChip(p) {
   const ph = `<span class="ph ptype-${postKind(p)}">${postLabel(p)}</span>`;
   const img = p.thumb ? `<img src="${esc(p.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=this.dataset.ph" data-ph="${esc(ph)}">` : ph;
-  const inner = `${img}<span class="k">${postLabel(p)}${p.sponsored ? ' <span class="sp">협</span>' : ''}</span>`;
-  const t = esc((['blog', 'clip'].includes(p.src) ? '' : p.at.slice(11, 16) + ' ') + (p.title || ''));
+  // 달력에도 올린 시각 (사용자 261117) — 시각을 모르는 것(클립 캡처·블로그 옛 기록표)은 빼고
+  const tm = postTime(p);
+  const inner = `${img}<span class="k">${postLabel(p)}${tm ? ` <span class="tm">${tm}</span>` : ''}${p.sponsored ? ' <span class="sp">협</span>' : ''}</span>${tm ? `<span class="tm-m">${tm}</span>` : ''}`;
+  const t = esc((tm ? tm + ' ' : '') + (p.title || ''));
   return p.permalink ? `<a class="pchip pk-${postKind(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener" title="${t}">${inner}</a>`
     : `<div class="pchip pk-${postKind(p)}" title="${t}">${inner}</div>`;
 }
@@ -1058,7 +1061,7 @@ function postsHtml() {
     ds.forEach(d => {
       const wd = WD[new Date(d + 'T00:00:00Z').getUTCDay()];
       const list = (byDay[d] || []).filter(p => !pf || postKind(p) === pf).map(p => {
-        const c = postKind(p), time = ['blog', 'clip'].includes(p.src) ? '' : `<span class="pt">${p.at.slice(11, 16)}</span>`;
+        const c = postKind(p), time = postTime(p) ? `<span class="pt">${postTime(p)}</span>` : '';
         const inner = `${pf ? '' : `<span class="ph ptype-${c}">${POST_SRC[c]}</span>`}${time}${p.sponsored ? '<span class="sp">협</span>' : ''}<span class="t">${esc(p.title || '(제목 없음)')}</span>`;
         return p.permalink ? `<a class="mi pk-${c}" href="${esc(p.permalink)}" target="_blank" rel="noopener">${inner}</a>` : `<div class="mi pk-${c}">${inner}</div>`;
       }).join('');
@@ -1070,7 +1073,7 @@ function postsHtml() {
   days.forEach(d => {
     const wd = WD[new Date(d + 'T00:00:00Z').getUTCDay()];
     const cell = c => (byDay[d] || []).filter(p => postKind(p) === c).map(p => {
-      const time = ['blog', 'clip'].includes(p.src) ? '' : `<span class="pt">${p.at.slice(11, 16)}</span>`;
+      const time = postTime(p) ? `<span class="pt">${postTime(p)}</span>` : '';
       const inner = `${time}${p.sponsored ? '<span class="sp">협</span>' : ''}${esc(p.title || '(제목 없음)')}`;
       return p.permalink ? `<a class="pi pk-${c}" href="${esc(p.permalink)}" target="_blank" rel="noopener">${inner}</a>` : `<div class="pi pk-${c}">${inner}</div>`;
     }).join('');
