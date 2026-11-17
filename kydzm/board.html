@@ -971,31 +971,56 @@ function dealCardHtml(d) {
 //  · 유튜브(AI 시말서): cupas state/yt_posts.json — 같은 액션이 공개 RSS로 매일 이어 붙임(261117). 쇼츠 빨강·롱폼 밤색
 // ════════════════════════════════════════════════════════════════════
 function addMonth(ym, n) { let [y, m] = ym.split('-').map(Number); m += n; while (m < 1) { m += 12; y--; } while (m > 12) { m -= 12; y++; } return `${y}-${String(m).padStart(2, '0')}`; }
+// 파일 버전(sha)이 같으면 브라우저에 기억해 둔 것 사용 — 바뀐 파일만 GitHub에서 다시 받음 (사용자 261117 '올린 글 너무 느림')
+const BLOB_CACHE = 'kydz_board_blob_';
+async function readBlobJsonCached(path) {
+  const sha = (S.files || {})[path];
+  if (!sha) return null;
+  try { const c = JSON.parse(localStorage.getItem(BLOB_CACHE + path) || 'null'); if (c && c.sha === sha) return c.json; } catch (e) {}
+  const json = await readBlobJson(sha);
+  try { localStorage.setItem(BLOB_CACHE + path, JSON.stringify({ sha, json })); } catch (e) { /* 저장 공간 모자라면 그냥 매번 받기 */ }
+  return json;
+}
+// 달력 썸네일: Actions가 미리 96px로 줄여 cupas state/thumbs/YYYY-MM.json 에 달마다 모아 둠 → 그 달 파일 하나만 (261117)
+async function loadThumbs(ym) {
+  S.thumbs = S.thumbs || {};
+  if (S.thumbs[ym] !== undefined) return;
+  S.thumbs[ym] = null;
+  try { S.thumbs[ym] = ((await readBlobJsonCached(`state/thumbs/${ym}.json`)) || {}).items || {}; } catch (e) { S.thumbs[ym] = {}; }
+  renderSoon();
+}
 async function loadPosts() {
   if (S.postsLoading) return; S.postsLoading = true;
   try {
+    // 파일들을 한꺼번에 받음 (예전엔 하나씩 차례로)
     const f = S.files || {};
+    const [igp, igm, yt, fb, tt, clip, blogJ, blogMd] = await Promise.all([
+      readBlobJsonCached('state/ig_posts.json'), f['state/ig_posts.json'] ? null : readBlobJsonCached('state/ig_media.json'),
+      readBlobJsonCached('state/yt_posts.json'), readBlobJsonCached('state/fb_posts.json'),
+      readBlobJsonCached('state/tiktok_posts.json'), readBlobJsonCached('state/clip_posts.json'),
+      fetch('/data/blog_posts.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => null),
+      fetch('/docs/blog.md?t=' + Date.now(), { cache: 'no-store' }).then(r => r.text()).catch(() => '')]);
     let posts = [];
-    if (f['state/ig_posts.json']) posts = (await readBlobJson(f['state/ig_posts.json'])).posts || [];
-    else if (f['state/ig_media.json']) posts = ((await readBlobJson(f['state/ig_media.json'])).media || []).map(m => ({
+    if (igp) posts = igp.posts || [];
+    else if (igm) posts = (igm.media || []).map(m => ({
       id: m.id, at: m.at, product: m.product, type: m.type, permalink: m.permalink,
       title: (String(m.caption || '').split('\n').find(x => x.trim()) || '').trim().slice(0, 80),
       sponsored: /\((협찬|광고)\)|#광고|#협찬|유료광고/.test(String(m.caption || '').slice(0, 200)),
       thumb: m.thumb || (m.type === 'IMAGE' ? m.url : '') || ((m.children || []).find(c => c.type === 'IMAGE') || {}).url || '' }));
     posts.forEach(p => { p.src = 'ig'; });
-    if (f['state/yt_posts.json']) ((await readBlobJson(f['state/yt_posts.json'])).posts || []).forEach(p => posts.push({ ...p, src: 'yt' }));
-    if (f['state/fb_posts.json']) ((await readBlobJson(f['state/fb_posts.json'])).posts || []).forEach(p => posts.push({ ...p, src: 'fb' }));   // 페이스북 페이지 (261117)
-    if (f['state/tiktok_posts.json']) ((await readBlobJson(f['state/tiktok_posts.json'])).posts || []).forEach(p => posts.push({ ...p, src: 'tt' }));   // 틱톡 (261117)
+    ((yt || {}).posts || []).forEach(p => posts.push({ ...p, src: 'yt' }));
+    ((fb || {}).posts || []).forEach(p => posts.push({ ...p, src: 'fb' }));   // 페이스북 페이지 (261117)
+    ((tt || {}).posts || []).forEach(p => posts.push({ ...p, src: 'tt' }));   // 틱톡 (261117)
     // 네이버 클립: API·RSS가 없어 사용자가 보낸 '내 클립' 캡처를 옮긴 것 (cupas state/clip_posts.json, 261117)
-    if (f['state/clip_posts.json']) ((await readBlobJson(f['state/clip_posts.json'])).posts || []).forEach(p => posts.push({ ...p, src: 'clip', permalink: p.url || '', notime: true }));
+    ((clip || {}).posts || []).forEach(p => posts.push({ ...p, src: 'clip', permalink: p.url || '', notime: true }));
     // 블로그: data/blog_posts.json(blog-rss 액션이 네이버 블로그 RSS에서 매일 2번) + 그 전 기록은 docs/blog.md '올린 글 기록' 표 (261117)
     const blogDays = new Set();
     try {
-      const j = await (await fetch('/data/blog_posts.json?t=' + Date.now(), { cache: 'no-store' })).json();
+      const j = blogJ || {};
       (j.posts || []).forEach(b => { blogDays.add(String(b.at).slice(0, 10)); posts.push({ id: 'blog_' + b.id, at: b.at, src: 'blog', permalink: b.url, title: b.title, thumb: '' }); });
     } catch (e) { /* 아직 없으면 표만 */ }
     try {
-      const md = await (await fetch('/docs/blog.md?t=' + Date.now(), { cache: 'no-store' })).text();
+      const md = blogMd || '';
       const sec = md.split(/##\s*올린 글 기록/)[1] || '';
       sec.split(/\r?\n/).forEach(line => {
         const c = line.split(/(?<!\\)\|/).map(x => x.trim());
@@ -1016,7 +1041,8 @@ const postLabel = p => POST_SRC[postKind(p)];
 function postTime(p) { return p.notime || !/T\d\d:\d\d/.test(p.at || '') ? '' : p.at.slice(11, 16); }
 function postChip(p) {
   const ph = `<span class="ph ptype-${postKind(p)}">${postLabel(p)}</span>`;
-  const img = p.thumb ? `<img src="${esc(p.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=this.dataset.ph" data-ph="${esc(ph)}">` : ph;
+  const th = ((S.thumbs || {})[(p.at || '').slice(0, 7)] || {})[`${p.src}:${p.id}`] || p.thumb || '';
+  const img = th ? `<img src="${esc(th)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=this.dataset.ph" data-ph="${esc(ph)}">` : ph;
   // 달력에도 올린 시각 (사용자 261117) — 시각을 모르는 것(클립 캡처·블로그 옛 기록표)은 빼고
   const tm = postTime(p);
   const inner = `${img}<span class="k">${postLabel(p)}${tm ? ` <span class="tm">${tm}</span>` : ''}${p.sponsored ? ' <span class="sp">협</span>' : ''}</span>${tm ? `<span class="tm-m">${tm}</span>` : ''}`;
@@ -1027,6 +1053,7 @@ function postChip(p) {
 function postsHtml() {
   if (!S.posts) { if (!S.postsErr) loadPosts(); return `<div class="card">${S.postsErr ? '게시물 목록을 못 읽었어요: ' + esc(S.postsErr) : '올린 글 불러오는 중…'}</div>`; }
   const ym = S.postsMonth || (S.postsMonth = kstToday().slice(0, 7));
+  loadThumbs(ym);
   const byDay = {};
   S.posts.forEach(p => { const d = p.at.slice(0, 10); (byDay[d] = byDay[d] || []).push(p); });
   Object.values(byDay).forEach(a => a.sort((x, y) => x.at < y.at ? -1 : 1));
