@@ -3249,7 +3249,7 @@ ${dashPhone ? `    <section class="dash-page dash-todo-page">
     <section class="dash-page"><div class="dash-fit">
     <!-- 메뉴 (묶음) -->
     <div class="dash-groups">
-      ${grp('📌 업무 관리', [['board.html', '📋', '운영판', '오늘·이번 주·이번 달 할 일'], ['board.html?tab=posts', '📅', '올린 글 달력', '인스타·유튜브 날짜별'], ['board.html?tab=autos', '⏰', '자동화', '예약 목록·문제 있으면 ⚠️']])}
+      ${grp('📌 업무 관리', [['board.html', '📋', '운영판', '오늘·이번 주·이번 달 할 일'], ['board.html?tab=posts', '📅', '올린 글 달력', '인스타·유튜브 날짜별'], ['board.html?tab=autos', '⏰', '자동화', '예약 목록·문제 있으면 ⚠️'], ['board.html?tab=conns', '🔌', '연결', '연결된 API·토큰 현황']])}
       ${grp('🎬 콘텐츠 관리', [
         ['#series', '🎬', '시리즈 EP', cnt(cache.series.reduce((s, x) => s + x.eps.length, 0), '편')],
         ['#camps', '🏕', '캠핑장', cnt(cache.camps.length, '곳')],

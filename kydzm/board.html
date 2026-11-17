@@ -379,6 +379,12 @@
   .atbl .a-detail-txt { margin-top: 4px; white-space: pre-wrap; }
   .atbl .warnc { color: #d9480f; font-weight: 800; }
   .chk-old { color: var(--muted); font-weight: 900; display: inline-block; width: 1.2em; text-align: center; }
+  .ctbl td { vertical-align: top; }
+  .ctbl .c-name { width: 220px; } .ctbl .c-meta { font-size: 12px; margin-top: 2px; font-weight: 400; }
+  .ctbl .c-what { font-size: 13px; } .ctbl .c-note { font-size: 12px; color: #d9480f; margin-top: 2px; }
+  .ctbl .c-key { width: 230px; font-size: 12px; } .ctbl .c-st { font-weight: 700; }
+  .ctbl .c-st.bad, .ctbl .c-st.warn { color: var(--danger); } .ctbl .c-st.none { color: var(--muted); font-weight: 400; }
+  @media (max-width: 700px) { .ctbl .c-key { display: none; } .ctbl .c-name { width: 38%; } }
   .arec2 { color: #d9480f; font-weight: 700; }
   @media (hover: hover) { .atbl tr:hover td:not(.a-grp) { background: var(--accent-soft); } .atbl tr.isbad:hover td:not(.a-grp) { background: var(--danger-soft); } }
   @media (max-width: 700px) {
@@ -940,8 +946,8 @@ function render() {
   // 할 일·프로젝트 탭을 합침: 위의 프로젝트 고르기로 그 프로젝트 일만 + 프로젝트 정보 (사용자 요청 261103)
   if (tab === 'projects') tab = pc ? 'tasks' : 'today';
   const tabs = pc
-    ? [['tasks', '할 일'], ['posts', '올린 글'], ['autos', '⏰ 자동화']]
-    : [...(tasksIn('overdue').length || tab === 'overdue' ? [['overdue', '지난 일정']] : []), ['today', '오늘'], ['week', '7일'], ['month', '30일'], ['later', '30일 뒤'], ['inbox', '받은함'], ['deals', '협찬'], ['posts', '올린 글'], ['autos', '⏰ 자동화']];
+    ? [['tasks', '할 일'], ['posts', '올린 글'], ['autos', '⏰ 자동화'], ['conns', '🔌 연결']]
+    : [...(tasksIn('overdue').length || tab === 'overdue' ? [['overdue', '지난 일정']] : []), ['today', '오늘'], ['week', '7일'], ['month', '30일'], ['later', '30일 뒤'], ['inbox', '받은함'], ['deals', '협찬'], ['posts', '올린 글'], ['autos', '⏰ 자동화'], ['conns', '🔌 연결']];
   const overN = tasksIn('overdue').length;
   let h = '';
   if (S.failed) h += `<div class="banner err savefail"><span>저장하지 못했어요: ${esc(S.failed)} (바꾼 내용은 이 화면에 남아 있어요)</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
@@ -949,6 +955,7 @@ function render() {
   if (tab === 'deals') h += dealsHtml();
   else if (tab === 'posts') h += postsHtml();
   else if (tab === 'autos') h += autosHtml();
+  else if (tab === 'conns') h += connsHtml();
   else h += tasksHtml(pc ? null : tab);
   const keep = {};   // 다시 그려도 칸 안 스크롤 위치 유지
   m.querySelectorAll('.tlist').forEach(el => { const k = el.closest('[data-drop]'); if (k) keep[k.dataset.drop] = el.scrollTop; });
@@ -1234,6 +1241,39 @@ function autoState(a) {
   const due = a.freq === 'hourly' ? 0 : lastDue(a, a.where === 'actions' ? 480 : 60);
   if (due && new Date(last.at).getTime() < due - 20 * 60e3) return { kind: 'missed', last, due };
   return { kind: 'ok', last };
+}
+// 🔌 연결된 API·토큰 현황 — cupas state/connections.json (사용자 261117 '자동화 옆에 연결된 API 현황'). 토큰 값은 없음(이름만)
+async function loadConns() {
+  if (S.connsLoading) return; S.connsLoading = true;
+  try { S.conns = ((await readBlobJsonCached('state/connections.json')) || {}).items || []; } catch (e) { S.connsErr = e.message; }
+  S.connsLoading = false; renderSoon();
+}
+function connsHtml() {
+  if (!S.conns) { if (!S.connsErr) loadConns(); return `<div class="card">${S.connsErr ? '연결 목록을 못 읽었어요: ' + esc(S.connsErr) : '연결 목록 불러오는 중…'}</div>`; }
+  if (!S.autos && !S.autosErr) loadAutos();   // 관련 예약이 제때 돌았는지로 상태를 같이 봄
+  const autoById = Object.fromEntries((S.autos || []).map(a => [a.id, a]));
+  const st = c => {
+    if (c.status === 'none') return ['none', '— 연결 안 됨'];
+    const bad = (c.autos || []).map(id => autoById[id]).filter(a => a && ['fail', 'missed'].includes(autoState(a).kind));
+    if (bad.length) return ['bad', `⚠️ ${bad.map(a => a.name).join(' · ')} 문제`];
+    if (c.status === 'warn') return ['warn', '⚠️ 손볼 것 있음'];
+    return ['ok', '✅ 연결됨'];
+  };
+  const rows = S.conns.map(c => ({ c, s: st(c) }));
+  const order = { bad: 0, warn: 1, ok: 2, none: 3 };
+  rows.sort((x, y) => order[x.s[0]] - order[y.s[0]]);
+  const n = k => rows.filter(r => r.s[0] === k).length;
+  let h = `<div class="conns"><div class="${n('bad') + n('warn') ? 'abad' : 'agood'}">${n('bad') + n('warn') ? `⚠️ 손볼 것 ${n('bad') + n('warn')}개 — ${rows.filter(r => ['bad', 'warn'].includes(r.s[0])).map(r => esc(r.c.name)).join(' · ')}` : '✅ 연결된 API 모두 정상'} <span class="muted" style="font-weight:400">· 연결됨 ${n('ok')} · 연결 안 됨 ${n('none')}</span></div>`;
+  h += `<table class="atbl ctbl"><tbody>`;
+  rows.forEach(({ c, s: [k, label] }) => {
+    const meta = [c.kind, c.cost && c.cost !== '—' ? '💰 ' + c.cost : '', c.renew && c.renew !== '—' ? '🔄 ' + c.renew : ''].filter(Boolean).join(' · ');
+    h += `<tr class="${k === 'bad' ? 'isbad' : ''}"><td class="c-name"><b>${esc(c.name)}</b><div class="muted c-meta">${esc(meta)}</div></td>`
+      + `<td class="c-what">${esc(c.what || '')}${c.perms && c.perms !== '—' ? `<div class="muted c-meta">권한: ${esc(c.perms)}</div>` : ''}${c.note ? `<div class="c-note">${esc(c.note)}</div>` : ''}</td>`
+      + `<td class="c-key muted">${esc(c.secret || '')}</td>`
+      + `<td class="a-res c-st ${k}">${esc(label)}</td></tr>`;
+  });
+  h += `</tbody></table><div class="muted" style="font-size:12px;margin-top:10px">상태는 그 API를 쓰는 예약이 제때 돌았는지(⏰ 자동화 탭)로 같이 봐요 · 토큰 값은 저장하지 않고 이름만 · 원본 cupas state/connections.json</div></div>`;
+  return h;
 }
 function autosHtml() {
   if (!S.autos) { if (!S.autosErr) loadAutos(); return `<div class="card">${S.autosErr ? '자동화 목록을 못 읽었어요: ' + esc(S.autosErr) : '자동화 불러오는 중…'}</div>`; }
