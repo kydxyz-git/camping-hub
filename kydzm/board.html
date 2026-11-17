@@ -372,6 +372,10 @@
   .atbl tr.arow2 { cursor: pointer; } .atbl tr.aopen td:not(.a-grp) { background: var(--accent-soft); }
   .atbl tr.adetail td { font-size: 12.5px; line-height: 1.55; padding: 4px 9px 10px 9px; border-top: 0; background: var(--accent-soft); white-space: normal; }
   .atbl .a-dbody-m { display: none; }
+  .atbl .a-fix { margin-top: 6px; padding: 6px 9px; border-radius: 6px; background: rgba(255,170,60,.13); font-weight: 700; }
+  .atbl .a-fix.ok { background: rgba(60,200,120,.13); }
+  .atbl .a-ask { font-weight: 400; margin-top: 3px; }
+  .atbl .a-fixbtn { margin-left: 6px; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--line); background: var(--card, transparent); color: inherit; font-size: 12px; cursor: pointer; }
   .atbl .a-detail-txt { margin-top: 4px; white-space: pre-wrap; }
   .atbl .warnc { color: #d9480f; font-weight: 800; }
   .chk-old { color: var(--muted); font-weight: 900; display: inline-block; width: 1.2em; text-align: center; }
@@ -1211,7 +1215,10 @@ function autoState(a) {
     // ☁️·💻 예약은 그 Claude가 automations.json last_run에 적은 시각으로 (261117)
     const due = a.freq === 'hourly' ? 0 : lastDue(a, 90);
     if (a.last_run && a.last_run.at) {
-      const last = { at: a.last_run.at, note: a.last_run.note || '', url: a.last_run.url || '', detail: a.last_run.detail || '', status: a.last_run.status || 'ok' };
+      const last = { at: a.last_run.at, note: a.last_run.note || '', url: a.last_run.url || '', detail: a.last_run.detail || '', status: a.last_run.status || 'ok', fix: a.last_run.fix || null };
+      // 문제에 걸린 할 일이 끝났으면 처리됨으로 (사용자 261117 '어디서 뭘 해야될지')
+      const ft = last.fix && last.fix.task && (S.data && S.data.tasks || []).find(t => t.id === last.fix.task);
+      if (ft && ['done', 'canceled'].includes(ft.bucket)) { last.resolved = true; last.status = 'ok'; }
       // 그 Claude가 적은 결과: fail = 못 함, warn = 돌았는데 문제 있음 (사용자 261117 '실패하면 표기·상세')
       if (last.status === 'fail') return { kind: 'fail', last };
       if (due && new Date(last.at).getTime() < due - 20 * 60e3) return { kind: 'missed', last, due };
@@ -1289,7 +1296,11 @@ function autosHtml() {
     if (open) {
       const L = st.last;
       const mk = { fail: '❌ 실패', warn: '⚠️ 문제', missed: '⚠️ 안 돎', ok: '✅ 성공', unk: '❔ 기록 없음' }[st.kind] || '—';
-      const body = L ? `<b>${mk}</b> · ${when(L.at)}${L.note ? '<br>' + esc(L.note) : ''}${L.detail ? `<div class="a-detail-txt">${esc(L.detail)}</div>` : ''}${L.url ? `<br><a href="${esc(L.url)}" target="_blank" rel="noopener">실행 기록 열기 ↗</a>` : ''}`
+      const F = L && L.fix, FT = F && F.task && S.data.tasks.find(t => t.id === F.task);
+      const act = !L ? '' : L.resolved ? `<div class="a-fix ok">✔ 처리됨 — 걸린 할 일 '${esc(FT ? FT.title : '')}' 완료</div>`
+        : F ? `<div class="a-fix">➡ ${F.who === 'claude' ? 'Claude가 할 일' : '사장님이 할 일'}: ${esc(F.what || '')}${FT ? ` <button class="a-fixbtn" data-aedit="${esc(F.task)}">할 일 열기</button>` : ''}${F.ask ? `<div class="a-ask">Claude에게 이렇게 말하세요: <b>“${esc(F.ask)}”</b></div>` : ''}</div>`
+        : ['fail', 'warn'].includes(st.kind) ? `<div class="a-fix">➡ 할 것이 안 적혀 있어요 — Claude에게 <b>“${esc(a.name)} 자동화 문제 봐줘”</b>라고 하세요</div>` : '';
+      const body = L ? `<b>${mk}</b> · ${when(L.at)}${L.note ? '<br>' + esc(L.note) : ''}${L.detail ? `<div class="a-detail-txt">${esc(L.detail)}</div>` : ''}${act}${L.url ? `<br><a href="${esc(L.url)}" target="_blank" rel="noopener">실행 기록 열기 ↗</a>` : ''}`
         : `<b>${mk}</b> · 돈 기록이 없어요${a.workflow ? '' : ' — 그 Claude가 last_run을 안 적었거나 안 돎'}`;
       h += `<tr class="adetail"><td class="a-ic"></td><td class="a-time"></td><td class="a-dpad"></td><td class="a-dbody" colspan="2">${body}${st.kind === 'missed' && st.due ? `<br><span class="muted">돌았어야 할 시각 ${when(new Date(st.due).toISOString())}</span>` : ''}</td><td class="a-dbody-m" colspan="2">${body}${st.kind === 'missed' && st.due ? `<br><span class="muted">돌았어야 할 시각 ${when(new Date(st.due).toISOString())}</span>` : ''}</td></tr>`;
     }
@@ -1891,6 +1902,8 @@ function bind() {
     const afq = e.target.closest('[data-afq]');
     if (afq) { S.autoFq = afq.dataset.afq; render(); return; }
     const arow = !e.target.closest('a') && e.target.closest('tr[data-aid]');
+    const aed = e.target.closest('[data-aedit]');
+    if (aed) { openEditSheet(aed.dataset.aedit); return; }
     if (arow) { const o = S.autoOpen = S.autoOpen || {}; o[arow.dataset.aid] = !o[arow.dataset.aid]; render(); return; }
     const ppf = e.target.closest('[data-ppf]');
     if (ppf) { S.postsPf = ppf.dataset.ppf; try { localStorage.setItem('kydz_posts_pf', S.postsPf); } catch (_) {} render(); return; }
