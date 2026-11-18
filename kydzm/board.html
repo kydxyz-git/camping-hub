@@ -295,6 +295,9 @@
   .pchip { display: flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--text); text-decoration: none; border-radius: 6px; padding: 2px; background: var(--accent-soft); overflow: hidden; }
   .pchip img, .ph { width: 30px; height: 40px; object-fit: cover; border-radius: 4px; flex: none; }
   .ph { display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: 700; }
+  .pchip.mini { padding: 1px 5px; font-size: 10.5px; gap: 4px; min-height: 0; border-left: 3px solid; border-radius: 4px; }
+  .pchip.mini .mk { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .pchip.mini .tm { opacity: .7; font-variant-numeric: tabular-nums; }
+  .pchip.mini.pk-fb { border-color: #1877f2; } .pchip.mini.pk-blog { border-color: #03c75a; } .pchip.mini.pk-clip { border-color: #ff8a00; } .pchip.mini.pk-tt { border-color: #888; }
   .pchip .k { font-weight: 700; white-space: nowrap; } .pchip .k .tm { font-weight: 500; opacity: .75; font-variant-numeric: tabular-nums; } .pchip .tm-m { display: none; }
   .sp { color: #2d8f4c; font-weight: 800; }
   /* 올린 글 달력 — 플랫폼 3색만 (사용자 261117: 릴스·피드·롱폼·쇼츠 구분 말고 인스타/블로그/유튜브) */
@@ -310,7 +313,7 @@
   .plist .when { color: var(--muted); font-size: 12.5px; }
   .plist .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   html.embed .cal-head { position: sticky; top: 0; z-index: 2; background: var(--accent-soft); padding: 4px 0; margin-bottom: 6px; }
-  @media (max-width: 700px) { .cal .day { min-height: 58px; } .pchip .k { display: none; } .pchip { padding: 0; } .pchip img, .pchip .ph { width: 100%; height: 38px; border-radius: 5px 5px 0 0; } .pchip { flex-direction: column; } .pchip .tm-m { display: block; font-size: 10px; line-height: 1.3; text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; } }
+  @media (max-width: 700px) { .cal .day { min-height: 58px; } .pchip .k { display: none; } .pchip { padding: 0; } .pchip img, .pchip .ph { width: 100%; height: 38px; border-radius: 5px 5px 0 0; } .pchip { flex-direction: column; } .pchip .tm-m { display: block; font-size: 10px; line-height: 1.3; text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; } .pchip.mini { flex-direction: row; padding: 0 3px; border-left-width: 3px; } .pchip.mini .tm { display: none; } .pchip.mini .mk { font-size: 9.5px; } }
   .pk-ig { border-left: 4px solid #7b3fe4; } .pk-blog { border-left: 4px solid #03c75a; } .pk-yt { border-left: 4px solid #ff0000; } .pk-clip { border-left: 4px solid #ff8a00; } .pk-fb { border-left: 4px solid #1877f2; } .pk-tt { border-left: 4px solid #111; }
   @media (max-width: 700px) { .pk-ig, .pk-fb, .pk-blog, .pk-yt, .pk-clip, .pk-tt { border-left: 0; border-bottom: 4px solid; } .pk-ig { border-color: #7b3fe4; } .pk-blog { border-color: #03c75a; } .pk-yt { border-color: #ff0000; } .pk-clip { border-color: #ff8a00; } .pk-fb { border-color: #1877f2; } .pk-tt { border-color: #111; } }
   .ptable-wrap { margin-top: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -1092,7 +1095,17 @@ async function loadPosts() {
 }
 const POST_SRC = { ig: '인스타', fb: '페북', blog: '블로그', yt: '유튜브', clip: '클립', tt: '틱톡' };   // 색은 플랫폼 3개만 (261117)
 const postKind = p => POST_SRC[p.src] ? p.src : 'ig';
-const postLabel = p => POST_SRC[postKind(p)];
+// 종류까지: 인스타 릴스/게시물, 유튜브 쇼츠/롱폼, 클립 게시물 (사용자 261118)
+const postSub = p => {
+  const k = postKind(p);
+  if (k === 'ig') return p.product === 'REELS' || (p.type === 'VIDEO' && p.product !== 'FEED') ? '릴스' : p.product === 'STORY' ? '스토리' : '게시물';
+  if (k === 'yt') return p.product === 'SHORTS' || /\/shorts\//.test(p.permalink || '') ? '쇼츠' : '롱폼';
+  if (k === 'clip' && p.kind === 'post') return '게시물';
+  return '';
+};
+const postLabel = p => POST_SRC[postKind(p)] + (postSub(p) ? ' ' + postSub(p) : '');
+// 인스타·유튜브가 중심, 나머지(페북·블로그·클립·틱톡)는 작게 (사용자 261118)
+const POST_MAIN = ['ig', 'yt'];
 function postTime(p) { return p.notime || !/T\d\d:\d\d/.test(p.at || '') ? '' : p.at.slice(11, 16); }
 function postChip(p) {
   const ph = `<span class="ph ptype-${postKind(p)}">${postLabel(p)}</span>`;
@@ -1102,6 +1115,10 @@ function postChip(p) {
   const tm = postTime(p);
   const inner = `${img}<span class="k">${postLabel(p)}${tm ? ` <span class="tm">${tm}</span>` : ''}${p.sponsored ? ' <span class="sp">협</span>' : ''}</span>${tm ? `<span class="tm-m">${tm}</span>` : ''}`;
   const t = esc((tm ? tm + ' ' : '') + (p.title || ''));
+  if (!POST_MAIN.includes(postKind(p))) {
+    const mi = `<span class="mk">${esc(postLabel(p))}</span>${tm ? `<span class="tm">${tm}</span>` : ''}`;
+    return p.permalink ? `<a class="pchip mini pk-${postKind(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener" title="${t}">${mi}</a>` : `<div class="pchip mini pk-${postKind(p)}" title="${t}">${mi}</div>`;
+  }
   return p.permalink ? `<a class="pchip pk-${postKind(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener" title="${t}">${inner}</a>`
     : `<div class="pchip pk-${postKind(p)}" title="${t}">${inner}</div>`;
 }
@@ -1126,7 +1143,7 @@ function postsHtml() {
     const d = addDays(start, i);
     if (i % 7 === 0 && i >= 28 && !d.startsWith(ym)) break;
     const cls = ['day', d.startsWith(ym) ? '' : 'out', d === today ? 'today' : '', i % 7 === 0 ? 'sun' : ''].join(' ');
-    h += `<div class="${cls}"><span class="dn">${+d.slice(8)}</span>${(byDay[d] || []).map(postChip).join('')}</div>`;
+    h += `<div class="${cls}"><span class="dn">${+d.slice(8)}</span>${(byDay[d] || []).slice().sort((x, y) => (POST_MAIN.includes(postKind(y)) - POST_MAIN.includes(postKind(x))) || (x.at < y.at ? -1 : 1)).map(postChip).join('')}</div>`;
   }
   // 아래 표: 왼쪽 날짜(최근 위), 오른쪽 플랫폼별 칸 — 그날 올린 것만 채움 (사용자 261117)
   const COLS = ['ig', 'fb', 'blog', 'yt', 'clip', 'tt'];
