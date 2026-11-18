@@ -1201,7 +1201,7 @@ async function loadAutos() {
       const { repo, file } = a.workflow;
       try {
         const r = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/${file}/runs?per_page=30`, { headers: { Accept: 'application/vnd.github+json', ...(tok ? { Authorization: 'Bearer ' + tok } : {}) } });
-        if (r.ok) S.autoRuns[a.id] = ((await r.json()).workflow_runs || []).map(x => ({ at: x.created_at, ok: x.conclusion, st: x.status, url: x.html_url }));
+        if (r.ok) S.autoRuns[a.id] = ((await r.json()).workflow_runs || []).filter(x => x.event !== 'push').map(x => ({ at: x.created_at, ok: x.conclusion, st: x.status, url: x.html_url, ev: x.event }));   // push = 매시 통계 커밋 때 예비 확인(대부분 건너뜀) — 실제로 돈 시각이 아니라 뺌 (261118)
       } catch (e) { /* 실행 기록 못 읽으면 '—' */ }
     }));
     // 워커가 커밋으로 남기는 예약(통계 동기화 등): 그 파일 마지막 커밋 시각 = 돈 시각 (261117)
