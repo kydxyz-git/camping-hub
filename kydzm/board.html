@@ -397,6 +397,8 @@
     .atbl .a-name { width: auto; white-space: normal; } .atbl .a-time-m { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
     .atbl .a-desc-m { display: none; }   /* 휴대폰은 설명 줄 뺌 — 줄 누르면 상세만 (사용자 261117 '모바일 지저분') */
   }
+  .pk-yt.yt-long { border-color: #a3001f !important; }
+  .pchip.pk-yt.yt-long, .ptable .pi.pk-yt.yt-long, .mday .mi.pk-yt.yt-long { background: rgba(163,0,31,.24); }
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
 </head>
@@ -1106,6 +1108,7 @@ const postSub = p => {
 const postLabel = p => POST_SRC[postKind(p)] + (postSub(p) ? ' ' + postSub(p) : '');
 // 인스타·유튜브가 중심, 나머지(페북·블로그·클립·틱톡)는 작게 (사용자 261118)
 const POST_MAIN = ['ig', 'yt'];
+const ytCls = p => postKind(p) === 'yt' && postSub(p) === '롱폼' ? ' yt-long' : '';   // 롱폼은 진한 빨강, 쇼츠는 밝은 빨강 (사용자 261118)
 function postTime(p) { return p.notime || !/T\d\d:\d\d/.test(p.at || '') ? '' : p.at.slice(11, 16); }
 function postChip(p) {
   const ph = `<span class="ph ptype-${postKind(p)}">${postLabel(p)}</span>`;
@@ -1117,10 +1120,10 @@ function postChip(p) {
   const t = esc((tm ? tm + ' ' : '') + (p.title || ''));
   if (!POST_MAIN.includes(postKind(p))) {
     const mi = `<span class="mk">${esc(postLabel(p))}</span>${tm ? `<span class="tm">${tm}</span>` : ''}`;
-    return p.permalink ? `<a class="pchip mini pk-${postKind(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener" title="${t}">${mi}</a>` : `<div class="pchip mini pk-${postKind(p)}" title="${t}">${mi}</div>`;
+    return p.permalink ? `<a class="pchip mini pk-${postKind(p)}${ytCls(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener" title="${t}">${mi}</a>` : `<div class="pchip mini pk-${postKind(p)}${ytCls(p)}" title="${t}">${mi}</div>`;
   }
-  return p.permalink ? `<a class="pchip pk-${postKind(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener" title="${t}">${inner}</a>`
-    : `<div class="pchip pk-${postKind(p)}" title="${t}">${inner}</div>`;
+  return p.permalink ? `<a class="pchip pk-${postKind(p)}${ytCls(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener" title="${t}">${inner}</a>`
+    : `<div class="pchip pk-${postKind(p)}${ytCls(p)}" title="${t}">${inner}</div>`;
 }
 function postsHtml() {
   if (!S.posts) { if (!S.postsErr) loadPosts(); return `<div class="card">${S.postsErr ? '게시물 목록을 못 읽었어요: ' + esc(S.postsErr) : '올린 글 불러오는 중…'}</div>`; }
@@ -1162,7 +1165,7 @@ function postsHtml() {
       const list = (byDay[d] || []).filter(p => !pf || postKind(p) === pf).map(p => {
         const c = postKind(p), time = postTime(p) ? `<span class="pt">${postTime(p)}</span>` : '';
         const inner = `${pf ? '' : `<span class="ph ptype-${c}">${POST_SRC[c]}</span>`}${time}${p.sponsored ? '<span class="sp">협</span>' : ''}<span class="t">${esc(p.title || '(제목 없음)')}</span>`;
-        return p.permalink ? `<a class="mi pk-${c}" href="${esc(p.permalink)}" target="_blank" rel="noopener">${inner}</a>` : `<div class="mi pk-${c}">${inner}</div>`;
+        return p.permalink ? `<a class="mi pk-${c}${ytCls(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener">${inner}</a>` : `<div class="mi pk-${c}${ytCls(p)}">${inner}</div>`;
       }).join('');
       h += `<div class="mday${d === today ? ' today' : ''}"><div class="md">${md(d)} <span class="muted">${wd}</span></div>${list}</div>`;
     });
@@ -1174,7 +1177,7 @@ function postsHtml() {
     const cell = c => (byDay[d] || []).filter(p => postKind(p) === c).map(p => {
       const time = postTime(p) ? `<span class="pt">${postTime(p)}</span>` : '';
       const inner = `${time}${p.sponsored ? '<span class="sp">협</span>' : ''}${esc(p.title || '(제목 없음)')}`;
-      return p.permalink ? `<a class="pi pk-${c}" href="${esc(p.permalink)}" target="_blank" rel="noopener">${inner}</a>` : `<div class="pi pk-${c}">${inner}</div>`;
+      return p.permalink ? `<a class="pi pk-${c}${ytCls(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener">${inner}</a>` : `<div class="pi pk-${c}${ytCls(p)}">${inner}</div>`;
     }).join('');
     h += `<tr${d === today ? ' class="today"' : ''}><td class="pd">${md(d)} <span class="muted">${wd}</span></td>${COLS.map(c => `<td>${cell(c)}</td>`).join('')}</tr>`;
   });
