@@ -313,7 +313,7 @@
   .plist .when { color: var(--muted); font-size: 12.5px; }
   .plist .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   html.embed .cal-head { position: sticky; top: 0; z-index: 2; background: var(--accent-soft); padding: 4px 0; margin-bottom: 6px; }
-  @media (max-width: 700px) { .cal .day { min-height: 58px; } .pchip .k { display: none; } .pchip { padding: 0; } .pchip img, .pchip .ph { width: 100%; height: 38px; border-radius: 5px 5px 0 0; } .pchip { flex-direction: column; } .pchip .tm-m { display: block; font-size: 10px; line-height: 1.3; text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; } .pchip.mini { flex-direction: row; padding: 1px 3px; border-left: 0 !important; border-bottom: 3px solid; border-radius: 4px 4px 0 0; background: transparent !important; } .pchip.mini .tm { display: none; } .pchip.mini .mk { font-size: 9.5px; } }
+  @media (max-width: 700px) { .cal .day { min-height: 58px; } .pchip .k { display: none; } .pchip { padding: 0; } .pchip img, .pchip .ph { width: 100%; height: 38px; border-radius: 5px 5px 0 0; } .pchip { flex-direction: column; } .pchip .tm-m { display: block; font-size: 10px; line-height: 1.3; text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; } .pchip.mini { flex-direction: row; padding: 1px 3px; border-left-width: 3px !important; border-left-style: solid !important; border-bottom: 0 !important; border-radius: 0 4px 4px 0; background: transparent !important; } .pchip.mini .tm { display: none; } .pchip.mini .mk { font-size: 9.5px; } .pchip.mini.pk-fb { border-left-color: #1877f2 !important; } .pchip.mini.pk-blog { border-left-color: #03c75a !important; } .pchip.mini.pk-clip { border-left-color: #ff8a00 !important; } .pchip.mini.pk-tt { border-left-color: #888 !important; } }
   .pk-ig { border-left: 4px solid #7b3fe4; } .pk-blog { border-left: 4px solid #03c75a; } .pk-yt { border-left: 4px solid #ff0000; } .pk-clip { border-left: 4px solid #ff8a00; } .pk-fb { border-left: 4px solid #1877f2; } .pk-tt { border-left: 4px solid #111; }
   @media (max-width: 700px) { .pk-ig, .pk-fb, .pk-blog, .pk-yt, .pk-clip, .pk-tt { border-left: 0; border-bottom: 4px solid; } .pk-ig { border-color: #7b3fe4; } .pk-blog { border-color: #03c75a; } .pk-yt { border-color: #ff0000; } .pk-clip { border-color: #ff8a00; } .pk-fb { border-color: #1877f2; } .pk-tt { border-color: #111; } }
   .ptable-wrap { margin-top: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -1108,6 +1108,7 @@ const postSub = p => {
 const postLabel = p => POST_SRC[postKind(p)] + (postSub(p) ? ' ' + postSub(p) : '');
 // 인스타·유튜브가 중심, 나머지(페북·블로그·클립·틱톡)는 작게 (사용자 261118)
 const POST_MAIN = ['ig', 'yt'];
+const POST_ORDER = p => ({ yt: 0, ig: 1 })[postKind(p)] ?? 2;   // 하루 안 순서: 유튜브 → 인스타 → 나머지 (사용자 261118)
 const ytCls = p => postKind(p) === 'yt' && postSub(p) === '롱폼' ? ' yt-long' : '';   // 롱폼은 진한 빨강, 쇼츠는 밝은 빨강 (사용자 261118)
 function postTime(p) { return p.notime || !/T\d\d:\d\d/.test(p.at || '') ? '' : p.at.slice(11, 16); }
 function postChip(p) {
@@ -1139,17 +1140,17 @@ function postsHtml() {
   const start = addDays(`${ym}-01`, -startWd), today = kstToday();
   const oldest = S.posts.reduce((a, p) => p.at < a ? p.at : a, S.posts.length ? S.posts[0].at : '').slice(0, 10);
   let h = `<div class="cal-head"><button class="cal-nav" data-pm="-1" aria-label="이전 달">‹</button><span class="ttl">${y}년 ${m}월</span><button class="cal-nav" data-pm="1" aria-label="다음 달">›</button>`
-    + `<span class="plegend"><span><i class="ptype-ig"></i>인스타 ${cnt('ig')}</span><span><i class="ptype-fb"></i>페북 ${cnt('fb')}</span><span><i class="ptype-blog"></i>블로그 ${cnt('blog')}</span><span><i class="ptype-yt"></i>유튜브 ${cnt('yt')}</span><span><i class="ptype-clip"></i>클립 ${cnt('clip')}</span><span><i class="ptype-tt"></i>틱톡 ${cnt('tt')}</span></span>`
+    + `<span class="plegend"><span><i class="ptype-yt"></i>유튜브 ${cnt('yt')}</span><span><i class="ptype-ig"></i>인스타 ${cnt('ig')}</span><span><i class="ptype-fb"></i>페북 ${cnt('fb')}</span><span><i class="ptype-blog"></i>블로그 ${cnt('blog')}</span><span><i class="ptype-clip"></i>클립 ${cnt('clip')}</span><span><i class="ptype-tt"></i>틱톡 ${cnt('tt')}</span></span>`
     + `<span class="sum">${sp ? `협찬 ${sp}` : ''}${oldest ? `${sp ? ' · ' : ''}${oldest.slice(2, 4)}/${md(oldest)}부터 기록` : ''}</span></div>`;
   h += `<div class="cal">${WD.map(w => `<div class="wd">${w}</div>`).join('')}`;
   for (let i = 0; i < 42; i++) {
     const d = addDays(start, i);
     if (i % 7 === 0 && i >= 28 && !d.startsWith(ym)) break;
     const cls = ['day', d.startsWith(ym) ? '' : 'out', d === today ? 'today' : '', i % 7 === 0 ? 'sun' : ''].join(' ');
-    h += `<div class="${cls}"><span class="dn">${+d.slice(8)}</span>${(byDay[d] || []).slice().sort((x, y) => (POST_MAIN.includes(postKind(y)) - POST_MAIN.includes(postKind(x))) || (x.at < y.at ? -1 : 1)).map(postChip).join('')}</div>`;
+    h += `<div class="${cls}"><span class="dn">${+d.slice(8)}</span>${(byDay[d] || []).slice().sort((x, y) => (POST_ORDER(x) - POST_ORDER(y)) || (x.at < y.at ? -1 : 1)).map(postChip).join('')}</div>`;
   }
   // 아래 표: 왼쪽 날짜(최근 위), 오른쪽 플랫폼별 칸 — 그날 올린 것만 채움 (사용자 261117)
-  const COLS = ['ig', 'fb', 'blog', 'yt', 'clip', 'tt'];
+  const COLS = ['yt', 'ig', 'fb', 'blog', 'clip', 'tt'];
   const days = [...new Set(inMonth.map(p => p.at.slice(0, 10)))].sort().reverse();
   h += `</div><div class="ptable-wrap">`;
   if (!days.length) return h + '<div class="muted">이 달에 올린 글이 없어요.</div></div>';
@@ -1162,7 +1163,7 @@ function postsHtml() {
     if (!ds.length) return h + `<div class="muted">이 달에 ${POST_SRC[pf]}에 올린 글이 없어요.</div></div>`;
     ds.forEach(d => {
       const wd = WD[new Date(d + 'T00:00:00Z').getUTCDay()];
-      const list = (byDay[d] || []).filter(p => !pf || postKind(p) === pf).map(p => {
+      const list = (byDay[d] || []).filter(p => !pf || postKind(p) === pf).sort((x, y) => (POST_ORDER(x) - POST_ORDER(y)) || (x.at < y.at ? -1 : 1)).map(p => {
         const c = postKind(p), time = postTime(p) ? `<span class="pt">${postTime(p)}</span>` : '';
         const inner = `${pf ? '' : `<span class="ph ptype-${c}">${POST_SRC[c]}</span>`}${time}${p.sponsored ? '<span class="sp">협</span>' : ''}<span class="t">${esc(p.title || '(제목 없음)')}</span>`;
         return p.permalink ? `<a class="mi pk-${c}${ytCls(p)}" href="${esc(p.permalink)}" target="_blank" rel="noopener">${inner}</a>` : `<div class="mi pk-${c}${ytCls(p)}">${inner}</div>`;
