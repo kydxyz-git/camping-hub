@@ -2,8 +2,7 @@
 name: blog-rss
 
 on:
-  schedule:
-    - cron: '20 19 * * *'
+  # 제시간 실행은 Cloudflare 워커(kyd-stats EXTRA_WAKE)가 04·12시(KST)에 깨움 — 깃허브 예약은 새벽에 몇 시간씩 밀리거나 빠져서 뺌 (261118)
   workflow_dispatch:
   # 예비: 깃허브가 새벽 예약을 빼먹는 날이 있어서(261118) 매시 통계 커밋 때 05시 이후 오늘 아직 안 돌았으면 실행
   push:
