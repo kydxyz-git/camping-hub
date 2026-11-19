@@ -746,6 +746,7 @@ async function load() {
   if (!board) throw new Error(`cupas에 ${BOARD_PATH} 가 없어요.`);
   S.base = normBoard(board);
   S.sha = head.sha; S.commitDate = head.date || '';
+  autosStale();
   try { localStorage.setItem(SNAP_KEY, JSON.stringify({ sha: head.sha, date: S.commitDate, files })); } catch (e) {}
   recompute();
   const mig = migrateOps();
@@ -854,6 +855,7 @@ async function refresh(force) {
     if (!board) return;
     S.base = normBoard(board);
     S.sha = ref.object.sha; if (cdate) S.commitDate = cdate;
+    autosStale();
     try { localStorage.setItem(SNAP_KEY, JSON.stringify({ sha: S.sha, date: S.commitDate, files })); } catch (e) {}
     recompute();
     const mig = migrateOps();
@@ -1190,10 +1192,15 @@ function postsHtml() {
 // ════════════════════════════════════════════════════════════════════
 const AUTO_WHERE = { cloud: ['☁️', '클라우드 Claude'], actions: ['⚙️', 'GitHub'], worker: ['⚙️', '워커'], pc: ['💻', 'PC'] };
 const AUTO_FREQ = [['hourly', '매시'], ['multi', '하루 여러 번'], ['daily', '매일'], ['weekly', '매주'], ['once', '1회']];
+// 자동화 목록 파일이 바뀌었으면 다시 읽음 — 예전엔 처음 한 번만 읽어서 Claude가 적은 실행 기록이 안 보였음 (261119)
+function autosStale() {
+  if (S.autos && S.files && (S.files['state/automations.json'] || '') !== S.autosSha) loadAutos();
+}
 async function loadAutos() {
   if (S.autosLoading) return; S.autosLoading = true;
   try {
     const f = S.files || {};
+    S.autosSha = f['state/automations.json'] || '';
     S.autos = f['state/automations.json'] ? (await readBlobJson(f['state/automations.json'])).items || [] : [];
     S.autoRuns = {};
     const tok = getToken();
