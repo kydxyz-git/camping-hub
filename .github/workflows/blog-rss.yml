@@ -1,10 +1,10 @@
-# 매일 04:20(KST, 새벽 — 공통 기억 261116) + 수동: 네이버 블로그 RSS → data/blog_posts.json (운영판 '올린 글' 달력의 블로그, 261117)
+# 매일 04시·12시(KST) + 수동: 네이버 블로그 RSS → data/blog_posts.json (운영판 '올린 글' 달력의 블로그, 261117)
 name: blog-rss
 
 on:
-  # 제시간 실행은 Cloudflare 워커(kyd-stats EXTRA_WAKE)가 04·12시(KST)에 깨움 — 깃허브 예약은 새벽에 몇 시간씩 밀리거나 빠져서 뺌 (261118)
+  # 제시간 실행 = 매시 통계 커밋(워커가 매시 :00에 data/stats.json 커밋)에 붙어서 04시·12시대(KST)에 한 번씩 (261119)
+  # — 워커 EXTRA_WAKE는 camping-hub 실행 권한이 없어서 못 깨움(261119 확인), 깃허브 예약은 새벽에 몇 시간씩 밀려서 안 씀
   workflow_dispatch:
-  # 예비: 깃허브가 새벽 예약을 빼먹는 날이 있어서(261118) 매시 통계 커밋 때 05시 이후 오늘 아직 안 돌았으면 실행
   push:
     branches: [main]
     paths: ['data/stats.json']
@@ -28,12 +28,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: 오늘 이미 돌았으면 건너뜀 (통계 커밋 예비 실행일 때)
+      - name: 이번 차례(04시·12시) 이미 돌았으면 건너뜀 (통계 커밋에 붙어 돌 때)
         if: github.event_name == 'push'
         run: |
-          h=$(TZ=Asia/Seoul date +%H); today=$(TZ=Asia/Seoul date +%F)
+          h=$((10#$(TZ=Asia/Seoul date +%H))); today=$(TZ=Asia/Seoul date +%F)
           last=$(python3 -c "import json;print(json.load(open('data/blog_posts.json')).get('checked_at',''))" 2>/dev/null || echo "")
-          if [ "$h" -lt 5 ] || [ "${last:0:10}" = "$today" ]; then echo "SKIP=1" >> "$GITHUB_ENV"; echo "건너뜀 (지금 ${h}시, 마지막 확인 $last)"; fi
+          # 지금 차례의 시작 시각: 12시 이후면 오늘 12:00, 04시 이후면 오늘 04:00, 그 전이면 차례 아님
+          if [ "$h" -ge 12 ]; then slot="${today}T12:00"; elif [ "$h" -ge 4 ]; then slot="${today}T04:00"; else slot=""; fi
+          if [ -z "$slot" ] || [[ "${last:0:16}" > "$slot" ]] || [ "${last:0:16}" = "$slot" ]; then echo "SKIP=1" >> "$GITHUB_ENV"; echo "건너뜀 (지금 ${h}시, 마지막 확인 $last)"; fi
       - name: Fetch blog RSS
         if: env.SKIP != '1'
         run: python3 tools/blog_rss.py
