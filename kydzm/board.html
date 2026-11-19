@@ -1195,6 +1195,7 @@ const AUTO_FREQ = [['hourly', '매시'], ['multi', '하루 여러 번'], ['daily
 // 자동화 목록 파일이 바뀌었으면 다시 읽음 — 예전엔 처음 한 번만 읽어서 Claude가 적은 실행 기록이 안 보였음 (261119)
 function autosStale() {
   if (S.autos && S.files && (S.files['state/automations.json'] || '') !== S.autosSha) loadAutos();
+  if (S.vault && S.files && (S.files['state/vault.json'] || '') !== S.vaultSha) loadVault();
 }
 async function loadAutos() {
   if (S.autosLoading) return; S.autosLoading = true;
@@ -1276,6 +1277,28 @@ async function loadConns() {
   try { S.conns = ((await readBlobJsonCached('state/connections.json')) || {}).items || []; } catch (e) { S.connsErr = e.message; }
   S.connsLoading = false; renderSoon();
 }
+// 🔐 보관함 — 프로그램 키·계정 (비공개 cupas state/vault.json, 사용자 261119). 브라우저 저장소에 남기지 않으려고 캐시 없이 읽고, 값은 누를 때만 보임
+async function loadVault() {
+  if (S.vaultLoading) return; S.vaultLoading = true;
+  try { const sha = (S.files || {})['state/vault.json']; S.vaultSha = sha || ''; S.vault = sha ? ((await readBlobJson(sha)).items || []) : []; } catch (e) { S.vaultErr = e.message; }
+  S.vaultLoading = false; renderSoon();
+}
+function vaultHtml() {
+  if (!S.vault) { if (!S.vaultErr) loadVault(); return `<div class="card" style="margin-top:14px">${S.vaultErr ? '보관함을 못 읽었어요: ' + esc(S.vaultErr) : '🔐 보관함 불러오는 중…'}</div>`; }
+  const shown = S.vaultShow || {};
+  let h = `<div class="conns" style="margin-top:18px"><div class="agood">🔐 보관함 <span class="muted" style="font-weight:400">· 프로그램 키·계정 · 눌러야 보여요</span></div><table class="atbl ctbl"><tbody>`;
+  S.vault.forEach(it => {
+    const rows = (it.fields || []).map((f, i) => {
+      const k = it.id + ':' + i, open = !f.secret || shown[k];
+      return `<div style="display:flex;gap:6px;align-items:center;margin:2px 0"><span class="muted" style="min-width:64px">${esc(f.label)}</span>`
+        + `<code style="user-select:all;word-break:break-all">${open ? esc(f.value) : '••••••••'}</code>`
+        + (f.secret ? `<button class="btn small" data-vshow="${esc(k)}">${open ? '가리기' : '보기'}</button>` : '')
+        + `<button class="btn small" data-vcopy="${esc(k)}">복사</button></div>`;
+    }).join('');
+    h += `<tr><td class="c-name"><b>${esc(it.name)}</b><div class="muted c-meta">${esc(it.kind || '')}${it.added ? ' · ' + esc(it.added) : ''}</div></td><td class="c-what">${rows}${it.note ? `<div class="c-note">${esc(it.note)}</div>` : ''}</td></tr>`;
+  });
+  return h + `</tbody></table><div class="muted" style="font-size:12px;margin-top:10px">원본 비공개 cupas state/vault.json — 새로 넣을 건 Claude에게 말하면 넣어요</div></div>`;
+}
 function connsHtml() {
   if (!S.conns) { if (!S.connsErr) loadConns(); return `<div class="card">${S.connsErr ? '연결 목록을 못 읽었어요: ' + esc(S.connsErr) : '연결 목록 불러오는 중…'}</div>`; }
   if (!S.autos && !S.autosErr) loadAutos();   // 관련 예약이 제때 돌았는지로 상태를 같이 봄
@@ -1301,7 +1324,7 @@ function connsHtml() {
       + `<td class="a-res c-st ${k}">${esc(label)}</td></tr>`;
   });
   h += `</tbody></table><div class="muted" style="font-size:12px;margin-top:10px">상태는 그 API를 쓰는 예약이 제때 돌았는지(⏰ 자동화 탭)로 같이 봐요 · 토큰 값은 저장하지 않고 이름만 · 원본 cupas state/connections.json</div></div>`;
-  return h;
+  return h + vaultHtml();
 }
 function autosHtml() {
   if (!S.autos) { if (!S.autosErr) loadAutos(); return `<div class="card">${S.autosErr ? '자동화 목록을 못 읽었어요: ' + esc(S.autosErr) : '자동화 불러오는 중…'}</div>`; }
@@ -1967,6 +1990,14 @@ function bind() {
   const m = $('#main');
   if (!m._drag) { bindDrag(m); if (EMBED) bindTouchDrag(m); m._drag = true; }
   m.onclick = e => {
+    const vs = e.target.closest('[data-vshow]');
+    if (vs) { S.vaultShow = S.vaultShow || {}; S.vaultShow[vs.dataset.vshow] = !S.vaultShow[vs.dataset.vshow]; render(); return; }
+    const vc = e.target.closest('[data-vcopy]');
+    if (vc) {
+      const [id, i] = vc.dataset.vcopy.split(':'); const it = (S.vault || []).find(x => x.id === id); const f = it && it.fields[+i];
+      if (f) { navigator.clipboard.writeText(f.value).then(() => { vc.textContent = '복사됨'; setTimeout(() => { vc.textContent = '복사'; }, 1500); }, () => alert(f.value)); }
+      return;
+    }
     const afq = e.target.closest('[data-afq]');
     if (afq) { S.autoFq = afq.dataset.afq; render(); return; }
     const arow = !e.target.closest('a') && e.target.closest('tr[data-aid]');
