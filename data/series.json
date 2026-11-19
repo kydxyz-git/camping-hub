@@ -31,6 +31,16 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_995c0e44dd",
+        "ep": 4,
+        "title": "화목난로가 고민이라면",
+        "url": "https://www.instagram.com/reel/Df5h1DVhD37/",
+        "thumb": "./images/series/winter-ep04.jpg",
+        "published": true,
+        "created_at": "2026-11-19T08:11:15.000Z",
+        "updated_at": "2026-11-19T08:11:15.000Z"
+      },
+      {
         "id": "ep_9d8cae1b51",
         "ep": 3,
         "title": "겨울철 난방 시 필수품",
