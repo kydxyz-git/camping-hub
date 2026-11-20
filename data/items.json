@@ -1834,5 +1834,23 @@
     "updated_at": "2026-11-18T09:17:20.000Z",
     "is_new": true,
     "pick": 1
+  },
+  {
+    "id": "item_d804171e35",
+    "name": "트론스마트 미르튠 C3 PLUS",
+    "cat": "light",
+    "video": "",
+    "desc": "IPX7 방수, 물에 떠도 멀쩡했던 아웃도어 블루투스 스피커",
+    "url": "https://link.coupang.com/a/iP0mOF6fhA",
+    "source": "쿠팡",
+    "thumb": "./images/products/1f4895135dcc.jpg",
+    "currency": "KRW",
+    "price_original": 0,
+    "price_sale": null,
+    "discount_rate": null,
+    "published": true,
+    "created_at": "2026-11-20T16:18:04.000Z",
+    "updated_at": "2026-11-20T16:18:04.000Z",
+    "is_new": true
   }
 ]
