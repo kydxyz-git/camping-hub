@@ -3367,6 +3367,7 @@ ${dashPhone ? `    <section class="dash-page dash-todo-page">
         if (!confirm('GitHub 토큰 형식이 아닌 것 같아요. 그래도 저장할까요?')) return;
       }
       localStorage.setItem(STORAGE_KEYS.token, v);
+      try { if (!localStorage.getItem('kydz_cupas_gh_token')) localStorage.setItem('kydz_cupas_gh_token', v); } catch (e) {}   // 깃허브·쿠파스 같은 토큰 (사용자 261120) — 한 번만 넣게
       _tokenCardExpanded = false; // 저장 후 자동 접힘
       renderDashboard();
     };
@@ -8836,7 +8837,7 @@ async function runCoupang(inputs) {
   }
   throw new Error('결과를 4분 안에 못 받았어요. cupas 저장소 Actions의 coupang-search 실행 기록을 확인해 주세요.');
 }
-function cupasToken() { try { return localStorage.getItem('kydz_cupas_gh_token') || ''; } catch (e) { return ''; } }
+function cupasToken() { try { return localStorage.getItem('kydz_cupas_gh_token') || localStorage.getItem('kydz_admin_gh_token') || ''; } catch (e) { return ''; } }   // 같은 토큰 (261120)
 async function ghFetchRaw(path, opts = {}) {
   const r = await fetch(`${GH_API}${path}`, { ...opts, headers: {
     'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${path.includes('/cupas/') ? cupasToken() : getToken()}`,

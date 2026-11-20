@@ -316,8 +316,8 @@ function jsonText(data) { return JSON.stringify(data, null, 2) + '\n'; }
 // ════════════════════════════════════════════════════════════════════
 // GitHub API
 // ════════════════════════════════════════════════════════════════════
-function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
-function setToken(v) { try { v ? localStorage.setItem(TOKEN_KEY, v) : localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+function getToken() { try { return localStorage.getItem(TOKEN_KEY) || localStorage.getItem('kydz_admin_gh_token') || ''; } catch (e) { return ''; } }   // 관리 화면 깃허브 토큰과 같은 토큰 (261120)
+function setToken(v) { try { v ? localStorage.setItem(TOKEN_KEY, v) : localStorage.removeItem(TOKEN_KEY); if (v && !localStorage.getItem('kydz_admin_gh_token')) localStorage.setItem('kydz_admin_gh_token', v); } catch (e) {} }
 
 class GhError extends Error { constructor(status, msg) { super(msg); this.status = status; } }
 async function gh(path, opts = {}) {

@@ -26,7 +26,7 @@ const CLIENT_KEY = 'sbawnc6030u39o2lyr';
 const REDIRECT = 'https://kydz.kr/kydzm/tiktok.html';
 const SCOPES = 'user.info.basic,user.info.profile,user.info.stats,video.list,video.upload,video.manage';
 const box = document.getElementById('box');
-const tok = (() => { try { return localStorage.getItem('kydz_cupas_gh_token') || ''; } catch (e) { return ''; } })();
+const tok = (() => { try { return localStorage.getItem('kydz_cupas_gh_token') || localStorage.getItem('kydz_admin_gh_token') || ''; } catch (e) { return ''; } })();
 const q = new URLSearchParams(location.search);
 
 function start() {

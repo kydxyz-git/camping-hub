@@ -519,7 +519,7 @@ function todayLabel() { const p = kstParts(); return `${p.m}월 ${p.d}일 (${WD[
 // ════════════════════════════════════════════════════════════════════
 // GitHub API — threads.html 과 같은 함수
 // ════════════════════════════════════════════════════════════════════
-function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
+function getToken() { try { return localStorage.getItem(TOKEN_KEY) || localStorage.getItem('kydz_admin_gh_token') || ''; } catch (e) { return ''; } }   // 관리 화면 깃허브 토큰과 같은 토큰 (261120)
 
 class GhError extends Error { constructor(status, msg) { super(msg); this.status = status; } }
 async function gh(path, opts = {}) {

@@ -822,7 +822,7 @@ function startGitHub() {
   document.getElementById('woodpanel').hidden = true;   // 사용량은 GitHub에 없음 (내 컴퓨터 연결에서만)
   wood.level = wood.shown = 1;
   const dot = document.getElementById('dot'), mode = document.getElementById('mode'), note = document.getElementById('modenote');
-  const tok = r => { try { return localStorage.getItem(r.key) || ''; } catch (e) { return ''; } };
+  const tok = r => { try { return localStorage.getItem(r.key) || localStorage.getItem('kydz_admin_gh_token') || localStorage.getItem('kydz_cupas_gh_token') || ''; } catch (e) { return ''; } };   // 깃허브·쿠파스 같은 토큰 (261120)
   const repos = () => GH_REPOS.filter(r => !r.needToken || tok(r));
   const every = () => repos().some(r => tok(r)) ? 60e3 : 150e3;   // 토큰 없으면 시간당 60번 제한이라 느리게
   note.textContent = `GitHub에 올라간 커밋은 공대남자가, 자동 작업(스레드 게시·특가·링크 점검 등)은 예약봇이 움직여요. ${every() / 60e3 >= 2 ? '2분 반' : '1분'}마다 확인.` +
