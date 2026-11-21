@@ -1196,6 +1196,7 @@ const AUTO_FREQ = [['hourly', '매시'], ['multi', '하루 여러 번'], ['daily
 function autosStale() {
   if (S.autos && S.files && (S.files['state/automations.json'] || '') !== S.autosSha) loadAutos();
   if (S.vault && S.files && (S.files['state/vault.json'] || '') !== S.vaultSha) loadVault();
+  if (S.conns && S.files && (S.files['state/connections.json'] || '') !== S.connsSha) loadConns();
 }
 async function loadAutos() {
   if (S.autosLoading) return; S.autosLoading = true;
@@ -1274,7 +1275,7 @@ function autoState(a) {
 // 🔌 연결된 API·토큰 현황 — cupas state/connections.json (사용자 261117 '자동화 옆에 연결된 API 현황'). 토큰 값은 없음(이름만)
 async function loadConns() {
   if (S.connsLoading) return; S.connsLoading = true;
-  try { S.conns = ((await readBlobJsonCached('state/connections.json')) || {}).items || []; } catch (e) { S.connsErr = e.message; }
+  try { S.connsSha = (S.files || {})['state/connections.json'] || ''; S.conns = ((await readBlobJsonCached('state/connections.json')) || {}).items || []; } catch (e) { S.connsErr = e.message; }
   S.connsLoading = false; renderSoon();
 }
 // 🔐 보관함 — 프로그램 키·계정 (비공개 cupas state/vault.json, 사용자 261119). 브라우저 저장소에 남기지 않으려고 캐시 없이 읽고, 값은 누를 때만 보임
