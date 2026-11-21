@@ -83,6 +83,16 @@
     "sort": "random",
     "eps": [
       {
+        "id": "ep_0cc2dc81fb",
+        "ep": 0,
+        "title": "이 스피커, 은근 괜찮은데요?",
+        "url": "https://www.instagram.com/reel/Df-rZLshmH-/",
+        "thumb": "./images/series/items-mwpo9qzc.jpg",
+        "published": true,
+        "created_at": "2026-11-21T00:31:05.000Z",
+        "updated_at": "2026-11-21T00:31:05.000Z"
+      },
+      {
         "id": "ep_9fed6e31b7",
         "ep": 0,
         "title": "전기장판 대신 추천하는 난방용품",
