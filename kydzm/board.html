@@ -1223,6 +1223,8 @@ async function loadAutos() {
     }));
   } catch (e) { S.autosErr = e.message; }
   S.autosLoading = false; renderSoon();
+  // 옛 스냅샷으로 읽는 사이 최신본이 오면 그때 다시 읽기를 건너뛰어 옛 기록이 남았음 — 끝나고 한 번 더 확인 (261123 '안 돎' 3개가 사실 11/22에 돈 것)
+  if (S.files && (S.files['state/automations.json'] || '') !== S.autosSha) loadAutos();
 }
 function kstHM(iso) { const p = kstParts(new Date(iso)); return p.iso.slice(11, 16); }
 function runMark(r) { return !r ? '' : r.st !== 'completed' ? '⏳' : r.ok === 'success' ? '✅' : r.ok === 'skipped' || r.ok === 'cancelled' ? '⏭' : '❌'; }
@@ -1277,12 +1279,14 @@ async function loadConns() {
   if (S.connsLoading) return; S.connsLoading = true;
   try { S.connsSha = (S.files || {})['state/connections.json'] || ''; S.conns = ((await readBlobJsonCached('state/connections.json')) || {}).items || []; } catch (e) { S.connsErr = e.message; }
   S.connsLoading = false; renderSoon();
+  if (S.files && (S.files['state/connections.json'] || '') !== S.connsSha) loadConns();   // 읽는 사이 바뀌었으면 한 번 더 (261123)
 }
 // 🔐 보관함 — 프로그램 키·계정 (비공개 cupas state/vault.json, 사용자 261119). 브라우저 저장소에 남기지 않으려고 캐시 없이 읽고, 값은 누를 때만 보임
 async function loadVault() {
   if (S.vaultLoading) return; S.vaultLoading = true;
   try { const sha = (S.files || {})['state/vault.json']; S.vaultSha = sha || ''; S.vault = sha ? ((await readBlobJson(sha)).items || []) : []; } catch (e) { S.vaultErr = e.message; }
   S.vaultLoading = false; renderSoon();
+  if (S.files && (S.files['state/vault.json'] || '') !== S.vaultSha) loadVault();   // 읽는 사이 바뀌었으면 한 번 더 (261123)
 }
 function vaultHtml() {
   if (!S.vault) { if (!S.vaultErr) loadVault(); return `<div class="card" style="margin-top:14px">${S.vaultErr ? '보관함을 못 읽었어요: ' + esc(S.vaultErr) : '🔐 보관함 불러오는 중…'}</div>`; }
