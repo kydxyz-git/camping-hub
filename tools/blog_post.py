@@ -204,10 +204,32 @@ def pieces(spec, out):
             lines = b['p'].split('\n')
             text.append((''.join(f'<p>{html.escape(l)}</p>' if l else '<p><br></p>' for l in lines) + '<p><br></p>', b['p'] + '\n'))
     flush()
-    return res
+    return merge_text(res, spec.get('tags', ''))
 
 
-PAGE = r'''<!doctype html><html lang="ko"><head><meta charset="utf-8">
+def merge_text(ps, tags=''):
+    """사진 사이 글·링크 조각은 전부 한 번에 복사되게 하나로 묶고, 태그는 맨 끝 글 조각에 붙인다 (261123 사장님
+    "이미지 말고 이미지 사이 문구들은 뭐든 한번에 복사"). 링크 카드는 어차피 안 생겨서 따로 뗄 이유 없음."""
+    out = []
+    for p in ps:
+        if p['k'] == 'img':
+            out.append(p)
+            continue
+        h = p['html'] if p['k'] == 'text' else ''.join(f'<p>{l}</p>' for l in p['html'].split('<br>')) + '<p><br></p>'
+        if out and out[-1]['k'] == 'text':
+            out[-1] = {'k': 'text', 'html': out[-1]['html'] + h, 'plain': (out[-1]['plain'] + '\n\n' + p['plain']).strip()}
+        else:
+            out.append({'k': 'text', 'html': h, 'plain': p['plain'].strip()})
+    tags = (tags or '').strip()
+    if tags and not any(p['k'] == 'text' and tags in p['plain'] for p in out):
+        if out and out[-1]['k'] == 'text':
+            out[-1] = {**out[-1], 'html': out[-1]['html'] + f'<p>{html.escape(tags)}</p>', 'plain': out[-1]['plain'] + '\n\n' + tags}
+        else:
+            out.append({'k': 'text', 'html': f'<p>{html.escape(tags)}</p>', 'plain': tags})
+    return out
+
+
+PAGE =r'''<!doctype html><html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>__TITLE__</title>
 <style>
 :root{--bg:#eef1ec;--paper:#fff;--ink:#1f2420;--muted:#68716a;--line:#d8ddd6;--accent:#03a94f;--done:#e6f4ea}
