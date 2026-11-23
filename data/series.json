@@ -8,6 +8,17 @@
     "sort": "ep_desc",
     "eps": [
       {
+        "id": "ep_6a1c2f9e47",
+        "ep": 2,
+        "title": "사이트 안에 전용 자쿠지까지",
+        "url": "https://www.instagram.com/reel/DgGYuXRhlBN/?hvrq=MWl2NWk4Nnlsc2d2ZQ==",
+        "thumb": "./images/series/special-site-ep02.jpg",
+        "published": true,
+        "created_at": "2026-11-23T22:21:35.000Z",
+        "updated_at": "2026-11-23T22:33:17.000Z",
+        "camp_id": "camp_b8d29b3f00"
+      },
+      {
         "id": "ep_db21235f21",
         "ep": 1,
         "title": "한 사이트에 세 가족까지, 매너타임도 없음",
@@ -16,17 +27,6 @@
         "published": true,
         "created_at": "2026-11-17T08:06:00.000Z",
         "updated_at": "2026-11-17T08:15:00.000Z",
-        "camp_id": "camp_b8d29b3f00"
-      },
-      {
-        "id": "ep_6a1c2f9e47",
-        "ep": 2,
-        "title": "사이트 안에 전용 자쿠지까지",
-        "url": "https://www.instagram.com/reel/DgGYuXRhlBN/?hvrq=MWl2NWk4Nnlsc2d2ZQ==",
-        "thumb": "./images/series/special-site-ep02.jpg",
-        "published": true,
-        "created_at": "2026-11-23T22:21:35.000Z",
-        "updated_at": "2026-11-23T22:21:35.000Z",
         "camp_id": "camp_b8d29b3f00"
       }
     ],
