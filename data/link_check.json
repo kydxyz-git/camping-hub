@@ -1,8 +1,8 @@
 {
-  "checked_at": "2026-11-16T15:26:16+09:00",
+  "checked_at": "2026-11-23T16:35:10+09:00",
   "main_af": "AF7202884",
   "counts": {
-    "unknown": 97,
+    "unknown": 99,
     "ok": 7
   },
   "results": {
@@ -899,6 +899,29 @@
       "status": "unknown",
       "af": "AF7202884",
       "product_id": "8412705233",
+      "detail": "상품 페이지 확인 불가 (응답 403)"
+    },
+    "item_fed82c5193": {
+      "type": "items",
+      "name": "캠핑투게더 엠스토브 V3",
+      "url": "https://naver.me/FsoYTMxe",
+      "shop": "naver",
+      "status": "unknown",
+      "af": "",
+      "product_id": "12412109224",
+      "detail": "링크 살아 있음(브랜드 커넥트로 넘어감) · 상품 판매·캠페인 종료 여부는 확인 불가",
+      "chain": [
+        "https://brandconnect.naver.com/affiliates/1018643054724960?channelProductNo=12412109224"
+      ]
+    },
+    "item_d804171e35": {
+      "type": "items",
+      "name": "트론스마트 미르튠 C3 PLUS",
+      "url": "https://link.coupang.com/a/iP0mOF6fhA",
+      "shop": "coupang",
+      "status": "unknown",
+      "af": "AF7202884",
+      "product_id": "9585586384",
       "detail": "상품 페이지 확인 불가 (응답 403)"
     },
     "food_6b6f5c2711": {
