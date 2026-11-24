@@ -3,6 +3,7 @@
 PC 대화(☆KYD_ZM 폴더: 캠핑장 페이지 코드 작업 · 블로그 반자동화 …)와 클라우드 대화(쓰레드+쿠파스 자동화)는 서로 기억을 공유하지 않는다.
 이 파일이 그 사이의 다리 — **대화마다 하루 한 번(그날 첫 작업 전) 읽고, 작업 하나가 끝날 때마다 한 줄 남긴다.** 규칙은 CLAUDE.md '작업 일지'.
 
+- 11/24 17:00 [클라우드] GitHub 토큰 정리 결정(사용자): kydz-admin·kydz-threads 두 개를 같은 권한(세 저장소 camping-hub·cupas·camping-search, Contents·Actions·Secrets·Variables·Workflows 쓰기, Administration 읽기)으로 맞춰 둘 다 씀, camping-hub-sync는 삭제. **앞으로 토큰을 새로 넣을 일이 생기면 kydz-admin 하나로 통일**(그때 kydz-threads 삭제). 값은 어디에도 적지 않음
 - 11/24 15:30 [클라우드] cupas·camping-search 워크플로 실행을 집 PC 러너로 전환(`runs-on: vars.RUNNER || 'pc'`) — PC가 오래 꺼지면 각 저장소 Actions 변수 `RUNNER`=`ubuntu-latest`로 되돌림. camping-hub(공개)는 GitHub 서버 그대로
 - 11/24 14:40 [PC 코드] 이 PC에 GitHub Actions 러너 설치 끝 — WSL Ubuntu, 러너 pc-cupas·pc-cupas-2(cupas)·pc-camping-search(camping-search), 라벨 pc, 셋 다 Idle. 재부팅 뒤 로그인 없이 자동으로 켜짐 확인(부팅 작업 'WSL 깨워두기'). 남은 일: 클라우드가 runs-on 전환·Worker
 - 11/24 13:30 [클라우드] 비공개 저장소 Actions 무료 시간 거의 다 씀(예산 $0이라 넘으면 12/1 오전까지 자동화 멈춤, 돈은 안 나감) → 운영판 알림은 push마다 대신 Worker가 30분마다 필요할 때만 · 쓰레드 전체 확인 2시간마다 · DM 가져오기 3시간마다 · 깃허브 예비 예약 뺌 — Worker v12 사용자 배포 필요(배포 전엔 운영판 알림 안 감). **PC 대화도 운영판 커밋을 잘게 쪼개지 말고 묶어서**
