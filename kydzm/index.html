@@ -2034,7 +2034,7 @@ async function loadAllData(force = false) {
   if (cache.loaded && !force) return cache;
   const files = ['config', 'series', 'foods', 'items', 'camps'];
   // 모두 한꺼번에 받음 (예전엔 뒤 3개를 하나씩 기다려서 느렸음, 261103)
-  const [results, linkCheck, siteStats, cpHome] = await Promise.all([
+  const [results, linkCheck, siteStats, cpHome, cpChrome] = await Promise.all([
     Promise.all(files.map(fetchDataFile)),
     // 쿠팡 링크 점검 결과 (tools/check_links.py, 없으면 표시 안 함)
     fetchDataFile('link_check').catch(() => null),
@@ -2043,7 +2043,11 @@ async function loadAllData(force = false) {
     // 홈페이지 링크별 쿠팡 클릭·주문 (비공개 cupas state/homepage_links.json — 수익 숫자라 공개 저장소엔 없음, 쿠파스 토큰 있을 때만)
     cupasToken() ? ghFetchRaw('/repos/kydxyz-git/cupas/contents/state/homepage_links.json?ref=main',
       { headers: { Accept: 'application/vnd.github.raw+json' } }).then(r => r.json()).catch(() => null) : null,
+    // 쿠팡 판매 여부 — PC 크롬 점검 결과 (비공개 cupas state/coupang_chrome_check.json, 매주 월 04:40). 깃허브 서버 점검(link_check)은 쿠팡이 막아 '확인 불가'가 대부분이라 이걸로 표시 (261124 사용자 '여기서 보여줘야 뭐가 잘못된지 확인이 되는데')
+    cupasToken() ? ghFetchRaw('/repos/kydxyz-git/cupas/contents/state/coupang_chrome_check.json?ref=main',
+      { headers: { Accept: 'application/vnd.github.raw+json' } }).then(r => r.json()).catch(() => null) : null,
   ]);
+  cache.cpChrome = cpChrome;
   cache.config = results[0];
   cache.series = results[1];
   cache.foods  = results[2];
@@ -7660,10 +7664,15 @@ const siteStatItem = (kind, id) => siteStatOf(kind === 'camps' ? [`/camps/${id}`
 const siteChip = st => st && (st.view || st.click) ? `<span style="font-size:11px;color:#1a4d8f;background:#e8f0fb;border-radius:4px;padding:1px 5px;margin-right:6px;" title="홈페이지 최근 30일: 조회 · 바깥 링크(구매처·예약처·DM) 클릭">🏠 👁 ${st.view} · 🖱 ${st.click}</span>` : '';
 const siteNote = () => cache.siteStats ? `<span style="opacity:.75">🏠 = 홈페이지 최근 30일(${escapeHtml(cache.siteStats.from.slice(5))}~${escapeHtml(cache.siteStats.to.slice(5))}) 조회 · 바깥 링크 클릭</span>` : '';
 
+const CHROME_BAD = { '판매 종료 의심': 'soldout', '품절': 'soldout' };
 function linkIssue(item) {
   const r = cache.linkCheck && cache.linkCheck.results && cache.linkCheck.results[item.id];
-  if (!r || !LINK_BAD[r.status] || String(item.url || '').trim() !== r.url) return null;
-  return r;
+  if (r && LINK_BAD[r.status] && String(item.url || '').trim() === r.url) return r;
+  // PC 크롬 점검: 판매 종료 의심·품절. 점검 뒤에 링크를 바꾼 상품(updated_at이 더 늦음)은 다음 점검까지 표시 안 함
+  const cc = cache.cpChrome, c = cc && cc.results && cc.results[item.id];
+  if (c && CHROME_BAD[c.status] && /coupang\./.test(String(item.url || '')) && !(item.updated_at && cc.checked_at && item.updated_at > cc.checked_at))
+    return { status: CHROME_BAD[c.status], detail: `${c.status} — ${c.title || ''} (PC 크롬 점검 ${String(cc.checked_at).slice(5, 10)})`, label: c.status };
+  return null;
 }
 
 function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
@@ -7685,7 +7694,7 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
         <div class="list-item-thumb">${thumb}</div>
         <div class="list-item-body">
           <div class="list-item-title">${escapeHtml(item.name)}</div>
-          <div class="list-item-meta">${stChip}${cpChip}${li ? `<span style="font-size:11px;color:#fff;background:#d93025;border-radius:4px;padding:1px 5px;margin-right:6px;" title="${escapeHtml(li.detail)}">⚠ ${LINK_BAD[li.status]}</span>` : ''}${src}${escapeHtml(item.desc || '')}</div>
+          <div class="list-item-meta">${stChip}${cpChip}${li ? `<span style="font-size:11px;color:#fff;background:#d93025;border-radius:4px;padding:1px 5px;margin-right:6px;" title="${escapeHtml(li.detail)}">⚠ ${escapeHtml(li.label || LINK_BAD[li.status])}</span>` : ''}${src}${escapeHtml(item.desc || '')}</div>
         </div>
       </a>
       <span class="pick-stars">${[1,2,3].map(n => `<button type="button"
@@ -7829,7 +7838,7 @@ function renderProductList(dataArr, searchVar, opts) {
     ${cache.siteStats ? `<div class="series-sort-note" style="background:#e8f0fb;border-color:#c5d8f2;color:#1a4d8f;">${siteNote()}
           <button type="button" class="btn btn-sm btn-ghost" id="site-sort-btn" style="margin-left:6px">${_siteSort ? '원래 순서' : '홈페이지 클릭 많은 순'}</button></div>` : ''}
     ${badN ? `<div class="series-sort-note" style="background:#fdecea;border-color:#f5c2c0;color:#8a1c14;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-        <span>🔎 링크 점검(쿠팡·컬리) (${escapeHtml(String(lc.checked_at || '').slice(5, 16).replace('T', ' '))}): 손볼 링크 <b>${badN}</b>개 — 파트너스에서 새 링크를 만들어 바꿔 주세요</span>
+        <span>🔎 링크 점검(쿠팡·컬리 ${escapeHtml(String((lc && lc.checked_at) || '').slice(5, 10))}${cache.cpChrome ? ` · PC 크롬 ${escapeHtml(String(cache.cpChrome.checked_at || '').slice(5, 10))}` : ''}): 손볼 링크 <b>${badN}</b>개 — 파트너스에서 새 링크를 만들어 바꿔 주세요 (빨간 ⚠ 배지에 손가락을 대면 이유)</span>
         <button type="button" class="btn btn-sm ${linkOnly ? '' : 'btn-ghost'}" id="link-only-btn">${linkOnly ? '전체 보기' : '문제만 보기'}</button></div>` : ''}
     <div class="list" id="prod-list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>'
