@@ -134,6 +134,15 @@ def make_comment(c):
     return '\n'.join(out).strip()
 
 
+SENT_END = re.compile(r'(?<=[가-힣)\]"\'”’][.!?])[ \t]+(?=\S)')
+
+
+def one_sentence_per_line(p):
+    """문단 안 문장은 한 줄에 하나씩 (폰에서 읽기 편하게, 261124 사장님 수정본 기준).
+    한글 뒤 . ! ? 다음 띄어쓰기에서만 끊는다 — 3.5kg·1. 같은 숫자 점은 그대로."""
+    return '\n'.join(SENT_END.sub('\n', l) for l in p.split('\n'))
+
+
 def pieces(spec, out):
     """붙여넣을 조각 목록: 이어진 글 블록은 하나로 묶고, 사진은 한 장씩."""
     res, text = [], []
@@ -201,8 +210,9 @@ def pieces(spec, out):
             t = f'[지도: 에디터 \'장소\' 버튼 → {b["map"]} 검색해서 넣고 이 줄은 지우기]'
             text.append((f'<p>{html.escape(t)}</p><p><br></p>', t + '\n'))
         else:
-            lines = b['p'].split('\n')
-            text.append((''.join(f'<p>{html.escape(l)}</p>' if l else '<p><br></p>' for l in lines) + '<p><br></p>', b['p'] + '\n'))
+            p = one_sentence_per_line(b['p'])
+            lines = p.split('\n')
+            text.append((''.join(f'<p>{html.escape(l)}</p>' if l else '<p><br></p>' for l in lines) + '<p><br></p>', p + '\n'))
     flush()
     return merge_text(res, spec.get('tags', ''))
 
