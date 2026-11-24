@@ -53,6 +53,15 @@
   }
   .input:focus { outline: 2px solid var(--text); outline-offset: -1px; }
 
+  /* ── 채널 칩 (261124) ── */
+  .ch-chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 14px; }
+  .ch-chip { padding: 7px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; font-family: inherit; }
+  .ch-chip.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .badge.ch-badge { background: var(--accent-soft); color: var(--text); }
+  .badge.badge-daily { background: #e8f1f8; color: var(--info); }
+  .badge.badge-weekly { background: #e9f8ef; color: #0a8a43; }
+  .old-btn { width: 100%; margin-top: 6px; background: var(--bg); color: var(--text); border: 1px solid var(--line); }
+
   /* ── 로그인 ── */
   .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
   .login-card { max-width: 380px; width: 100%; padding: 32px 24px; }
@@ -222,7 +231,7 @@ function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function badgeClass(t) {
-  return t === 'quarter' ? 'badge-quarter' : t === 'strategy' ? 'badge-strategy' : 'badge-monthly';
+  return t === 'quarter' ? 'badge-quarter' : t === 'strategy' ? 'badge-strategy' : t === 'daily' ? 'badge-daily' : t === 'weekly' ? 'badge-weekly' : 'badge-monthly';
 }
 function fmtDate(iso) {
   const [y, m, d] = iso.split('-');
@@ -236,30 +245,58 @@ function dday(iso) {
   return `${Math.floor(diff / 365)}년 전`;
 }
 
+// 리포트는 비공개 cupas reports/*.json (261124 사용자 '비공개 쪽으로 옮겨' — 예전 공개 data/insights.json은 지움)
+const CHANNELS = [
+  { key: 'instagram', label: '인스타' }, { key: 'youtube', label: '유튜브' },
+  { key: 'threads', label: '쓰레드' }, { key: 'deals', label: '딜 보드' },
+];
+const CH_LABEL = Object.fromEntries(CHANNELS.map(c => [c.key, c.label]));
+function cupasToken() { try { return localStorage.getItem('kydz_cupas_gh_token') || localStorage.getItem('kydz_admin_gh_token') || ''; } catch (e) { return ''; } }
 async function loadData() {
   if (DATA) return DATA;
-  const r = await fetch(`../data/insights.json?v=${Date.now()}`);
-  if (!r.ok) throw new Error('insights.json 로드 실패: ' + r.status);
-  DATA = await r.json();
+  const tok = cupasToken();
+  if (!tok) throw new Error('쿠파스(깃허브) 토큰이 이 브라우저에 없어요. 관리자 홈이나 스레드 관리에서 한 번 넣으면 리포트가 보여요.');
+  const all = await Promise.all(CHANNELS.map(async c => {
+    const r = await fetch(`https://api.github.com/repos/kydxyz-git/cupas/contents/reports/${c.key}.json?ref=main&t=${Date.now()}`,
+      { headers: { Authorization: `Bearer ${tok}`, Accept: 'application/vnd.github.raw+json', 'X-GitHub-Api-Version': '2022-11-28' }, cache: 'no-store' });
+    if (r.status === 404) return [];
+    if (!r.ok) throw new Error(`${c.label} 리포트 로드 실패: ${r.status}`);
+    const j = await r.json();
+    return (j.reports || []).map(x => ({ ...x, channel: x.channel || c.key }));
+  }));
+  DATA = { reports: all.flat() };
   return DATA;
 }
+let FILTER = (() => { try { return localStorage.getItem('kydz_insights_ch') || ''; } catch (e) { return ''; } })();
+let SHOW_OLD = false;
 
 // ── 목록 ──
 function renderList() {
   const main = document.getElementById('main');
-  const reports = [...(DATA.reports || [])].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || b.analyzedAt.localeCompare(a.analyzedAt));
+  const all = [...(DATA.reports || [])].filter(r => !FILTER || r.channel === FILTER)
+    .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || b.analyzedAt.localeCompare(a.analyzedAt));
+  // 매일 쌓이는 일간 리포트는 최근 7일만 펼치고 나머지는 접음
+  const cutoff = new Date(Date.now() + 9 * 3600e3 - 7 * 86400e3).toISOString().slice(0, 10);
+  const isOld = r => r.badgeType === 'daily' && r.analyzedAt < cutoff;
+  const reports = SHOW_OLD ? all : all.filter(r => !isOld(r));
+  const hidden = all.length - reports.length;
+  const chips = `<div class="ch-chips">${[{ key: '', label: '전체' }, ...CHANNELS].map(c =>
+    `<button class="ch-chip ${FILTER === c.key ? 'on' : ''}" data-ch="${c.key}">${c.label}</button>`).join('')}</div>`;
   if (!reports.length) {
-    main.innerHTML = '<div class="empty">아직 등록된 분석 리포트가 없습니다</div>';
+    main.innerHTML = chips + '<div class="empty">아직 등록된 분석 리포트가 없습니다</div>';
+    bindChips();
     return;
   }
   main.innerHTML = `
     <div class="page-head">
       <div class="page-title">📈 성과 분석 리포트</div>
-      <div class="page-sub">총 ${reports.length}건 · 최신순</div>
+      <div class="page-sub">총 ${all.length}건 · 최신순</div>
     </div>
+    ${chips}
     ${reports.map(r => `
       <a class="card report-card ${r.pinned ? 'is-pinned' : ''}" href="#${escapeHtml(r.id)}">
         <div class="report-meta">
+          <span class="badge ch-badge">${escapeHtml(CH_LABEL[r.channel] || r.channel || '')}</span>
           <span class="badge ${badgeClass(r.badgeType)}">${escapeHtml(r.badge)}</span>
           <span class="report-date">${r.badgeType === 'strategy' ? '수립일' : '분석일'} ${fmtDate(r.analyzedAt)} · ${dday(r.analyzedAt)}</span>
         </div>
@@ -268,7 +305,18 @@ function renderList() {
         <div class="report-oneliner">${escapeHtml(r.oneLiner)}</div>
       </a>
     `).join('')}
+    ${hidden ? `<button class="btn old-btn" id="show-old">이전 일간 리포트 ${hidden}건 더 보기</button>` : ''}
   `;
+  bindChips();
+  const ob = document.getElementById('show-old');
+  if (ob) ob.onclick = () => { SHOW_OLD = true; renderList(); };
+}
+function bindChips() {
+  document.querySelectorAll('.ch-chip').forEach(b => b.onclick = () => {
+    FILTER = b.dataset.ch; SHOW_OLD = false;
+    try { localStorage.setItem('kydz_insights_ch', FILTER); } catch (e) {}
+    renderList();
+  });
 }
 
 // ── 상세 ──
