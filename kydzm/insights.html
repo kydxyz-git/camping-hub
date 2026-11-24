@@ -248,7 +248,7 @@ function dday(iso) {
 // 리포트는 비공개 cupas reports/*.json (261124 사용자 '비공개 쪽으로 옮겨' — 예전 공개 data/insights.json은 지움)
 const CHANNELS = [
   { key: 'instagram', label: '인스타' }, { key: 'youtube', label: '유튜브' },
-  { key: 'threads', label: '쓰레드' }, { key: 'deals', label: '딜 보드' },
+  { key: 'tiktok', label: '틱톡' }, { key: 'threads', label: '쓰레드' }, { key: 'deals', label: '딜 보드' },
 ];
 const CH_LABEL = Object.fromEntries(CHANNELS.map(c => [c.key, c.label]));
 function cupasToken() { try { return localStorage.getItem('kydz_cupas_gh_token') || localStorage.getItem('kydz_admin_gh_token') || ''; } catch (e) { return ''; } }
