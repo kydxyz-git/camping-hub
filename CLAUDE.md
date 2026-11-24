@@ -24,7 +24,7 @@ PC 코드가 관리하는 **드라이브 `☆CLAUDE/AI 공통 기억/공통기�
 
 내 드라이브 `☆CLAUDE`(id `1zGwzot8N-m2AkSeCotarrN3AqFAVGwGh`)에 Claude가 쓰는 폴더를 모은다. **새 폴더·파일도 여기 안에 만들고 내 드라이브 맨 위(루트)에 만들지 않는다.** 예약 작업은 폴더 id로 찾으므로 옮겨도 그대로 동작.
 - `AI 공통 기억`(1oniK0KBJNDjK6I1Q9XJkaRyG7KNHu7ip) — `공통기억.md` 원본 + `받은함/`(1rC4gTwFG2NIw-yVFUGEXxgHQWtM2ViUS). PC 동기화 경로는 `내 드라이브\☆CLAUDE\AI 공통 기억`
-- `운영판 받은함 (Claude 대화)`(1mtVSK3u7k49fDYsDnC1-T9Tgf8DN4lKD) · `유튜브 소재함 (Claude 대화)`(18HviMUk5XroFfHO55_NCv9BjIlJ2LwWV) · `유튜브 리포트 (클라우드)`(1B6tCyAY8h4nuD69O_W17VyAinc61tGwe) · `노션 이전` · `공대남자 업로드 기록`
+- `운영판 받은함 (Claude 대화)`(1mtVSK3u7k49fDYsDnC1-T9Tgf8DN4lKD) · `유튜브 소재함 (Claude 대화)`(18HviMUk5XroFfHO55_NCv9BjIlJ2LwWV) · `유튜브 리포트 (클라우드)`(1B6tCyAY8h4nuD69O_W17VyAinc61tGwe, 261124부터 날짜별 문서 안 만듦) · `기록 (Claude용)`(109Ah_bpjv6kUJYQIJUcnQH6MsipnysbK — 분야별 기록 파일 하나씩: `유튜브_기록.md`·`쓰레드_기록.md`…, 예약 작업이 통째로 다시 씀, 261124) · `노션 이전` · `공대남자 업로드 기록`
 
 ## 운영판 기록 — 모든 대화 공용 (261105 사용자)
 
