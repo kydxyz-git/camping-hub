@@ -1432,7 +1432,7 @@ function dealStChips(list, order, cur, act) {
 }
 function dealsHtml() {
   const openAll = openDeals();
-  if (S.openDeals) loadDealArchive();
+  if (S.files && S.files[DEAL_ARCHIVE_PATH]) loadDealArchive();   // 처음부터 '끝난 것 N건'이 맞게 (사용자 261125 '왜 0건+야') — 캐시돼 있어 바뀔 때만 받음
   const closedAll = closedDeals();
   if (S.dealSt && !openAll.some(d => dealStKey(d.status) === S.dealSt)) S.dealSt = '';
   if (S.dealCSt && !closedAll.some(d => dealStKey(d.status) === S.dealCSt)) S.dealCSt = '';
