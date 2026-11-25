@@ -171,20 +171,27 @@
   .st-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
   .deal-month { font-size: 13px; font-weight: 800; margin: 14px 0 2px; padding-bottom: 3px; border-bottom: 1px solid var(--line); }
   .deal-month.sel { color: #2f9e44; }
-  .deal-chart { margin: 14px 0 4px; --g0: #69db7c; --g1: #2f9e44; --g2: #adb5bd; --g3: #dee2e6; }
-  @media (prefers-color-scheme: dark) { .deal-chart { --g2: #5c5f66; --g3: #3d4047; } }
+  .deal-chart { margin: 14px 0 4px; --g0: #69db7c; --g1: #2f9e44; --g2: #adb5bd; --g3: #dee2e6; --ln: #f08c00; --lnt: #fff; }
+  @media (prefers-color-scheme: dark) { .deal-chart { --g2: #5c5f66; --g3: #3d4047; --ln: #ffd43b; --lnt: #1c1c1c; } }
   .deal-chart .g0 { background: var(--g0); } .deal-chart .g1 { background: var(--g1); } .deal-chart .g2 { background: var(--g2); } .deal-chart .g3 { background: var(--g3); }
   .dc-h { font-size: 13px; font-weight: 800; margin-bottom: 6px; } .dc-h .n { color: var(--muted); font-weight: 500; font-size: 12px; }
-  .dc-bars, .dc-labs { display: flex; gap: 10px; padding: 0 2px; }
-  .dc-bars { align-items: flex-end; height: 156px; border-bottom: 1px solid var(--line); }
-  .dc-col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: stretch; background: none; border: none; padding: 0; cursor: pointer; color: var(--text); }
-  .dc-tot { text-align: center; font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+  .dc-plot { position: relative; }
+  .dc-bars, .dc-labs { display: flex; }
+  .dc-bars { align-items: flex-end; height: 186px; border-bottom: 1px solid var(--line); }
+  .dc-col { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: stretch; background: none; border: none; padding: 0 5px; cursor: pointer; color: var(--text); }
+  .dc-tot { text-align: center; font-size: 12px; font-weight: 700; color: var(--muted); }
   .dc-stack { display: flex; flex-direction: column; border-radius: 4px 4px 0 0; overflow: hidden; }
   .dc-stack i { display: block; }
   .dc-col.sel .dc-stack { outline: 2px solid var(--text); outline-offset: 2px; }
-  .dc-labs span { flex: 1; text-align: center; font-size: 12px; color: var(--muted); padding-top: 4px; } .dc-labs span.sel { color: var(--text); font-weight: 800; }
-  .dc-leg { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11.5px; color: var(--muted); margin-top: 6px; }
+  .dc-line { position: absolute; left: 0; bottom: 0; width: 100%; height: 130px; overflow: visible; pointer-events: none; z-index: 1; }
+  .dc-line polyline { fill: none; stroke: var(--ln); stroke-width: 2; }
+  .dc-dot { position: absolute; left: 50%; width: 9px; height: 9px; margin: 0 0 -4.5px -4.5px; border-radius: 50%; background: var(--ln); border: 1.5px solid var(--bg); z-index: 2; }
+  .dc-ok { position: absolute; left: 50%; transform: translateX(-50%); font-size: 10.5px; font-weight: 800; line-height: 1; padding: 2px 4px; border-radius: 3px; background: var(--ln); color: var(--lnt); white-space: nowrap; z-index: 2; }
+  .dc-labs span { flex: 1; text-align: center; font-size: 12px; color: var(--muted); padding-top: 4px; line-height: 1.3; } .dc-labs span.sel { color: var(--text); font-weight: 800; }
+  .dc-labs em { display: block; font-style: normal; font-size: 11px; opacity: .8; font-weight: 500; }
+  .dc-leg { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11.5px; color: var(--muted); margin-top: 6px; align-items: center; }
   .dc-leg i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+  .dc-lk { display: inline-block; width: 14px; height: 2px; background: var(--ln); margin-right: 4px; vertical-align: middle; }
   .deal-month .n { color: var(--muted); font-weight: 600; font-size: 12px; }
   #closed-deals .pfbar.dealst { margin: 8px 0 4px; }
   .pfbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -1474,23 +1481,30 @@ function dealsHtml() {
       ${cf}${closedBody}</details>
   </div>`;
 }
-// 달별 협찬 막대그래프 (사용자 261125 "월별로 그래프", 색은 B안 = 성사만 초록, 나머지 회색) — 제안 받은 달 기준, 최근 6개월 + 그 전은 '이전' 한 칸, 단순인사(기타)는 뺌
+// 달별 협찬 막대그래프 (사용자 261125 "월별로 그래프", 색 B안 = 성사만 초록·나머지 회색) — 제안 받은 달 기준 최근 6개월('이전'은 데이터가 다 안 들어가 있어 뺌), 단순인사(기타) 뺌
+//  노란 선 = 진행 중+종결 건수(작은 각진 칸에 'N건'), 월 밑 = 성사 비율
 function dealChartHtml(list, recv) {
-  const GR = ['진행 중', '종결', '협상결렬', '거절'], LAB = { '거절': '거절(내가)' };
+  const GR = ['진행 중', '종결', '협상결렬', '거절'], LAB = { '거절': '거절(내가)' }, BH = 130;
   const gOf = d => { const k = dealStKey(d.status || ''); return k === '단순인사' ? null : DEAL_CLOSED.includes(k) ? k : '진행 중'; };
   const months = []; for (let i = 5; i >= 0; i--) months.push(addMonth(kstToday().slice(0, 7), -i));
-  const cnt = {}; ['이전', ...months].forEach(m => cnt[m] = {});
-  list.forEach(d => { const g = gOf(d); if (!g) return; const ym = recv(d).slice(0, 7); const k = cnt[ym] ? ym : (ym && ym < months[0] ? '이전' : null); if (k) cnt[k][g] = (cnt[k][g] || 0) + 1; });
-  const tot = m => GR.reduce((a, g) => a + (cnt[m][g] || 0), 0);
-  const keys = (tot('이전') ? ['이전'] : []).concat(months);
-  const mx = Math.max(1, ...keys.map(tot));
-  if (!keys.some(tot)) return '';
+  const cnt = {}; months.forEach(m => cnt[m] = {});
+  list.forEach(d => { const g = gOf(d); if (!g) return; const ym = recv(d).slice(0, 7); if (cnt[ym]) cnt[ym][g] = (cnt[ym][g] || 0) + 1; });
+  const tot = m => GR.reduce((a, g) => a + (cnt[m][g] || 0), 0), ok = m => (cnt[m]['진행 중'] || 0) + (cnt[m]['종결'] || 0);
+  if (!months.some(tot)) return '';
+  const mx = Math.max(1, ...months.map(tot)), n = months.length, hy = v => v / mx * BH;
   const cls = { '진행 중': 'g0', '종결': 'g1', '협상결렬': 'g2', '거절': 'g3' };
-  const cols = keys.map(m => `<button class="dc-col${S.dealMonth === m ? ' sel' : ''}" data-act="dealmonth" data-id="${m}" title="${m === '이전' ? '이전' : Number(m.slice(5)) + '월'} ${GR.map(g => `${LAB[g] || g} ${cnt[m][g] || 0}`).join(' · ')}"><span class="dc-tot">${tot(m) || ''}</span><span class="dc-stack">${GR.slice().reverse().filter(g => cnt[m][g]).map(g => `<i class="${cls[g]}" style="height:${(cnt[m][g] / mx * 130).toFixed(1)}px"></i>`).join('')}</span></button>`).join('');
-  const labs = keys.map(m => `<span class="${S.dealMonth === m ? 'sel' : ''}">${m === '이전' ? '이전' : Number(m.slice(5)) + '월'}</span>`).join('');
-  return `<div class="deal-chart"><div class="dc-h">📊 달별 협찬 <span class="n">제안 받은 달 기준 · 막대를 누르면 아래 '끝난 것'이 그 달로</span></div>
-    <div class="dc-bars">${cols}</div><div class="dc-labs">${labs}</div>
-    <div class="dc-leg">${GR.map(g => `<span><i class="${cls[g]}"></i>${LAB[g] || g}</span>`).join('')}</div></div>`;
+  const cols = months.map(m => {
+    const yo = hy(ok(m)), yb = hy(tot(m)), push = Math.max(0, Math.ceil(yo + 26 - yb));   // 건수 칸이 막대 위 숫자를 가리면 숫자를 위로
+    return `<button class="dc-col${S.dealMonth === m ? ' sel' : ''}" data-act="dealmonth" data-id="${m}" title="${Number(m.slice(5))}월 ${GR.map(g => `${LAB[g] || g} ${cnt[m][g] || 0}`).join(' · ')}">`
+      + `<span class="dc-tot" style="margin-bottom:${2 + push}px">${tot(m) || ''}</span><span class="dc-stack">${GR.slice().reverse().filter(g => cnt[m][g]).map(g => `<i class="${cls[g]}" style="height:${hy(cnt[m][g]).toFixed(1)}px"></i>`).join('')}</span>`
+      + (tot(m) ? `<span class="dc-dot" style="bottom:${yo.toFixed(1)}px"></span><span class="dc-ok" style="bottom:${(yo + 8).toFixed(1)}px">${ok(m)}건</span>` : '') + `</button>`;
+  }).join('');
+  const pts = months.map((m, i) => tot(m) ? `${((i + 0.5) / n * 100).toFixed(2)},${(BH - hy(ok(m))).toFixed(1)}` : null).filter(Boolean);
+  const line = pts.length > 1 ? `<svg class="dc-line" viewBox="0 0 100 ${BH}" preserveAspectRatio="none"><polyline points="${pts.join(' ')}" vector-effect="non-scaling-stroke"/></svg>` : '';
+  const labs = months.map(m => `<span class="${S.dealMonth === m ? 'sel' : ''}">${Number(m.slice(5))}월${tot(m) ? `<em>성사 ${Math.round(ok(m) / tot(m) * 100)}%</em>` : ''}</span>`).join('');
+  return `<div class="deal-chart"><div class="dc-h">📊 달별 협찬 <span class="n">제안 받은 달 기준 · 노란 선 = 진행 중+종결 건수 · 막대를 누르면 아래 '끝난 것'이 그 달로</span></div>
+    <div class="dc-plot"><div class="dc-bars">${cols}</div>${line}</div><div class="dc-labs">${labs}</div>
+    <div class="dc-leg">${GR.map(g => `<span><i class="${cls[g]}"></i>${LAB[g] || g}</span>`).join('')}<span><b class="dc-lk"></b>진행 중+종결 건수</span></div></div>`;
 }
 function newDealId() { return 'deal_' + hex(5); }
 function openDealSheet(id) {
