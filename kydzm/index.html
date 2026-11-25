@@ -1557,6 +1557,11 @@
   .series-sort-select:focus { outline: 2px solid var(--text); outline-offset: -1px; }
 
   /* random 모드 안내 (admin과 메인 사이트 차이 설명) */
+  .pf-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 8px 0 2px; }
+  .pf-lbl { font-size: 12px; font-weight: 700; color: #666; margin-right: 2px; min-width: 28px; }
+  .pf-chip { border: 1px solid #ddd; background: #fff; color: #222; border-radius: 999px; padding: 4px 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+  .pf-chip b { font-weight: 600; opacity: .55; margin-left: 2px; }
+  .pf-chip.on { background: #111; color: #fff; border-color: #111; } .pf-chip.on b { opacity: .8; }
   .series-sort-note {
     font-size: 11px;
     color: var(--muted);
@@ -7782,6 +7787,19 @@ function groupedItemsHtml(arr, opts, manual) {
 
 let _cpSort = false;   // 장비·먹거리 목록 '클릭 많은 순' (쿠팡 리포트 기준)
 let _siteSort = false; // 장비·먹거리 목록 '홈페이지 클릭 많은 순' (홈페이지 자체 통계)
+// 목록 필터 (사용자 261125 "NEW인것만·별표순·쿠팡 네이버·미등록 필터해서 쉽게") — 상태 한 줄 + 출처 한 줄, 두 줄은 같이 걸림, 같은 버튼 다시 누르면 풀림
+const _pf = { items: { st: '', src: '' }, foods: { st: '', src: '' } };
+const PF_ST = [['new', '✨ NEW', x => !!x.is_new], ['pick', '★ 별표', x => !!x.pick], ['hidden', '미노출', x => x.published === false], ['nolink', '링크 없음', x => !(x.url || '').trim()]];
+const pickLv = x => x.pick === true ? 1 : (Number(x.pick) || 0);
+function prodFilterHtml(dataArr, type) {
+  const pf = _pf[type];
+  const chip = (k, v, l, n) => `<button type="button" class="pf-chip${pf[k] === v ? ' on' : ''}" data-pfk="${k}" data-pfv="${escapeHtml(v)}">${l} <b>${n}</b></button>`;
+  const st = PF_ST.map(([v, l, f]) => [v, l, dataArr.filter(f).length]).filter(r => r[2] || pf.st === r[0]);
+  const sc = {}; dataArr.forEach(x => { const k = (x.source || '').trim(); if (k) sc[k] = (sc[k] || 0) + 1; });
+  const srcs = Object.keys(sc).sort((a, b) => sc[b] - sc[a]);
+  return `<div class="pf-row"><span class="pf-lbl">상태</span>${chip('st', '', '전체', dataArr.length)}${st.map(r => chip('st', r[0], r[1], r[2])).join('')}</div>
+    ${srcs.length > 1 ? `<div class="pf-row"><span class="pf-lbl">출처</span>${chip('src', '', '전체', dataArr.length)}${srcs.map(k => chip('src', k, escapeHtml(k), sc[k])).join('')}</div>` : ''}`;
+}
 function renderProductList(dataArr, searchVar, opts) {
   document.getElementById('topbar-title').innerHTML = `${opts.icon} ${opts.label}`;
   const c = document.getElementById('app-content');
@@ -7801,6 +7819,12 @@ function renderProductList(dataArr, searchVar, opts) {
     .map(({ x, idx }) => ({ ...x, _idx: idx }))
     .filter(x => matchSearch(x, q, ['name', 'desc', 'source']))
     .filter(x => !linkOnly || linkIssue(x));
+  const pf = _pf[opts.type] || { st: '', src: '' }, pfOn = !!(pf.st || pf.src);
+  if (pfOn) {
+    const stF = (PF_ST.find(r => r[0] === pf.st) || [])[2];
+    for (let i = arr.length - 1; i >= 0; i--) if ((stF && !stF(arr[i])) || (pf.src && (arr[i].source || '').trim() !== pf.src)) arr.splice(i, 1);
+    if (pf.st === 'pick') arr.sort((a, b) => pickLv(b) - pickLv(a));   // 별 많은 순 (클릭 순을 켜면 아래에서 다시 정렬)
+  }
   const stOf = x => (x.id && siteStatItem(opts.type, x.id)) || { view: 0, click: 0 };
   if (_siteSort && cache.siteStats) arr.sort((a, b) => stOf(b).click - stOf(a).click || stOf(b).view - stOf(a).view);
   else if (_cpSort && cache.cpHome) arr.sort((a, b) => (cpOf(b).click || 0) - (cpOf(a).click || 0) || (cpOf(b).order || 0) - (cpOf(a).order || 0));
@@ -7817,6 +7841,7 @@ function renderProductList(dataArr, searchVar, opts) {
       </div>
       <button class="search-bar-btn" id="prod-search-btn" type="button">조회</button>
     </div>
+    ${prodFilterHtml(dataArr, opts.type)}
     <div class="series-sort-bar" style="margin:8px 0 4px;">
       <span class="series-sort-label">${opts.label} 정렬:</span>
       <select class="series-sort-select" id="prod-sort-select">
@@ -7842,9 +7867,9 @@ function renderProductList(dataArr, searchVar, opts) {
         <button type="button" class="btn btn-sm ${linkOnly ? '' : 'btn-ghost'}" id="link-only-btn">${linkOnly ? '전체 보기' : '문제만 보기'}</button></div>` : ''}
     <div class="list" id="prod-list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>'
-        : (opts.type === 'items' && !isSearchActive && !linkOnly && !_cpSort && !_siteSort)
+        : (opts.type === 'items' && !isSearchActive && !linkOnly && !_cpSort && !_siteSort && !pfOn)
           ? groupedItemsHtml(arr, opts, isManual)
-          : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: isManual && !isSearchActive && !_cpSort && !_siteSort })).join('')}
+          : arr.map(x => productListItem(x, opts.hashPrefix, opts.fallbackEmoji, opts.dataAttrKey, { manual: isManual && !isSearchActive && !_cpSort && !_siteSort && !pfOn })).join('')}
     </div>
   `;
   document.getElementById('back-btn').onclick = () => location.hash = '';
@@ -7852,6 +7877,9 @@ function renderProductList(dataArr, searchVar, opts) {
   if (cpb) cpb.onclick = () => { _cpSort = !_cpSort; _siteSort = false; renderProductList(dataArr, searchVar, opts); };
   const stb = document.getElementById('site-sort-btn');
   if (stb) stb.onclick = () => { _siteSort = !_siteSort; _cpSort = false; renderProductList(dataArr, searchVar, opts); };
+  document.querySelectorAll('.pf-chip').forEach(b => {
+    b.onclick = () => { const k = b.dataset.pfk, v = b.dataset.pfv; pf[k] = (pf[k] === v || !v) ? '' : v; (opts.rerender || (() => renderProductList(dataArr, searchVar, opts)))(); };
+  });
   const lob = document.getElementById('link-only-btn');
   if (lob) lob.onclick = () => { _linkOnly[opts.type] = !linkOnly; renderProductList(dataArr, searchVar, opts); };
   // 세부 분류 접기/펼치기
