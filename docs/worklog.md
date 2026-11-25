@@ -3,6 +3,7 @@
 PC 대화(☆KYD_ZM 폴더: 캠핑장 페이지 코드 작업 · 블로그 반자동화 …)와 클라우드 대화(쓰레드+쿠파스 자동화)는 서로 기억을 공유하지 않는다.
 이 파일이 그 사이의 다리 — **대화마다 하루 한 번(그날 첫 작업 전) 읽고, 작업 하나가 끝날 때마다 한 줄 남긴다.** 규칙은 CLAUDE.md '작업 일지'.
 
+- 11/25 16:10 [PC 코드] 운영판 자동화 탭에 '3일마다'(freq `every3`, cron */3 = 1·4·7…일) 주기 표시·안 돎 계산 추가 — 쓰레드 확인 대기 댓글 챙기기 예약용
 - 11/24 18:00 [클라우드] Worker v13 배포(사용자) — PC 꺼지면 GitHub 서버로 자동 넘김, 쓰레드 댓글·답글·인스타 DM 7~23시 10분마다, 딜 수집 2시간마다, 운영판 알림은 push마다 바로, 협업 DM 새로 오면 폰 알림, 매일 03:33 PC `D:\백업\github`에 저장소 3개 미러 백업(시험 성공). Worker 원본은 이제 비공개 cupas `worker/`에 보관. 쿠팡 API는 막힘 위험 때문에 늘리지 않음
 - 11/24 17:00 [클라우드] GitHub 토큰 정리 결정(사용자): kydz-admin·kydz-threads 두 개를 같은 권한(세 저장소 camping-hub·cupas·camping-search, Contents·Actions·Secrets·Variables·Workflows 쓰기, Administration 읽기)으로 맞춰 둘 다 씀, camping-hub-sync는 삭제. **앞으로 토큰을 새로 넣을 일이 생기면 kydz-admin 하나로 통일**(그때 kydz-threads 삭제). 값은 어디에도 적지 않음
 - 11/24 15:30 [클라우드] cupas·camping-search 워크플로 실행을 집 PC 러너로 전환(`runs-on: vars.RUNNER || 'pc'`) — PC가 오래 꺼지면 각 저장소 Actions 변수 `RUNNER`=`ubuntu-latest`로 되돌림. camping-hub(공개)는 GitHub 서버 그대로
