@@ -170,6 +170,21 @@
   .pfbar.dealst .pf { padding: 4px 9px; font-size: 12px; }
   .st-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
   .deal-month { font-size: 13px; font-weight: 800; margin: 14px 0 2px; padding-bottom: 3px; border-bottom: 1px solid var(--line); }
+  .deal-month.sel { color: #2f9e44; }
+  .deal-chart { margin: 14px 0 4px; --g0: #69db7c; --g1: #2f9e44; --g2: #adb5bd; --g3: #dee2e6; }
+  @media (prefers-color-scheme: dark) { .deal-chart { --g2: #5c5f66; --g3: #3d4047; } }
+  .deal-chart .g0 { background: var(--g0); } .deal-chart .g1 { background: var(--g1); } .deal-chart .g2 { background: var(--g2); } .deal-chart .g3 { background: var(--g3); }
+  .dc-h { font-size: 13px; font-weight: 800; margin-bottom: 6px; } .dc-h .n { color: var(--muted); font-weight: 500; font-size: 12px; }
+  .dc-bars, .dc-labs { display: flex; gap: 10px; padding: 0 2px; }
+  .dc-bars { align-items: flex-end; height: 156px; border-bottom: 1px solid var(--line); }
+  .dc-col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: stretch; background: none; border: none; padding: 0; cursor: pointer; color: var(--text); }
+  .dc-tot { text-align: center; font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+  .dc-stack { display: flex; flex-direction: column; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .dc-stack i { display: block; }
+  .dc-col.sel .dc-stack { outline: 2px solid var(--text); outline-offset: 2px; }
+  .dc-labs span { flex: 1; text-align: center; font-size: 12px; color: var(--muted); padding-top: 4px; } .dc-labs span.sel { color: var(--text); font-weight: 800; }
+  .dc-leg { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11.5px; color: var(--muted); margin-top: 6px; }
+  .dc-leg i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
   .deal-month .n { color: var(--muted); font-weight: 600; font-size: 12px; }
   #closed-deals .pfbar.dealst { margin: 8px 0 4px; }
   .pfbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -1006,7 +1021,7 @@ const DEAL_TYPE_COLOR = { '광고': '#e8590c', '협찬': '#2d8f4c', '공구': '#
 const DEAL_PROJECT = 'ad';   // 협찬은 광고영상 프로젝트로 (사용자 결정 261103)
 const dealProject = d => d.project || DEAL_PROJECT;
 // 거절 = 내가 거절, 협상결렬 = 상대가 거절·탈락·답 없음 (261103 '미선정' → 261105 이름 바꿈, 사용자 요청 — 예전 '미선정' 값도 협상결렬로 보임)
-const DEAL_LABEL = { '거절': '거절(내가)', '미선정': '협상결렬' };
+const DEAL_LABEL = { '거절': '거절(내가)', '미선정': '협상결렬', '단순인사': '기타' };   // 단순인사 → '기타'로 보임 (261125)
 const dealLabel = st => DEAL_LABEL[st] || st;
 const DEAL_COLOR = { '제안 수신': '#e05591', '회신대기': '#2f80ed', '협상중': '#d4a017', '진행중': '#2d8f4c', '콘티 컨펌중': '#7048e8', '영상 컨펌중': '#9c36b5', '업로드 예정': '#1c7ed6', '입금대기': '#0b7285', '종결': '#868e96', '협상결렬': '#8e44ad', '미선정': '#8e44ad', '거절': '#d93025', '단순인사': '#bdbdbd' };
 const DEAL_KINDS = ['인바운드', '아웃바운드', '이벤트'];
@@ -1445,15 +1460,37 @@ function dealsHtml() {
   // 달별: 제안 받은 날(received) 기준, 최근 달부터 — updated_at은 보관할 때 한꺼번에 바뀌어 못 씀
   const recv = d => (d.received || ymdOf(d.created_at || '') || '').slice(0, 10);
   const groups = []; let cur = null;
-  closed.slice().sort((x, y) => recv(y).localeCompare(recv(x))).forEach(d => { const ym = recv(d).slice(0, 7) || '날짜 없음'; if (!cur || cur.ym !== ym) groups.push(cur = { ym, list: [] }); cur.list.push(d); });
+  const CRANK = ['종결', '협상결렬', '거절', '단순인사'];   // 달 안에서 종결 → 협상결렬 → 거절 → 기타, 같은 상태는 최근 먼저 (사용자 261125)
+  const cr = d => { const i = CRANK.indexOf(dealStKey(d.status)); return i < 0 ? 9 : i; };
+  closed.slice().sort((x, y) => recv(y).slice(0, 7).localeCompare(recv(x).slice(0, 7)) || cr(x) - cr(y) || recv(y).localeCompare(recv(x))).forEach(d => { const ym = recv(d).slice(0, 7) || '날짜 없음'; if (!cur || cur.ym !== ym) groups.push(cur = { ym, list: [] }); cur.list.push(d); });
   const ymLabel = ym => /^\d{4}-\d{2}$/.test(ym) ? `${ym.slice(2, 4)}년 ${Number(ym.slice(5))}월` : ym;
-  const closedBody = groups.map(g => `<div class="deal-month">${ymLabel(g.ym)} <span class="n">${g.list.length}건</span></div><div class="deal-grid">${g.list.map(dealCardHtml).join('')}</div>`).join('') || '<div class="empty">해당 상태 없음</div>';
+  const closedBody = groups.map(g => `<div class="deal-month${S.dealMonth === g.ym ? ' sel' : ''}" id="dm-${esc(g.ym)}">${ymLabel(g.ym)} <span class="n">${g.list.length}건</span></div><div class="deal-grid">${g.list.map(dealCardHtml).join('')}</div>`).join('') || '<div class="empty">해당 상태 없음</div>';
+  const chart = dealChartHtml(openAll.concat(closedAll), recv);
   return `<div class="deal-box">
     <div class="col-h"><h2>🤝 광고·협찬·공구 <span class="n">${openAll.length}건 진행</span></h2><button class="btn small" data-act="new-deal">+ 추가</button></div>${tf}${sf}
     ${open.length ? `<div class="deal-grid">${open.map(dealCardHtml).join('')}</div>` : '<div class="empty">진행 중인 협찬 없음</div>'}
+    ${chart}
     <details class="later"${S.openDeals ? ' open' : ''} id="closed-deals"><summary>끝난 것 ${closedAll.length}건${S.dealArch === undefined ? '+' : ''} (종결·협상결렬·거절)</summary>
       ${cf}${closedBody}</details>
   </div>`;
+}
+// 달별 협찬 막대그래프 (사용자 261125 "월별로 그래프", 색은 B안 = 성사만 초록, 나머지 회색) — 제안 받은 달 기준, 최근 6개월 + 그 전은 '이전' 한 칸, 단순인사(기타)는 뺌
+function dealChartHtml(list, recv) {
+  const GR = ['진행 중', '종결', '협상결렬', '거절'], LAB = { '거절': '거절(내가)' };
+  const gOf = d => { const k = dealStKey(d.status || ''); return k === '단순인사' ? null : DEAL_CLOSED.includes(k) ? k : '진행 중'; };
+  const months = []; for (let i = 5; i >= 0; i--) months.push(addMonth(kstToday().slice(0, 7), -i));
+  const cnt = {}; ['이전', ...months].forEach(m => cnt[m] = {});
+  list.forEach(d => { const g = gOf(d); if (!g) return; const ym = recv(d).slice(0, 7); const k = cnt[ym] ? ym : (ym && ym < months[0] ? '이전' : null); if (k) cnt[k][g] = (cnt[k][g] || 0) + 1; });
+  const tot = m => GR.reduce((a, g) => a + (cnt[m][g] || 0), 0);
+  const keys = (tot('이전') ? ['이전'] : []).concat(months);
+  const mx = Math.max(1, ...keys.map(tot));
+  if (!keys.some(tot)) return '';
+  const cls = { '진행 중': 'g0', '종결': 'g1', '협상결렬': 'g2', '거절': 'g3' };
+  const cols = keys.map(m => `<button class="dc-col${S.dealMonth === m ? ' sel' : ''}" data-act="dealmonth" data-id="${m}" title="${m === '이전' ? '이전' : Number(m.slice(5)) + '월'} ${GR.map(g => `${LAB[g] || g} ${cnt[m][g] || 0}`).join(' · ')}"><span class="dc-tot">${tot(m) || ''}</span><span class="dc-stack">${GR.slice().reverse().filter(g => cnt[m][g]).map(g => `<i class="${cls[g]}" style="height:${(cnt[m][g] / mx * 130).toFixed(1)}px"></i>`).join('')}</span></button>`).join('');
+  const labs = keys.map(m => `<span class="${S.dealMonth === m ? 'sel' : ''}">${m === '이전' ? '이전' : Number(m.slice(5)) + '월'}</span>`).join('');
+  return `<div class="deal-chart"><div class="dc-h">📊 달별 협찬 <span class="n">제안 받은 달 기준 · 막대를 누르면 아래 '끝난 것'이 그 달로</span></div>
+    <div class="dc-bars">${cols}</div><div class="dc-labs">${labs}</div>
+    <div class="dc-leg">${GR.map(g => `<span><i class="${cls[g]}"></i>${LAB[g] || g}</span>`).join('')}</div></div>`;
 }
 function newDealId() { return 'deal_' + hex(5); }
 function openDealSheet(id) {
@@ -2073,6 +2110,12 @@ function bind() {
       case 'dealtype': S.dealType = id || ''; render(); break;
       case 'dealst': S.dealSt = id || ''; render(); break;
       case 'dealcst': S.dealCSt = id || ''; render(); break;
+      case 'dealmonth': {   // 그 달로 내려가기 — '끝난 것'을 열고 필터는 풀어 둠
+        S.dealMonth = S.dealMonth === id ? '' : id; S.openDeals = true; if (S.dealMonth) S.dealCSt = '';
+        render();
+        if (S.dealMonth) setTimeout(() => { const m = S.dealMonth === '이전' ? [...document.querySelectorAll('#closed-deals .deal-month')].pop() : document.getElementById('dm-' + S.dealMonth); if (m) m.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
+        break;
+      }
       case 'review-ok': reviewOk(el.dataset.coll, id); break;
       case 'review-all': reviewAll(); break;
       case 'new-deal': openDealSheet(null); break;
