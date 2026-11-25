@@ -421,6 +421,9 @@
   .atbl .warnc { color: #d9480f; font-weight: 800; }
   .chk-old { color: var(--muted); font-weight: 900; display: inline-block; width: 1.2em; text-align: center; }
   .ctbl td { vertical-align: top; }
+  .pfbar.csec { margin: 0 0 12px; }
+  .csec-h { font-size: 15px; margin: 22px 0 8px; } .csec-h:first-of-type { margin-top: 4px; } .csec-h .muted { font-size: 12px; font-weight: 500; }
+  .ttbl .c-st { width: 60px; text-align: center; }
   .ctbl .c-name { width: 220px; } .ctbl .c-meta { font-size: 12px; margin-top: 2px; font-weight: 400; }
   .ctbl .c-what { font-size: 13px; } .ctbl .c-note { font-size: 12px; color: #d9480f; margin-top: 2px; }
   .ctbl .c-key { width: 230px; font-size: 12px; } .ctbl .c-st { font-weight: 700; }
@@ -991,8 +994,8 @@ function render() {
   // 할 일·프로젝트 탭을 합침: 위의 프로젝트 고르기로 그 프로젝트 일만 + 프로젝트 정보 (사용자 요청 261103)
   if (tab === 'projects') tab = pc ? 'tasks' : 'today';
   const tabs = pc
-    ? [['tasks', '할 일'], ['posts', '올린 글'], ['autos', '⏰ 자동화'], ['conns', '🔌 연결']]
-    : [...(tasksIn('overdue').length || tab === 'overdue' ? [['overdue', '지난 일정']] : []), ['today', '오늘'], ['week', '7일'], ['month', '30일'], ['later', '30일 뒤'], ['inbox', '받은함'], ['deals', '협찬'], ['posts', '올린 글'], ['autos', '⏰ 자동화'], ['conns', '🔌 연결']];
+    ? [['tasks', '할 일'], ['posts', '올린 글'], ['autos', '⏰ 자동화'], ['conns', '🧰 연결·도구']]
+    : [...(tasksIn('overdue').length || tab === 'overdue' ? [['overdue', '지난 일정']] : []), ['today', '오늘'], ['week', '7일'], ['month', '30일'], ['later', '30일 뒤'], ['inbox', '받은함'], ['deals', '협찬'], ['posts', '올린 글'], ['autos', '⏰ 자동화'], ['conns', '🧰 연결·도구']];
   const overN = tasksIn('overdue').length;
   let h = '';
   if (S.failed) h += `<div class="banner err savefail"><span>저장하지 못했어요: ${esc(S.failed)} (바꾼 내용은 이 화면에 남아 있어요)</span><button class="btn small" data-act="retry">다시 저장</button></div>`;
@@ -1235,6 +1238,7 @@ function autosStale() {
   if (S.autos && S.files && (S.files['state/automations.json'] || '') !== S.autosSha) loadAutos();
   if (S.vault && S.files && (S.files['state/vault.json'] || '') !== S.vaultSha) loadVault();
   if (S.conns && S.files && (S.files['state/connections.json'] || '') !== S.connsSha) loadConns();
+  if (S.tools && S.files && (S.files['state/tools.json'] || '') !== S.toolsSha) loadTools();
 }
 async function loadAutos() {
   if (S.autosLoading) return; S.autosLoading = true;
@@ -1320,6 +1324,23 @@ async function loadConns() {
   S.connsLoading = false; renderSoon();
   if (S.files && (S.files['state/connections.json'] || '') !== S.connsSha) loadConns();   // 읽는 사이 바뀌었으면 한 번 더 (261123)
 }
+// 🧰 Claude 스킬·플러그인·PC 프로그램·파이썬 도구·폰트 — cupas state/tools.json (tools_scan.py가 사장님 터미널에서 훑어 씀, 사용자 261125 "클로드에 깔린 스킬(도구) 현황 / 로컬 프로그램도 / 폰트까지")
+async function loadTools() {
+  if (S.toolsLoading) return; S.toolsLoading = true;
+  try { S.toolsSha = (S.files || {})['state/tools.json'] || ''; S.tools = (await readBlobJsonCached('state/tools.json')) || { sections: [] }; } catch (e) { S.toolsErr = e.message; }
+  S.toolsLoading = false; renderSoon();
+  if (S.files && (S.files['state/tools.json'] || '') !== S.toolsSha) loadTools();
+}
+function toolsSecHtml(sec) {
+  let h = `<table class="atbl ctbl ttbl"><tbody>`;
+  (sec.items || []).forEach(it => {
+    const meta = [it.ver, it.added ? it.added + ' 깜' : ''].filter(Boolean).join(' · ');
+    h += `<tr><td class="c-name"><b>${esc(it.name)}</b>${meta ? `<div class="muted c-meta">${esc(meta)}</div>` : ''}</td>`
+      + `<td class="c-what">${esc(it.what || '')}${it.where ? `<div class="muted c-meta">${esc(it.where)}</div>` : ''}</td>`
+      + `<td class="a-res c-st ${it.status === 'none' ? 'none' : 'ok'}">${it.status === 'none' ? '— 없음' : '✅'}</td></tr>`;
+  });
+  return h + `</tbody></table>`;
+}
 // 🔐 보관함 — 프로그램 키·계정 (비공개 cupas state/vault.json, 사용자 261119). 브라우저 저장소에 남기지 않으려고 캐시 없이 읽고, 값은 누를 때만 보임
 async function loadVault() {
   if (S.vaultLoading) return; S.vaultLoading = true;
@@ -1343,7 +1364,7 @@ function vaultHtml() {
   });
   return h + `</tbody></table><div class="muted" style="font-size:12px;margin-top:10px">원본 비공개 cupas state/vault.json — 새로 넣을 건 Claude에게 말하면 넣어요</div></div>`;
 }
-function connsHtml() {
+function connsApiHtml(list, isConn) {
   if (!S.conns) { if (!S.connsErr) loadConns(); return `<div class="card">${S.connsErr ? '연결 목록을 못 읽었어요: ' + esc(S.connsErr) : '연결 목록 불러오는 중…'}</div>`; }
   if (!S.autos && !S.autosErr) loadAutos();   // 관련 예약이 제때 돌았는지로 상태를 같이 봄
   const autoById = Object.fromEntries((S.autos || []).map(a => [a.id, a]));
@@ -1354,11 +1375,11 @@ function connsHtml() {
     if (c.status === 'warn') return ['warn', '⚠️ 손볼 것 있음'];
     return ['ok', '✅ 연결됨'];
   };
-  const rows = S.conns.map(c => ({ c, s: st(c) }));
+  const rows = list.map(c => ({ c, s: st(c) }));
   const order = { bad: 0, warn: 1, ok: 2, none: 3 };
   rows.sort((x, y) => order[x.s[0]] - order[y.s[0]]);
   const n = k => rows.filter(r => r.s[0] === k).length;
-  let h = `<div class="conns"><div class="${n('bad') + n('warn') ? 'abad' : 'agood'}">${n('bad') + n('warn') ? `⚠️ 손볼 것 ${n('bad') + n('warn')}개 — ${rows.filter(r => ['bad', 'warn'].includes(r.s[0])).map(r => esc(r.c.name)).join(' · ')}` : '✅ 연결된 API 모두 정상'} <span class="muted" style="font-weight:400">· 연결됨 ${n('ok')} · 연결 안 됨 ${n('none')}</span></div>`;
+  let h = `<div class="conns">${isConn ? '' : `<div class="${n('bad') + n('warn') ? 'abad' : 'agood'}">${n('bad') + n('warn') ? `⚠️ 손볼 것 ${n('bad') + n('warn')}개 — ${rows.filter(r => ['bad', 'warn'].includes(r.s[0])).map(r => esc(r.c.name)).join(' · ')}` : '✅ 연결된 API 모두 정상'} <span class="muted" style="font-weight:400">· 연결됨 ${n('ok')} · 연결 안 됨 ${n('none')}</span></div>`}`;
   h += `<table class="atbl ctbl"><tbody>`;
   rows.forEach(({ c, s: [k, label] }) => {
     const meta = [c.kind, c.cost && c.cost !== '—' ? '💰 ' + c.cost : '', c.renew && c.renew !== '—' ? '🔄 ' + c.renew : ''].filter(Boolean).join(' · ');
@@ -1367,8 +1388,27 @@ function connsHtml() {
       + `<td class="c-key muted">${esc(c.secret || '')}</td>`
       + `<td class="a-res c-st ${k}">${esc(label)}</td></tr>`;
   });
-  h += `</tbody></table><div class="muted" style="font-size:12px;margin-top:10px">상태는 그 API를 쓰는 예약이 제때 돌았는지(⏰ 자동화 탭)로 같이 봐요 · 토큰 값은 저장하지 않고 이름만 · 원본 cupas state/connections.json</div></div>`;
-  return h + vaultHtml();
+  h += `</tbody></table>${isConn ? '' : `<div class="muted" style="font-size:12px;margin-top:10px">상태는 그 API를 쓰는 예약이 제때 돌았는지(⏰ 자동화 탭)로 같이 봐요 · 토큰 값은 저장하지 않고 이름만 · 원본 cupas state/connections.json</div>`}</div>`;
+  return h;
+}
+// 🧰 연결·도구 탭 — 위 버튼으로 묶음 고르기(전체 = 묶음마다 제목 달고 이어서) (사용자 261125 "묶어서 하나로 보여주고 각각 보기 쉽게")
+function connsHtml() {
+  if (!S.conns) { if (!S.connsErr) loadConns(); return `<div class="card">${S.connsErr ? '연결 목록을 못 읽었어요: ' + esc(S.connsErr) : '연결 목록 불러오는 중…'}</div>`; }
+  if (!S.tools && !S.toolsErr) loadTools();
+  const isC = c => c.kind === 'Claude 커넥터';
+  const api = S.conns.filter(c => !isC(c)), con = S.conns.filter(isC);
+  const secs = [['api', '🔌 API·연결', api.length], ['conn', '🤝 Claude 커넥터', con.length],
+    ...((S.tools && S.tools.sections) || []).map(t => [t.key, { skills: '🧠 ', plugins: '🧩 ', programs: '💻 ', python: '🐍 ', fonts: '🔤 ' }[t.key] + t.label, (t.items || []).length])];
+  const cur = S.connSec || '';
+  const bar = `<div class="pfbar csec">${[['', '전체', S.conns.length + ((S.tools && S.tools.sections) || []).reduce((a, t) => a + (t.items || []).length, 0)], ...secs].map(([k, l, n]) => `<button class="pf${cur === k ? ' on' : ''}" data-act="connsec" data-id="${k}">${esc(l)} <b>${n}</b></button>`).join('')}</div>`;
+  const body = k => k === 'api' ? connsApiHtml(api) + vaultHtml() : k === 'conn' ? connsApiHtml(con, true)
+    : (() => { const t = ((S.tools && S.tools.sections) || []).find(x => x.key === k); return t ? toolsSecHtml(t) : ''; })();
+  let h = bar;
+  if (cur) h += body(cur);
+  else h += secs.map(([k, l, n]) => `<h3 class="csec-h">${esc(l)} <span class="muted">${n}</span></h3>` + body(k)).join('');
+  if (!S.tools) h += `<div class="muted" style="margin-top:10px">${S.toolsErr ? '도구 목록을 못 읽었어요: ' + esc(S.toolsErr) : '도구 목록 불러오는 중…'}</div>`;
+  else h += `<div class="muted" style="font-size:12px;margin-top:12px">스킬·프로그램·폰트는 이 PC를 훑어 만든 목록(${esc((S.tools.updated_at || '').slice(2, 10).replace(/-/g, ''))} 기준) · 윈도우 기본 글꼴은 뺐어요 · 원본 cupas state/tools.json · Claude가 깔거나 지우면 다시 훑어요</div>`;
+  return h;
 }
 function autosHtml() {
   if (!S.autos) { if (!S.autosErr) loadAutos(); return `<div class="card">${S.autosErr ? '자동화 목록을 못 읽었어요: ' + esc(S.autosErr) : '자동화 불러오는 중…'}</div>`; }
@@ -2124,6 +2164,7 @@ function bind() {
       case 'deal': openDealSheet(id); break;
       case 'dealtype': S.dealType = id || ''; render(); break;
       case 'dealst': S.dealSt = id || ''; render(); break;
+      case 'connsec': S.connSec = id || ''; render(); break;
       case 'dealcst': S.dealCSt = id || ''; render(); break;
       case 'dealmonth': {   // 그 달로 내려가기 — '끝난 것'을 열고 필터는 풀어 둠
         S.dealMonth = S.dealMonth === id ? '' : id; S.openDeals = true; if (S.dealMonth) S.dealCSt = '';
