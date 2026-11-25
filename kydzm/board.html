@@ -133,6 +133,10 @@
   .task.compact .t-sub { display: none; }
   .task.compact.open .t-title { white-space: normal; }
   .task.compact.open .t-sub { display: block; }
+  .task.compact .t-meta { flex-wrap: nowrap; overflow: hidden; white-space: nowrap; }
+  .task.compact .t-meta > * { flex-shrink: 0; }
+  .task.compact .t-meta > :last-child { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .task.compact.open .t-meta { flex-wrap: wrap; white-space: normal; }
   .t-meta { font-size: 12px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; align-items: center; }
   .pdot { display: inline-flex; align-items: center; gap: 4px; }
   .pdot i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
