@@ -166,6 +166,12 @@
   .auto-chip { font-size: 11px; border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; color: var(--muted); }
   .deal-ty { font-size: 11px; font-weight: 800; border: 1.5px solid; border-radius: 999px; padding: 0 7px; flex-shrink: 0; }
   .pfbar.dealtype { margin: 4px 0 10px; }
+  .pfbar.dealst { margin: -4px 0 10px; }
+  .pfbar.dealst .pf { padding: 4px 9px; font-size: 12px; }
+  .st-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .deal-month { font-size: 13px; font-weight: 800; margin: 14px 0 2px; padding-bottom: 3px; border-bottom: 1px solid var(--line); }
+  .deal-month .n { color: var(--muted); font-weight: 600; font-size: 12px; }
+  #closed-deals .pfbar.dealst { margin: 8px 0 4px; }
   .pfbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
   .pf { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text); }
   .pf i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
@@ -1416,17 +1422,37 @@ function autosHtml() {
   return h;
 }
 
+// 상태 필터 + 끝난 것은 달별 묶음 (사용자 261125 "현재 상태에대한 뱃지랑 필터", "월별로 묶어주고")
+const dealStKey = st => st === '미선정' ? '협상결렬' : st;
+function dealStChips(list, order, cur, act) {
+  const cnt = {}; list.forEach(d => { const k = dealStKey(d.status || '제안 수신'); cnt[k] = (cnt[k] || 0) + 1; });
+  const keys = order.filter(k => cnt[k]);
+  if (keys.length < 2) return '';
+  return `<div class="pfbar dealst">${[['', '전체', list.length], ...keys.map(k => [k, dealLabel(k), cnt[k]])].map(([v, l, n]) => `<button class="pf${(cur || '') === v ? ' on' : ''}" data-act="${act}" data-id="${esc(v)}">${v ? `<i class="st-dot" style="background:${DEAL_COLOR[v] || '#999'}"></i>` : ''}${esc(l)} <b>${n}</b></button>`).join('')}</div>`;
+}
 function dealsHtml() {
-  const open = openDeals();
+  const openAll = openDeals();
   if (S.openDeals) loadDealArchive();
-  const closed = closedDeals();
+  const closedAll = closedDeals();
+  if (S.dealSt && !openAll.some(d => dealStKey(d.status) === S.dealSt)) S.dealSt = '';
+  if (S.dealCSt && !closedAll.some(d => dealStKey(d.status) === S.dealCSt)) S.dealCSt = '';
+  const open = S.dealSt ? openAll.filter(d => dealStKey(d.status) === S.dealSt) : openAll;
+  const closed = S.dealCSt ? closedAll.filter(d => dealStKey(d.status) === S.dealCSt) : closedAll;
   const all = (S.data.deals || []).filter(d => !DEAL_CLOSED.includes(d.status) && (!curPf() || dealProject(d) === curPf()));
   const tf = `<div class="pfbar dealtype">${[['', '전체'], ...DEAL_TYPES.map(t => [t, t])].map(([v, l]) => `<button class="pf${(S.dealType || '') === v ? ' on' : ''}" data-act="dealtype" data-id="${v}">${l} <b>${v ? all.filter(d => d.type === v).length : all.length}</b></button>`).join('')}</div>`;
+  const sf = dealStChips(openAll, DEAL_STATUS_PICK.filter(k => !DEAL_CLOSED.includes(k)), S.dealSt, 'dealst');
+  const cf = dealStChips(closedAll, ['종결', '협상결렬', '거절', '단순인사'], S.dealCSt, 'dealcst');
+  // 달별: 제안 받은 날(received) 기준, 최근 달부터 — updated_at은 보관할 때 한꺼번에 바뀌어 못 씀
+  const recv = d => (d.received || ymdOf(d.created_at || '') || '').slice(0, 10);
+  const groups = []; let cur = null;
+  closed.slice().sort((x, y) => recv(y).localeCompare(recv(x))).forEach(d => { const ym = recv(d).slice(0, 7) || '날짜 없음'; if (!cur || cur.ym !== ym) groups.push(cur = { ym, list: [] }); cur.list.push(d); });
+  const ymLabel = ym => /^\d{4}-\d{2}$/.test(ym) ? `${ym.slice(2, 4)}년 ${Number(ym.slice(5))}월` : ym;
+  const closedBody = groups.map(g => `<div class="deal-month">${ymLabel(g.ym)} <span class="n">${g.list.length}건</span></div><div class="deal-grid">${g.list.map(dealCardHtml).join('')}</div>`).join('') || '<div class="empty">해당 상태 없음</div>';
   return `<div class="deal-box">
-    <div class="col-h"><h2>🤝 광고·협찬·공구 <span class="n">${open.length}건 진행</span></h2><button class="btn small" data-act="new-deal">+ 추가</button></div>${tf}
+    <div class="col-h"><h2>🤝 광고·협찬·공구 <span class="n">${openAll.length}건 진행</span></h2><button class="btn small" data-act="new-deal">+ 추가</button></div>${tf}${sf}
     ${open.length ? `<div class="deal-grid">${open.map(dealCardHtml).join('')}</div>` : '<div class="empty">진행 중인 협찬 없음</div>'}
-    <details class="later"${S.openDeals ? ' open' : ''} id="closed-deals"><summary>끝난 것 ${closed.length}건${S.dealArch === undefined ? '+' : ''} (종결·협상결렬·거절)</summary>
-      <div class="deal-grid">${closed.map(dealCardHtml).join('')}</div></details>
+    <details class="later"${S.openDeals ? ' open' : ''} id="closed-deals"><summary>끝난 것 ${closedAll.length}건${S.dealArch === undefined ? '+' : ''} (종결·협상결렬·거절)</summary>
+      ${cf}${closedBody}</details>
   </div>`;
 }
 function newDealId() { return 'deal_' + hex(5); }
@@ -2045,6 +2071,8 @@ function bind() {
       case 'emb-week': S.weekAll = !S.weekAll; render(); break;
       case 'deal': openDealSheet(id); break;
       case 'dealtype': S.dealType = id || ''; render(); break;
+      case 'dealst': S.dealSt = id || ''; render(); break;
+      case 'dealcst': S.dealCSt = id || ''; render(); break;
       case 'review-ok': reviewOk(el.dataset.coll, id); break;
       case 'review-all': reviewAll(); break;
       case 'new-deal': openDealSheet(null); break;
