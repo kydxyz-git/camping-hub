@@ -127,6 +127,12 @@
   .t-main { flex: 1; min-width: 0; cursor: pointer; padding: 6px 0; }
   .t-title { font-size: 15px; word-break: break-word; }
   .task.done .t-title { text-decoration: line-through; color: var(--muted); }
+  /* 한 줄 요약 (사용자 261125): 오늘·지난 일정 = 요약 + 세부 늘 보임 / 7일·30일·받은함 등 = 요약 한 줄만, 누르면 세부 */
+  .t-sub { font-size: 12.5px; color: var(--muted); word-break: break-word; margin-top: 1px; line-height: 1.45; }
+  .task.compact .t-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .task.compact .t-sub { display: none; }
+  .task.compact.open .t-title { white-space: normal; }
+  .task.compact.open .t-sub { display: block; }
   .t-meta { font-size: 12px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; align-items: center; }
   .pdot { display: inline-flex; align-items: center; gap: 4px; }
   .pdot i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
@@ -1583,9 +1589,14 @@ function taskRowHtml(t, opts = {}) {
   else if (t.bucket === 'inbox') mv = `<button class="mv" data-act="classify" data-id="${esc(t.id)}">분류</button>`;
   else mv = `<button class="mv" data-act="date" data-id="${esc(t.id)}">날짜</button>`;
   const drag = !closed && CAN_DRAG ? ` draggable="true" data-drag="${esc(t.id)}"` : '';
-  return `<div class="task${closed ? ' done' : ''}" data-tid="${esc(t.id)}"${drag}>
+  // 한 줄 요약 (사용자 261125): short = 칸에 보이는 한 줄, title = 세부
+  const v = viewOf(t), full = !closed && (v === 'today' || v === 'overdue');
+  const short = (t.short || '').trim(), head = short || t.title;
+  const sub = short && short !== t.title ? `<div class="t-sub">${esc(t.title)}</div>` : '';
+  const isOpen = !full && S.openRows && S.openRows[t.id];
+  return `<div class="task${closed ? ' done' : ''}${full ? '' : ' compact'}${isOpen ? ' open' : ''}" data-tid="${esc(t.id)}"${drag}>
     ${closed ? `<span class="chk ${t.bucket === 'canceled' ? 'cx' : 'on'}" aria-hidden="true"><span></span></span>` : `<button class="chk" data-act="check" data-id="${esc(t.id)}" aria-label="완료"><span></span></button>`}
-    <div class="t-main" data-act="edit" data-id="${esc(t.id)}"><div class="t-title">${esc(t.title)}</div>${meta.length ? `<div class="t-meta">${meta.join('')}</div>` : ''}</div>
+    <div class="t-main" data-act="${full ? 'edit' : 'expand'}" data-id="${esc(t.id)}"${full ? '' : ` title="${esc(t.title)}"`}><div class="t-title">${esc(head)}</div>${sub}${meta.length ? `<div class="t-meta">${meta.join('')}</div>` : ''}</div>
     ${mv}<button class="mv more" data-act="edit" data-id="${esc(t.id)}" title="수정 · 삭제 · 완료 날짜" aria-label="수정·삭제"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="5" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="19" cy="12" r="2" fill="currentColor"/></svg></button>
   </div>`;
 }
@@ -1856,7 +1867,8 @@ function openEditSheet(id) {
   const closed = t.bucket === 'done' || t.bucket === 'canceled';
   const st = { project: t.project || '', date: t.date || '', every: (t.repeat && t.repeat.every) || '' };
   sheet(`<h3>할 일 수정<button class="x" data-close aria-label="닫기">×</button></h3>
-    <div class="field"><label>제목</label><textarea class="input" id="e-title" style="min-height:64px">${esc(t.title)}</textarea></div>
+    <div class="field"><label>한 줄 요약 (칸에 보이는 글)</label><input class="input" id="e-short" value="${esc(t.short || '')}" placeholder="비우면 제목이 그대로 보여요"></div>
+    <div class="field"><label>세부 (제목)</label><textarea class="input" id="e-title" style="min-height:64px">${esc(t.title)}</textarea></div>
     <div class="field"><label>프로젝트</label>${chipsHtml('project', projChipItems(), st.project)}</div>
     ${closed ? `<div class="field"><label>${t.bucket === 'done' ? '처리한 날' : '취소한 날'}</label><input class="input" id="e-closed" type="date" value="${esc(ymdOf(t.done_at || t.canceled_at))}"></div>`
       : `<div class="field"><label>할 날</label>${datePickHtml(st.date)}</div>
@@ -1871,6 +1883,8 @@ function openEditSheet(id) {
       const f = {};
       const title = bg.querySelector('#e-title').value.trim();
       if (title && title !== t.title) f.title = title;
+      const short = bg.querySelector('#e-short').value.trim();
+      if (short !== (t.short || '')) f.short = short;
       const project = st.project || null;
       if (project !== (t.project || null)) f.project = project;
       if (closed) {
@@ -2033,6 +2047,7 @@ function bind() {
       case 'check': if (t) toggleDone(t); break;
       case 'date': openDateSheet(id); break;
       case 'edit': openEditSheet(id); break;
+      case 'expand': { S.openRows = S.openRows || {}; S.openRows[id] = !S.openRows[id]; const r = el.closest('.task'); if (r) r.classList.toggle('open', S.openRows[id]); fitTaskLists(); break; }
       case 'classify': openClassifySheet(id); break;
       case 'upload': openUploadSheet(); break;
       case 'quick-add': quickAdd(); break;
