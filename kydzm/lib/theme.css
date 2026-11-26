@@ -82,3 +82,11 @@ body.kn-wide .wrap, body.kn-wide .container { max-width: none; }
 .btn:active, .tab:active, .topbar-btn:active, .pf:active, .pf-chip:active, .dash-nav button:active { transform: scale(.96); filter: brightness(.95); }
 .btn:focus-visible, .tab:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .btn:disabled, button:disabled { opacity: .5; cursor: default; transform: none; filter: none; }
+
+/* 폰: 가로 스크롤바 안 보이게 (사용자 261126 '줄은 넘어가도 되는데 가로 스크롤바가 생기면 안 돼')
+   — 화면 전체는 옆으로 안 밀리게(clip은 sticky를 안 깨뜨림), 안쪽 가로 스크롤 줄(탭·칩)은 스크롤바만 숨김 */
+@media (max-width: 759px) {
+  html, body { overflow-x: clip; }
+  * { scrollbar-width: none; }
+  *::-webkit-scrollbar { height: 0; }
+}

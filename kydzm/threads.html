@@ -69,7 +69,10 @@
   .topbar-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
   .topbar-link { font-size: 13px; opacity: .75; text-decoration: none; }
   .wrap { max-width: 980px; margin: 0 auto; padding: 18px 16px 80px; }
-  .tabs { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  /* 폰: 탭 한 줄에 다 들어가게 (사용자 261126 '모바일에서 줄 넘어가면 안 되지') */
+  @media (max-width: 600px) { .tabs { gap: 4px; } .tabs .tab { flex: 1; padding: 8px 4px; font-size: 13px; text-align: center; } }
   .tab {
     padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg);
     font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;
@@ -206,7 +209,7 @@
   ol.steps { padding-left: 20px; font-size: 13.5px; display: flex; flex-direction: column; gap: 4px; }
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
-<link rel="stylesheet" href="lib/theme.css?v=261126k">
+<link rel="stylesheet" href="lib/theme.css?v=261126l">
 <script src="lib/nav.js?v=261126n"></script>
 </head>
 <body>
@@ -638,8 +641,7 @@ function render() {
   if (!getToken()) { main.innerHTML = tokenSetupHtml(); bindTokenSetup(); return; }
   const newC = (S.replies || []).filter(r => r.status === '새댓글').length;
   const tabs = [['list', '글 목록'], ['comments', `댓글${newC ? ' ' + newC : ''}`], ['cycle', '게시주기'], ['settings', '토큰·실행']];
-  let html = `<div class="tabs">${tabs.map(([k, t]) => `<button class="tab${S.tab === k ? ' on' : ''}" data-tab="${k}">${esc(t)}</button>`).join('')}
-    <button class="tab" id="reload" title="저장소에서 다시 불러오기">새로고침</button></div>`;
+  let html = `<div class="tabs">${tabs.map(([k, t]) => `<button class="tab${S.tab === k ? ' on' : ''}" data-tab="${k}">${esc(t)}</button>`).join('')}</div>`;   // 새로고침 탭은 뺌 (사용자 261126 '필요 없을 것 같은데' — 브라우저 새로고침으로)
   html += bannersHtml();
   html += `<div id="view"></div>`;
   main.innerHTML = html;
@@ -649,10 +651,6 @@ function render() {
     try { localStorage.setItem(TAB_KEY, S.tab); } catch (e) {}
     render();
   });
-  $('#reload').onclick = () => {
-    if (hasChanges() && !confirm('저장하지 않은 변경이 사라져요. 다시 불러올까요?')) return;
-    withBusy('불러오는 중...', () => reloadAndRender('최신 내용으로 불러왔어요')).catch(e => toast(e.message, true));
-  };
   ({ list: renderList, comments: renderComments, cycle: renderCycle, settings: renderSettings }[S.tab] || renderList)();
   updateSaveBar();
 }
