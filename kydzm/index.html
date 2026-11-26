@@ -207,6 +207,23 @@
   .dash-group { padding: 14px 16px; margin: 0; }
   .dash-todo { padding: 12px 14px; margin: 0 0 12px; }
   .dash-recent { padding: 12px 14px; margin: 12px 0 0; }
+  /* 261126 사용자 '블럭 겹치거나 여백 이상한 것 조정': PC는 오늘·수익 → 인스타 → 캠핑딜 TOP7 → 최근 바뀐 것, 칸 사이 16px */
+  .dash-ig { margin-bottom: 18px; }
+  @media (min-width: 760px) {
+    /* 칸을 한 격자로: 왼쪽 오늘 홈페이지 | 오른쪽 수익화 + 최근 바뀐 것, 그 아래 가로 전체 인스타 → 캠핑딜 TOP7 → 토큰 */
+    #dash-pages { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); grid-template-areas: "stats money" "stats recent" "ig ig" "deal deal" "token token"; gap: 18px; align-items: start; }
+    #dash-pages > .dash-page, #dash-pages .dash-fit, #dash-pages .dash-top { display: contents; }
+    #dash-pages .dash-top > div:first-child { grid-area: stats; min-width: 0; }
+    #dash-pages .dash-top > div:nth-child(2) { grid-area: money; min-width: 0; }
+    #dash-pages .dash-ig { grid-area: ig; margin: 0; min-width: 0; }
+    #dash-pages .dash-recent { grid-area: recent; margin: 0; }
+    #dash-pages #deal-top-card { grid-area: deal; margin: 0; }
+    #dash-pages #token-card { grid-area: token; margin: 0; }
+    #dash-pages .dash-groups { display: none; }
+    #dash-pages .dash-loaded { grid-row: 20; grid-column: 1 / -1; margin: 0 !important; }
+    #dash-pages .dash-fit > :not(.dash-top):not(.dash-ig):not(.dash-recent):not(#deal-top-card):not(#token-card):not(.dash-groups) { grid-column: 1 / -1; }
+  }
+  .today-top + .today-top { margin-top: 6px; }
   .dash-rc { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); text-decoration: none; color: inherit; font-size: 14px; }
   .dash-rc:first-of-type { border-top: none; }
   .dash-rc-i { flex: none; width: 20px; text-align: center; }
@@ -298,6 +315,15 @@
   .ig-vs { display: flex; flex-wrap: wrap; gap: 4px; }
   .ig-v { font-size: 12px; padding: 3px 8px; border-radius: 99px; background: var(--soft); border: 1px solid var(--line); text-decoration: none; color: inherit; }
   .ig-v.more { color: var(--muted); }
+  .ig-wide { display: grid; gap: 14px; }
+  @media (min-width: 760px) { .ig-wide { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: start; } }
+  .ig-vs2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+  @media (max-width: 759px) { .ig-vs2 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; } .ig-v2 span { font-size: 10px; } .ig-v2:nth-child(n+6) { display: none; } }
+  .ig-v2 { display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: inherit; min-width: 0; }
+  .ig-v2 img, .ig-v2 i { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: var(--soft); display: block; }
+  .ig-v2 span { font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ig-v2:hover img { outline: 2px solid var(--text); }
+  .ig-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
   .ig-warn { background: var(--danger-soft); color: var(--danger); font-size: 13px; font-weight: 700; padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; }
   @media (max-width: 759px) { .dash-groups { grid-template-columns: 1fr 1fr; gap: 10px; } .dash-group { padding: 12px; } .dash-link-d { display: none; } .dash-link { padding: 7px 2px; } .dash-link-icon { grid-row: auto; font-size: 16px; } }
   .money-v { font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
@@ -534,8 +560,7 @@
 
   /* 오늘 활동 미니 카드 */
   .today-card {
-    background: var(--success-soft);
-    border-left: 3px solid var(--point);
+    background: var(--card);   /* 261126: 다른 칸과 같은 바탕·테두리 (왼쪽 굵은 선이 다크에서 어긋나 보임) */
   }
   .today-grid {
     display: grid;
@@ -2996,15 +3021,17 @@ async function renderIgSummary() {
     const posts = (g.need_posts || []).slice(0, 3).map(p => `<a class="ig-p" href="mutuals.html#posts/${encodeURIComponent(p.media)}">
         ${p.thumb || p.shot ? `<img ${p.shot ? `data-shot="${e(p.shot)}"` : ''} src="${e(p.thumb || '')}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="if(!this.dataset.shot)this.style.visibility='hidden'">` : '<i></i>'}
         <span class="t">${e(Array.from((p.title || '').replace(/^\((협찬|광고)\)\s*/, '')).slice(0, 30).join('') || '(글 없음)')}</span><span class="n">답 ${p.n}</span></a>`).join('');
-    const vis = (g.visit || []).slice(0, 6).map(v => `<a class="ig-v" href="${e(v.permalink || '#')}" target="_blank" rel="noopener">@${e(v.user)}</a>`).join('');
+    // 다녀올 맞팔: 그 사람 새 글 썸네일 + 아이디 (사용자 261126 인스타 칸 정리)
+    const vis = (g.visit || []).slice(0, 8).map(v => `<a class="ig-v2" href="${e(v.permalink || '#')}" target="_blank" rel="noopener" title="@${e(v.user)}">${v.thumb ? `<img src="${e(v.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<i></i>'}<span>@${e(v.user)}</span></a>`).join('');
     box.innerHTML = `<div class="card" style="margin:0">
       ${g.mode === 'paused' ? '<div class="ig-warn">⛔ 자동 대댓글 멈춤 — 인스타 화면에서 확인</div>' : ''}
-      <div class="ig-ks">${kp('답 필요', g.need_comments, 'mutuals.html#posts', g.need_comments ? 'red' : '')}${kp('진행 중', g.going, 'mutuals.html#posts')}${kp('오늘 답글', g.posted_today, 'mutuals.html#posts')}${kp('다녀올 맞팔', g.visit_total, 'mutuals.html#people')}</div>
-      ${posts ? `<div class="today-label" style="margin:10px 0 4px">답 필요 게시물 ${g.need_posts_total || 0}개</div><div class="ig-ps">${posts}</div>` : ''}
-      ${vis ? `<div class="today-label" style="margin:10px 0 4px">🚶 오늘 다녀올 맞팔</div><div class="ig-vs">${vis}${(g.visit_total || 0) > 6 ? `<a class="ig-v more" href="mutuals.html#people">+${g.visit_total - 6}</a>` : ''}</div>` : ''}
+      <div class="ig-wide">
+        <div class="ig-col"><div class="ig-ks">${kp('답 필요', g.need_comments, 'mutuals.html#posts', g.need_comments ? 'red' : '')}${kp('진행 중', g.going, 'mutuals.html#posts')}${kp('오늘 답글', g.posted_today, 'mutuals.html#posts')}${kp('다녀올 맞팔', g.visit_total, 'mutuals.html#posts')}</div>
+          ${posts ? `<div class="today-label" style="margin:10px 0 4px">답 필요 게시물 ${g.need_posts_total || 0}개</div><div class="ig-ps">${posts}</div>` : ''}</div>
+        <div class="ig-col">${vis ? `<div class="today-label" style="margin:0 0 6px">🚶 오늘 다녀올 맞팔 ${g.visit_total || 0}명</div><div class="ig-vs2">${vis}</div>` : '<div class="help">오늘 다녀올 맞팔 없음 ✅</div>'}</div>
+      </div>
       ${(g.api_issues || []).length ? `<div class="ig-warn" style="margin-top:8px">${g.api_issues.map(x => `${e(x.title)} <span style="opacity:.7">${e((x.at || '').slice(11, 16))}</span>`).join('<br>')}</div>` : ''}
-      <div class="help" style="margin-top:8px">${g.at ? e(g.at.slice(5, 16).replace('T', ' ')) + ' 기준' : ''}${g.check ? ` · 확인 필요 ${g.check}` : ''}${g.api_usage != null ? ` · API 사용 ${g.api_usage}%` : ''}</div>
-      <a class="dash-more" href="mutuals.html">인스타 자세히 →</a></div>`;
+      <div class="ig-foot"><span class="help">${g.at ? e(g.at.slice(5, 16).replace('T', ' ')) + ' 기준' : ''}${g.check ? ` · 확인 필요 ${g.check}` : ''}${g.api_usage != null ? ` · API 사용 ${g.api_usage}%` : ''}</span><a class="dash-more" style="margin:0" href="mutuals.html">인스타 자세히 →</a></div></div>`;
     dashCacheSet('ig', box.innerHTML);
     // 썸네일은 봇이 보관한 cupas 파일로 (인스타 주소는 며칠 뒤 만료, 사용자 261126)
     box.querySelectorAll('img[data-shot]').forEach(async im => {
@@ -3318,9 +3345,12 @@ function renderDashboard() {
       <div>
         <div class="section-title" style="margin-top:0">💰 수익화 요약</div>
         <div id="money-container"><div class="card stats-loading">불러오는 중...</div></div>
-        <div class="section-title">📸 인스타 맞팔</div>
-        <div id="ig-container"><div class="card stats-loading">불러오는 중...</div></div>
       </div>
+    </div>
+    <!-- 인스타 맞팔: 가로 한 줄 전체 (사용자 261126 '인스타 맞팔 부분 캠핑딜 TOP7 위에 · 칸 안도') -->
+    <div class="dash-ig">
+      <div class="section-title" style="margin-top:0">📸 인스타 맞팔</div>
+      <div id="ig-container"><div class="card stats-loading">불러오는 중...</div></div>
     </div>
 
     </div></section>
@@ -3332,7 +3362,7 @@ ${dashPhone ? `    <section class="dash-page dash-todo-page">
     <!-- 달력: 언제 뭐 올렸는지 (인스타 릴스·피드 + 유튜브 롱폼·쇼츠) — 운영판 '올린 글'을 작게, 사용자 요청 261117 -->
     ${cupasToken() ? `<iframe class="dash-cal" src="board.html?embed=1&cal=1" title="달력" loading="lazy"></iframe>` : `<div class="card help">쿠파스 토큰이 이 브라우저에 없어요. <a href="threads.html">스레드 관리</a>에서 한 번 넣으면 달력이 보여요.</div>`}
     </section>` : ''}
-    <section class="dash-page"><div class="dash-fit">
+    <section class="dash-page dp-menu"><div class="dash-fit">
     <!-- 메뉴 (묶음) -->
     <div class="dash-groups">
       ${grp('📌 업무 관리', [['board.html', '📋', '운영판', '오늘·이번 주·이번 달 할 일'], ['board.html?tab=posts', '📅', '올린 글 달력', '인스타·유튜브 날짜별'], ['board.html?tab=autos', '⏰', '자동화', '예약 목록·문제 있으면 ⚠️'], ['board.html?tab=conns', '🔌', '연결', '연결된 API·토큰 현황']])}
@@ -3391,7 +3421,7 @@ ${dashPhone ? `    <section class="dash-page dash-todo-page">
       </div>
     </div>
 
-    <div style="margin-top:24px;font-size:11px;color:var(--muted);text-align:center;">
+    <div class="dash-loaded" style="margin-top:24px;font-size:11px;color:var(--muted);text-align:center;">
       데이터 로드 ${new Date(cache.loadedAt).toLocaleTimeString('ko-KR')}
     </div>
     <div id="passkey-slot" style="margin-top:8px;font-size:12px;color:var(--muted);text-align:center;"></div>
