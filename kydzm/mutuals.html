@@ -358,10 +358,16 @@ function renderPosts() {
       </div></div>`;
   };
   const grid = (list, kind) => `<div class="igrid">${list.map(x => card(x, kind)).join('')}</div>`;
-  return renderKpis(by, need, going.length) + renderDaily() + renderToday() +   // 오늘 다녀올 맞팔은 진행 중 위 (사용자 261126)
+  return renderKpis(by, need, going.length) + apiLine() + renderDaily() + renderToday() +   // 오늘 다녀올 맞팔은 진행 중 위 (사용자 261126)
     (going.length ? `<div class="gh">🔄 진행 중 <span class="muted">${going.length} · 달릴 답글(줄에 올림·고친 글)이 남은 게시물 — 줄에 올린 순서대로, 다 달리면 답 필요·다 답함으로</span></div>` + grid(going, 'going') : '') +
     (open.length ? `<div class="gh red">🔴 답 필요 <span class="muted">${open.length} · 체크해서 위 [자동 시작]</span></div>` + grid(open, 'open') : '') +
     (done.length ? `<button class="gh gh-tg" data-donetg>✅ 다 답함 <span class="muted">${done.length} · ${S.openDoneP ? '접기 ▴' : '펼치기 ▾'}</span></button>` + (S.openDoneP ? grid(done, 'done') : '') : '');   // 기본 접힘 (사용자 261126)
+}
+// 인스타 API 사용량 % (응답 헤더 기준, 댓글·DM 중 큰 쪽) — 사용자 261126 'API 사용량 알려준다면서?'. 50% 넘으면 폰 알림, 80% 넘으면 댓글 확인을 쉼
+function apiLine() {
+  const pc = S.st.pace || {}, u = Math.max(+pc.usage || 0, +pc.usage_dm || 0);
+  const cls = u >= 80 ? 'red' : u >= 50 ? 'or' : '';
+  return `<div class="muted" style="margin:-4px 2px 12px;font-size:12.5px">🔌 인스타 API 사용량 <b class="${cls}" style="${cls ? `color:var(--${cls === 'red' ? 'danger' : 'warning'})` : 'color:var(--text)'}">${u}%</b> (댓글 ${+pc.usage || 0}% · DM ${+pc.usage_dm || 0}%) · 50% 넘으면 폰 알림, 80% 넘으면 쉼 · 오류·경고도 바로 폰 알림</div>`;
 }
 function renderKpis(by, need, goingN) {
   const cs = Object.entries(S.st.comments || {}), lt = S.st.latest || {};
