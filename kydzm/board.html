@@ -207,12 +207,23 @@
   .pp-h i { width: 10px; height: 10px; border-radius: 50%; }
   .pp-h .kind { font-size: 11.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; }
   .pp-h .stale-t { font-size: 12px; color: var(--danger); font-weight: 700; }
+  .pp-sum { display: none; }   /* PC는 늘 펼침 — 한 줄 요약은 폰만 */
   .pp-l { font-size: 13.5px; line-height: 1.5; margin-top: 4px; white-space: pre-wrap; display: grid; grid-template-columns: 64px 1fr; gap: 6px; }   /* 이름 칸 / 내용 칸 — 줄바꿈해도 내용 칸 안에서 (261126 '화면 개판') */
   .pp-l > span:first-child { color: var(--muted); font-size: 12px; font-weight: 700; padding-top: 1px; }
   @media (max-width: 759px) {
     .pp-l { grid-template-columns: 1fr; gap: 1px; font-size: 13px; margin-top: 8px; }
     .pp-l > span:first-child { font-size: 11.5px; }
-    .ppanel { padding: 12px; }
+    .ppanel { padding: 10px 12px; }
+    .pp-sum { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 13.5px; min-width: 0; }
+    .pp-sum > i { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+    .pp-sum > b { flex: none; }
+    .pp-sum .stale-t { font-size: 11.5px; color: var(--danger); font-weight: 700; flex: none; }
+    .pp-one { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 12.5px; }
+    .pp-car { flex: none; color: var(--muted); transition: transform .15s; }
+    .ppanel.pp-open .pp-car { transform: rotate(90deg); }
+    .ppanel:not(.pp-open) .pp-body { display: none; }
+    .ppanel.pp-open .pp-body .pp-h { display: none; }
+    .ppanel.pp-open .pp-sum { margin-bottom: 2px; }
   }
   .pp-edit { margin-top: 8px; }
   .pp-edit summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--muted); padding: 4px 0; }
@@ -1778,7 +1789,11 @@ function projectPanelHtml(id) {
   const p = projOf(id); if (!p) return '';
   const log = (p.log || []).map((l, i) => ({ ...l, i })).sort((a, b) => (b.d || '').localeCompare(a.d || ''));
   const d = staleDays(p);
-  return `<div class="ppanel">
+  // 폰에서는 접어 두고 한 줄만 (사용자 261126 '프로젝트 설명 칸이 굳이 나올 필요가 있나?' → 추천안) — 누르면 펼침, PC는 늘 펼침
+  const one = p.status || (log[0] ? log[0].t : '') || p.direction || '';
+  return `<div class="ppanel${S.ppOpen ? ' pp-open' : ''}">
+    <div class="pp-sum" onclick="S.ppOpen=!S.ppOpen;this.parentNode.classList.toggle('pp-open')"><i style="background:${esc(p.color || '#999')}"></i><b>${esc(p.name)}</b>${d !== null && d > STALE_DAYS ? `<span class="stale-t">${d}일째</span>` : ''}<span class="pp-one">${esc(one) || '<span class="muted">현재 상태 없음</span>'}</span><span class="pp-car">▸</span></div>
+    <div class="pp-body">
     <div class="pp-h"><i style="background:${esc(p.color || '#999')}"></i><b>${esc(p.name)}</b>${p.kind ? `<span class="kind">${esc(p.kind)}</span>` : ''}${d !== null && d > STALE_DAYS ? `<span class="stale-t">${d}일째 손 안 댐</span>` : ''}</div>
     <div class="pp-l"><span>현재 상태</span>${p.status ? esc(p.status) : '<span class="muted">없음</span>'}</div>
     ${p.direction ? `<div class="pp-l"><span>방향</span>${esc(p.direction)}</div>` : ''}
@@ -1802,6 +1817,7 @@ function projectPanelHtml(id) {
       </div>
       </div>
     </details>
+    </div>
   </div>`;
 }
 // 🤖 Claude가 만든·바꾼·끝낸 것 — 사용자가 최종 확인 (사용자 요청 261103). review: 'pending' → [확인] 누르면 ''
