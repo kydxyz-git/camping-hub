@@ -334,7 +334,7 @@ function renderPosts() {
   const need = mid => (by[mid] || []).filter(([id, c]) => !myReplies(c).length && !skipWhy(id, c) && !waiting(id, c)).length;
   const auto = S.ctl.auto_media || {};
   const ms = Object.entries(S.st.media || {}).sort((a, b) => (b[1].at > a[1].at ? 1 : -1)).slice(0, 40);
-  const isGoing = mid => !!auto[mid];   // 진행 중 = 자동 켠 게시물 (사용자 261126 '진행 중인 건 다 자동 시작인 거잖아') — 줄에 올리거나 고쳐 저장하면 자동도 켜짐
+  const isGoing = mid => !!auto[mid] && (need(mid) > 0 || wait(mid) > 0);   // 다 끝났으면 자동 켜져 있어도 다 답함으로 (사용자 261126) — 새 맞팔 댓글이 오면 다시 진행 중   // 진행 중 = 자동 켠 게시물 (사용자 261126 '진행 중인 건 다 자동 시작인 거잖아') — 줄에 올리거나 고쳐 저장하면 자동도 켜짐
   const going = ms.filter(([mid]) => isGoing(mid)), open = ms.filter(([mid]) => !isGoing(mid) && need(mid)), done = ms.filter(([mid]) => !isGoing(mid) && !need(mid));
   // 유튜브 화면처럼 (사용자 261126 '인스타 화면도 유튜브처럼'): 위 숫자 칸 → 날짜별 막대 → 게시물 카드
   const card = ([mid, m], kind) => {
@@ -352,7 +352,7 @@ function renderPosts() {
         ${S.mtype[mid] === 'VIDEO' ? '<span class="igc-reel" title="릴스">▶</span>' : ''}
         ${kind === 'going' ? `<span class="igc-badges">${nSk ? `<span class="igc-b2">⏭ 건너뜀 ${nSk}</span>` : ''}${wt ? `<span class="igc-b2 wait">⏳ 대기 ${wt}</span>` : ''}${nd ? `<span class="igc-b2 red">답 필요 ${nd}</span>` : ''}${!wt && !nd ? '<span class="igc-b2 go">🔄 진행 중</span>' : ''}</span>` : nd ? `<span class="igc-badge red">답 필요 ${nd}</span>` : '<span class="igc-badge ok">✅ 다 답함</span>'}</div>
       <div class="igc-b"><div class="igc-t" title="${esc(title)}">${esc(title)}</div>
-        <div class="igc-m"><span>${esc(dayLabel(dayKey(m.at)))}</span>${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}<span class="r">💬${n(m.cc)}</span></div>
+        <div class="igc-m"><span>${esc(dayLabel(dayKey(m.at)))}</span>${on && kind === 'done' ? '<span class="tag" title="자동 켜짐 — 새 맞팔 댓글이 오면 자동으로 달아요">🔄</span>' : ''}${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}<span class="r">💬${n(m.cc)}</span></div>
         <div class="rb"><div class="rb-t"><span>${kind === 'going' && on ? `자동 ${auto1}` : '내 답'}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i style="width:${pct}%;background:hsl(${Math.round(pct * 1.2)},78%,47%)"></i></div></div>
         ${kind === 'going' ? `<button class="btn red sm igc-stop" data-stop="${esc(mid)}">⏸ 자동 멈추기</button>` : ''}
       </div></div>`;
