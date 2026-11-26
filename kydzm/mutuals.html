@@ -199,6 +199,7 @@
   #qpop img { width:100%; aspect-ratio:4/5; object-fit:cover; border-radius:8px; display:block; margin-bottom:6px; background:var(--soft); }
   #qpop .qpt { font-size:12.5px; font-weight:700; line-height:1.4; }
   #qpop .qpr { font-size:12px; color:var(--muted); line-height:1.4; margin-top:3px; }
+  .tc .often { color:var(--warning); font-weight:700; }
   .tgrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(112px, 1fr)); gap:8px; margin-top:8px; }
   @media (max-width:760px) { .tgrid { grid-template-columns:repeat(4, 1fr); gap:5px; } }
   .qline { display:flex; align-items:center; gap:8px; margin:2px 0 12px; padding:6px 8px; border:1px solid var(--line); border-radius:12px; background:var(--card); }
@@ -542,18 +543,24 @@ function opened(u, since) { return !!S.visits[u] && S.visits[u] >= since; }
 
 // ── 오늘 다녀올 사람 (2번 기준으로 1번, 사용자 261126): 나한테 자주 오는 맞팔 중 새 글 올렸는데 아직 안 연 사람 ──
 function renderToday() {
-  // 3일 안에 나한테 댓글 단 맞팔 (사용자 261126 '최근에 나에게 댓글 단 사람, 3일 이내' — 예전 30일은 너무 넓음)
-  const m = counts(3), lt = S.st.latest || {}, cut = new Date(Date.now() - 3 * 864e5).toISOString();
-  const all = Object.values(m).filter(u => lt[u.user] && lt[u.user].at && lt[u.user].at >= cut);
-  const todo = all.filter(u => !opened(u.user, lt[u.user].at)).sort((a, b) => (b.posts.size - a.posts.size) || (lt[b.user].at > lt[a.user].at ? 1 : -1));
+  // 품앗이 (사용자 261126): 1순위 = 3일 안에 내 글에 댓글 단 맞팔이 새 글을 올림, 2순위 = 자주 오는 맞팔(30일 내 게시물의 절반 이상에 댓글)이 새 글을 올림
+  // 새 글 = 3일 안 글 중 이 화면에서 아직 안 연 글 — 한 글에 한 번만 뜸
+  const lt = S.st.latest || {}, cut = new Date(Date.now() - 3 * 864e5).toISOString(), d30 = new Date(Date.now() - 30 * 864e5).toISOString();
+  const m3 = counts(3), m30 = counts(30);
+  const n30 = Object.values(S.st.media || {}).filter(x => (x.at || '') >= d30).length, half = Math.max(2, Math.ceil(n30 / 2));
+  const pool = {};
+  for (const u of Object.values(m3)) pool[u.user] = { ...u, tier: 1, often: (m30[u.user] || u).posts.size };
+  for (const u of Object.values(m30)) if (!pool[u.user] && u.posts.size >= half) pool[u.user] = { ...u, tier: 2, often: u.posts.size };
+  const all = Object.values(pool).filter(u => lt[u.user] && lt[u.user].at && lt[u.user].at >= cut);
+  const todo = all.filter(u => !opened(u.user, lt[u.user].at)).sort((a, b) => (a.tier - b.tier) || (b.often - a.often) || (lt[b.user].at > lt[a.user].at ? 1 : -1));
   const doneN = all.length - todo.length;
-  const checked = Object.values(lt).filter(x => x.checked).length;
-  return `<div class="card"><div class="row" style="justify-content:space-between"><b>🚶 오늘 다녀올 맞팔</b><span class="muted">3일 안 나한테 댓글 단 맞팔 중 새 글 올리고 아직 안 연 사람 · 자주 오는 순</span></div>
+  const n1 = Object.keys(m3).length, n2 = Object.values(m30).filter(u => u.posts.size >= half).length;
+  return `<div class="card"><div class="row" style="justify-content:space-between"><b>🚶 오늘 다녀올 맞팔</b><span class="muted">① 3일 안 나한테 댓글 단 맞팔 → ② 자주 오는 맞팔(30일 내 게시물 ${n30}개 중 ${half}개+) · 새 글 올리고 아직 안 연 사람</span></div>
     ${todo.length ? `<div class="tgrid" data-n="${todo.length}">${todo.slice(0, 24).map(u => { const x = lt[u.user]; return `<a class="pcard tc" href="${esc(x.permalink)}" target="_blank" rel="noopener" data-open="${esc(u.user)}">
       ${x.thumb ? `<img src="${esc(x.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<div class="ph"></div>'}
-      <div class="pu">@${esc(u.user)}</div><div class="pn"><span>${hoursAgo(x.at)} 새 글</span><span>${u.posts.size}번 옴</span></div>${noteMini(u.user)}</a>`; }).join('')}</div>`
+      <div class="pu">@${esc(u.user)}</div><div class="pn"><span>${hoursAgo(x.at)} 새 글</span><span>${u.tier === 2 ? '<b class="often">자주 옴</b> ' : ''}30일 ${u.often}개에 옴</span></div>${noteMini(u.user)}</a>`; }).join('')}</div>`
       : `<div class="muted" style="padding:6px 0">${doneN ? `오늘 다 다녀왔어요 ✅ (${doneN}명)` : '최근 3일 새 글 올린 맞팔이 아직 없어요'}</div>`}
-    <div class="muted" style="margin-top:6px"><span class="tmore"></span>3일 안에 나한테 댓글 단 맞팔 ${Object.keys(m).length}명 중 새 글 올리고 아직 안 연 사람 · 새 글은 4시간마다 확인(개인 계정은 안 보임)</div></div>`;
+    <div class="muted" style="margin-top:6px"><span class="tmore"></span>대상 ① ${n1}명 · ② ${n2}명 중 새 글 올리고 아직 안 연 사람 · 새 글은 4시간마다 확인(개인 계정은 안 보임) · 인스타 앱에서 직접 다녀온 건 몰라서 또 뜰 수 있어요 — 'N시간 전 새 글'로 확인</div></div>`;
 }
 
 // ── 맞팔 후보 (사용자 261126 '4번 좋아'): 맞팔 아닌데 내 게시물에 자주 오는 사람 ──
