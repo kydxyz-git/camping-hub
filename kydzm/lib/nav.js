@@ -81,7 +81,12 @@
   const side = document.createElement('nav'); side.className = 'kn-side';
   const shade = document.createElement('div'); shade.className = 'kn-shade';
   const bar = document.createElement('div'); bar.className = 'kn-bar';
-  const drawer = v => { side.classList.toggle('on', v); shade.classList.toggle('on', v); };
+  // 뒤로 가기 = 열린 서랍·드롭다운만 닫기 (사용자 261126 '뒤로가기가 전체 메뉴를 뒤로 가서 불편')
+  let layer = null;   // 'drawer' | 'dd'
+  function pushLayer(k) { if (!layer) history.pushState({ knLayer: k }, ''); layer = k; }
+  function popLayer() { if (layer) { layer = null; if (history.state && history.state.knLayer) history.back(); } }
+  addEventListener('popstate', () => { if (layer) { layer = null; side.classList.remove('on'); shade.classList.remove('on'); if (dd) { dd.remove(); dd = null; bar.querySelectorAll('.open').forEach(x => x.classList.remove('open')); } } });
+  const drawer = v => { if (v) pushLayer('drawer'); else if (side.classList.contains('on')) popLayer(); side.classList.toggle('on', v); shade.classList.toggle('on', v); };
   shade.onclick = () => drawer(false);
 
   function renderSide() {
@@ -89,7 +94,7 @@
     side.innerHTML = `<a class="kn-home ${w ? '' : 'cur'}" href="./"><span class="ic">🏠</span>대시보드</a>` +
       MENU.map(([gi, g, items], i) => `<div class="kn-g">${esc(g)}</div><div class="kn-grp">` + items.map(it =>
         `<a href="${esc(it[0])}" class="${w && w[1] === it ? 'cur' : ''}"><span class="ic">${it[1]}</span>${esc(it[2])}</a>`).join('') + '</div>').join('');
-    side.querySelectorAll('a').forEach(a => a.addEventListener('click', () => drawer(false)));
+    side.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { layer = null; side.classList.remove('on'); shade.classList.remove('on'); }));
   }
   function renderBar() {
     const w = where();
@@ -108,25 +113,25 @@
     bar.querySelectorAll('[data-lv]').forEach(b => b.onclick = e => { e.stopPropagation(); dropdown(b, +b.dataset.lv); });
   }
   let dd = null;
-  function closeDD() { if (dd) { dd.remove(); dd = null; bar.querySelectorAll('.open').forEach(x => x.classList.remove('open')); } }
+  function closeDD(fromNav) { if (dd) { dd.remove(); dd = null; bar.querySelectorAll('.open').forEach(x => x.classList.remove('open')); if (!fromNav && layer === 'dd') popLayer(); } }
   function dropdown(btn, lv) {
     const was = btn.classList.contains('open'); closeDD(); if (was) return;
     const w = where(); let html = '';
     if (lv === 0 || lv === 1) html = MENU.map((g, i) => `<a href="${esc(g[2][0][0])}" class="${w && w[0] === i ? 'cur' : ''}">${g[0]} ${esc(g[1])}</a>`).join('') + (lv === 1 ? '<a href="./">🏠 대시보드</a>' : '');
     else if (lv === 2) html = MENU[w[0]][2].map(it => `<a href="${esc(it[0])}" class="${w[1] === it ? 'cur' : ''}">${it[1]} ${esc(it[2])}</a>`).join('');
     else if (lv === 3 && sub) html = sub.items.map(x => `<button data-k="${esc(x.key)}" class="${x.key === sub.cur ? 'cur' : ''}">${esc(x.label)}</button>`).join('');
-    dd = document.createElement('div'); dd.className = 'kn-dd'; dd.innerHTML = html;
+    dd = document.createElement('div'); dd.className = 'kn-dd'; dd.innerHTML = html; pushLayer('dd');
     document.body.appendChild(dd); btn.classList.add('open');
     const r = btn.getBoundingClientRect();
     dd.style.top = (r.bottom + 4) + 'px';
     dd.style.left = Math.max(8, Math.min(r.left, innerWidth - dd.offsetWidth - 8)) + 'px';
-    dd.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { closeDD(); sub.on(b.dataset.k); });
-    dd.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDD));
+    dd.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { closeDD(); setTimeout(() => sub.on(b.dataset.k), 30); });
+    dd.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { layer = null; closeDD(true); }));
   }
   addEventListener('click', e => { if (dd && !dd.contains(e.target)) closeDD(); });
-  addEventListener('scroll', closeDD, { passive: true });
+  addEventListener('scroll', () => closeDD(), { passive: true });
   addEventListener('keydown', e => { if (e.key === 'Escape') { closeDD(); drawer(false); } });
-  addEventListener('hashchange', () => { sub = null; renderSide(); renderBar(); });
+  addEventListener('hashchange', () => { const f = location.pathname.split('/').pop(); if (f === '' || f === 'index.html') { sub = null; renderSide(); renderBar(); } });
 
   api.setSub = (items, cur, on) => { sub = items && items.length ? { items, cur, on } : null; renderBar(); };
 

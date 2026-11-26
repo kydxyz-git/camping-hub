@@ -65,3 +65,18 @@ input::placeholder, textarea::placeholder { color: var(--muted); }
 /* 내용 폭 통일 (261126): 보통 화면 최대 1100px, 운영판은 넓게(자기 1400 유지) */
 .wrap, .container { max-width: 1100px; }
 body.kn-wide .wrap, body.kn-wide .container { max-width: none; }
+
+/* 버튼 손맛 (261126 사용자 '마우스오버·클릭 효과가 없네') — 모든 관리 화면 */
+.btn, .tab, .topbar-btn, .kn-act button, button.pill, .pf, .pf-chip, .dash-nav button {
+  transition: filter .12s, transform .08s, background-color .12s, border-color .12s, box-shadow .12s;
+  cursor: pointer;
+}
+.btn:hover, .tab:hover, .topbar-btn:hover, .pf:hover, .pf-chip:hover, .dash-nav button:hover {
+  filter: brightness(1.08); border-color: var(--line-strong);
+}
+@media (prefers-color-scheme: dark) {
+  .btn:hover, .tab:hover, .topbar-btn:hover, .pf:hover, .pf-chip:hover, .dash-nav button:hover { filter: brightness(1.25); }
+}
+.btn:active, .tab:active, .topbar-btn:active, .pf:active, .pf-chip:active, .dash-nav button:active { transform: scale(.96); filter: brightness(.95); }
+.btn:focus-visible, .tab:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.btn:disabled, button:disabled { opacity: .5; cursor: default; transform: none; filter: none; }

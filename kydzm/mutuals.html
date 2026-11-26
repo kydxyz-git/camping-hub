@@ -76,9 +76,23 @@
   @media (max-width:600px) { .wrap { padding:8px 12px 60px; } .card { padding:10px; } .th { width:46px; height:46px; } }
   .card.sk { opacity:.7; }
   .pill.scr { color:var(--info); }
+  .phead { display:flex; gap:14px; align-items:flex-start; }
+  .pthumb { flex:none; width:220px; border-radius:10px; overflow:hidden; background:var(--soft); display:block; }
+  .pthumb img { width:100%; height:auto; display:block; }
+  .pthumb.noimg { aspect-ratio:4/5; }
+  .pthumb.noimg img { display:none; }
+  .pinfo { flex:1; min-width:0; display:flex; flex-direction:column; gap:8px; }
+  .pstats { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .pstats > div { background:var(--soft); border-radius:8px; padding:6px 8px; }
+  .pstats span { display:block; font-size:11px; color:var(--muted); }
+  .pstats b { font-size:17px; font-variant-numeric:tabular-nums; }
+  .pstats .red b { color:var(--danger); }
+  .pcap { white-space:pre-line; font-size:13.5px; line-height:1.55; max-height:190px; overflow-y:auto; padding:8px 10px; background:var(--soft); border-radius:8px; }
+  .pill.ok { color:var(--ok); }
+  @media (max-width:600px) { .phead { flex-direction:column; } .pthumb { width:60%; max-width:240px; margin:0 auto; } .pcap { max-height:160px; } }
 </style>
-<link rel="stylesheet" href="lib/theme.css?v=261126f">
-<script src="lib/nav.js?v=261126g"></script>
+<link rel="stylesheet" href="lib/theme.css?v=261126h">
+<script src="lib/nav.js?v=261126h"></script>
 </head>
 <body>
 <div class="login" id="login" style="display:none">
@@ -102,6 +116,7 @@ const PASSWORD_HASH = 'fc0d164e3259b5a28b9b7ac489e95e1638ba1bc37a27c2bb07ac7bdb6
 const AUTH_KEY = 'kydz_admin_authed', TOKEN_KEY = 'kydz_cupas_gh_token';
 const RP = 'https://api.github.com/repos/kydxyz-git/cupas';
 const $ = s => document.querySelector(s);
+const n = x => (x == null ? '-' : Number(x).toLocaleString('ko-KR'));
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const S = { st: null, visits: {}, ctl: {}, tab: 'posts', post: null, sending: {}, sel: new Set() };
 try { S.tab = localStorage.getItem('kydz_mutuals_tab') || 'posts'; } catch (e) {}
@@ -200,8 +215,32 @@ function renderPosts() {
 function renderPost(mid, cs) {
   const m = S.st.media[mid] || {}, edits = S.ctl.edits || {}, skip = new Set(S.ctl.skip || []);
   cs.sort((a, b) => (b[1].at > a[1].at ? 1 : -1));
-  return `<div class="row" style="justify-content:space-between;margin-bottom:8px"><button class="btn" data-back>← 게시물</button><a class="btn" href="${esc(m.permalink || '#')}" target="_blank" rel="noopener">인스타에서 보기</a></div>
-    <div class="card">${m.thumb ? `<img src="${esc(m.thumb)}" alt="" referrerpolicy="no-referrer" style="width:100%;max-height:320px;object-fit:cover;border-radius:8px;margin-bottom:8px" onerror="this.remove()">` : ''}<div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)} · 전체 댓글 ${m.cc} · 맞팔 ${cs.length}</div><div style="white-space:pre-line;max-height:4.5em;overflow:hidden">${esc((m.cap || '').slice(0, 200))}</div></div>` +
+  const nReplied = cs.filter(([, c]) => myReplies(c).length).length;
+  const nSkip = cs.filter(([id, c]) => !myReplies(c).length && skipWhy(id, c)).length;
+  const nNeed = cs.length - nReplied - nSkip;
+  const nAuto = cs.filter(([, c]) => c.status === 'posted').length;
+  const on = !!(S.ctl.auto_media || {})[mid];
+  const ttl = (m.cap || '').replace(/^\((협찬|광고)\)\s*/, '');
+  return `<div class="row" style="justify-content:space-between;margin-bottom:8px"><button class="btn" data-back>← 게시물</button></div>
+    <div class="card phead">
+      ${m.thumb ? `<a class="pthumb" href="${esc(m.permalink || '#')}" target="_blank" rel="noopener"><img src="${esc(m.thumb)}" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('noimg')"></a>` : '<div class="pthumb noimg"></div>'}
+      <div class="pinfo">
+        <div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)} 올림${/^\((협찬|광고)\)/.test(m.cap || '') ? ` · <span class="pill">${esc((m.cap || '').match(/^\((협찬|광고)\)/)[1])}</span>` : ''}</div>
+        <div class="pstats">
+          <div><span>전체 댓글</span><b>${n(m.cc)}</b></div>
+          <div><span>맞팔 댓글</span><b>${cs.length}</b></div>
+          <div><span>내 답</span><b>${nReplied}</b></div>
+          <div class="${nNeed ? 'red' : ''}"><span>답 필요</span><b>${nNeed}</b></div>
+          <div><span>자동으로 단</span><b>${nAuto}</b></div>
+          <div><span>건너뜀</span><b>${nSkip}</b></div>
+        </div>
+        <div class="row pact">
+          ${on ? `<span class="pill ok">🔄 자동 대댓글 진행 중</span><button class="btn red sm" data-stop="${esc(mid)}">멈춤</button>` : (nNeed ? `<button class="btn pri sm" data-autoone="${esc(mid)}">이 게시물 자동 시작</button>` : '<span class="pill ok">✅ 맞팔 댓글 다 답함</span>')}
+          <a class="btn sm" href="${esc(m.permalink || '#')}" target="_blank" rel="noopener">인스타에서 보기</a>
+        </div>
+        <div class="pcap">${esc(ttl)}</div>
+      </div>
+    </div>` +
     (cs.length ? (() => {
       const replied = ([, c]) => myReplies(c).length > 0;
       const skipped = cs.filter(x => !replied(x) && skipWhy(x[0], x[1]));
@@ -305,15 +344,29 @@ function renderPeople() {
     }).join('');
 }
 
+// 주소 #탭/게시물 — 뒤로 가기가 전 화면(게시물 목록·전 탭)으로 (사용자 261126)
+function go(tab, post, replace) {
+  S.tab = tab; S.post = post || null;
+  try { localStorage.setItem('kydz_mutuals_tab', tab); } catch (e) {}
+  const h = '#' + tab + (post ? '/' + post : '');
+  if (location.hash !== h) history[replace ? 'replaceState' : 'pushState']({ kd: 1 }, '', h);
+  render(); scrollTo(0, 0);
+}
+function fromHash() {
+  const [t, p] = (location.hash || '').slice(1).split('/');
+  if (['posts', 'people', 'quiet', 'cands'].includes(t)) { S.tab = t; S.post = p || null; return true; }
+  return false;
+}
+addEventListener('popstate', () => { if (history.state && history.state.knLayer) return; if (fromHash() || !location.hash) { if (!location.hash) S.post = null; if (S.st) render(); } });
 function render() {
   renderMode();
   const TABS = [['posts', '📝 게시물'], ['people', '💬 맞팔'], ['quiet', '💤 조용한 맞팔'], ['cands', '🌱 맞팔 후보']];
-  if (window.kydzNav) kydzNav.setSub(TABS.map(([key, label]) => ({ key, label })), S.tab, k => { S.tab = k; S.post = null; try { localStorage.setItem('kydz_mutuals_tab', k); } catch (e) {} render(); scrollTo(0, 0); });
+  if (window.kydzNav) kydzNav.setSub(TABS.map(([key, label]) => ({ key, label })), S.tab, k => go(k));
   $('#tabs').innerHTML = TABS.map(([k, t]) => `<button class="btn ${S.tab === k ? 'on' : ''}" data-tab="${k}">${t}</button>`).join('');
-  $('#tabs').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { S.tab = b.dataset.tab; S.post = null; try { localStorage.setItem('kydz_mutuals_tab', S.tab); } catch (e) {} render(); });
+  $('#tabs').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => go(b.dataset.tab));
   if (!['posts', 'people', 'quiet', 'cands'].includes(S.tab)) S.tab = 'posts';
   $('#main').innerHTML = S.tab === 'posts' ? renderPosts() : S.tab === 'people' ? renderPeople() : S.tab === 'quiet' ? renderQuiet() : renderCands();
-  $('#main').querySelectorAll('[data-post]').forEach(b => b.onclick = e => { if (e.target.closest('[data-sel],[data-stop]')) return; S.post = b.dataset.post; render(); scrollTo(0, 0); });
+  $('#main').querySelectorAll('[data-post]').forEach(b => b.onclick = e => { if (e.target.closest('[data-sel],[data-stop]')) return; go('posts', b.dataset.post); });
   $('#main').querySelectorAll('[data-sel]').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); const m = b.dataset.sel; S.sel.has(m) ? S.sel.delete(m) : S.sel.add(m); render(); });
   $('#main').querySelectorAll('[data-selclear]').forEach(b => b.onclick = () => { S.sel.clear(); render(); });
   $('#main').querySelectorAll('[data-autostart]').forEach(b => b.onclick = async () => {
@@ -322,12 +375,18 @@ function render() {
     try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { d.auto_media ||= {}; ids.forEach(m => d.auto_media[m] = kstNow()); if (d.mode === 'paused') { d.mode = 'on'; d.mode_at = kstNow(); } }, 'ig(admin): 대댓글 자동 시작'); S.sel.clear(); render(); toast('자동 시작 — 진행 중으로 옮겼어요'); }
     catch (e) { alert(e.message); b.disabled = false; }
   });
+  $('#main').querySelectorAll('[data-autoone]').forEach(b => b.onclick = async () => {
+    const m = b.dataset.autoone; if (!confirm('이 게시물의 맞팔 댓글에 대댓글을 자동으로 달까요?\n(10~40분 간격, 9~22시, 초안은 10분 안에 만들어져요)')) return;
+    b.disabled = true;
+    try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { d.auto_media ||= {}; d.auto_media[m] = kstNow(); if (d.mode === 'paused') { d.mode = 'on'; d.mode_at = kstNow(); } }, 'ig(admin): 대댓글 자동 시작'); render(); toast('자동 시작'); }
+    catch (e) { alert(e.message); b.disabled = false; }
+  });
   $('#main').querySelectorAll('[data-stop]').forEach(b => b.onclick = async e => {
     e.stopPropagation(); const m = b.dataset.stop; b.disabled = true;
     try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { if (d.auto_media) delete d.auto_media[m]; }, 'ig(admin): 대댓글 멈춤'); render(); toast('이 게시물 자동 멈춤'); }
     catch (er) { alert(er.message); b.disabled = false; }
   });
-  $('#main').querySelectorAll('[data-back]').forEach(b => b.onclick = () => { S.post = null; render(); });
+  $('#main').querySelectorAll('[data-back]').forEach(b => b.onclick = () => { if (history.state && history.state.kd) history.back(); else go('posts', null, true); });
   const mark = async (u, val) => {
     if (val) S.visits[u] = val; else delete S.visits[u];
     render();
@@ -373,6 +432,7 @@ function render() {
 async function start() {
   $('#app').style.display = 'block';
   if (!tok()) { $('#main').innerHTML = '<div class="banner err">cupas 토큰이 없어요 — <a href="threads.html">스레드 관리</a>에서 넣어 주세요</div>'; return; }
+  fromHash(); if (!location.hash) history.replaceState({ kd: 0 }, '', '#' + S.tab);
   try { await load(); render(); } catch (e) { $('#main').innerHTML = `<div class="banner err">${esc(e.message)}</div>`; }
 }
 (function boot() {
