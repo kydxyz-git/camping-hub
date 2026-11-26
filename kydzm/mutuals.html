@@ -242,9 +242,11 @@ async function writeJson(path, mutate, msg) {   // 최신본 위에 고쳐 저�
 }
 
 async function load() {
-  const [st, v, c, mu, no, im] = await Promise.all([gh(`${RP}/contents/state/ig_comments.json?ref=main`, { raw: true }), readJson('state/ig_visits.json'), readJson('state/ig_comments_ctl.json'), readJson('state/ig_mutuals.json'), readJson('state/ig_notes.json'), readJson('state/ig_media.json').catch(() => ({ data: {} }))]);
+  // 가벼운 화면용 파일(state/ig_view.json, 봇이 만듦)만 읽음 — 전체 ig_comments.json(3MB)은 느려서 (사용자 261126 '불러오는 게 너무 느리네')
+  const view = gh(`${RP}/contents/state/ig_view.json?ref=main`, { raw: true, ok404: true }).then(t => t || gh(`${RP}/contents/state/ig_comments.json?ref=main`, { raw: true }));
+  const [st, v, c, mu, no] = await Promise.all([view, readJson('state/ig_visits.json'), readJson('state/ig_comments_ctl.json'), readJson('state/ig_mutuals.json'), readJson('state/ig_notes.json')]);
   S.st = JSON.parse(st); S.visits = v.data.visits || {}; S.ctl = c.data; S.mut = mu.data.mutual || []; S.mutAt = mu.data.at || ''; S.notes = no.data.notes || {};
-  S.mtype = Object.fromEntries(((im.data || {}).media || []).map(x => [x.id, x.type]));   // 릴스 표시용 (사용자 261126)
+  S.mtype = Object.fromEntries(Object.entries(S.st.media || {}).filter(([, m]) => m.type).map(([id, m]) => [id, m.type]));   // 릴스 표시용
 }
 
 function todayPosted() { const t = dayKey(new Date().toISOString()); return Object.values(S.st.comments || {}).filter(c => c.status === 'posted' && c.posted_at && dayKey(c.posted_at) === t).length; }
@@ -484,7 +486,7 @@ function avatar(u) {
   return `<span class="av" style="background:hsl(${h} 45% 42%)">${esc((u.replace(/[^a-zA-Z0-9]/g, '')[0] || u[0] || '?').toUpperCase())}${x.pic ? `<img data-shot="${esc(x.pic)}" src="${esc(SHOT[x.pic] || '')}" alt="" style="${SHOT[x.pic] ? '' : 'visibility:hidden'}">` : ''}</span>`;
 }
 function renderQuiet() {
-  const m = counts(30), all = counts(3650);
+  const m = counts(30), all = S.st.ulast ? Object.fromEntries(Object.entries(S.st.ulast).map(([u, last]) => [u, { last }])) : counts(3650);   // 가벼운 파일엔 31일 댓글만 → 사람별 마지막 댓글 시각(ulast)
   const dir = S.quietOld ? -1 : 1;   // 최근순(기본) ↔ 오래된순 (사용자 261126)
   const q = S.mut.filter(u => !m[u]).map(u => ({ user: u, last: (all[u] || {}).last || '' }))
     .sort((a, b) => (a.last === b.last ? (a.user > b.user ? 1 : -1) : !a.last ? 1 : !b.last ? -1 : (b.last > a.last ? dir : -dir)));
