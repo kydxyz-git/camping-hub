@@ -15,9 +15,9 @@
   .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:12px; }
   .muted { color:var(--muted); font-size:13px; }
   .gh { font-weight:700; margin:18px 2px 8px; }
-  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; }
   .kpi { background:var(--soft); border-radius:10px; padding:10px 12px; }
-  .kpi .l { font-size:12px; color:var(--muted); }
+  .kpi .l { font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .kpi .v { font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; }
   .d { font-size:12px; font-weight:700; margin-left:4px; }
   .d.up { color:var(--ok); } .d.dn { color:var(--danger); }
@@ -154,7 +154,8 @@ function render({ cur, prev, board }) {
       <div class="kpi"><div class="l">전체 조회</div><div class="v">${n(ch.viewCount)}${delta(pch.viewCount != null ? ch.viewCount - pch.viewCount : null)}</div></div>
       <div class="kpi"><div class="l">최근 7일 조회 (분석)</div><div class="v">${n(sum(d7, 'views'))}</div></div>
       <div class="kpi"><div class="l">최근 7일 구독</div><div class="v">${subs7 >= 0 ? '+' : ''}${subs7}</div></div>
-      <div class="kpi"><div class="l">어제→오늘 조회 · 쇼츠 / 롱폼</div><div class="v" style="font-size:18px">${n(dayViews('short'))} / ${n(dayViews('long'))}</div></div>
+      <div class="kpi" title="어제 수집 때보다 오늘 수집 때 늘어난 조회수 (쇼츠만)"><div class="l">하루 새 조회 · 쇼츠</div><div class="v">+${n(dayViews('short'))}</div></div>
+      <div class="kpi" title="어제 수집 때보다 오늘 수집 때 늘어난 조회수 (롱폼만)"><div class="l">하루 새 조회 · 롱폼</div><div class="v">+${n(dayViews('long'))}</div></div>
       <div class="kpi"><div class="l">영상</div><div class="v">${n(ch.videoCount)}</div></div>
     </div>
     <div class="gh">📊 날짜별 조회·구독</div><div class="card">${chart(cur.daily)}</div>
