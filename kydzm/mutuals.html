@@ -133,7 +133,7 @@
   .npop .u { font-size:12px; margin-bottom:4px; }
 </style>
 <link rel="stylesheet" href="lib/theme.css?v=261126j">
-<script src="lib/nav.js?v=261126l"></script>
+<script src="lib/nav.js?v=261126m"></script>
 </head>
 <body>
 <div class="login" id="login" style="display:none">
@@ -225,6 +225,31 @@ function myReplies(c, withSb) {   // 내가 단 답글(직접·자동). 소셜�
   return out;
 }
 
+// 내 게시물 썸네일 (사용자 261126 '2번으로'): 봇이 보관한 cupas state/ig_thumbs/{id}.jpg를 토큰으로 받아 보여 줌 — 인스타 주소는 며칠 뒤 만료돼서
+const SHOT = {}, SHOT_BAD = new Set();   // 경로 → blob 주소 · 못 받은 경로
+function shotImg(m, onerr) {
+  if (!m.thumb && !m.shot) return '';
+  const src = (m.shot && SHOT[m.shot]) || m.thumb || '';
+  return `<img ${m.shot ? `data-shot="${esc(m.shot)}"` : ''} src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" ${m.shot && !SHOT[m.shot] ? '' : onerr}>`;
+}
+let shotBusy = false;
+async function loadShots() {
+  if (shotBusy) return; shotBusy = true;
+  try {
+    const want = [...new Set([...document.querySelectorAll('img[data-shot]')].map(i => i.dataset.shot).filter(p => !SHOT[p] && !SHOT_BAD.has(p)))];
+    if (!want.length) return;
+    const one = async p => {
+      try {
+        const r = await fetch(`${RP}/contents/${p}?ref=main`, { knQuiet: true, headers: { Authorization: 'Bearer ' + tok(), Accept: 'application/vnd.github.raw' } });
+        if (!r.ok) { SHOT_BAD.add(p); return; }
+        SHOT[p] = URL.createObjectURL(await r.blob());
+        document.querySelectorAll(`img[data-shot="${CSS.escape(p)}"]`).forEach(i => { i.src = SHOT[p]; i.style.visibility = ''; i.parentNode.classList.remove('noimg'); });
+      } catch (e) { SHOT_BAD.add(p); }
+    };
+    for (let i = 0; i < want.length; i += 4) await Promise.all(want.slice(i, i + 4).map(one));
+  } finally { shotBusy = false; }
+  if ([...document.querySelectorAll('img[data-shot]')].some(i => !SHOT[i.dataset.shot] && !SHOT_BAD.has(i.dataset.shot))) loadShots();   // 받는 동안 화면이 바뀐 경우
+}
 // ── 1번 탭: 내 게시물 ──
 function renderPosts() {
   const by = {};
@@ -243,7 +268,7 @@ function renderPosts() {
     const title = (m.cap || '').replace(/^\((협찬|광고)\)\s*/, '').split('\n')[0] || '(글 없음)';
     const sel = S.sel.has(mid), pct = cs.length ? Math.round(got / cs.length * 100) : 100;
     return `<div class="ic ${kind} ${sel ? 'sel' : ''}" data-post="${esc(mid)}">
-      <div class="ic-img">${m.thumb ? `<img src="${esc(m.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : ''}
+      <div class="ic-img">${shotImg(m, `onerror="this.style.visibility='hidden'"`)}
         ${kind === 'open' ? `<label class="ic-ck" data-sel="${esc(mid)}" title="골라서 자동 시작"><input type="checkbox" ${sel ? 'checked' : ''} tabindex="-1"></label>` : ''}
         ${kind === 'going' ? '<span class="ic-badge go">🔄 진행 중</span>' : nd ? `<span class="ic-badge red">답 필요 ${nd}</span>` : '<span class="ic-badge ok">✅ 다 답함</span>'}</div>
       <div class="ic-b"><div class="ic-t">${esc(title)}</div>
@@ -306,7 +331,7 @@ function renderPost(mid, cs) {
   const ttl = (m.cap || '').replace(/^\((협찬|광고)\)\s*/, '');
   return `<div class="row" style="justify-content:space-between;margin-bottom:8px"><button class="btn" data-back>← 게시물</button></div>
     <div class="card phead">
-      ${m.thumb ? `<a class="pthumb" href="${esc(m.permalink || '#')}" target="_blank" rel="noopener"><img src="${esc(m.thumb)}" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('noimg')"></a>` : '<div class="pthumb noimg"></div>'}
+      ${(m.thumb || m.shot) ? `<a class="pthumb" href="${esc(m.permalink || '#')}" target="_blank" rel="noopener">${shotImg(m, `onerror="this.parentNode.classList.add('noimg')"`)}</a>` : '<div class="pthumb noimg"></div>'}
       <div class="pinfo">
         <div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)} 올림${/^\((협찬|광고)\)/.test(m.cap || '') ? ` · <span class="pill">${esc((m.cap || '').match(/^\((협찬|광고)\)/)[1])}</span>` : ''}</div>
         <div class="pstats">
@@ -449,6 +474,7 @@ function render() {
   $('#tabs').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => go(b.dataset.tab));
   if (!['posts', 'people', 'quiet', 'cands'].includes(S.tab)) S.tab = 'posts';
   $('#main').innerHTML = S.tab === 'posts' ? renderPosts() : S.tab === 'people' ? renderPeople() : S.tab === 'quiet' ? renderQuiet() : renderCands();
+  loadShots();
   $('#main').querySelectorAll('[data-post]').forEach(b => b.onclick = e => { if (e.target.closest('[data-sel],[data-stop]')) return; go('posts', b.dataset.post); });
   $('#main').querySelectorAll('[data-sel]').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); const m = b.dataset.sel; S.sel.has(m) ? S.sel.delete(m) : S.sel.add(m); render(); });
   // 선택 줄은 위 메뉴 줄 오른쪽 끝에 (사용자 261126)

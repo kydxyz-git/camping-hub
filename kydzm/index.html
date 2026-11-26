@@ -1863,7 +1863,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <script src="lib/passkey.js?v=261103c"></script>
 <link rel="stylesheet" href="lib/theme.css?v=261126j">
-<script src="lib/nav.js?v=261126l"></script>
+<script src="lib/nav.js?v=261126m"></script>
 </head>
 <body>
 
@@ -2974,7 +2974,7 @@ async function renderIgSummary() {
     const g = await r.json(), e = escapeHtml;
     const kp = (label, v, sub, cls = '') => `<a class="ig-k ${cls}" href="${sub}"><span>${label}</span><b>${(v || 0).toLocaleString()}</b></a>`;
     const posts = (g.need_posts || []).slice(0, 3).map(p => `<a class="ig-p" href="mutuals.html#posts/${encodeURIComponent(p.media)}">
-        ${p.thumb ? `<img src="${e(p.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<i></i>'}
+        ${p.thumb || p.shot ? `<img ${p.shot ? `data-shot="${e(p.shot)}"` : ''} src="${e(p.thumb || '')}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="if(!this.dataset.shot)this.style.visibility='hidden'">` : '<i></i>'}
         <span class="t">${e(Array.from((p.title || '').replace(/^\((협찬|광고)\)\s*/, '')).slice(0, 30).join('') || '(글 없음)')}</span><span class="n">답 ${p.n}</span></a>`).join('');
     const vis = (g.visit || []).slice(0, 6).map(v => `<a class="ig-v" href="${e(v.permalink || '#')}" target="_blank" rel="noopener">@${e(v.user)}</a>`).join('');
     box.innerHTML = `<div class="card" style="margin:0">
@@ -2985,6 +2985,13 @@ async function renderIgSummary() {
       <div class="help" style="margin-top:8px">${g.at ? e(g.at.slice(5, 16).replace('T', ' ')) + ' 기준' : ''}${g.check ? ` · 확인 필요 ${g.check}` : ''}</div>
       <a class="dash-more" href="mutuals.html">인스타 자세히 →</a></div>`;
     dashCacheSet('ig', box.innerHTML);
+    // 썸네일은 봇이 보관한 cupas 파일로 (인스타 주소는 며칠 뒤 만료, 사용자 261126)
+    box.querySelectorAll('img[data-shot]').forEach(async im => {
+      try {
+        const r2 = await ghFetchRaw(`/repos/kydxyz-git/cupas/contents/${im.dataset.shot}?ref=main`, { knQuiet: true, headers: { Accept: 'application/vnd.github.raw' } });
+        if (r2.ok) { im.src = URL.createObjectURL(await r2.blob()); im.style.visibility = ''; }
+      } catch (er) {}
+    });
   } catch (err) {
     box.innerHTML = `<div class="card money-msg" style="margin:0">인스타 요약을 못 불러왔어요. <a href="mutuals.html">인스타</a><div>${escapeHtml(err.message)}</div></div>`;
   }

@@ -48,7 +48,7 @@
     const of = window.fetch;
     if (!of) return;
     window.fetch = function (...a) {
-      const byBtn = lastBtn && performance.now() - lastAt < 500;
+      const byBtn = lastBtn && performance.now() - lastAt < 500 && !(a[1] && a[1].knQuiet);   // knQuiet: 사진 같은 뒤에서 받는 것은 화면을 막지 않음
       const m = ((a[1] && a[1].method) || (a[0] && a[0].method) || 'GET').toUpperCase();
       n++; if (byBtn) { nb++; if (m !== 'GET') saving = true; }
       upd();
