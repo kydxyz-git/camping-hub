@@ -142,18 +142,25 @@ function myReplies(c, withSb) {   // 내가 단 답글(직접·자동). 소셜�
 function renderPosts() {
   const by = {};
   for (const [id, c] of Object.entries(S.st.comments || {})) (by[c.media] ||= []).push([id, c]);
-  const ms = Object.entries(S.st.media || {}).sort((a, b) => (b[1].at > a[1].at ? 1 : -1)).slice(0, 40);
+  const need = mid => (by[mid] || []).filter(([, c]) => !myReplies(c).length).length;
+  // 1순위: 내 답 넣어야 하는 게시물, 2순위: 그중 최신 (사용자 261126)
+  const ms = Object.entries(S.st.media || {}).sort((a, b) => (b[1].at > a[1].at ? 1 : -1)).slice(0, 40)
+    .sort((a, b) => (+!!need(b[0]) - +!!need(a[0])) || (b[1].at > a[1].at ? 1 : -1));
+  const nNeed = ms.filter(([mid]) => need(mid)).length;
+  let hdr = 0;
   if (S.post) return renderPost(S.post, by[S.post] || []);
   return ms.map(([mid, m]) => {
     const cs = by[mid] || [];
     const done = cs.filter(([, c]) => myReplies(c).length).length;
     const chk = cs.filter(([, c]) => c.status === 'check').length;
     const title = (m.cap || '').replace(/^\((협찬|광고)\)\s*/, '').split('\n')[0].slice(0, 40) || '(글 없음)';
-    return `<div class="card pc" data-post="${esc(mid)}"><div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+    const nd = need(mid);
+    const head = (nd && hdr === 0) ? (hdr = 1, `<div class="gh" style="color:var(--danger);margin-top:0">🔴 내 답 넣어야 하는 게시물 ${nNeed}</div>`) : (!nd && hdr < 2) ? (hdr = 2, `<div class="gh">✅ 다 답한 게시물</div>`) : '';
+    return head + `<div class="card pc ${nd ? 'open' : ''}" data-post="${esc(mid)}"><div class="row" style="justify-content:space-between;flex-wrap:nowrap">
       ${m.thumb ? `<img class="th" src="${esc(m.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<div class="th"></div>'}
       <div style="min-width:0;flex:1"><div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)}</div><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(title)}</div></div>
       <div style="text-align:right;flex:none"><div class="n"><b>${m.cc}</b> <span class="muted">전체</span> · <b>${cs.length}</b> <span class="muted">맞팔</span></div>
-      <div class="muted n">내 답 ${done}/${cs.length}${chk ? ` · <span style="color:var(--danger)">확인 ${chk}</span>` : ''}</div></div></div></div>`;
+      <div class="muted n">${nd ? `<span style="color:var(--danger);font-weight:600">답 필요 ${nd}</span> · ` : ''}내 답 ${done}/${cs.length}${chk ? ` · <span style="color:var(--danger)">확인 ${chk}</span>` : ''}</div></div></div></div>`;
   }).join('');
 }
 function renderPost(mid, cs) {
