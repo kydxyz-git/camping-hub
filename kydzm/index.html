@@ -1203,6 +1203,13 @@
     background: var(--warning-soft);   /* 부드러운 베이지 */
     color: var(--warning);
   }
+  /* 폰: 목록 두 줄로 — 이름 / 지역·방문·조회 한 줄 (사용자 261126 '3줄인데 2줄로 맞춰야지') */
+  @media (max-width: 759px) {
+    .list-item-meta-row { flex-wrap: nowrap; overflow: hidden; gap: 5px; }
+    .list-item-meta-row > * { flex: none; }
+    .list-item-meta-row .site-chip { margin-right: 0 !important; padding: 1px 4px !important; }
+    .list-item-meta-row .meta-visits { font-size: 11.5px; }
+  }
   .meta-visits {
     font-size: 12px;
     color: var(--muted);
@@ -1235,6 +1242,19 @@
   .series-group.is-open .series-group-arrow { transform: rotate(90deg); }
   .series-group-arrow { transition: transform 0.18s; font-size: 12px; }
   .series-ep-thumb { display: none; }
+  .series-ep-meta { display: contents; }
+  /* 폰: EP 두 줄 — 왼쪽 썸네일, 위 EP 번호·제목(두 줄까지), 아래 작게 날짜·조회 (사용자 261126 '실제 시리즈명이 안 보여, 2줄로·날짜 조회수는 작게·왼쪽 썸네일') */
+  @media (max-width: 759px) {
+    .series-ep-link { display: grid !important; grid-template-columns: 40px auto minmax(0, 1fr); grid-template-areas: "th num title" "th meta meta"; column-gap: 8px; row-gap: 3px; align-items: center; }
+    .series-ep-link .series-ep-thumb { display: block; grid-area: th; width: 40px; height: 50px; border-radius: 6px; object-fit: cover; background: var(--soft); }
+    .series-ep-link .series-ep-num { grid-area: num; }
+    .series-ep-link .series-ep-title { grid-area: title; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.35; }
+    .series-ep-link .series-ep-meta { grid-area: meta; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 11.5px; }
+    .series-group-header-clickable { white-space: normal; display: flex; flex-wrap: wrap; align-items: center; row-gap: 3px; }
+    .series-group-name { font-weight: 700; flex: 0 1 calc(100% - 30px); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .series-group-count { margin-left: 28px !important; }
+    .series-group-stat { margin-left: 4px; }
+  }
   .series-ep-date { flex: none; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
   .series-ep-item {
     background: var(--bg);
@@ -1648,6 +1668,31 @@
 
   /* random 모드 안내 (admin과 메인 사이트 차이 설명) */
   .pf-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 8px 0 2px; }
+  /* 폰 정리 (사용자 261126 '상태는 한 줄로·세부분류 펼치기·회색 글자 필요 없고·녹색 파란색 글자 줄 띄우기 정렬 여백·이름 안 보임') */
+  .cat-fold { margin: 8px 0 4px; }
+  .cat-fold > summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text); list-style: none; padding: 6px 0; }
+  .cat-fold > summary::-webkit-details-marker { display: none; }
+  .cat-fold-hint { font-weight: 500; color: var(--muted); font-size: 12px; margin-left: 4px; }
+  .cat-fold[open] .cat-fold-hint { display: none; }
+  .stat-note { display: flex; align-items: center; justify-content: space-between; gap: 8px; line-height: 1.6; }
+  .stat-note > .btn { flex: none; margin-left: 0 !important; }
+  @media (max-width: 759px) {
+    .pf-row { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; }
+    .pf-row::-webkit-scrollbar { display: none; } .pf-row > * { flex: none; }
+    .stat-note { font-size: 12px; padding: 8px 10px !important; margin-bottom: 8px !important; }
+    /* 장비·먹거리 줄: 두 줄 — 위 이름, 아래 판매처·별·홈페이지 숫자 (NEW·링크 복사는 PC에서) */
+    #prod-list .list-item { display: grid; grid-template-columns: 52px auto auto minmax(0, 1fr) auto auto; grid-template-areas: "th ti ti ti tg ar" "th sr st me tg ar"; column-gap: 8px; row-gap: 4px; align-items: center; }
+    #prod-list .list-item > .drag-handle { display: none; }
+    #prod-list .list-item-link, #prod-list .list-item-body { display: contents; }
+    #prod-list .list-item-thumb { grid-area: th; width: 52px; height: 52px; }
+    #prod-list .list-item-title { grid-area: ti; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    #prod-list .list-item-meta { grid-area: me; display: flex; flex-wrap: nowrap; overflow: hidden; min-width: 0; }
+    #prod-list .list-item-meta > * { flex: none; }
+    #prod-list .pick-stars { grid-area: st; margin: 0; } #prod-list .pick-btn { font-size: 13px !important; padding: 0 1px !important; }
+    #prod-list .src-btn { grid-area: sr; font-size: 11px !important; padding: 2px 7px !important; }
+    #prod-list .new-btn, #prod-list .link-copy-btn, #prod-list .li-src { display: none; }
+    #prod-list .pub-toggle { grid-area: tg; } #prod-list .list-item-arrow { grid-area: ar; }
+  }
   .pf-lbl { font-size: 12px; font-weight: 700; color: var(--text); margin-right: 2px; min-width: 28px; }
   .pf-chip { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 999px; padding: 4px 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
   .pf-chip b { font-weight: 600; opacity: .55; margin-left: 2px; }
@@ -4955,7 +5000,7 @@ function renderCampList() {
       </div>
       ${withCoord < total ? `<button id="filter-no-coord" type="button" style="padding:4px 10px;background:#1a1a1a;color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;">미등록만 보기</button>` : ''}
     </div>
-    ${cache.siteStats ? `<div class="series-sort-note" style="background:var(--info-soft);border-color:#c5d8f2;color:var(--info);margin-bottom:10px">${siteNote()}
+    ${cache.siteStats ? `<div class="series-sort-note stat-note" style="background:var(--info-soft);border-color:#c5d8f2;color:var(--info);margin-bottom:10px">${siteNote()}
       <button type="button" class="btn btn-sm btn-ghost" id="camp-site-sort-btn" style="margin-left:6px">${_campSiteSort ? '원래 순서' : '홈페이지 클릭 많은 순'}</button></div>` : ''}
     <div class="list wide2">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(camp => {
@@ -4970,7 +5015,7 @@ function renderCampList() {
         const metaParts = [];
         if (camp.region) metaParts.push(`<span class="meta-badge meta-badge--region">${escapeHtml(camp.region)}</span>`);
         if (seasons.length) metaParts.push(`<span class="meta-badge meta-badge--season">${escapeHtml(seasons.join('·'))}</span>`);
-        if (visits > 0) metaParts.push(`<span class="meta-visits">${visits}회 방문</span>`);
+        if (visits > 0) metaParts.push(`<span class="meta-visits">${visits}회<span class="m-hide"> 방문</span></span>`);
         if (camp.id) metaParts.push(siteChip(cstOf(camp)));
         return `
           <div class="list-item ${isPub ? '' : 'is-unpublished'}">
@@ -6565,7 +6610,7 @@ function renderSeriesList() {
       <a class="btn btn-sm" href="#series/new" style="margin-left:auto;">+ EP 추가</a>
       <div class="page-count">${cache.series.length}시리즈 · ${totalEps}편</div>
     </div>
-    ${cache.siteStats ? `<div class="series-sort-note" style="background:var(--info-soft);border-color:#c5d8f2;color:var(--info);margin-bottom:10px">${siteNote()}
+    ${cache.siteStats ? `<div class="series-sort-note stat-note" style="background:var(--info-soft);border-color:#c5d8f2;color:var(--info);margin-bottom:10px">${siteNote()}
       <button type="button" class="btn btn-sm btn-ghost" id="series-site-sort-btn" style="margin-left:6px">${_seriesSiteSort ? '원래 순서' : 'EP 홈페이지 클릭 많은 순'}</button></div>` : ''}
     <div id="series-sortable">
       ${cache.series.map((s, si) => {
@@ -6576,7 +6621,7 @@ function renderSeriesList() {
           <div class="series-group-header">
             <span class="drag-handle" title="드래그해서 순서 변경">⋮⋮</span>
             <div class="series-group-header-clickable" data-toggle="${si}">
-              <span class="series-group-emoji">${escapeHtml(s.emoji || '🎬')}</span>${escapeHtml(s.name)}<span class="series-group-count">${s.eps.length}편</span>${s.id ? ' ' + siteChip(siteStatOf([], `/series/${s.id}/`)) : ''}
+              <span class="series-group-emoji">${escapeHtml(s.emoji || '🎬')}</span><span class="series-group-name">${escapeHtml(s.name)}</span><span class="series-group-count">${s.eps.length}편</span>${s.id ? '<span class="series-group-stat"> ' + siteChip(siteStatOf([], `/series/${s.id}/`)) + '</span>' : ''}
             </div>
             <div class="series-group-header-right">
               ${toggleHtml(sPub, `data-series-toggle="${si}"`, 'green')}
@@ -6591,7 +6636,7 @@ function renderSeriesList() {
                 ${SORT_MODES.map(m => `<option value="${m.value}" ${(s.sort || 'ep_desc') === m.value ? 'selected' : ''}>${m.label}</option>`).join('')}
               </select>
             </div>
-            ${(s.sort === 'random') ? `<div class="series-sort-note">🎲 메인 사이트에서는 매 페이지 로드마다 다른 순서로 보입니다 (admin은 입력 순서)<br>✨ 최근 7일 이내 신규 EP는 항상 상위에 노출됩니다</div>` : ''}
+            ${(s.sort === 'random') ? `<div class="series-sort-note m-hide">🎲 메인 사이트에서는 매 페이지 로드마다 다른 순서로 보입니다 (admin은 입력 순서)<br>✨ 최근 7일 이내 신규 EP는 항상 상위에 노출됩니다</div>` : ''}
             <div class="ep-sortable" data-ep-sortable="${si}">
               ${(() => { const L = getSortedEpsForAdmin(s), eSt = ep => (s.id && ep.id && siteStatOf([`/series/${s.id}/${ep.id}`])) || { view: 0, click: 0 };
                   return _seriesSiteSort && cache.siteStats ? [...L].sort((a, b) => eSt(b.ep).click - eSt(a.ep).click || eSt(b.ep).view - eSt(a.ep).view) : L; })().map(({ ep, ei }) => {
@@ -6603,7 +6648,7 @@ function renderSeriesList() {
                   <a class="series-ep-link" href="#series/${si}/${ei}">
                     ${ep.thumb ? `<img class="series-ep-thumb" src="../${escapeHtml(ep.thumb.replace(/^\.\//, ''))}" alt="" loading="lazy">` : '<span class="series-ep-thumb"></span>'}
                     <span class="series-ep-num">${epLabelOf(ep)}</span>
-                    <span class="series-ep-title">${escapeHtml(ep.title)}</span>${igPostDate(ep.url) ? `<span class="series-ep-date" title="인스타에 올린 날 (게시물 주소로 계산)">${igPostDate(ep.url)}</span>` : ''}${s.id && ep.id ? siteChip(siteStatOf([`/series/${s.id}/${ep.id}`])) : ''}
+                    <span class="series-ep-title">${escapeHtml(ep.title)}</span><span class="series-ep-meta">${igPostDate(ep.url) ? `<span class="series-ep-date" title="인스타에 올린 날 (게시물 주소로 계산)">${igPostDate(ep.url)}</span>` : ''}${s.id && ep.id ? siteChip(siteStatOf([`/series/${s.id}/${ep.id}`])) : ''}</span>
                   </a>
                   ${toggleHtml(epPub, `data-ep-toggle="${si}-${ei}"`)}
                   <a class="series-ep-arrow" href="#series/${si}/${ei}">›</a>
@@ -7927,7 +7972,7 @@ function siteStatOf(paths, prefix) {
 }
 const siteStatItem = (kind, id) => siteStatOf(kind === 'camps' ? [`/camps/${id}`, `/camps/${id}/video`, `/search/camps/${id}`]
   : [`/${kind}/${id}`, `/search/${kind === 'items' ? 'gear' : 'foods'}/${id}`]);
-const siteChip = st => st && (st.view || st.click) ? `<span style="font-size:11px;color:var(--info);background:var(--info-soft);border-radius:4px;padding:1px 5px;margin-right:6px;" title="홈페이지 최근 30일: 조회 · 바깥 링크(구매처·예약처·DM) 클릭">🏠 👁 ${st.view} · 🖱 ${st.click}</span>` : '';
+const siteChip = st => st && (st.view || st.click) ? `<span class="site-chip" style="white-space:nowrap;letter-spacing:0;font-size:11px;color:var(--info);background:var(--info-soft);border-radius:4px;padding:1px 5px;margin-right:6px;" title="홈페이지 최근 30일: 조회 · 바깥 링크(구매처·예약처·DM) 클릭">🏠 👁 ${st.view} · 🖱 ${st.click}</span>` : '';
 const siteNote = () => cache.siteStats ? `<span style="opacity:.75">🏠 = 홈페이지 최근 30일(${escapeHtml(cache.siteStats.from.slice(5))}~${escapeHtml(cache.siteStats.to.slice(5))}) 조회 · 바깥 링크 클릭</span>` : '';
 
 const CHROME_BAD = { '판매 종료 의심': 'soldout', '품절': 'soldout' };
@@ -7950,7 +7995,7 @@ function productListItem(item, hrefPrefix, fallbackEmoji, dataAttrKey, opts) {
   const thumb = item.thumb
     ? `<img src="../${item.thumb.replace(/^\.\//, '')}" alt="" loading="lazy">`
     : fallbackEmoji;
-  const src = item.source ? `<span style="font-size:11px;color:var(--muted);margin-right:6px;">${escapeHtml(item.source)}</span>` : '';
+  const src = item.source ? `<span class="li-src" style="font-size:11px;color:var(--muted);margin-right:6px;">${escapeHtml(item.source)}</span>` : '';
   const isPub = item.published !== false;
   const handle = opts.manual ? `<span class="drag-handle drag-handle--product" title="드래그해서 순서 변경">⋮⋮</span>` : '';
   return `
@@ -8109,7 +8154,7 @@ function renderProductList(dataArr, searchVar, opts) {
         ${PRODUCT_SORT_MODES.map(m => `<option value="${m.value}" ${currentSort === m.value ? 'selected' : ''}>${m.label}</option>`).join('')}
       </select>
     </div>
-    ${currentSort === 'random' ? `<div class="series-sort-note">🎲 메인 사이트에서는 매 페이지 로드마다 다른 순서로 보입니다 (admin은 입력 순서)<br>✨ 최근 7일 이내 신규는 항상 상위에 노출됩니다</div>` : ''}
+    ${currentSort === 'random' ? `<div class="series-sort-note m-hide">🎲 메인 사이트에서는 매 페이지 로드마다 다른 순서로 보입니다 (admin은 입력 순서)<br>✨ 최근 7일 이내 신규는 항상 상위에 노출됩니다</div>` : ''}
     ${currentSort === 'manual' && !isSearchActive && !_pendingOrder[opts.type] ? `<div class="series-sort-note">📝 ⋮⋮ 핸들을 드래그해서 순서를 바꾼 뒤 [순서 저장]을 누르세요</div>` : ''}
     ${_pendingOrder[opts.type] ? `<div class="order-savebar">
         <span class="order-savebar-msg">저장하지 않은 순서 변경이 있습니다</span>
@@ -8118,10 +8163,10 @@ function renderProductList(dataArr, searchVar, opts) {
       </div>` : ''}
     ${currentSort === 'manual' && isSearchActive ? `<div class="series-sort-note" style="background:var(--warning-soft);border-color:#ffe69c;color:var(--warning);">⚠️ 검색 중에는 드래그 정렬이 비활성화됩니다 (검색을 비우세요)</div>` : ''}
     ${cache.cpHome ? (() => { const h = cache.cpHome, t = h.homepage || {}, o = h.other || {};
-        return `<div class="series-sort-note" style="background:var(--soft);border-color:#b7dfc3;color:var(--success);">🛒 쿠팡 최근 30일 (${escapeHtml(String(h.from || '').slice(5))}~${escapeHtml(String(h.to || '').slice(5))}) 홈페이지 링크: 클릭 <b>${(t.click || 0).toLocaleString()}</b> · 주문 <b>${t.order || 0}</b> · 수익 <b>${(t.commission || 0).toLocaleString()}원</b>
-          <span style="opacity:.75">· 홈페이지 밖 직접 만든 링크 클릭 ${(o.click || 0).toLocaleString()} · 주문 ${o.order || 0}</span>
+        return `<div class="series-sort-note stat-note" style="background:var(--soft);border-color:#b7dfc3;color:var(--success);"><span>🛒 쿠팡 최근 30일 (${escapeHtml(String(h.from || '').slice(5))}~${escapeHtml(String(h.to || '').slice(5))}) 홈페이지 링크: 클릭 <b>${(t.click || 0).toLocaleString()}</b> · 주문 <b>${t.order || 0}</b> · 수익 <b>${(t.commission || 0).toLocaleString()}원</b>
+          <span class="m-hide" style="opacity:.75">· 홈페이지 밖 직접 만든 링크 클릭 ${(o.click || 0).toLocaleString()} · 주문 ${o.order || 0}</span></span>
           <button type="button" class="btn btn-sm btn-ghost" id="cp-sort-btn" style="margin-left:6px">${_cpSort ? '원래 순서' : '클릭 많은 순'}</button></div>`; })() : ''}
-    ${cache.siteStats ? `<div class="series-sort-note" style="background:var(--info-soft);border-color:#c5d8f2;color:var(--info);">${siteNote()}
+    ${cache.siteStats ? `<div class="series-sort-note stat-note" style="background:var(--info-soft);border-color:#c5d8f2;color:var(--info);">${siteNote()}
           <button type="button" class="btn btn-sm btn-ghost" id="site-sort-btn" style="margin-left:6px">${_siteSort ? '원래 순서' : '홈페이지 클릭 많은 순'}</button></div>` : ''}
     ${badN ? `<div class="series-sort-note" style="background:var(--danger-soft);border-color:#f5c2c0;color:var(--danger);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
         <span>🔎 링크 점검(쿠팡·컬리 ${escapeHtml(String((lc && lc.checked_at) || '').slice(5, 10))}${cache.cpChrome ? ` · PC 크롬 ${escapeHtml(String(cache.cpChrome.checked_at || '').slice(5, 10))}` : ''}): 손볼 링크 <b>${badN}</b>개 — 파트너스에서 새 링크를 만들어 바꿔 주세요 (빨간 ⚠ 배지에 손가락을 대면 이유)</span>
@@ -8941,13 +8986,16 @@ function _slugKey(label, exist) {
   return base;
 }
 
+let _catFoldOpen = null;
 function itemCatsBarHtml() {
   const cats = getItemCats();
   const counts = {};
   (cache.items || []).forEach(x => { const k = x.cat || 'camp'; counts[k] = (counts[k] || 0) + 1; });
+  // 세부 분류 편집 칸은 접어 둠 — 폰은 기본 접힘 (사용자 261126 '세부분류는 펼치기 기능 필요')
+  if (_catFoldOpen === null) _catFoldOpen = !window.matchMedia('(max-width: 759px)').matches;
   return `
+    <details class="cat-fold" id="cat-fold" ${_catFoldOpen ? 'open' : ''}><summary>세부 분류 ${cats.length}개 <span class="cat-fold-hint">고치기 ▾</span></summary>
     <div class="series-sort-bar" style="margin:8px 0 4px;flex-wrap:wrap;gap:6px;">
-      <span class="series-sort-label">세부 분류:</span>
       ${cats.map((c, i) => `
         <span class="cat-chip" data-ci="${i}" style="display:inline-flex;align-items:center;gap:5px;
           border:1px solid var(--line);border-radius:999px;padding:4px 8px 4px 11px;font-size:12px;background:var(--card);">
@@ -8960,12 +9008,13 @@ function itemCatsBarHtml() {
         </span>`).join('')}
       <button type="button" id="cat-add" class="btn btn-sm" style="font-size:12px;padding:4px 10px;">+ 분류 추가</button>
     </div>
-    <div class="series-sort-note">분류를 추가하면 장비 등록 폼의 '구분' 목록과 사이트 섹션이 함께 바뀝니다.</div>
+    <div class="series-sort-note m-hide">분류를 추가하면 장비 등록 폼의 '구분' 목록과 사이트 섹션이 함께 바뀝니다.</div></details>
   `;
 }
 
 function bindItemCatsBar() {
   const cats = getItemCats();
+  const fold = document.getElementById('cat-fold'); if (fold) fold.addEventListener('toggle', () => { _catFoldOpen = fold.open; });
   const q = (s) => document.querySelectorAll(s);
 
   q('[data-cat-up]').forEach(b => b.onclick = () => {
