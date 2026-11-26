@@ -334,7 +334,7 @@ function renderPosts() {
   const need = mid => (by[mid] || []).filter(([id, c]) => !myReplies(c).length && !skipWhy(id, c) && !waiting(id, c)).length;
   const auto = S.ctl.auto_media || {};
   const ms = Object.entries(S.st.media || {}).sort((a, b) => (b[1].at > a[1].at ? 1 : -1)).slice(0, 40);
-  const isGoing = mid => !!auto[mid] && (need(mid) > 0 || wait(mid) > 0);   // 다 끝났으면 자동 켜져 있어도 다 답함으로 (사용자 261126) — 새 맞팔 댓글이 오면 다시 진행 중   // 진행 중 = 자동 켠 게시물 (사용자 261126 '진행 중인 건 다 자동 시작인 거잖아') — 줄에 올리거나 고쳐 저장하면 자동도 켜짐
+  const isGoing = mid => !!auto[mid] && wait(mid) > 0;   // 진행 중 = 달릴 차례인 답글(줄에 올림·고쳐 저장)이 남은 것. 다 달리면 — 답 필요가 남았으면 답 필요로, 없으면 다 답함으로 (사용자 261126 '진행 중이 끝나면 답 필요로 다시') — AI 초안은 확인해야 달리니까   // 진행 중 = 자동 켠 게시물 (사용자 261126 '진행 중인 건 다 자동 시작인 거잖아') — 줄에 올리거나 고쳐 저장하면 자동도 켜짐
   const going = ms.filter(([mid]) => isGoing(mid)), open = ms.filter(([mid]) => !isGoing(mid) && need(mid)), done = ms.filter(([mid]) => !isGoing(mid) && !need(mid));
   // 유튜브 화면처럼 (사용자 261126 '인스타 화면도 유튜브처럼'): 위 숫자 칸 → 날짜별 막대 → 게시물 카드
   const card = ([mid, m], kind) => {
@@ -352,14 +352,14 @@ function renderPosts() {
         ${S.mtype[mid] === 'VIDEO' ? '<span class="igc-reel" title="릴스">▶</span>' : ''}
         ${kind === 'going' ? `<span class="igc-badges">${nSk ? `<span class="igc-b2">⏭ 건너뜀 ${nSk}</span>` : ''}${wt ? `<span class="igc-b2 wait">⏳ 대기 ${wt}</span>` : ''}${nd ? `<span class="igc-b2 red">답 필요 ${nd}</span>` : ''}${!wt && !nd ? '<span class="igc-b2 go">🔄 진행 중</span>' : ''}</span>` : nd ? `<span class="igc-badge red">답 필요 ${nd}</span>` : '<span class="igc-badge ok">✅ 다 답함</span>'}</div>
       <div class="igc-b"><div class="igc-t" title="${esc(title)}">${esc(title)}</div>
-        <div class="igc-m"><span>${esc(dayLabel(dayKey(m.at)))}</span>${on && kind === 'done' ? '<span class="tag" title="자동 켜짐 — 새 맞팔 댓글이 오면 자동으로 달아요">🔄</span>' : ''}${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}<span class="r">💬${n(m.cc)}</span></div>
+        <div class="igc-m"><span>${esc(dayLabel(dayKey(m.at)))}</span>${on && kind !== 'going' ? '<span class="tag" title="자동 켜짐 — 확인한 답글(댓글 달기·수정 저장)은 차례대로 달아요">🔄</span>' : ''}${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}<span class="r">💬${n(m.cc)}</span></div>
         <div class="rb"><div class="rb-t"><span>${kind === 'going' && on ? `자동 ${auto1}` : '내 답'}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i style="width:${pct}%;background:hsl(${Math.round(pct * 1.2)},78%,47%)"></i></div></div>
         ${kind === 'going' ? `<button class="btn red sm igc-stop" data-stop="${esc(mid)}">⏸ 자동 멈추기</button>` : ''}
       </div></div>`;
   };
   const grid = (list, kind) => `<div class="igrid">${list.map(x => card(x, kind)).join('')}</div>`;
   return renderKpis(by, need, going.length) + renderDaily() + renderToday() +   // 오늘 다녀올 맞팔은 진행 중 위 (사용자 261126)
-    (going.length ? `<div class="gh">🔄 진행 중 <span class="muted">${going.length} · 자동 켠 게시물 — 줄에 올린 것 먼저, 그다음 게시물 상관없이 오래된 댓글부터</span></div>` + grid(going, 'going') : '') +
+    (going.length ? `<div class="gh">🔄 진행 중 <span class="muted">${going.length} · 달릴 답글(줄에 올림·고친 글)이 남은 게시물 — 줄에 올린 순서대로, 다 달리면 답 필요·다 답함으로</span></div>` + grid(going, 'going') : '') +
     (open.length ? `<div class="gh red">🔴 답 필요 <span class="muted">${open.length} · 체크해서 위 [자동 시작]</span></div>` + grid(open, 'open') : '') +
     (done.length ? `<button class="gh gh-tg" data-donetg>✅ 다 답함 <span class="muted">${done.length} · ${S.openDoneP ? '접기 ▴' : '펼치기 ▾'}</span></button>` + (S.openDoneP ? grid(done, 'done') : '') : '');   // 기본 접힘 (사용자 261126)
 }
