@@ -359,7 +359,7 @@
     "visits": 1,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-11-04T02:32:34.328Z",
+    "updated_at": "2026-11-26T02:24:28.721Z",
     "lat": 37.3327488,
     "lng": 128.2765116,
     "videos": [
@@ -383,7 +383,32 @@
         "보 물놀이장"
       ],
       "notice": "보 아래는 깊어요(아이 혼자 입수 금지) · 매주 토요일 가족 행사"
-    }
+    },
+    "guide": [
+      {
+        "zone": "A3·A4·A5",
+        "text": "계곡 바로 앞, 나무 그늘도 좋음. 가장 추천",
+        "pick": true
+      },
+      {
+        "zone": "A1·A2·A6·A7",
+        "text": "그늘은 조금 적지만 계곡 앞자리",
+        "pick": false
+      },
+      {
+        "zone": "A22~A24",
+        "text": "그늘이 괜찮은 자리",
+        "pick": false
+      },
+      {
+        "zone": "계곡",
+        "text": "A1~A7 앞은 아이들 놀기 좋음, 아래로 30초 가면 깊은 계곡(보호자와 함께)",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/sangwoo-layout-1.jpg"
+    ]
   },
   {
     "id": "camp_e06cb829df",
