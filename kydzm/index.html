@@ -2841,6 +2841,10 @@ function cpRange(period, last) {   // last: 데이터 마지막 날 'YYYY-MM-DD'
   const L = new Date(last + 'T00:00:00Z'), iso = x => x.toISOString().slice(0, 10), back = n => iso(new Date(L - n * 864e5));
   const y = last.slice(0, 4), m = +last.slice(5, 7);
   if (period === '30d') return [back(29), last];
+  // 어제·오늘 (사용자 261126 '쿠팡도 어제 오늘') — 쿠팡은 전날 실적이 오후 4시 전후 들어와서 오늘은 보통 비어 있음
+  const kt = kstToday(), ky = new Date(Date.parse(kt + 'T00:00:00Z') - 864e5).toISOString().slice(0, 10);
+  if (period === 'today') return [kt, kt];
+  if (period === 'yest') return [ky, ky];
   if (period === 'thisMonth') return [`${y}-${String(m).padStart(2, '0')}-01`, last];
   if (period === 'lastMonth') {
     const py = m === 1 ? +y - 1 : +y, pm = m === 1 ? 12 : m - 1;
@@ -3092,7 +3096,7 @@ function renderStatsPage() {
 }
 // ── 🟢 네이버 실적 (사용자 261126 '쿠팡 실적처럼, API가 없어 금액은 모르니 홈페이지의 네이버 브랜드 커넥트 링크가 얼마나 눌렸는지 · 일·주 단위 · 어제 오늘')
 // 데이터: 통계 Worker의 날짜별 클릭(daily[날짜].clicks '경로::라벨') 중 홈페이지 장비·먹거리 카드의 네이버 링크(naver.me·브랜드 커넥트·스마트스토어). 수익·주문은 없음(네이버 API 없음)
-let _nvPeriod = '7d', _nvFilter = 'all', _nvUnit = 'day', _nvOrder = 'click';
+let _nvPeriod = '30d', _nvFilter = 'all', _nvUnit = 'day', _nvOrder = 'click';   // 쿠팡 실적처럼 최근 30일이 기본 (사용자 261126)
 const NV_RE = /naver\.me|brandconnect|smartstore\.naver|brand\.naver|shopping\.naver/i;
 async function renderNaverReport() {
   hideContentTabs();
@@ -3115,8 +3119,8 @@ async function renderNaverReport() {
   const addD = (ds, n) => new Date(Date.parse(ds + 'T00:00:00Z') + n * 864e5).toISOString().slice(0, 10);
   const yest = addD(today, -1), mStart = today.slice(0, 8) + '01';
   const lmEnd = addD(mStart, -1), lmStart = lmEnd.slice(0, 8) + '01';
-  const P = { today: ['오늘', today, today], yest: ['어제', yest, yest], '7d': ['최근 7일', addD(today, -6), today], '30d': ['최근 30일', addD(today, -29), today], thisMonth: ['이번 달', mStart, today], lastMonth: ['지난달', lmStart, lmEnd], year: ['올해', today.slice(0, 4) + '-01-01', today] };
-  const [, from, to] = P[_nvPeriod] || P['7d'];
+  const P = { yest: ['어제', yest, yest], today: ['오늘', today, today], '7d': ['최근 7일', addD(today, -6), today], '30d': ['최근 30일', addD(today, -29), today], thisMonth: ['이번 달', mStart, today], lastMonth: ['지난달', lmStart, lmEnd], year: ['올해', today.slice(0, 4) + '-01-01', today] };
+  const [, from, to] = P[_nvPeriod] || P['30d'];
   const span = (f, t, path) => { let n = 0; for (const [d, m] of Object.entries(perDay)) if (d >= dd(f) && d <= dd(t)) n += path ? (m[path] || 0) : Object.values(m).reduce((a, b) => a + b, 0); return n; };
   const pick = l => _nvFilter === 'all' || l.kind === _nvFilter;
   const shownLinks = links.filter(pick);
@@ -3155,8 +3159,8 @@ async function renderNaverReport() {
       <div style="font-size:13px;color:var(--muted);margin-top:10px">${escapeHtml(from)}${from !== to ? ' ~ ' + escapeHtml(to) : ''} · ${escapeHtml(F.find(f => f[0] === _nvFilter)[1])}</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;text-align:center">
         <div><div class="help">이 기간 클릭</div><div style="font-size:20px;font-weight:800">${total.toLocaleString()}</div></div>
-        <div><div class="help">오늘</div><div style="font-size:20px;font-weight:800">${tToday}</div></div>
         <div><div class="help">어제</div><div style="font-size:20px;font-weight:800">${tYest}</div></div>
+        <div><div class="help">오늘</div><div style="font-size:20px;font-weight:800">${tToday}</div></div>
         <div><div class="help">최근 7일 <span>${pct(t7, t7p)}</span></div><div style="font-size:20px;font-weight:800">${t7}</div></div></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">${F.map(([k, l, L]) => `<button type="button" class="btn btn-sm ${_nvFilter === k ? '' : 'btn-ghost'}" data-nvf="${k}">${l} · ${sumLinks(L)}번</button>`).join('')}</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><b style="font-size:14px">${_nvUnit === 'week' ? '주별' : '일별'} 클릭</b>
@@ -3168,7 +3172,7 @@ async function renderNaverReport() {
     <div class="list">${rows.length ? rows.map(l => `<a class="list-item" href="#${l.kind}/${l.i}" style="display:flex;gap:10px;align-items:center;padding:10px 12px;text-decoration:none;color:inherit">
         ${l.thumb ? `<img src="../${escapeHtml(String(l.thumb).replace(/^\.\//, ''))}" alt="" loading="lazy" style="width:40px;height:40px;border-radius:6px;object-fit:cover;flex:none;background:var(--soft)">` : ''}
         <div style="min-width:0;flex:1">${badge(l)}<b>${escapeHtml(l.name)}</b>${l.bc ? '' : ' <span class="help">스마트스토어</span>'}
-          <div class="help" style="margin-top:2px">🖱 <b>${l.n}</b> (이 기간) · 오늘 ${l.today} · 어제 ${l.yest} · 7일 ${l.d7} · 30일 ${l.d30}${l.last ? ` · 최근 클릭 ${+l.last.slice(4, 6)}/${+l.last.slice(6)}` : ' · 아직 클릭 없음'}</div></div></a>`).join('') : '<div class="list-empty">홈페이지에 네이버 링크가 없어요</div>'}</div>`;
+          <div class="help" style="margin-top:2px">🖱 <b>${l.n}</b> (이 기간) · 어제 ${l.yest} · 오늘 ${l.today} · 7일 ${l.d7} · 30일 ${l.d30}${l.last ? ` · 최근 클릭 ${+l.last.slice(4, 6)}/${+l.last.slice(6)}` : ' · 아직 클릭 없음'}</div></div></a>`).join('') : '<div class="list-empty">홈페이지에 네이버 링크가 없어요</div>'}</div>`;
   c.querySelectorAll('[data-nvp]').forEach(b => b.onclick = () => { _nvPeriod = b.dataset.nvp; renderNaverReport(); });
   c.querySelectorAll('[data-nvf]').forEach(b => b.onclick = () => { _nvFilter = b.dataset.nvf; renderNaverReport(); });
   c.querySelectorAll('[data-nvu]').forEach(b => b.onclick = () => { _nvUnit = b.dataset.nvu; renderNaverReport(); });
@@ -3217,7 +3221,7 @@ async function renderCoupangReport() {
   const ORD = { commission: (a, b) => b.commission - a.commission || b.click - a.click, order: (a, b) => b.order - a.order || b.commission - a.commission,
     click: (a, b) => b.click - a.click || b.commission - a.commission, recent: (a, b) => (b.lastBuy || '').localeCompare(a.lastBuy || '') || b.commission - a.commission };
   const shown = [...list].sort(ORD[_cpOrder] || ORD.commission);
-  const P = [['7d', '최근 7일'], ['30d', '최근 30일'], ['thisMonth', '이번 달'], ['lastMonth', '지난달'], ['year', '올해'], ['custom', '직접']];
+  const P = [['yest', '어제'], ['today', '오늘'], ['7d', '최근 7일'], ['30d', '최근 30일'], ['thisMonth', '이번 달'], ['lastMonth', '지난달'], ['year', '올해'], ['custom', '직접']];
   c.innerHTML = `
     <div class="page-header"><button class="page-back" id="back-btn">← 대시보드</button>
       <div class="page-count">데이터 ${escapeHtml(dash(daily.from || ''))} ~ ${escapeHtml(last)} · ${escapeHtml(String(daily.updated_at || '').slice(5, 16).replace('T', ' '))} 갱신</div></div>
@@ -3227,7 +3231,7 @@ async function renderCoupangReport() {
         <input class="input" type="date" id="cp-from" value="${escapeHtml(_cpFrom || from)}" min="${escapeHtml(dash(daily.from || ''))}" max="${escapeHtml(last)}" style="width:auto">
         ~ <input class="input" type="date" id="cp-to" value="${escapeHtml(_cpTo || to)}" min="${escapeHtml(dash(daily.from || ''))}" max="${escapeHtml(last)}" style="width:auto">
         <button type="button" class="btn btn-sm" id="cp-apply">조회</button></div>` : ''}
-      <div style="font-size:13px;color:var(--muted);margin-top:10px">${escapeHtml(from)} ~ ${escapeHtml(to)} · ${escapeHtml(G[_cpFilter][0])}</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:10px">${escapeHtml(from)}${from !== to ? ' ~ ' + escapeHtml(to) : ''} · ${escapeHtml(G[_cpFilter][0])}${to > last ? ` · <b style="color:var(--warning)">쿠팡은 전날 실적이 오후 4시 전후에 들어와요 — ${escapeHtml(last)}까지 반영</b>` : ''}</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;text-align:center">
         <div><div class="help">클릭</div><div style="font-size:20px;font-weight:800">${t.click.toLocaleString()}</div></div>
         <div><div class="help">주문</div><div style="font-size:20px;font-weight:800">${t.order}건</div></div>
