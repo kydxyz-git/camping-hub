@@ -1049,7 +1049,8 @@
     }
   }
   .list { display: flex; flex-direction: column; gap: 6px; }
-  .cpc { display: flex; align-items: flex-end; gap: 3px; height: 170px; border-bottom: 1px solid var(--line); }
+  .cpc { position: relative; display: flex; align-items: flex-end; gap: 3px; height: 170px; border-bottom: 1px solid var(--line); }
+  .cpc-line { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
   .cpc-c { flex: 1; min-width: 0; height: 100%; display: flex; align-items: flex-end; cursor: default; }
   .cpc-c .cp-bar { width: 100%; background: var(--success); opacity: .75; border-radius: 3px 3px 0 0; transition: opacity .1s; }
   .cpc-x { display: flex; gap: 3px; margin-top: 4px; }
@@ -2916,6 +2917,11 @@ function cpChart(rows, from, to, metric) {
   const monthly = days.length > 62;
   const keys = monthly ? [...new Set(days.map(d => d.slice(0, 6)))] : days;
   const series = keys.map(k => monthly ? days.filter(d => d.startsWith(k)).reduce((a, d) => a + (val[d] || 0), 0) : (val[k] || 0));
+  // 클릭 꺾은선 — 막대와 따로 자기 최댓값 기준(상대 그래프) (사용자 261126 '클릭률도 꺾은선으로, 상대 그래프로')
+  const cval = {}; for (const r of rows) for (const [d, n] of Object.entries(r.daily || {})) cval[d] = (cval[d] || 0) + n;
+  const clicks = keys.map(k => monthly ? days.filter(d => d.startsWith(k)).reduce((a, d) => a + (cval[d] || 0), 0) : (cval[k] || 0));
+  const cmax = Math.max(1, ...clicks), showLine = metric !== 'click' && clicks.some(v => v);
+  const line = showLine ? `<svg class="cpc-line" viewBox="0 0 ${keys.length} 100" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="var(--info, #4a90d9)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" points="${clicks.map((v, i) => `${i + 0.5},${(100 - v / cmax * 92).toFixed(1)}`).join(' ')}"/></svg>` : '';
   const max = Math.max(1, ...series.map(v => Math.abs(v)));
   const fmt = v => metric === 'commission' ? `${Math.round(v).toLocaleString()}원` : `${v.toLocaleString()}${metric === 'order' ? '건' : ''}`;
   const lab = k => monthly ? `${+k.slice(4, 6)}월` : `${+k.slice(4, 6)}/${+k.slice(6)}`;
@@ -2923,9 +2929,9 @@ function cpChart(rows, from, to, metric) {
   // 막대는 HTML로 폭을 꽉 채움 (사용자 261126 '쿠팡 실적 그래프 더 보여줘' — SVG가 비율 유지하며 작게 나왔음)
   // 막대에 마우스를 올리거나(모바일은 탭) 하면 바로 말풍선 (261028)
   return `<div class="cpc-wrap" style="position:relative;padding-top:26px" onpointermove="cpTip(event,this)" onpointerdown="cpTip(event,this)" onpointerleave="cpTip(null,this)">
-    <div class="cpc" role="img" aria-label="기간 ${metric} 그래프">${series.map((v, i) => `<div class="cpc-c" data-tip="${lab(keys[i])} · ${fmt(v)}"><div class="cp-bar" style="height:${Math.max(0, v) / max * 100}%;${v ? 'min-height:2px' : ''}"></div></div>`).join('')}</div>
+    <div class="cpc" role="img" aria-label="기간 ${metric} 그래프">${series.map((v, i) => `<div class="cpc-c" data-tip="${lab(keys[i])} · ${fmt(v)}${showLine ? ` · 클릭 ${clicks[i]}` : ''}"><div class="cp-bar" style="height:${Math.max(0, v) / max * 100}%;${v ? 'min-height:2px' : ''}"></div></div>`).join('')}${line}</div>
     <div class="cpc-x">${keys.map((k, i) => `<span>${i % every === 0 || i === keys.length - 1 ? lab(k) : ''}</span>`).join('')}</div>
-    <div class="cp-tip" style="display:none;position:absolute;pointer-events:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-100%)"></div></div><div class="help">최고 ${fmt(Math.max(...series))} · 합계 ${fmt(series.reduce((a, b) => a + b, 0))}</div>`;
+    <div class="cp-tip" style="display:none;position:absolute;pointer-events:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-100%)"></div></div><div class="help">최고 ${fmt(Math.max(...series))} · 합계 ${fmt(series.reduce((a, b) => a + b, 0))}${showLine ? ` · <span style="color:var(--info, #4a90d9);font-weight:700">─ 클릭</span> (선은 클릭끼리의 높낮이, 최고 ${cmax}번)` : ''}</div>`;
 }
 // 폰 대시보드 가로 페이지: 위 버튼 ↔ 가로 스크롤 맞추기 (마지막 페이지 기억)
 let _dashPage = 0;
