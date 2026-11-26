@@ -475,12 +475,14 @@ function renderCands() {
   // 눌러서 열어 본 사람은 숨김 — 7일 지나고, 그 뒤에도 또 댓글을 달았으면 다시 (사용자 261126 '확인하면 사라지게·일주일 뒤에도 추천할 사람이면')
   const wk = new Date(Date.now() - 7 * 864e5 + 9 * 3600e3).toISOString().slice(0, 19);
   const snoozed = (u, o) => { const v = S.visits[u]; return !!v && (v.slice(0, 19) > wk || o.last <= v); };
-  const cs = Object.entries(S.st.others || {}).filter(([u, o]) => !mut.has(u) && o.last >= cut && o.posts.length >= 2 && !snoozed(u, o))
-    .map(([u, o]) => ({ user: u, posts: o.posts.length, n: o.c.length, last: o.last })).sort((a, b) => (b.posts - a.posts) || (b.n - a.n));
+  // 소통 댓글만 셈 — DM 키워드 댓글은 뺌 (사용자 261126). o.talk {댓글 id: 소통이면 게시물 id, 키워드면 ''} — 봇이 채우기 전 사람은 안 나옴
+  const talk = o => { const v = Object.values(o.talk || {}); return { posts: new Set(v.filter(Boolean)).size, n: v.filter(Boolean).length, kw: v.filter(x => !x).length }; };
+  const cs = Object.entries(S.st.others || {}).filter(([u, o]) => !mut.has(u) && o.last >= cut && talk(o).posts >= 2 && !snoozed(u, o))
+    .map(([u, o]) => ({ user: u, ...talk(o), last: o.last })).sort((a, b) => (b.posts - a.posts) || (b.n - a.n));
   if (!cs.length) return '';   // 없으면 숨김 (맞팔 탭 맨 위라)
-  return `<div class="gh" style="margin-top:4px">🌱 맞팔 후보 <span class="muted">${cs.length}명 · 맞팔은 아닌데 최근 30일 내 게시물 2개 이상에 댓글 단 사람 · 눌러 보면 7일 숨김</span></div>` +
+  return `<div class="gh" style="margin-top:4px">🌱 맞팔 후보 <span class="muted">${cs.length}명 · 맞팔은 아닌데 최근 30일 내 게시물 2개 이상에 소통 댓글(DM 키워드 말고) 단 사람 · 눌러 보면 7일 숨김</span></div>` +
     (cs.length ? `<div class="grid" style="margin-bottom:16px">${cs.map(u => `<a class="pcard ${opened(u.user, u.last) ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}">
-      <div class="pu">@${esc(u.user)}</div><div class="pn"><span>게시물 ${u.posts}개 · 댓글 ${u.n}</span></div><div class="pn"><span>${ago(u.last)}</span><span class="nb" data-note="${esc(u.user)}">✎</span></div>${noteMini(u.user)}</a>`).join('')}</div>` : '<div class="card muted">아직 없어요 — 며칠 쌓이면 나와요</div>');
+      <div class="pu">@${esc(u.user)}</div><div class="pn"><span>게시물 ${u.posts}개 · 소통 ${u.n}${u.kw ? ` · 키워드 ${u.kw}` : ''}</span></div><div class="pn"><span>${ago(u.last)}</span><span class="nb" data-note="${esc(u.user)}">✎</span></div>${noteMini(u.user)}</a>`).join('')}</div>` : '<div class="card muted">아직 없어요 — 며칠 쌓이면 나와요</div>');
 }
 
 // ── 2번 탭: 최근 나에게 댓글 단 맞팔 (날짜별 묶음, 작은 카드) ──
