@@ -42,7 +42,11 @@
   .kn-side a{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;color:inherit;text-decoration:none}
   .kn-side a:hover{background:var(--kn-soft)} .kn-side a.cur{background:var(--kn-hi);font-weight:700}
   .kn-side .kn-home{font-weight:700;margin-bottom:6px}
-  .kn-side .kn-g{font-size:11px;color:var(--kn-muted);font-weight:700;margin:12px 10px 3px;letter-spacing:.02em}
+  .kn-side .kn-g{font-size:11px;color:var(--kn-muted);font-weight:700;margin:14px 6px 4px;padding-top:12px;border-top:1px solid var(--kn-line);letter-spacing:.04em}
+  .kn-side .kn-grp{margin-left:12px;padding-left:6px;border-left:2px solid var(--kn-line)}
+  .kn-side .kn-grp a{padding:6px 8px;font-size:14px}
+  .kn-side .kn-grp .ic{width:18px;font-size:14px}
+  .kn-side .kn-home{font-size:15px}
   .kn-side .ic{width:20px;text-align:center;flex:none}
   .kn-shade{position:fixed;inset:0;z-index:9099;background:rgba(0,0,0,.35);display:none}
   @media (max-width:759px){.kn-side{transform:translateX(-105%);transition:transform .2s;width:260px;visibility:hidden} .kn-side.on{transform:none;visibility:visible;box-shadow:4px 0 20px rgba(0,0,0,.25)} .kn-shade.on{display:block}}
@@ -71,8 +75,8 @@
   function renderSide() {
     const w = where();
     side.innerHTML = `<a class="kn-home ${w ? '' : 'cur'}" href="./"><span class="ic">🏠</span>대시보드</a>` +
-      MENU.map(([gi, g, items], i) => `<div class="kn-g">${gi} ${esc(g)}</div>` + items.map(it =>
-        `<a href="${esc(it[0])}" class="${w && w[1] === it ? 'cur' : ''}"><span class="ic">${it[1]}</span>${esc(it[2])}</a>`).join('')).join('');
+      MENU.map(([gi, g, items], i) => `<div class="kn-g">${esc(g)}</div><div class="kn-grp">` + items.map(it =>
+        `<a href="${esc(it[0])}" class="${w && w[1] === it ? 'cur' : ''}"><span class="ic">${it[1]}</span>${esc(it[2])}</a>`).join('') + '</div>').join('');
     side.querySelectorAll('a').forEach(a => a.addEventListener('click', () => drawer(false)));
   }
   function renderBar() {
