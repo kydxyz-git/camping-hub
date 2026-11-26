@@ -1910,7 +1910,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <script src="lib/passkey.js?v=261103c"></script>
 <link rel="stylesheet" href="lib/theme.css?v=261126l">
-<script src="lib/nav.js?v=261126p"></script>
+<script src="lib/nav.js?v=261126q"></script>
 </head>
 <body>
 
@@ -2816,6 +2816,8 @@ async function router() {
     else renderItemList();
   } else if (parts[0] === 'coupang') {
     renderCoupangReport();
+  } else if (parts[0] === 'naver') {
+    renderNaverReport();
   } else if (parts[0] === 'stats') {
     renderStatsPage();
   } else {
@@ -3087,6 +3089,90 @@ function renderStatsPage() {
   document.getElementById('back-btn').onclick = () => location.hash = '';
   document.getElementById('stats-refresh').onclick = e => { e.preventDefault(); loadAndRenderStats(true); };
   loadAndRenderStats();
+}
+// ── 🟢 네이버 실적 (사용자 261126 '쿠팡 실적처럼, API가 없어 금액은 모르니 홈페이지의 네이버 브랜드 커넥트 링크가 얼마나 눌렸는지 · 일·주 단위 · 어제 오늘')
+// 데이터: 통계 Worker의 날짜별 클릭(daily[날짜].clicks '경로::라벨') 중 홈페이지 장비·먹거리 카드의 네이버 링크(naver.me·브랜드 커넥트·스마트스토어). 수익·주문은 없음(네이버 API 없음)
+let _nvPeriod = '7d', _nvFilter = 'all', _nvUnit = 'day', _nvOrder = 'click';
+const NV_RE = /naver\.me|brandconnect|smartstore\.naver|brand\.naver|shopping\.naver/i;
+async function renderNaverReport() {
+  hideContentTabs();
+  document.getElementById('topbar-title').innerHTML = '🟢 네이버 실적';
+  const c = document.getElementById('app-content');
+  if (!_statsCache || Date.now() - _statsCacheAt > 60e3) {
+    c.innerHTML = '<div class="loading">네이버 링크 클릭 불러오는 중...</div>';
+    try { const r = await fetch(STATS_API + '?t=' + Date.now()); if (!r.ok) throw new Error('HTTP ' + r.status); _statsCache = await r.json(); _statsCacheAt = Date.now(); }
+    catch (e) { c.innerHTML = `<div class="card">통계를 못 불러왔어요.<div class="help">${escapeHtml(e.message)}</div></div>`; return; }
+  }
+  const daily = _statsCache.daily || {};
+  // 네이버 링크가 걸린 장비·먹거리
+  const links = [];
+  for (const [kind, arr] of [['items', cache.items || []], ['foods', cache.foods || []]]) arr.forEach((x, i) => { if (NV_RE.test(x.url || '')) links.push({ kind, i, id: x.id, name: x.name, thumb: x.thumb, url: x.url, bc: /naver\.me|brandconnect/i.test(x.url) }); });
+  const byPath = Object.fromEntries(links.map(l => [`/${l.kind}/${l.id}`, l]));
+  // 날짜별 링크 클릭 (YYYYMMDD → {경로: n})
+  const perDay = {};
+  for (const [d, v] of Object.entries(daily)) for (const [k, n] of Object.entries(v.clicks || {})) { const path = k.split('::')[0]; if (byPath[path]) { const dd = d.replace(/-/g, ''); (perDay[dd] = perDay[dd] || {})[path] = (perDay[dd][path] || 0) + n; } }
+  const today = kstToday(), dd = x => x.replace(/-/g, '');
+  const addD = (ds, n) => new Date(Date.parse(ds + 'T00:00:00Z') + n * 864e5).toISOString().slice(0, 10);
+  const yest = addD(today, -1), mStart = today.slice(0, 8) + '01';
+  const lmEnd = addD(mStart, -1), lmStart = lmEnd.slice(0, 8) + '01';
+  const P = { today: ['오늘', today, today], yest: ['어제', yest, yest], '7d': ['최근 7일', addD(today, -6), today], '30d': ['최근 30일', addD(today, -29), today], thisMonth: ['이번 달', mStart, today], lastMonth: ['지난달', lmStart, lmEnd], year: ['올해', today.slice(0, 4) + '-01-01', today] };
+  const [, from, to] = P[_nvPeriod] || P['7d'];
+  const span = (f, t, path) => { let n = 0; for (const [d, m] of Object.entries(perDay)) if (d >= dd(f) && d <= dd(t)) n += path ? (m[path] || 0) : Object.values(m).reduce((a, b) => a + b, 0); return n; };
+  const pick = l => _nvFilter === 'all' || l.kind === _nvFilter;
+  const shownLinks = links.filter(pick);
+  const paths = new Set(shownLinks.map(l => `/${l.kind}/${l.id}`));
+  const sumRange = (f, t) => { let n = 0; for (const [d, m] of Object.entries(perDay)) if (d >= dd(f) && d <= dd(t)) for (const [p2, v] of Object.entries(m)) if (paths.has(p2)) n += v; return n; };
+  const total = sumRange(from, to), tToday = sumRange(today, today), tYest = sumRange(yest, yest), t7 = sumRange(addD(today, -6), today), t7p = sumRange(addD(today, -13), addD(today, -7));
+  const pct = (a, b) => b ? `${a >= b ? '↑' : '↓'} ${Math.abs(Math.round((a - b) / b * 100))}%` : '';
+  // 그래프: 일별 또는 주별(월요일 시작)
+  let keys = [], vals = [], labs = [];
+  if (_nvUnit === 'week') {
+    const f = new Date(Date.parse((_nvPeriod === 'today' || _nvPeriod === 'yest' || _nvPeriod === '7d' ? addD(today, -83) : from) + 'T00:00:00Z'));
+    f.setUTCDate(f.getUTCDate() - ((f.getUTCDay() + 6) % 7));
+    for (let w = f.toISOString().slice(0, 10); w <= to; w = addD(w, 7)) { keys.push(w); vals.push(sumRange(w, addD(w, 6) > to ? to : addD(w, 6))); labs.push(`${+w.slice(5, 7)}/${+w.slice(8)}주`); }
+  } else {
+    const f = (_nvPeriod === 'today' || _nvPeriod === 'yest') ? addD(today, -13) : from;
+    for (let d = f; d <= to; d = addD(d, 1)) { keys.push(d); vals.push(sumRange(d, d)); labs.push(`${+d.slice(5, 7)}/${+d.slice(8)}`); }
+  }
+  const max = Math.max(1, ...vals), every = Math.ceil(keys.length / (window.innerWidth < 760 ? 7 : 15));
+  const chart = `<div class="cpc-wrap" style="position:relative;padding-top:26px" onpointermove="cpTip(event,this)" onpointerdown="cpTip(event,this)" onpointerleave="cpTip(null,this)">
+    <div class="cpc" role="img" aria-label="네이버 링크 클릭 그래프">${vals.map((v, i) => `<div class="cpc-c" data-tip="${labs[i]} · ${v}번"><div class="cp-bar" style="height:${v / max * 100}%;${v ? 'min-height:2px' : ''}"></div></div>`).join('')}</div>
+    <div class="cpc-x">${labs.map((l, i) => `<span>${i % every === 0 || i === labs.length - 1 ? l : ''}</span>`).join('')}</div>
+    <div class="cp-tip" style="display:none;position:absolute;pointer-events:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-100%)"></div></div>
+    <div class="help">최고 ${Math.max(...vals)}번 · 합계 ${vals.reduce((a, b) => a + b, 0)}번</div>`;
+  // 링크별
+  const rows = shownLinks.map(l => { const p2 = `/${l.kind}/${l.id}`; let last = ''; for (const [d, m] of Object.entries(perDay)) if (m[p2] && d > last) last = d;
+    return { ...l, n: span(from, to, p2), today: span(today, today, p2), yest: span(yest, yest, p2), d7: span(addD(today, -6), today, p2), d30: span(addD(today, -29), today, p2), last }; });
+  const ORD = { click: (a, b) => b.n - a.n || b.d30 - a.d30, recent: (a, b) => b.last.localeCompare(a.last) || b.n - a.n };
+  rows.sort(ORD[_nvOrder] || ORD.click);
+  const badge = l => `<span style="font-size:11px;color:#fff;background:${l.kind === 'foods' ? '#c2570c' : '#0b5e2e'};border-radius:4px;padding:1px 6px;margin-right:6px">홈페이지·${l.kind === 'foods' ? '음식' : '장비'}</span>`;
+  const F = [['all', '전체', links], ['items', '장비', links.filter(l => l.kind === 'items')], ['foods', '음식', links.filter(l => l.kind === 'foods')]];
+  const sumLinks = L => L.reduce((a, l) => a + span(from, to, `/${l.kind}/${l.id}`), 0);
+  c.innerHTML = `
+    <div class="page-header"><div class="page-count">홈페이지 네이버 링크 ${links.length}개 · 통계 ${escapeHtml(String(_statsCache.updated_at || '').slice(5, 16).replace('T', ' '))} 기준</div></div>
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${Object.entries(P).map(([k, [l]]) => `<button type="button" class="btn btn-sm ${_nvPeriod === k ? '' : 'btn-ghost'}" data-nvp="${k}">${l}</button>`).join('')}</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:10px">${escapeHtml(from)}${from !== to ? ' ~ ' + escapeHtml(to) : ''} · ${escapeHtml(F.find(f => f[0] === _nvFilter)[1])}</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;text-align:center">
+        <div><div class="help">이 기간 클릭</div><div style="font-size:20px;font-weight:800">${total.toLocaleString()}</div></div>
+        <div><div class="help">오늘</div><div style="font-size:20px;font-weight:800">${tToday}</div></div>
+        <div><div class="help">어제</div><div style="font-size:20px;font-weight:800">${tYest}</div></div>
+        <div><div class="help">최근 7일 <span>${pct(t7, t7p)}</span></div><div style="font-size:20px;font-weight:800">${t7}</div></div></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">${F.map(([k, l, L]) => `<button type="button" class="btn btn-sm ${_nvFilter === k ? '' : 'btn-ghost'}" data-nvf="${k}">${l} · ${sumLinks(L)}번</button>`).join('')}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><b style="font-size:14px">${_nvUnit === 'week' ? '주별' : '일별'} 클릭</b>
+        <span>${[['day', '일별'], ['week', '주별']].map(([k, l]) => `<button type="button" class="btn btn-sm ${_nvUnit === k ? '' : 'btn-ghost'}" data-nvu="${k}">${l}</button>`).join(' ')}</span></div>
+      ${chart}
+      <div class="help" style="margin-top:6px">홈페이지 장비·먹거리 카드에서 네이버 링크(브랜드 커넥트·스마트스토어)를 <b>누른 횟수</b>예요(같은 사람이 5분 안에 또 누르면 1번). 네이버는 판매·수익을 알려 주는 API가 없어서 주문·금액은 브랜드 커넥트 관리자 화면에서 확인해요.</div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 8px"><span class="help">정렬</span>${[['click', '클릭'], ['recent', '최근 클릭']].map(([k, l]) => `<button type="button" class="btn btn-sm ${_nvOrder === k ? '' : 'btn-ghost'}" data-nvo="${k}">${l}</button>`).join('')}</div>
+    <div class="list">${rows.length ? rows.map(l => `<a class="list-item" href="#${l.kind}/${l.i}" style="display:flex;gap:10px;align-items:center;padding:10px 12px;text-decoration:none;color:inherit">
+        ${l.thumb ? `<img src="../${escapeHtml(String(l.thumb).replace(/^\.\//, ''))}" alt="" loading="lazy" style="width:40px;height:40px;border-radius:6px;object-fit:cover;flex:none;background:var(--soft)">` : ''}
+        <div style="min-width:0;flex:1">${badge(l)}<b>${escapeHtml(l.name)}</b>${l.bc ? '' : ' <span class="help">스마트스토어</span>'}
+          <div class="help" style="margin-top:2px">🖱 <b>${l.n}</b> (이 기간) · 오늘 ${l.today} · 어제 ${l.yest} · 7일 ${l.d7} · 30일 ${l.d30}${l.last ? ` · 최근 클릭 ${+l.last.slice(4, 6)}/${+l.last.slice(6)}` : ' · 아직 클릭 없음'}</div></div></a>`).join('') : '<div class="list-empty">홈페이지에 네이버 링크가 없어요</div>'}</div>`;
+  c.querySelectorAll('[data-nvp]').forEach(b => b.onclick = () => { _nvPeriod = b.dataset.nvp; renderNaverReport(); });
+  c.querySelectorAll('[data-nvf]').forEach(b => b.onclick = () => { _nvFilter = b.dataset.nvf; renderNaverReport(); });
+  c.querySelectorAll('[data-nvu]').forEach(b => b.onclick = () => { _nvUnit = b.dataset.nvu; renderNaverReport(); });
+  c.querySelectorAll('[data-nvo]').forEach(b => b.onclick = () => { _nvOrder = b.dataset.nvo; renderNaverReport(); });
 }
 async function renderCoupangReport() {
   document.getElementById('topbar-title').innerHTML = '🛒 쿠팡 실적';
@@ -3374,9 +3460,10 @@ ${dashPhone ? `    <section class="dash-page dash-todo-page">
       ${grp('📱 SNS 관리', [['mutuals.html', '📸', '인스타', '맞팔 방문·대댓글'], ['threads.html', '🧵', '스레드', '쿠파스 글·아이템·게시주기'], ['youtube.html', '📺', '유튜브', 'AI 시말서 조회·구독·영상별']])}
       ${grp('🔥 딜보드 관리', [['deals.html', '🔥', '딜 보드', '카페 할인정보 수집·라벨']])}
       ${grp('📈 성과 분석', [
-        ['insights.html', '📈', '성과 분석', '인스타 분석 리포트'],
+        ['#stats', '📊', '홈페이지 통계', '방문·인기·유입·검색'],
         ['#coupang', '🛒', '쿠팡 실적', '클릭·주문·수익'],
-        ['#stats', '📊', '홈페이지 통계', '방문·인기·유입·검색']])}
+        ['#naver', '🟢', '네이버 실적', '네이버 링크 클릭'],
+        ['insights.html', '📈', '분석 카드', '채널별 주간 분석']])}
       ${grp('🗂 기타', [
         ['pipeline.html', '🗺️', '운영 지도', '채널·자동화 한눈에'],
         ['camp-live.html', '🏕️', '캠핑사이트', '작업 실시간 보기'],

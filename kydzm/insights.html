@@ -192,7 +192,7 @@
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
 <link rel="stylesheet" href="lib/theme.css?v=261126l">
-<script src="lib/nav.js?v=261126p"></script>
+<script src="lib/nav.js?v=261126q"></script>
 </head>
 <body>
 
@@ -287,7 +287,7 @@ function renderList() {
   // 리포트가 없는 채널도 같은 머리말·칩·폭으로 (사용자 261126 '인스타·전체랑 쓰레드·딜 보드랑 화면이 좀 달라')
   const head = `
     <div class="page-head">
-      <div class="page-title">📈 성과 분석 리포트</div>
+      <div class="page-title">📈 분석 카드</div>
       <div class="page-sub">${FILTER ? `${escapeHtml((CHANNELS.find(c => c.key === FILTER) || {}).label || '')} ` : ''}총 ${all.length}건 · 최신순</div>
     </div>`;
   if (!reports.length) {
