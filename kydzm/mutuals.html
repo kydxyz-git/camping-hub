@@ -217,12 +217,13 @@ function counts(days) {
   return m;
 }
 function renderStats() {
-  const m = counts(30), top = Object.values(m).sort((a, b) => (b.posts.size - a.posts.size) || (b.n - a.n)).slice(0, 10);
+  const m = counts(30), ranked = Object.values(m).sort((a, b) => (b.posts.size - a.posts.size) || (b.n - a.n)), top = S.statsAll ? ranked : ranked.slice(0, 10);
   if (!top.length) return '';
   const mx = top[0].posts.size, posts30 = Object.values(S.st.media || {}).filter(x => x.at >= new Date(Date.now() - 30 * 864e5).toISOString()).length;
-  return `<div class="card"><div class="row" style="justify-content:space-between"><b>🏆 자주 오는 맞팔 · 최근 30일</b><span class="muted">내 게시물 ${posts30}개 중 몇 개에 왔는지</span></div>
+  return `<div class="card"><div class="row" style="justify-content:space-between"><b>🏆 자주 오는 맞팔 · 최근 30일${S.statsAll ? '' : ' TOP 10'}</b><span class="muted">내 게시물 ${posts30}개 중 몇 개에 왔는지</span></div>
     ${top.map((u, i) => `<a class="bar" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener"><span class="bn">${i + 1}</span><span class="bu">@${esc(u.user)}</span>
       <span class="bb"><i style="width:${Math.round(u.posts.size / mx * 100)}%"></i></span><span class="bc n">${u.posts.size}개 · 댓글 ${u.n}</span></a>`).join('')}
+    ${ranked.length > 10 ? `<button class="btn" data-more style="width:100%;margin-top:6px">${S.statsAll ? '접기' : `더보기 (${ranked.length}명 전부)`}</button>` : ''}
     <div class="muted" style="margin-top:6px">맞팔 ${S.mut.length}명 중 30일 안에 댓글 단 사람 ${Object.keys(m).length}명</div></div>`;
 }
 function renderQuiet() {
@@ -265,6 +266,7 @@ function render() {
     render();
     try { await writeJson('state/ig_visits.json', d => { d.visits ||= {}; if (val) d.visits[u] = val; else delete d.visits[u]; }, 'ig(admin): 맞팔 열어 봄'); } catch (e) { alert(e.message); }
   };
+  $('#main').querySelectorAll('[data-more]').forEach(b => b.onclick = () => { S.statsAll = !S.statsAll; render(); });
   $('#main').querySelectorAll('[data-note]').forEach(b => b.onclick = async e => {
     e.preventDefault(); e.stopPropagation();
     const u = b.dataset.note, t = prompt(`@${u} 메모 (비우면 지움)`, S.notes[u] || '');
