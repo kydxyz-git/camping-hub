@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>맞팔 · kydz.kr</title>
+<style>
+  :root { --bg:#fff; --card:#fff; --text:#1a1a1a; --muted:#6e6e6e; --line:#e5e5e5; --soft:#f5f5f3; --danger:#e63946; --ok:#03c75a; --warn:#f59e0b; --brand:#FFE873; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#1d1f1d; --card:#262926; --text:#ececea; --muted:#9a9e98; --line:#343834; --soft:#2c302c; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.5 -apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif; }
+  .wrap { max-width:760px; margin:0 auto; padding:12px 16px 60px; }
+  .top { display:flex; align-items:center; gap:8px; justify-content:space-between; margin:6px 0 12px; }
+  h1 { font-size:19px; margin:0; } a { color:inherit; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:10px; }
+  .muted { color:var(--muted); font-size:13px; }
+  .btn { border:1px solid var(--line); background:var(--soft); color:var(--text); border-radius:8px; padding:6px 10px; font-size:13px; cursor:pointer; }
+  .btn.pri { background:var(--brand); border-color:var(--brand); color:#1a1a1a; font-weight:600; }
+  .btn.red { color:var(--danger); }
+  .tabs { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+  .tabs .btn.on { background:var(--text); color:var(--bg); }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .u { font-weight:600; } .n { font-variant-numeric:tabular-nums; }
+  .pill { font-size:12px; padding:1px 7px; border-radius:10px; background:var(--soft); color:var(--muted); }
+  .pill.red { background:#fdecee; color:var(--danger); } .pill.ok { color:var(--ok); }
+  textarea { width:100%; border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit; background:var(--bg); color:var(--text); }
+  .cm { font-size:14px; margin:4px 0; padding:6px 8px; background:var(--soft); border-radius:8px; }
+  .banner { padding:10px 12px; border-radius:10px; margin-bottom:10px; background:var(--soft); }
+  .banner.err { background:#fdecee; color:var(--danger); }
+  .login { min-height:90vh; display:flex; align-items:center; justify-content:center; }
+  input.pw { border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit; background:var(--bg); color:var(--text); }
+</style>
+</head>
+<body>
+<div class="login" id="login" style="display:none">
+  <div class="card" style="width:300px">
+    <div style="font-weight:700;margin-bottom:8px">맞팔 · 관리자 전용</div>
+    <div class="row" style="flex-wrap:nowrap"><input type="password" class="pw" id="pw" placeholder="비밀번호"><button class="btn pri" id="pw-go">입장</button></div>
+    <div class="muted" id="pw-err" style="display:none;color:var(--danger)">비밀번호가 올바르지 않습니다</div>
+  </div>
+</div>
+<div class="wrap" id="app" style="display:none">
+  <div class="top"><h1>🤝 맞팔</h1><a class="btn" href="./">대시보드</a></div>
+  <div id="mode"></div>
+  <div class="tabs" id="tabs"></div>
+  <div id="main"><div class="card muted">불러오는 중...</div></div>
+</div>
+<script src="lib/passkey.js?v=261103c"></script>
+<script>
+// 맞팔 방문·대댓글 (사용자 261126) — 데이터는 비공개 cupas state/ig_comments.json(ig_comments.py가 씀).
+// 이 화면은 state/ig_visits.json(다녀옴)과 state/ig_comments_ctl.json(모드·수정·건너뛰기)만 씀 — 봇 파일을 직접 고치지 않음.
+// 공개 저장소라 이 파일에 계정 이름·댓글 예시를 넣지 않는다.
+const PASSWORD_HASH = 'fc0d164e3259b5a28b9b7ac489e95e1638ba1bc37a27c2bb07ac7bdb624f1347';
+const AUTH_KEY = 'kydz_admin_authed', TOKEN_KEY = 'kydz_cupas_gh_token';
+const RP = 'https://api.github.com/repos/kydxyz-git/cupas';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const S = { st: null, visits: {}, vsha: '', ctl: {}, csha: '', tab: 'visit' };
+try { S.tab = localStorage.getItem('kydz_mutuals_tab') || 'visit'; } catch (e) {}
+
+function tok() { try { return localStorage.getItem(TOKEN_KEY) || localStorage.getItem('kydz_admin_gh_token') || ''; } catch (e) { return ''; } }
+async function sha256(t) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+function kstNow() { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 19) + '+09:00'; }
+function ago(iso) { if (!iso) return ''; const d = (Date.now() - new Date(iso)) / 864e5; return d < 1 ? '오늘' : d < 2 ? '어제' : `${Math.floor(d)}일 전`; }
+function utf8ToB64(t) { const a = new TextEncoder().encode(t); let s = ''; for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode(...a.subarray(i, i + 0x8000)); return btoa(s); }
+function b64ToUtf8(b) { const bin = atob(b.replace(/\n/g, '')); const a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new TextDecoder().decode(a); }
+async function gh(url, opts = {}) {
+  const r = await fetch(url, { method: opts.method || 'GET', cache: 'no-store', headers: { Authorization: 'Bearer ' + tok(), Accept: opts.raw ? 'application/vnd.github.raw' : 'application/vnd.github+json', ...(opts.body ? { 'Content-Type': 'application/json' } : {}) }, body: opts.body ? JSON.stringify(opts.body) : undefined });
+  if (r.status === 404 && opts.ok404) return null;
+  if (!r.ok) throw new Error(`깃허브 오류 ${r.status} — 토큰을 스레드 관리 화면에서 확인해 주세요`);
+  return opts.raw ? r.text() : r.json();
+}
+async function readJson(path) {   // 작은 파일: sha 같이
+  const d = await gh(`${RP}/contents/${path}?ref=main`, { ok404: true });
+  return d ? { data: JSON.parse(b64ToUtf8(d.content)), sha: d.sha } : { data: {}, sha: '' };
+}
+async function writeJson(path, mutate, msg) {   // 최신본 위에 고쳐 저장 (충돌 나면 한 번 더)
+  for (let i = 0; i < 3; i++) {
+    const f = await readJson(path); mutate(f.data);
+    try { await gh(`${RP}/contents/${path}`, { method: 'PUT', body: { message: msg, content: utf8ToB64(JSON.stringify(f.data, null, 2) + '\n'), branch: 'main', ...(f.sha ? { sha: f.sha } : {}) } }); return f.data; }
+    catch (e) { if (i === 2) throw e; }
+  }
+}
+
+async function load() {
+  const [st, v, c] = await Promise.all([gh(`${RP}/contents/state/ig_comments.json?ref=main`, { raw: true }), readJson('state/ig_visits.json'), readJson('state/ig_comments_ctl.json')]);
+  S.st = JSON.parse(st); S.visits = v.data.visits || {}; S.ctl = c.data;
+}
+
+function users() {
+  const m = {}, cut = new Date(Date.now() - 30 * 864e5).toISOString();
+  for (const [id, c] of Object.entries(S.st.comments || {})) {
+    const u = m[c.user] ||= { user: c.user, all: 0, d30: 0, last: '', lastMedia: '', pend: 0 };
+    u.all++; if (c.at >= cut) u.d30++;
+    if (c.at > u.last) { u.last = c.at; u.lastMedia = c.media; }
+    if (c.status === 'ready' || c.status === 'check') u.pend++;
+  }
+  return Object.values(m).map(u => ({ ...u, visited: S.visits[u.user] || '', todo: !(S.visits[u.user] >= u.last) }))
+    .sort((a, b) => (b.todo - a.todo) || (b.d30 - a.d30) || (b.all - a.all) || (b.last > a.last ? 1 : -1));
+}
+function postLink(mid) { return (S.st.media[mid] || {}).permalink || '#'; }
+
+function renderMode() {
+  const st = S.st, m = st.mode;
+  const label = { sample: '🧪 말투 확인 중 — 아직 안 담', auto: '✅ 자동으로 다는 중', paused: '⛔ 멈춤' }[m] || m;
+  $('#mode').innerHTML = `<div class="banner ${m === 'paused' ? 'err' : ''}"><div class="row" style="justify-content:space-between"><b>${label}</b>
+    <span class="row">${m !== 'auto' ? `<button class="btn pri" data-mode="auto">${m === 'paused' ? '다시 켜기' : '말투 OK — 자동 시작'}</button>` : '<button class="btn red" data-mode="paused">멈춤</button>'}</span></div>
+    ${m === 'paused' && st.paused_reason ? `<div class="muted">${esc(st.paused_reason)}</div>` : ''}
+    <div class="muted">마지막 확인 ${esc((st.pace || {}).fetched_at || '').slice(5, 16).replace('T', ' ')} · 마지막으로 단 답글 ${esc((st.pace || {}).last_post || '-').slice(5, 16).replace('T', ' ')}</div></div>`;
+  $('#mode').querySelectorAll('[data-mode]').forEach(b => b.onclick = async () => {
+    if (b.dataset.mode === 'auto' && !confirm('자동으로 대댓글을 달기 시작할까요? (10~40분 간격, 9~22시)')) return;
+    b.disabled = true;
+    await writeJson('state/ig_comments_ctl.json', d => { d.mode = b.dataset.mode; d.mode_at = kstNow(); }, `ig(admin): 맞팔 대댓글 ${b.dataset.mode}`);
+    alert('저장했어요 — 10분 안에 반영됩니다');
+  });
+}
+
+function renderVisit() {
+  const list = users();
+  const todo = list.filter(u => u.todo).length;
+  return `<div class="muted" style="margin:0 2px 8px">안 다녀온 맞팔 ${todo}명 · 위에서부터 자주 오는 순서 · 좋아요는 인스타 공식 기능이 없어 직접 눌러야 해요</div>` +
+    list.slice(0, 200).map(u => `<div class="card"><div class="row" style="justify-content:space-between">
+      <span class="row"><a class="u" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener">@${esc(u.user)}</a>
+      <span class="pill n">30일 ${u.d30} · 전체 ${u.all}</span>${u.todo ? '<span class="pill red">안 다녀옴</span>' : `<span class="pill ok">다녀옴 ${ago(u.visited)}</span>`}</span>
+      <button class="btn ${u.todo ? 'pri' : ''}" data-visit="${esc(u.user)}">${u.todo ? '다녀옴' : '다시'}</button></div>
+      <div class="muted">마지막 댓글 ${ago(u.last)} · <a href="${esc(postLink(u.lastMedia))}" target="_blank" rel="noopener">내 게시물 보기</a>${u.pend ? ` · 대댓글 대기 ${u.pend}` : ''}</div></div>`).join('');
+}
+
+function renderReplies() {
+  const cs = Object.entries(S.st.comments || {}).filter(([, c]) => ['ready', 'check', 'posted'].includes(c.status))
+    .sort((a, b) => ({ check: 0, ready: 1, posted: 2 }[a[1].status] - { check: 0, ready: 1, posted: 2 }[b[1].status]) || (b[1].at > a[1].at ? 1 : -1)).slice(0, 150);
+  if (!cs.length) return '<div class="card muted">아직 초안이 없어요</div>';
+  const edits = S.ctl.edits || {}, skip = new Set(S.ctl.skip || []);
+  return cs.map(([id, c]) => {
+    const tag = c.status === 'posted' ? `<span class="pill ok">달음 ${ago(c.posted_at)}</span>` : c.status === 'check' ? `<span class="pill red">확인 필요 · ${esc(c.why || '')}</span>` : skip.has(id) ? '<span class="pill">건너뜀 예약</span>' : `<span class="pill">대기 · ${esc((c.due_at || '').slice(5, 16).replace('T', ' '))} 뒤</span>`;
+    return `<div class="card"><div class="row" style="justify-content:space-between"><span class="row"><a class="u" href="https://www.instagram.com/${esc(c.user)}/" target="_blank" rel="noopener">@${esc(c.user)}</a>${tag}</span>
+      <a class="muted" href="${esc(postLink(c.media))}" target="_blank" rel="noopener">게시물 ${ago(c.at)}</a></div>
+      <div class="cm">${esc(c.text)}</div>
+      ${c.status === 'posted' ? `<div class="muted">↳ ${esc(c.reply)}</div>` : `<textarea rows="2" data-edit="${esc(id)}" placeholder="${c.status === 'check' ? '직접 쓸 답글 (비우면 안 담)' : ''}">${esc(edits[id] || c.reply || '')}</textarea>
+      <div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn" data-skip="${esc(id)}">건너뛰기</button><button class="btn pri" data-save="${esc(id)}">${c.status === 'check' ? '이 답글로 달기' : '수정 저장'}</button></div>`}</div>`;
+  }).join('');
+}
+
+function render() {
+  renderMode();
+  const n = Object.values(S.st.comments || {}).filter(c => c.status === 'check').length;
+  $('#tabs').innerHTML = [['visit', '🚶 맞팔 방문'], ['replies', `💬 대댓글${n ? ` (확인 ${n})` : ''}`]].map(([k, t]) => `<button class="btn ${S.tab === k ? 'on' : ''}" data-tab="${k}">${t}</button>`).join('');
+  $('#tabs').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { S.tab = b.dataset.tab; try { localStorage.setItem('kydz_mutuals_tab', S.tab); } catch (e) {} render(); });
+  $('#main').innerHTML = S.tab === 'visit' ? renderVisit() : renderReplies();
+  $('#main').querySelectorAll('[data-visit]').forEach(b => b.onclick = async () => {
+    const u = b.dataset.visit; S.visits[u] = kstNow(); render();
+    try { await writeJson('state/ig_visits.json', d => { (d.visits ||= {})[u] = S.visits[u]; }, 'ig(admin): 맞팔 다녀옴'); } catch (e) { alert(e.message); }
+  });
+  $('#main').querySelectorAll('[data-save]').forEach(b => b.onclick = async () => {
+    const id = b.dataset.save, t = $(`[data-edit="${id}"]`).value.trim(); if (!t) return;
+    b.disabled = true;
+    try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { (d.edits ||= {})[id] = t; d.skip = (d.skip || []).filter(x => x !== id); }, 'ig(admin): 대댓글 수정'); b.textContent = '저장됨'; } catch (e) { alert(e.message); b.disabled = false; }
+  });
+  $('#main').querySelectorAll('[data-skip]').forEach(b => b.onclick = async () => {
+    const id = b.dataset.skip; b.disabled = true;
+    try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { d.skip = [...new Set([...(d.skip || []), id])]; }, 'ig(admin): 대댓글 건너뜀'); render(); } catch (e) { alert(e.message); b.disabled = false; }
+  });
+}
+
+async function start() {
+  $('#app').style.display = 'block';
+  if (!tok()) { $('#main').innerHTML = '<div class="banner err">cupas 토큰이 없어요 — <a href="threads.html">스레드 관리</a>에서 넣어 주세요</div>'; return; }
+  try { await load(); render(); } catch (e) { $('#main').innerHTML = `<div class="banner err">${esc(e.message)}</div>`; }
+}
+(function boot() {
+  try { if (sessionStorage.getItem(AUTH_KEY) === '1') return start(); } catch (e) {}
+  $('#login').style.display = 'flex';
+  const go = async () => { if (await sha256($('#pw').value) === PASSWORD_HASH) { try { sessionStorage.setItem(AUTH_KEY, '1'); } catch (e) {} $('#login').style.display = 'none'; start(); kydzPasskey.offer(); } else $('#pw-err').style.display = 'block'; };
+  $('#pw-go').onclick = go; $('#pw').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) go(); });
+  kydzPasskey.mountLogin(() => { $('#login').style.display = 'none'; start(); });
+})();
+</script>
+</body>
+</html>
