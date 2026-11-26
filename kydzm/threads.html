@@ -876,10 +876,7 @@ function renderList() {
   // 탭별로 보여 줄 부분만 (대기 글 HTML은 위에서 만든 것 그대로)
   const view = $('#view');
   if (S.tab === 'home') view.innerHTML = `${saveBarHtml()}${bestHtml(done)}
-    ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">최근 게시 <button class="btn small ghost" data-goto2="done">게시 완료 ${done.length}개 모두 보기</button></div>
-      <div class="posts done-list" style="margin-bottom:16px">${done.slice(0, 3).map(doneHtml).join('')}</div>` : ''}
-    ${first ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">다음 글 <button class="btn small ghost" data-goto2="list">대기 글 ${pending.length}개 보기</button></div>
-      <div class="plist" style="margin-bottom:16px">${pending.filter(p => sched[p.id]).slice(0, 3).map(p => `<div class="prow" data-goto2="list"><span class="pt" style="width:auto">${esc(fmtSlot(sched[p.id]))}</span>${p.kind ? `<span class="pk k-${esc(p.kind)}">${esc(p.kind)}</span>` : ''}<span class="pn">${esc(firstLine(p))}</span></div>`).join('')}</div>` : ''}
+    ${homeDayHtml(done, pending, sched, firstLine)}
     ${reportHtml()}`;
   view.querySelectorAll('[data-goto2]').forEach(b => b.onclick = () => { const toDone = b.dataset.goto2 === 'done'; if (toDone) S.showDone = true; S.tab = 'list'; try { localStorage.setItem(TAB_KEY, S.tab); } catch (e) {} if (window.kydzNav) kydzNav.pushView(S.tab); render(); const el = toDone && document.getElementById('done-sec'); if (el) el.scrollIntoView(); else window.scrollTo(0, 0); });
   document.querySelectorAll('[data-openp]').forEach(r => r.onclick = () => { const id = r.dataset.openp, p = S.posts.find(x => x.id === id); if (S.openPost.has(id)) S.openPost.delete(id); else if (p && !dirty(p)) S.openPost.add(id); else S.openPost.add(id); if (p && dirty(p) && !S.openPost.has(id)) toast('저장 안 한 글은 열어 둬요', false); renderList(); });
@@ -1027,6 +1024,32 @@ function doneHtml(p) {
     ${p.permalink ? thLink(p.permalink, 'go') : '<span class="tm">링크 없음</span>'}
     <button class="btn small ghost" data-repost="${esc(p.id)}" title="같은 글을 초안으로 복사해서 목록 맨 위에 넣어요">다시 올리기</button>
   </div>`;
+}
+// 요약 탭 최근 게시·다음 글을 날짜로 묶음 (사용자 261126 '어제 올린 거·오늘 올린 거 / 오늘 올릴 거·내일 올릴 거')
+function homeDayHtml(done, pending, sched, firstLine) {
+  const today = kstToday(), yest = addDays(today, -1), tmr = addDays(today, 1);
+  const dayOf = p => { const t = new Date(p.posted_at); return isNaN(t) ? '' : kstDateStr(t); };
+  const head = (label, n) => `<div class="pgroup"><b>${label}</b> ${n}개</div>`;
+  let out = '';
+  if (done.length) {
+    const td = done.filter(p => dayOf(p) === today), yd = done.filter(p => dayOf(p) === yest);
+    const body = (td.length ? head('오늘 올린 글', td.length) + `<div class="posts done-list">${td.map(doneHtml).join('')}</div>` : '')
+      + (yd.length ? head('어제 올린 글', yd.length) + `<div class="posts done-list">${yd.map(doneHtml).join('')}</div>` : '')
+      || head(`마지막으로 올린 글${dayOf(done[0]) ? ` (${fmtMD(dayOf(done[0]))})` : ""}`, Math.min(3, done.length)) + `<div class="posts done-list">${done.slice(0, 3).map(doneHtml).join('')}</div>`;
+    out += `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">최근 게시 <button class="btn small ghost" data-goto2="done">게시 완료 ${done.length}개 모두 보기</button></div>
+      <div style="margin-bottom:16px">${body}</div>`;
+  }
+  const up = pending.filter(p => sched[p.id]).sort((a, b) => sched[a.id] < sched[b.id] ? -1 : 1);
+  if (up.length) {
+    const row = p => `<div class="prow" data-goto2="list"><span class="pt">${esc(sched[p.id].slice(11, 13))}:00</span>${p.kind ? `<span class="pk k-${esc(p.kind)}">${esc(p.kind)}</span>` : ''}<span class="pn">${esc(firstLine(p))}</span></div>`;
+    const tu = up.filter(p => sched[p.id].slice(0, 10) === today), mu = up.filter(p => sched[p.id].slice(0, 10) === tmr);
+    const body = (tu.length ? head('오늘 올릴 글', tu.length) + `<div class="plist">${tu.map(row).join('')}</div>` : '')
+      + (mu.length ? head('내일 올릴 글', mu.length) + `<div class="plist">${mu.map(row).join('')}</div>` : '')
+      || head(`다음 예약 (${esc(fmtSlot(sched[up[0].id]))})`, Math.min(3, up.length)) + `<div class="plist">${up.slice(0, 3).map(row).join('')}</div>`;
+    out += `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">다음 글 <button class="btn small ghost" data-goto2="list">대기 글 ${pending.length}개 보기</button></div>
+      <div style="margin-bottom:16px">${body}</div>`;
+  }
+  return out;
 }
 function fitHeight(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight + 2) + 'px'; }
 function bindList() {
