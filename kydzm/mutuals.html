@@ -180,6 +180,12 @@
     .ub-c { font-size:10px; }
     .ub-c { display:none; } .ub .ub-c2 { display:inline; }
   }
+  .ub.pb { padding-right:8px; }
+  .ub.qy { border-color:rgba(250,204,21,.55); } .ub.qo { border-color:rgba(249,115,22,.6); } .ub.qr { border-color:rgba(230,57,70,.45); } .ub.pb.v { opacity:.45; }
+  .avw { position:relative; flex:none; display:inline-flex; }
+  .avw .nd { position:absolute; right:-1px; top:-1px; width:10px; height:10px; border-radius:50%; background:var(--success, var(--ok)); border:2px solid var(--card); }
+  .pb-i { font-size:12px; }
+  .ub.pb .nb { color:var(--muted); font-size:12px; padding:0 2px; } .ub.pb .ck { color:var(--success, var(--ok)); font-weight:700; }
   .ub-c2 { display:none; font-size:10px; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums; }
   .hbars { display:flex; gap:6px; align-items:flex-end; height:150px; margin-top:10px; }
   .hb { flex:1; min-width:0; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; }
@@ -500,11 +506,17 @@ function renderQuiet() {
   const age = l => l ? (Date.now() - new Date(l)) / 864e5 : 9999;
   const tone = l => { const d = age(l); return d < 60 ? 'y' : d < 90 ? 'o' : 'r'; };   // 1~2달 노랑 · 2~3달 주황 · 그 뒤·기록 없음 빨강
   const cnt = { y: 0, o: 0, r: 0 }; q.forEach(u => cnt[tone(u.last)]++);
-  return `<div class="row" style="justify-content:space-between;margin:0 2px 8px"><span class="muted">맞팔 ${S.mut.length}명 중 30일 동안 댓글 없는 ${q.length}명 · 맞팔 목록 ${esc(S.mutAt)} 기준</span>
-    <button class="btn" data-qsort>${S.quietOld ? '오래된 순 ↓' : '최근 순 ↓'}</button></div>
-    <div class="row" style="margin:0 2px 8px;gap:6px"><span class="lg y">1~2달 ${cnt.y}</span><span class="lg o">2~3달 ${cnt.o}</span><span class="lg r">3달 넘음·기록 없음 ${cnt.r}</span></div><div class="grid">` +
-    q.map(u => `<a class="pcard t${tone(u.last)} ${S.visits[u.user] ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}"><div class="pu">@${esc(u.user)}</div>
-      <div class="pn"><span>${u.last ? `마지막 ${ago(u.last)}` : '댓글 기록 없음'}</span><span><span class="nb" data-note="${esc(u.user)}">✎</span>${S.visits[u.user] ? '<span class="ck" data-undo="' + esc(u.user) + '">✓</span>' : ''}</span></div>${noteMini(u.user)}</a>`).join('') + '</div>';
+  // 뱃지로 (사용자 261126 '조용한 맞팔도 마찬가지'): 기간별로 칸을 나누고 사진+아이디+마지막 댓글
+  const badge = u => {
+    const v = !!S.visits[u.user], note = (S.notes || {})[u.user] || '', d = age(u.last);
+    return `<a class="ub pb q${tone(u.last)} ${v ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}" title="${u.last ? `마지막 댓글 ${esc(ago(u.last))}` : '댓글 기록 없음'}">
+      <span class="avw">${avatar(u.user)}</span><span class="ub-n">@${esc(u.user)}</span><span class="ub-c">${u.last ? `${Math.floor(d)}일` : '기록 없음'}</span>
+      ${note ? `<span class="pb-i" title="${esc(note)}">${note.includes('제외') ? '🙅' : '📝'}</span>` : ''}<span class="nb" data-note="${esc(u.user)}" title="메모">✎</span>${v ? `<span class="ck" data-undo="${esc(u.user)}" title="열어 봄 취소">✓</span>` : ''}</a>`;
+  };
+  const sec = (t, k) => { const l = q.filter(u => tone(u.last) === k); return l.length ? `<div class="gh"><span class="lg ${k}">${t}</span> <span class="muted">${l.length}명</span></div><div class="ubs">${l.map(badge).join('')}</div>` : ''; };
+  return `<div class="row" style="justify-content:space-between;margin:0 2px 8px"><span class="muted">맞팔 ${S.mut.length}명 중 30일 동안 댓글 없는 ${q.length}명 · 맞팔 목록 ${esc(S.mutAt)} 기준 · 숫자 = 마지막 댓글 뒤 지난 날</span>
+    <button class="btn" data-qsort>${S.quietOld ? '오래된 순 ↓' : '최근 순 ↓'}</button></div>` +
+    sec('1~2달', 'y') + sec('2~3달', 'o') + sec('3달 넘음·기록 없음', 'r');
 }
 function renderPeople() {
   const cut = new Date(Date.now() - 7 * 864e5).toISOString(), m = {};
@@ -517,12 +529,19 @@ function renderPeople() {
   Object.values(m).forEach(u => (groups[dayKey(u.last)] ||= []).push(u));
   const days = Object.keys(groups).sort().reverse();
   if (!days.length) return '<div class="card muted">최근 7일 맞팔 댓글이 없어요</div>';
-  return renderToday() + renderStats() + `<div class="gh" style="margin-top:4px">💬 최근 7일 나한테 댓글 단 맞팔</div><div class="muted" style="margin:0 2px 8px">누르면 프로필이 열리고 ✓(열어 봄)가 붙어요 — 실제로 댓글 달았는지는 인스타가 알려 주지 않아서 확인 못 해요</div>` +
+  // 뱃지로 (사용자 261126 '이 화면도 좀 바꾸면' → 해): 사진+아이디+💬횟수, 댓글 내용은 마우스 올리면, 새 글은 초록 점, 연 사람은 흐리게+✓
+  const all = Object.values(m), notOpen = all.filter(u => !(S.visits[u.user] >= u.last)).length;
+  const newCut = new Date(Date.now() - 864e5).toISOString();
+  const badge = u => {
+    const v = S.visits[u.user] >= u.last, lt = (S.st.latest || {})[u.user], nw = lt && lt.at >= newCut, note = (S.notes || {})[u.user] || '';
+    return `<a class="ub pb ${v ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}" title="${esc(u.text)}${nw ? '\n🆕 24시간 안에 새 글' : ''}">
+      <span class="avw">${avatar(u.user)}${nw ? '<i class="nd"></i>' : ''}</span><span class="ub-n">@${esc(u.user)}</span><span class="ub-c">💬${u.n}</span>
+      ${note ? `<span class="pb-i" title="${esc(note)}">${note.includes('제외') ? '🙅' : '📝'}</span>` : ''}<span class="nb" data-note="${esc(u.user)}" title="메모">✎</span>${v ? `<span class="ck" data-undo="${esc(u.user)}" title="열어 봄 취소">✓</span>` : ''}</a>`;
+  };
+  return renderToday() + renderStats() + `<div class="gh" style="margin-top:4px">💬 최근 7일 나한테 댓글 단 맞팔 <span class="muted">${all.length}명 · 아직 안 연 ${notOpen}명</span></div><div class="muted" style="margin:0 2px 8px">누르면 프로필이 열리고 ✓(열어 봄)가 붙어요 · 마우스를 올리면 댓글 내용 · 🟢 = 24시간 안 새 글</div>` +
     days.map(d => {
-      const us = groups[d].sort((a, b) => (+!!S.visits[a.user] - +!!S.visits[b.user]) || (b.n - a.n));
-      return `<div class="gh">${esc(dayLabel(d))} <span class="muted">${us.length}명</span></div><div class="grid">` +
-        us.map(u => { const v = S.visits[u.user] >= u.last; return `<a class="pcard ${v ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}">
-          <div class="pu">@${esc(u.user)}</div><div class="pt">${esc(u.text)}</div><div class="pn"><span>${u.n > 1 ? `댓글 ${u.n}` : ''}${(S.st.latest || {})[u.user] && S.st.latest[u.user].at >= new Date(Date.now() - 864e5).toISOString() ? ' · 🆕새 글' : ''}</span><span><span class="nb" data-note="${esc(u.user)}">✎</span>${v ? '<span class="ck" data-undo="' + esc(u.user) + '">✓</span>' : ''}</span></div>${noteMini(u.user)}</a>`; }).join('') + '</div>';
+      const us = groups[d].sort((a, b) => (+(S.visits[a.user] >= a.last) - +(S.visits[b.user] >= b.last)) || (b.n - a.n));
+      return `<div class="gh">${esc(dayLabel(d))} <span class="muted">${us.length}명</span></div><div class="ubs">${us.map(badge).join('')}</div>`;
     }).join('');
 }
 
