@@ -1056,7 +1056,9 @@ const DEAL_LABEL = { '거절': '거절(내가)', '미선정': '협상결렬', '�
 const dealLabel = st => DEAL_LABEL[st] || st;
 const DEAL_COLOR = { '제안 수신': '#e05591', '회신대기': '#2f80ed', '협상중': '#d4a017', '진행중': '#2d8f4c', '콘티 컨펌중': '#7048e8', '영상 컨펌중': '#9c36b5', '업로드 예정': '#1c7ed6', '입금대기': '#0b7285', '종결': '#868e96', '협상결렬': '#8e44ad', '미선정': '#8e44ad', '거절': '#d93025', '단순인사': '#bdbdbd' };
 const DEAL_KINDS = ['인바운드', '아웃바운드', '이벤트'];
-const deals = () => (S.data.deals || []).filter(d => (!S.dealType || d.type === S.dealType) && (!curPf() || dealProject(d) === curPf()));
+// 협찬을 거르는 프로젝트: 고른 프로젝트에 협찬이 하나라도 있을 때만(광고영상 등). 협찬이 없는 프로젝트(블로그 등)를 골라 둔 채 협찬 탭을 열면 0건으로 보이던 문제 (사용자 261126 '이거 또 왜 없어')
+const dealPf = () => { const pf = curPf(); return pf && (S.data.deals || []).some(d => dealProject(d) === pf) ? pf : ''; };
+const deals = () => (S.data.deals || []).filter(d => (!S.dealType || d.type === S.dealType) && (!dealPf() || dealProject(d) === dealPf()));
 // 마감(업로드 기한)이 7일 안이거나 지난 건은 맨 앞, 가까운 순 → 나머지는 내 차례 먼저·단계 순 (사용자 261105)
 function dealDueLeft(d) {
   if (!d.due || d.uploaded || DEAL_CLOSED.includes(d.status) || d.status === '입금대기') return null;
@@ -1071,7 +1073,7 @@ function dealSort(a, b) {
   return r(a) - r(b) || (a.due || '9999').localeCompare(b.due || '9999') || (b.updated_at || '').localeCompare(a.updated_at || '');
 }
 const openDeals = () => deals().filter(d => !DEAL_CLOSED.includes(d.status)).sort(dealSort);
-const closedDeals = () => { const inB = new Set((S.data.deals || []).map(d => d.id)); return deals().filter(d => DEAL_CLOSED.includes(d.status)).concat((S.dealArch || []).filter(d => !inB.has(d.id) && (!curPf() || dealProject(d) === curPf())).map(d => ({ ...d, _arch: true }))).sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || '')); };
+const closedDeals = () => { const inB = new Set((S.data.deals || []).map(d => d.id)); return deals().filter(d => DEAL_CLOSED.includes(d.status)).concat((S.dealArch || []).filter(d => !inB.has(d.id) && (!dealPf() || dealProject(d) === dealPf())).map(d => ({ ...d, _arch: true }))).sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || '')); };
 function dealCardHtml(d) {
   const today = kstToday();
   const left = d.due ? daysBetween(today, d.due) : null;
@@ -1522,7 +1524,7 @@ function dealsHtml() {
   if (S.dealCSt && !closedAll.some(d => dealStKey(d.status) === S.dealCSt)) S.dealCSt = '';
   const open = S.dealSt ? openAll.filter(d => dealStKey(d.status) === S.dealSt) : openAll;
   const closed = S.dealCSt ? closedAll.filter(d => dealStKey(d.status) === S.dealCSt) : closedAll;
-  const all = (S.data.deals || []).filter(d => !DEAL_CLOSED.includes(d.status) && (!curPf() || dealProject(d) === curPf()));
+  const all = (S.data.deals || []).filter(d => !DEAL_CLOSED.includes(d.status) && (!dealPf() || dealProject(d) === dealPf()));
   const tf = `<div class="pfbar dealtype">${[['', '전체'], ...DEAL_TYPES.map(t => [t, t])].map(([v, l]) => `<button class="pf${(S.dealType || '') === v ? ' on' : ''}" data-act="dealtype" data-id="${v}">${l} <b>${v ? all.filter(d => d.type === v).length : all.length}</b></button>`).join('')}</div>`;
   const sf = dealStChips(openAll, DEAL_STATUS_PICK.filter(k => !DEAL_CLOSED.includes(k)), S.dealSt, 'dealst');
   const cf = dealStChips(closedAll, ['종결', '협상결렬', '거절', '단순인사'], S.dealCSt, 'dealcst');
@@ -1605,7 +1607,7 @@ function openDealSheet(id) {
       if (d) {
         const ch = {}; Object.keys(f).forEach(k => { if ((d[k] || '') !== f[k]) ch[k] = f[k]; });
         if (Object.keys(ch).length) op(arch ? { t: 'upsert', coll: 'deals', id: d.id, fields: { ...arch, ...ch }, create: true } : { t: 'upsert', coll: 'deals', id: d.id, fields: ch });
-      } else op({ t: 'upsert', coll: 'deals', id: newDealId(), fields: { ...f, project: curPf() || DEAL_PROJECT, notion: '', created_at: kstNow() }, create: true });
+      } else op({ t: 'upsert', coll: 'deals', id: newDealId(), fields: { ...f, project: dealPf() || DEAL_PROJECT, notion: '', created_at: kstNow() }, create: true });
     };
     if (d) {
       if (!arch) bg.querySelector('#d-del').onclick = () => askConfirm(`'${d.company}' 협찬 기록을 지울까요? (끝난 건은 '종결'로 두는 게 좋아요)`, '삭제', () => op({ t: 'delete', coll: 'deals', id: d.id }));
