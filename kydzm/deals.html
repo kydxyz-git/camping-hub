@@ -307,32 +307,61 @@ async function loadLabels(){
   } catch(e){ LABELS = {}; LABELS_SHA = null; }
 }
 
+// 저장: 한 번에 하나씩 + 충돌(409·422)이면 최신 파일을 다시 읽고 내가 바꾼 판정만 얹어 다시 (사용자 261126 '저장 실패가 자꾸 떠')
+let PENDING = {};   // 이번 창에서 바꾼 판정: link → {v…} 또는 null(지움)
+let saving = false, saveAgain = false;
 async function saveLabels(){
   if (!dirty) return;
-  const body = JSON.stringify({
-    updated_at: new Date().toISOString().slice(0,16).replace('T',' '),
-    count: Object.keys(LABELS).length,
-    labels: LABELS
-  }, null, 1);
-  const content = btoa(unescape(encodeURIComponent(body)));
-  const payload = { message:`label: ${Object.keys(LABELS).length}건 판정`, content, branch:'main' };
-  if (LABELS_SHA) payload.sha = LABELS_SHA;
-  const r = await fetch(`${GH_API}${GH_PATH}/labels.json`, {
-    method:'PUT',
-    headers:{'Accept':'application/vnd.github+json',
-             'Authorization':`Bearer ${getToken()}`,
-             'X-GitHub-Api-Version':'2022-11-28',
-             'Content-Type':'application/json'},
-    body: JSON.stringify(payload)
-  });
-  if (r.ok){ const j = await r.json(); LABELS_SHA = j.content.sha; dirty = false; toast('판정 저장됨'); }
-  else { toast('저장 실패 ' + r.status); }
+  if (saving) { saveAgain = true; return; }
+  saving = true;
+  try {
+    for (let tryN = 0; tryN < 3; tryN++) {
+      const mine = { ...PENDING };
+      const body = JSON.stringify({
+        updated_at: new Date().toISOString().slice(0,16).replace('T',' '),
+        count: Object.keys(LABELS).length,
+        labels: LABELS
+      }, null, 1);
+      const content = btoa(unescape(encodeURIComponent(body)));
+      const payload = { message:`label: ${Object.keys(LABELS).length}건 판정`, content, branch:'main' };
+      if (LABELS_SHA) payload.sha = LABELS_SHA;
+      const r = await fetch(`${GH_API}${GH_PATH}/labels.json`, {
+        method:'PUT',
+        headers:{'Accept':'application/vnd.github+json',
+                 'Authorization':`Bearer ${getToken()}`,
+                 'X-GitHub-Api-Version':'2022-11-28',
+                 'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      if (r.ok) {
+        const j = await r.json(); LABELS_SHA = j.content.sha;
+        for (const k of Object.keys(mine)) if (PENDING[k] === mine[k]) delete PENDING[k];
+        dirty = Object.keys(PENDING).length > 0;
+        toast('판정 저장됨');
+        return;
+      }
+      if (r.status === 409 || r.status === 422) {   // 그새 다른 곳이 고침 → 최신본 위에 내 판정만 다시 얹기
+        await loadLabels();
+        for (const [k, v] of Object.entries(PENDING)) { if (v) LABELS[k] = v; else delete LABELS[k]; }
+        continue;
+      }
+      toast('저장 실패 ' + r.status + (r.status === 401 ? ' — 토큰 확인' : ''));
+      return;
+    }
+    toast('저장 실패 — 잠시 뒤 다시 눌러 주세요');
+  } catch (e) {
+    toast('저장 실패 — 인터넷 연결 확인');
+  } finally {
+    saving = false;
+    if (saveAgain) { saveAgain = false; setTimeout(saveLabels, 300); }
+  }
 }
 
 function setLabel(link, val, rec){
   if (LABELS[link] && LABELS[link].v === val) delete LABELS[link];
   else LABELS[link] = { v: val, t: rec.title, s: rec.score, c: rec.cafe,
                         at: new Date().toISOString().slice(0,10) };
+  PENDING[link] = LABELS[link] || null;
   dirty = true;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveLabels, 1500);
