@@ -115,6 +115,8 @@
   .igc-img img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
   .igc-ck { position:absolute; left:0; top:0; padding:6px; cursor:pointer; }
   .igc-ck input { width:19px; height:19px; pointer-events:none; accent-color:var(--danger); }
+  .igc-reel { position:absolute; right:5px; top:5px; width:20px; height:20px; border-radius:50%; background:rgba(0,0,0,.55); color:#fff; font-size:9px; display:flex; align-items:center; justify-content:center; padding-left:2px; box-sizing:border-box; pointer-events:none; }
+  .rb-sk { font-style:normal; font-size:10px; color:var(--muted); opacity:.75; margin-left:5px; white-space:nowrap; }
   .igc-badge { position:absolute; right:5px; bottom:5px; font-size:10.5px; font-weight:700; padding:1px 6px; border-radius:99px; background:rgba(0,0,0,.65); color:#fff; }
   .igc-badge.red { background:var(--danger); } .igc-badge.go { background:var(--success, var(--ok)); }
   .igc-b { padding:6px 7px 8px; }
@@ -209,8 +211,9 @@ async function writeJson(path, mutate, msg) {   // 최신본 위에 고쳐 저�
 }
 
 async function load() {
-  const [st, v, c, mu, no] = await Promise.all([gh(`${RP}/contents/state/ig_comments.json?ref=main`, { raw: true }), readJson('state/ig_visits.json'), readJson('state/ig_comments_ctl.json'), readJson('state/ig_mutuals.json'), readJson('state/ig_notes.json')]);
+  const [st, v, c, mu, no, im] = await Promise.all([gh(`${RP}/contents/state/ig_comments.json?ref=main`, { raw: true }), readJson('state/ig_visits.json'), readJson('state/ig_comments_ctl.json'), readJson('state/ig_mutuals.json'), readJson('state/ig_notes.json'), readJson('state/ig_media.json').catch(() => ({ data: {} }))]);
   S.st = JSON.parse(st); S.visits = v.data.visits || {}; S.ctl = c.data; S.mut = mu.data.mutual || []; S.mutAt = mu.data.at || ''; S.notes = no.data.notes || {};
+  S.mtype = Object.fromEntries(((im.data || {}).media || []).map(x => [x.id, x.type]));   // 릴스 표시용 (사용자 261126)
 }
 
 function todayPosted() { const t = dayKey(new Date().toISOString()); return Object.values(S.st.comments || {}).filter(c => c.status === 'posted' && c.posted_at && dayKey(c.posted_at) === t).length; }
@@ -271,6 +274,11 @@ async function loadShots() {
   } finally { shotBusy = false; }
   if ([...document.querySelectorAll('img[data-shot]')].some(i => !SHOT[i.dataset.shot] && !SHOT_BAD.has(i.dataset.shot))) loadShots();   // 받는 동안 화면이 바뀐 경우
 }
+// 협찬 구분 (사용자 261126 '(협찬 × ○○)·(장소제공)·(제품제공)도 다 협찬'): (광고)=광고, 협찬·장소제공·제품제공으로 시작하는 괄호=협찬
+// "(광고❌️ 내돈내산❌️ …)"처럼 괄호 안이 다른 말이면 잡지 않음
+const SP_RE = /^\((광고|협찬(?:\s*[×xX]\s*[^)]*)?|장소\s*제공|제품\s*제공)\)\s*/;
+function spOf(cap) { const m = String(cap || '').match(SP_RE); return m ? (m[1] === '광고' ? '광고' : '협찬') : ''; }
+function capBody(cap) { return String(cap || '').replace(SP_RE, ''); }
 // ── 1번 탭: 내 게시물 ──
 function renderPosts() {
   const by = {};
@@ -283,18 +291,20 @@ function renderPosts() {
   // 유튜브 화면처럼 (사용자 261126 '인스타 화면도 유튜브처럼'): 위 숫자 칸 → 날짜별 막대 → 게시물 카드
   const card = ([mid, m], kind) => {
     const cs = by[mid] || [], nd = need(mid);
-    const got = cs.filter(([, c]) => myReplies(c).length).length;
+    const got0 = cs.filter(([, c]) => myReplies(c).length).length;
+    const nSk = cs.filter(([id, c]) => !myReplies(c).length && skipWhy(id, c)).length, got = got0 + nSk;   // 건너뜀도 '다 한 것'으로 (사용자 261126)
     const auto1 = cs.filter(([, c]) => c.status === 'posted').length, chk = cs.filter(([, c]) => c.status === 'check').length;
-    const sp = ((m.cap || '').match(/^\((협찬|광고)\)/) || [])[1];
-    const title = (m.cap || '').replace(/^\((협찬|광고)\)\s*/, '').split('\n')[0] || '(글 없음)';
+    const sp = spOf(m.cap);
+    const title = capBody(m.cap).split('\n')[0] || '(글 없음)';
     const sel = S.sel.has(mid), pct = cs.length ? Math.round(got / cs.length * 100) : 100;
     return `<div class="igc ${kind} ${sel ? 'sel' : ''}" data-post="${esc(mid)}">
       <div class="igc-img">${shotImg(m, `onerror="this.style.visibility='hidden'"`)}
         ${kind === 'open' ? `<label class="igc-ck" data-sel="${esc(mid)}" title="골라서 자동 시작"><input type="checkbox" ${sel ? 'checked' : ''} tabindex="-1"></label>` : ''}
+        ${S.mtype[mid] === 'VIDEO' ? '<span class="igc-reel" title="릴스">▶</span>' : ''}
         ${kind === 'going' ? '<span class="igc-badge go">🔄 진행 중</span>' : nd ? `<span class="igc-badge red">답 필요 ${nd}</span>` : '<span class="igc-badge ok">✅ 다 답함</span>'}</div>
       <div class="igc-b"><div class="igc-t" title="${esc(title)}">${esc(title)}</div>
         <div class="igc-m"><span>${esc(dayLabel(dayKey(m.at)))}</span>${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}<span class="r">💬${n(m.cc)}</span></div>
-        <div class="rb"><div class="rb-t"><span>${kind === 'going' ? `자동 ${auto1}` : '내 답'}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${pct}%"></i></div></div>
+        <div class="rb"><div class="rb-t"><span>${kind === 'going' ? `자동 ${auto1}` : '내 답'}${nSk ? `<em class="rb-sk">건너뜀 ${nSk}</em>` : ''}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${pct}%"></i></div></div>
         ${kind === 'going' ? `<button class="btn red sm igc-stop" data-stop="${esc(mid)}">⏸ 멈추기</button><div class="muted" style="text-align:center;font-size:11px;margin-top:3px">남은 ${nd}</div>` : ''}
       </div></div>`;
   };
@@ -346,12 +356,12 @@ function renderPost(mid, cs) {
   const nNeed = cs.length - nReplied - nSkip;
   const nAuto = cs.filter(([, c]) => c.status === 'posted').length;
   const on = !!(S.ctl.auto_media || {})[mid];
-  const ttl = (m.cap || '').replace(/^\((협찬|광고)\)\s*/, '');
+  const ttl = capBody(m.cap);
   return `<div class="row" style="justify-content:space-between;margin-bottom:8px"><button class="btn" data-back>← 게시물</button></div>
     <div class="card phead">
       ${(m.thumb || m.shot) ? `<a class="pthumb" href="${esc(m.permalink || '#')}" target="_blank" rel="noopener">${shotImg(m, `onerror="this.parentNode.classList.add('noimg')"`)}</a>` : '<div class="pthumb noimg"></div>'}
       <div class="pinfo">
-        <div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)} 올림${/^\((협찬|광고)\)/.test(m.cap || '') ? ` · <span class="pill">${esc((m.cap || '').match(/^\((협찬|광고)\)/)[1])}</span>` : ''}</div>
+        <div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)} 올림${spOf(m.cap) ? ` · <span class="pill">${spOf(m.cap)}</span>` : ''}</div>
         <div class="pstats">
           <div><span>전체 댓글</span><b>${n(m.cc)}</b></div>
           <div><span>맞팔 댓글</span><b>${cs.length}</b></div>
