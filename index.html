@@ -397,7 +397,8 @@
     .ep-badge { position:absolute; bottom:6px; left:6px; font-size:9px; font-weight:800; padding:2px 7px; border-radius:100px; color:white; letter-spacing:0.03em; }
     .ep-ig { position:absolute; bottom:6px; right:6px; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
     .ep-ig svg { width:11px; height:11px; fill:white; }
-    .ep-name { font-size:11px; font-weight:600; color:var(--text); line-height:1.3; letter-spacing:-0.01em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:center; }
+    /* 제목 두 줄까지 (사용자 261126 — 한 줄이면 '사이트 안에 전용 자쿠…'처럼 무슨 영상인지 안 보임), 칸 높이는 두 줄로 맞춤 */
+    .ep-name { font-size:11px; font-weight:600; color:var(--text); line-height:1.3; letter-spacing:-0.01em; overflow:hidden; text-align:center; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; white-space:normal; word-break:keep-all; min-height:2.6em; }
     .ep-name.dim { color:var(--text-sub); font-weight:400; }
 
     /* ── 캠핑장 ── */

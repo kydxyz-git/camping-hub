@@ -1,0 +1,99 @@
+# 클라우드플레어 캐시 (사용자 261126 — kydz.kr을 클라우드플레어로 옮김, 사진은 한 달 보관 규칙)
+# 1) 페이지 배포가 끝날 때마다(page_build): 최근 커밋에서 '고쳐지거나 지워진' 사진 주소만 캐시에서 비움.
+#    사진은 바꿀 때 새 파일 이름으로 저장하는 규칙이라 보통은 비울 게 없음 → 바로 끝남(공개 저장소라 Actions 시간 무료).
+# 2) 손으로 실행(workflow_dispatch): mode=check → 사이트·관리자·통계·검색엔진 인증 파일이 열리는지 + 클라우드플레어를 거치는지 점검,
+#    mode=purge-all → 전체 비우기(사진을 같은 이름으로 덮어써서 옛것이 보일 때만).
+# 토큰은 저장소 Secrets의 CF_PURGE_TOKEN(캐시 비우기 권한만). 없으면 비우기는 건너뜀.
+name: cf-cache
+
+on:
+  page_build:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'check = 점검만 / purge-all = 전체 비우기'
+        default: check
+        type: choice
+        options: [check, purge-all]
+
+concurrency:
+  group: cf-cache
+  cancel-in-progress: false
+
+env:
+  ZONE: f97d8cbec8d0845ce76b48af47f1a4bf
+  SITE: https://kydz.kr
+
+jobs:
+  purge:
+    if: github.event_name == 'page_build'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 15
+      - name: 바뀐 사진만 캐시 비우기
+        env:
+          CF_TOKEN: ${{ secrets.CF_PURGE_TOKEN }}
+        run: |
+          set -e
+          # 최근 15개 커밋 중 고쳐지거나(M) 지워진(D) 사진 — 새로 생긴 파일은 캐시에 없으니 안 비움
+          files=$(git log -15 --diff-filter=MD --name-only --pretty=format: -- images | sort -u | sed '/^$/d')
+          if [ -z "$files" ]; then echo "바뀐 사진 없음 — 끝"; exit 0; fi
+          if [ -z "$CF_TOKEN" ]; then echo "::warning::CF_PURGE_TOKEN 없음 — 비우기 건너뜀"; exit 0; fi
+          echo "$files" | python3 -c "
+          import sys, json, os, urllib.request, urllib.parse
+          site = os.environ['SITE']
+          urls = [site + '/' + urllib.parse.quote(l.strip()) for l in sys.stdin if l.strip()]
+          for i in range(0, len(urls), 30):
+              chunk = urls[i:i+30]
+              req = urllib.request.Request(f\"https://api.cloudflare.com/client/v4/zones/{os.environ['ZONE']}/purge_cache\",
+                  data=json.dumps({'files': chunk}).encode(), method='POST',
+                  headers={'Authorization': 'Bearer ' + os.environ['CF_TOKEN'], 'Content-Type': 'application/json'})
+              r = json.load(urllib.request.urlopen(req, timeout=30))
+              print('비움' if r.get('success') else '실패', len(chunk), '개', r.get('errors') or '')
+              if not r.get('success'): sys.exit(1)
+          "
+
+  manual:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 점검 — 열리는지 + 클라우드플레어를 거치는지
+        run: |
+          fail=0
+          for p in / /kydzm/ /camps/ /gear/ /foods/ /sitemap.xml /robots.txt \
+                   /naver7a710ec2e81a089dd8a5d993d3ceb9c4.html /tiktokEQF9NKUr2SmBj3uu9iWFfLnvS2Wd2SVf.txt \
+                   /tiktok/terms.html /tiktok/privacy.html /data/config.json; do
+            h=$(curl -s -o /dev/null -D - -m 20 "$SITE$p" || true)
+            code=$(echo "$h" | head -1 | awk '{print $2}')
+            srv=$(echo "$h" | grep -i '^server:' | tr -d '\r' | cut -d' ' -f2-)
+            cst=$(echo "$h" | grep -i '^cf-cache-status:' | tr -d '\r' | cut -d' ' -f2-)
+            echo "$code  server=$srv  cache=${cst:--}  $p"
+            [ "$code" = "200" ] || fail=1
+          done
+          # 사진 하나: 두 번 받아서 두 번째가 HIT인지(캐시 규칙 확인)
+          img=$(curl -s -m 20 "$SITE/data/camps.json" | python3 -c "import sys,json; d=json.load(sys.stdin); d=d if isinstance(d,list) else d.get('camps',[]); print(next((c['imgs'][0] for c in d if c.get('imgs')), '').lstrip('./'))" 2>/dev/null || true)
+          if [ -n "$img" ]; then
+            for i in 1 2; do echo "사진 $i번째: $(curl -s -o /dev/null -D - -m 20 "$SITE/$img" | grep -iE '^(HTTP|cf-cache-status|cache-control)' | tr -d '\r' | tr '\n' ' ')"; done
+          fi
+          echo "통계 Worker: $(curl -s -m 20 https://kyd-stats.kydxyz.workers.dev/health | head -c 200)"
+          echo "www: $(curl -s -o /dev/null -w '%{http_code} → %{redirect_url}' -m 20 https://www.kydz.kr/)"
+          echo "http: $(curl -s -o /dev/null -w '%{http_code} → %{redirect_url}' -m 20 http://kydz.kr/)"
+          exit $fail
+      - name: 전체 비우기
+        if: inputs.mode == 'purge-all'
+        env:
+          CF_TOKEN: ${{ secrets.CF_PURGE_TOKEN }}
+        run: |
+          [ -n "$CF_TOKEN" ] || { echo "::error::CF_PURGE_TOKEN 없음"; exit 1; }
+          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE/purge_cache" \
+            -H "Authorization: Bearer $CF_TOKEN" -H "Content-Type: application/json" --data '{"purge_everything":true}' | head -c 300
+      - name: 토큰 확인 (값은 안 보임)
+        env:
+          CF_TOKEN: ${{ secrets.CF_PURGE_TOKEN }}
+        run: |
+          if [ -z "$CF_TOKEN" ]; then echo "CF_PURGE_TOKEN: 없음"; exit 0; fi
+          curl -s -m 20 "https://api.cloudflare.com/client/v4/user/tokens/verify" -H "Authorization: Bearer $CF_TOKEN" | python3 -c "import sys,json; r=json.load(sys.stdin); print('CF_PURGE_TOKEN:', 'OK' if r.get('success') else '문제', (r.get('result') or {}).get('status',''), r.get('errors') or '')"
