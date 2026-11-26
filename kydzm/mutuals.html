@@ -155,12 +155,12 @@ function dayLabel(k) { const t = dayKey(new Date().toISOString()); const y = day
 function hm(iso) { return iso ? new Date(new Date(iso).getTime() + 9 * 3600e3).toISOString().slice(11, 16) : ''; }
 function postLink(mid) { return (S.st.media[mid] || {}).permalink || '#'; }
 function norm(t, u) { let s = String(t || ''); if (u) s = s.split(u).join(''); return s.replace(/@[\w.]+/g, '').replace(/[^\p{L}\p{N}_]/gu, '').toLowerCase(); }
-function skipWhy(id, c) {   // 건너뜀: 화면에서 [건너뛰기] 누름 또는 메모에 '제외' (사용자 261126)
+function skipWhy(id, c) {   // 건너뜀: 화면에서 [건너뛰기] 누른 것만 (메모 '제외'는 자동만 안 하고 목록엔 보임 — 사용자 261126 '수동으로 달긴 해야 돼서')
   if ((S.ctl.skip || []).includes(id)) return '화면에서 건너뜀';
-  const n = (S.notes || {})[c.user]; if (n && n.includes('제외')) return '메모: 제외';
   if (c.status === 'skip' && c.why !== '화면에서 건너뜀' && c.why !== '메모: 제외') return c.why || '건너뜀';
   return '';
 }
+function autoOff(c) { const n = (S.notes || {})[c.user]; return !!(n && n.includes('제외')); }
 function myReplies(c, withSb) {   // 내가 단 답글(직접·자동). 소셜비즈 자동 DM 답글은 withSb일 때만
   if (!S.tpl) S.tpl = new Set(S.st.tpl || []);
   const out = (c.mine || []).map(r => ({ t: r.text, k: (S.tpl.has(norm(r.text)) || S.tpl.has(norm(r.text, c.user))) ? '소셜비즈' : '직접' })).filter(r => withSb || r.k !== '소셜비즈');
@@ -216,6 +216,7 @@ function renderPost(mid, cs) {
         <div class="cm">${esc(c.text)}</div>
         ${mine.map(r => `<div class="muted">↳ <span class="pill ${r.k === '자동' ? 'ok' : ''}">${r.k}</span> ${esc(r.t)}</div>`).join('')}
         ${S.sending[id] ? `<div class="banner" style="margin-top:6px">⏳ 달고 있어요 — 1분쯤 뒤 새로고침하면 보여요</div>` : !real.length ? `${draft ? `<div class="muted">${c.status === 'check' ? `<span class="pill red">확인 필요 · ${esc(c.why || '')}</span>` : skip.has(id) ? '<span class="pill">건너뜀</span>' : ((S.ctl.auto_media || {})[c.media] ? `<span class="pill">${esc(dayLabel(dayKey(c.due_at || new Date().toISOString())))} ${esc((c.due_at || '').slice(11, 16))}부터 자동으로 달 예정</span>` : '<span class="pill">초안 (자동 꺼짐)</span>')}</div>` : ''}
+          ${autoOff(c) ? '<div class="muted"><span class="pill red">🙅 자동 제외(메모) — 직접 달기</span></div>' : ''}
           <textarea rows="2" data-edit="${esc(id)}" placeholder="답글 쓰기 (@${esc(c.user)}는 자동으로 붙어요)">${esc(edits[id] || (draft ? c.reply : '') || '')}</textarea>
           <div class="row" style="justify-content:flex-end;margin-top:6px">${draft ? `<button class="btn" data-skip="${esc(id)}">건너뛰기</button><button class="btn" data-save="${esc(id)}">수정 저장</button>` : ''}<button class="btn pri" data-postnow="${esc(id)}">댓글 달기</button></div>` : ''}
         ${noteLine(c.user)}</div>`;
