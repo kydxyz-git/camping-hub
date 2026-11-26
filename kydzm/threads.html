@@ -664,7 +664,8 @@ function render() {
   const main = $('#main');
   if (!getToken()) { main.innerHTML = tokenSetupHtml(); bindTokenSetup(); return; }
   const newC = (S.replies || []).filter(r => r.status === '새댓글').length;
-  const tabs = [['list', '글 목록'], ['comments', `댓글${newC ? ' ' + newC : ''}`], ['cycle', '게시주기'], ['settings', '토큰·실행']];
+  // 탭 순서 (사용자 261126 '첫 장이 요약 · 그다음 글 목록 · 댓글 · 게시주기 · 토큰·실행'): 요약 = 잘된 글·최근 게시·다음 글·성과 리포트, 글 목록 = 대기 글 + 아래 게시 완료
+  const tabs = [['home', '요약'], ['list', '글 목록'], ['comments', `댓글${newC ? ' ' + newC : ''}`], ['cycle', '게시주기'], ['settings', '토큰·실행']];
   let html = `<div class="tabs">${tabs.map(([k, t]) => `<button class="tab${S.tab === k ? ' on' : ''}" data-tab="${k}">${esc(t)}</button>`).join('')}</div>`;   // 새로고침 탭은 뺌 (사용자 261126 '필요 없을 것 같은데' — 브라우저 새로고침으로)
   html += bannersHtml();
   html += `<div id="view"></div>`;
@@ -676,7 +677,7 @@ function render() {
     if (window.kydzNav) kydzNav.pushView(S.tab);   // 뒤로 가기 = 전 탭 (사용자 261126)
     render();
   });
-  ({ list: renderList, comments: renderComments, cycle: renderCycle, settings: renderSettings }[S.tab] || renderList)();
+  ({ home: renderList, list: renderList, comments: renderComments, cycle: renderCycle, settings: renderSettings }[S.tab] || renderList)();
   updateSaveBar();
 }
 function bannersHtml() {
@@ -868,13 +869,19 @@ function renderList() {
       <span class="row"><button class="btn small ${S.onlyNeedLink ? 'ghost' : ''}" data-filter="all">전체 ${pending.length}</button><button class="btn small ${S.onlyNeedLink ? '' : 'ghost'}" data-filter="needlink">링크 필요 ${needLink}</button></span></div>` : ''}
     <div id="pending">${pendHtml || '<div class="card small muted">대기 중인 글이 없어요. 상품 이미지와 링크를 채팅으로 보내주시면 글을 만들어 넣어 드려요.</div>'}
 </div>
-    <div style="height:18px"></div>
-    ${bestHtml(done)}
-    ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">게시 완료 ${done.length}개
+    ${done.length ? `<div class="section-title" id="done-sec" style="display:flex;justify-content:space-between;align-items:center;margin-top:22px">게시 완료 ${done.length}개
         ${done.length > 3 ? `<button class="btn small ghost" id="toggle-done">${S.showDone ? '최근 3개만' : '모두 보기'}</button>` : ''}</div>
       <div class="posts done-list" style="margin-bottom:16px">${(S.showDone ? done : done.slice(0, 3)).map(doneHtml).join('')}</div>` : ''}
-    ${reportHtml()}
 `;
+  // 탭별로 보여 줄 부분만 (대기 글 HTML은 위에서 만든 것 그대로)
+  const view = $('#view');
+  if (S.tab === 'home') view.innerHTML = `${saveBarHtml()}${bestHtml(done)}
+    ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">최근 게시 <button class="btn small ghost" data-goto2="done">게시 완료 ${done.length}개 모두 보기</button></div>
+      <div class="posts done-list" style="margin-bottom:16px">${done.slice(0, 3).map(doneHtml).join('')}</div>` : ''}
+    ${first ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">다음 글 <button class="btn small ghost" data-goto2="list">대기 글 ${pending.length}개 보기</button></div>
+      <div class="plist" style="margin-bottom:16px">${pending.filter(p => sched[p.id]).slice(0, 3).map(p => `<div class="prow" data-goto2="list"><span class="pt" style="width:auto">${esc(fmtSlot(sched[p.id]))}</span>${p.kind ? `<span class="pk k-${esc(p.kind)}">${esc(p.kind)}</span>` : ''}<span class="pn">${esc(firstLine(p))}</span></div>`).join('')}</div>` : ''}
+    ${reportHtml()}`;
+  view.querySelectorAll('[data-goto2]').forEach(b => b.onclick = () => { const toDone = b.dataset.goto2 === 'done'; if (toDone) S.showDone = true; S.tab = 'list'; try { localStorage.setItem(TAB_KEY, S.tab); } catch (e) {} if (window.kydzNav) kydzNav.pushView(S.tab); render(); const el = toDone && document.getElementById('done-sec'); if (el) el.scrollIntoView(); else window.scrollTo(0, 0); });
   document.querySelectorAll('[data-openp]').forEach(r => r.onclick = () => { const id = r.dataset.openp, p = S.posts.find(x => x.id === id); if (S.openPost.has(id)) S.openPost.delete(id); else if (p && !dirty(p)) S.openPost.add(id); else S.openPost.add(id); if (p && dirty(p) && !S.openPost.has(id)) toast('저장 안 한 글은 열어 둬요', false); renderList(); });
   document.querySelectorAll('[data-act2="drafts"]').forEach(b => b.onclick = () => { S.showDraftsG = !S.showDraftsG; renderList(); });
   document.querySelectorAll('[data-act2="allpend"]').forEach(b => b.onclick = () => { S.showAllPending = !S.showAllPending; renderList(); });
@@ -1028,7 +1035,7 @@ function doneHtml(p) {
 function fitHeight(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight + 2) + 'px'; }
 function bindList() {
   document.querySelectorAll('#pending textarea').forEach(fitHeight);
-  $('#add-post').onclick = () => {
+  if ($('#add-post')) $('#add-post').onclick = () => {
     const p = newPost();
     S.posts.push(p);
     renderList(); updateSaveBar();
@@ -1452,7 +1459,7 @@ function kstIso(utcIso) { return new Date(new Date(utcIso).getTime() + 9 * 3600e
 function isAuthed() { try { return sessionStorage.getItem(AUTH_KEY) === '1'; } catch (e) { return false; } }
 async function start() {
   $('#app').classList.add('is-active');
-  try { S.tab = localStorage.getItem(TAB_KEY) || 'list'; } catch (e) {}
+  try { S.tab = 'home'; /* 열면 늘 요약부터 (사용자 261126 '첫 장이 요약') */ } catch (e) {}
   if (window.kydzNav) kydzNav.onView(v => { if (v) { S.tab = v; render(); window.scrollTo(0, 0); } }, S.tab);
   if (!getToken()) { render(); return; }
   $('#main').innerHTML = '<div class="card muted">불러오는 중...</div>';
