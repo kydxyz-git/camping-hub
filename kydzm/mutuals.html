@@ -83,7 +83,7 @@ const AUTH_KEY = 'kydz_admin_authed', TOKEN_KEY = 'kydz_cupas_gh_token';
 const RP = 'https://api.github.com/repos/kydxyz-git/cupas';
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const S = { st: null, visits: {}, ctl: {}, tab: 'posts', post: null };
+const S = { st: null, visits: {}, ctl: {}, tab: 'posts', post: null, sending: {} };
 try { S.tab = localStorage.getItem('kydz_mutuals_tab') || 'posts'; } catch (e) {}
 
 function tok() { try { return localStorage.getItem(TOKEN_KEY) || localStorage.getItem('kydz_admin_gh_token') || ''; } catch (e) { return ''; } }
@@ -96,6 +96,7 @@ async function gh(url, opts = {}) {
   const r = await fetch(url, { method: opts.method || 'GET', cache: 'no-store', headers: { Authorization: 'Bearer ' + tok(), Accept: opts.raw ? 'application/vnd.github.raw' : 'application/vnd.github+json', ...(opts.body ? { 'Content-Type': 'application/json' } : {}) }, body: opts.body ? JSON.stringify(opts.body) : undefined });
   if (r.status === 404 && opts.ok404) return null;
   if (!r.ok) throw new Error(`깃허브 오류 ${r.status} — 토큰을 스레드 관리 화면에서 확인해 주세요`);
+  if (r.status === 204) return null;
   return opts.raw ? r.text() : r.json();
 }
 async function readJson(path) {   // 작은 파일: sha 같이
@@ -134,10 +135,10 @@ function dayKey(iso) { return new Date(new Date(iso).getTime() + 9 * 3600e3).toI
 function dayLabel(k) { const t = dayKey(new Date().toISOString()); const y = dayKey(new Date(Date.now() - 864e5).toISOString()); return k === t ? '오늘' : k === y ? '어제' : `${+k.slice(5, 7)}/${+k.slice(8, 10)}`; }
 function hm(iso) { return iso ? new Date(new Date(iso).getTime() + 9 * 3600e3).toISOString().slice(11, 16) : ''; }
 function postLink(mid) { return (S.st.media[mid] || {}).permalink || '#'; }
-function norm(t) { return String(t || '').replace(/@[\w.]+/g, '').replace(/[^\p{L}\p{N}_]/gu, '').toLowerCase(); }
+function norm(t, u) { let s = String(t || ''); if (u) s = s.split(u).join(''); return s.replace(/@[\w.]+/g, '').replace(/[^\p{L}\p{N}_]/gu, '').toLowerCase(); }
 function myReplies(c, withSb) {   // 내가 단 답글(직접·자동). 소셜비즈 자동 DM 답글은 withSb일 때만
   if (!S.tpl) S.tpl = new Set(S.st.tpl || []);
-  const out = (c.mine || []).map(r => ({ t: r.text, k: S.tpl.has(norm(r.text)) ? '소셜비즈' : '직접' })).filter(r => withSb || r.k !== '소셜비즈');
+  const out = (c.mine || []).map(r => ({ t: r.text, k: (S.tpl.has(norm(r.text)) || S.tpl.has(norm(r.text, c.user))) ? '소셜비즈' : '직접' })).filter(r => withSb || r.k !== '소셜비즈');
   if (c.status === 'posted') out.push({ t: c.reply, k: '자동' });
   return out;
 }
@@ -184,9 +185,10 @@ function renderPost(mid, cs) {
       return `<div class="card ${real.length ? '' : 'open'}"><div class="row" style="justify-content:space-between"><a class="u" href="https://www.instagram.com/${esc(c.user)}/" target="_blank" rel="noopener">@${esc(c.user)}</a><span class="muted">${esc(dayLabel(dayKey(c.at)))} ${hm(c.at)}</span></div>
         <div class="cm">${esc(c.text)}</div>
         ${mine.map(r => `<div class="muted">↳ <span class="pill ${r.k === '자동' ? 'ok' : ''}">${r.k}</span> ${esc(r.t)}</div>`).join('')}
-        ${draft ? `<div class="muted">${c.status === 'check' ? `<span class="pill red">확인 필요 · ${esc(c.why || '')}</span>` : skip.has(id) ? '<span class="pill">건너뜀</span>' : `<span class="pill">${esc(dayLabel(dayKey(c.due_at || new Date().toISOString())))} ${esc((c.due_at || '').slice(11, 16))}부터 달 예정</span>`}</div>
-          <textarea rows="2" data-edit="${esc(id)}" placeholder="${c.status === 'check' ? '직접 쓸 답글 (비우면 안 담)' : ''}">${esc(edits[id] || c.reply || '')}</textarea>
-          <div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn" data-skip="${esc(id)}">건너뛰기</button><button class="btn pri" data-save="${esc(id)}">${c.status === 'check' ? '이 답글로 달기' : '수정 저장'}</button></div>` : (!real.length ? '<div class="muted">↳ 아직 없음</div>' : '')}${noteLine(c.user)}</div>`;
+        ${S.sending[id] ? `<div class="banner" style="margin-top:6px">⏳ 달고 있어요 — 1분쯤 뒤 새로고침하면 보여요</div>` : !real.length ? `${draft ? `<div class="muted">${c.status === 'check' ? `<span class="pill red">확인 필요 · ${esc(c.why || '')}</span>` : skip.has(id) ? '<span class="pill">건너뜀</span>' : (S.st.mode === 'auto' ? `<span class="pill">${esc(dayLabel(dayKey(c.due_at || new Date().toISOString())))} ${esc((c.due_at || '').slice(11, 16))}부터 자동으로 달 예정</span>` : '<span class="pill">초안 (자동 꺼짐)</span>')}</div>` : ''}
+          <textarea rows="2" data-edit="${esc(id)}" placeholder="답글 쓰기 (@${esc(c.user)}는 자동으로 붙어요)">${esc(edits[id] || (draft ? c.reply : '') || '')}</textarea>
+          <div class="row" style="justify-content:flex-end;margin-top:6px">${draft ? `<button class="btn" data-skip="${esc(id)}">건너뛰기</button><button class="btn" data-save="${esc(id)}">수정 저장</button>` : ''}<button class="btn pri" data-postnow="${esc(id)}">댓글 달기</button></div>` : ''}
+        ${noteLine(c.user)}</div>`;
   }
 }
 
@@ -299,6 +301,17 @@ function render() {
     const id = b.dataset.save, t = $(`[data-edit="${id}"]`).value.trim(); if (!t) return;
     b.disabled = true;
     try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { (d.edits ||= {})[id] = t; d.skip = (d.skip || []).filter(x => x !== id); }, 'ig(admin): 대댓글 수정'); b.textContent = '저장됨'; } catch (e) { alert(e.message); b.disabled = false; }
+  });
+  $('#main').querySelectorAll('[data-postnow]').forEach(b => b.onclick = async () => {
+    const id = b.dataset.postnow, t = $(`[data-edit="${id}"]`).value.trim(); if (!t) { alert('답글을 써 주세요'); return; }
+    const c = S.st.comments[id];
+    if (!confirm(`@${c.user} 댓글 밑에 지금 달까요?\n\n${t}`)) return;
+    b.disabled = true; b.textContent = '보내는 중…';
+    try {
+      await gh(`${RP}/actions/workflows/ig-comments.yml/dispatches`, { method: 'POST', body: { ref: 'main', inputs: { cmd: `post ${id}`, text: t } } });
+      S.sending[id] = 1; render();
+      setTimeout(async () => { try { await load(); S.sending = {}; render(); } catch (e) {} }, 75000);
+    } catch (e) { alert(e.message); b.disabled = false; b.textContent = '댓글 달기'; }
   });
   $('#main').querySelectorAll('[data-skip]').forEach(b => b.onclick = async () => {
     const id = b.dataset.skip; b.disabled = true;
