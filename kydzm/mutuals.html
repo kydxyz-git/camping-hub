@@ -405,7 +405,7 @@ function renderPosts() {
 }
 // 인스타 API 남은 양을 배터리처럼 — 탭 줄 오른쪽 (사용자 261126 '사용량 저렇게 하지 말고 조용한 맞팔 오른쪽에 배터리 게이지로'). 사용률은 응답 헤더 기준, 댓글·DM 중 큰 쪽
 // 달릴 차례 줄 (봇 post_one과 같은 순서: [댓글 달기]로 줄에 올린 것 먼저(올린 순), 그다음 자동 켠 게시물에서 고쳐 저장한 것(댓글 오래된 순))
-// 예상 시각 = 다음 차례(pace.next_at)부터 평균 25분 간격, 9~22시만 — 간격이 무작위라 '쯤' (사용자 261126 '올릴 것들 일괄로 · 칸 차지 말고')
+// 예상 시각 = 다음 차례(pace.next_at)부터 평균 6분 간격, 9~22시만 — 간격이 무작위라 '쯤' (사용자 261126 '올릴 것들 일괄로 · 칸 차지 말고')
 function queueList() {
   const q = S.ctl.queue || {}, ed = S.ctl.edits || {}, au = S.ctl.auto_media || {}, sk = new Set(S.ctl.skip || []);
   const L = Object.entries(S.st.comments || {}).filter(([id, c]) => c.status !== 'posted' && !sk.has(id) && !myReplies(c).length && (q[id] || (ed[id] && au[c.media])))
@@ -417,7 +417,7 @@ function queueList() {
     else if (h >= 22) { d.setUTCDate(d.getUTCDate() + 1); d.setUTCHours(9, 0, 0, 0); t = d.getTime() - 9 * 3600e3; }
     const eta = new Date(t + 9 * 3600e3), today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
     const lab = (eta.toISOString().slice(0, 10) === today ? '' : eta.toISOString().slice(0, 10) === new Date(Date.now() + 33 * 3600e3).toISOString().slice(0, 10) ? '내일 ' : eta.toISOString().slice(5, 10).replace('-', '/') + ' ') + eta.toISOString().slice(11, 16);
-    t += 25 * 60e3;
+    t += 6 * 60e3;   // 평균 6분 간격 (사용자 261126 시간당 10개)
     const hm = eta.toISOString().slice(11, 16);
     return { id, c, text: ed[id] || c.reply || '', eta: lab, day: lab.slice(0, -5).trim() || '오늘', hm };
   });
@@ -435,7 +435,7 @@ function renderQueue() {
     more = `<div class="qgrid">${[...g].map(([k, xs]) => `<div class="qg"><span class="qgk">${esc(k)}</span><div class="qgv">${xs.map(pill).join('')}</div></div>`).join('')}</div>`;
   }
   // 가로 한 줄을 꽉 채움 (사용자 261126 '진행 중 밑에 · 가로줄 맞춰 꽉 채워서'): 알약을 다 넣고 fitQline()이 넘치는 것만 숨기고 +N을 맞춤
-  return `<div class="qline" title="하나씩 10~40분 간격(무작위), 9~22시만 — 시각은 대략"><span class="qh">⏳ 다음 답글 <small>${L.length}</small></span><div class="qps">${L.slice(0, 20).map(pill).join('')}</div><button class="qmore" data-qmore data-n="${L.length}">${S.openQueue ? '접기 ▴' : '전체 ▸'}</button></div>${more}`;
+  return `<div class="qline" title="하나씩 3~9분 간격(평균 6분)(무작위), 9~22시만 — 시각은 대략"><span class="qh">⏳ 다음 답글 <small>${L.length}</small></span><div class="qps">${L.slice(0, 20).map(pill).join('')}</div><button class="qmore" data-qmore data-n="${L.length}">${S.openQueue ? '접기 ▴' : '전체 ▸'}</button></div>${more}`;
 }
 // 오늘 다녀올 맞팔: 가로 한 줄(폰은 두 줄)을 꽉 채우는 만큼만 — 사용자 261126 '오른쪽 꽉 채울 만큼'
 function fitToday() {
@@ -537,7 +537,7 @@ function renderPost(mid, cs) {
       return `<div class="card ${real.length ? '' : 'open'}"><div class="row" style="justify-content:space-between"><a class="u" href="https://www.instagram.com/${esc(c.user)}/" target="_blank" rel="noopener">@${esc(c.user)}</a><span class="muted">${esc(dayLabel(dayKey(c.at)))} ${hm(c.at)}</span></div>
         <div class="cm">${esc(c.text)}</div>
         ${mine.map(r => `<div class="muted">↳ <span class="pill ${r.k === '자동' ? 'ok' : r.k === '수동' ? 'scr' : ''}">${r.k}</span> ${esc(r.t)}</div>`).join('')}
-        ${(S.ctl.queue || {})[id] && !real.length ? `<div class="banner" style="margin-top:6px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span>${(() => { const L = queueList(), k = L.findIndex(x => x.id === id); return k >= 0 ? `⏳ 줄에서 ${k + 1}번째 — ${esc(L[k].eta)}쯤 달릴 예정 (하나씩 10~40분 간격, 9~22시)` : '⏳ 줄에 올림 — 차례대로 달려요 (하나씩 10~40분 간격, 9~22시)'; })()}<br><span class="muted">${esc(edits[id] || c.reply || '')}</span></span><button class="btn sm" data-unqueue="${esc(id)}">줄에서 빼기</button></div>` : !real.length ? `${draft ? `<div class="muted">${c.status === 'check' ? `<span class="pill red">확인 필요 · ${esc(c.why || '')}</span>` : skip.has(id) ? '<span class="pill">건너뜀</span>' : ((S.ctl.auto_media || {})[c.media] && (S.ctl.edits || {})[id] ? `<span class="pill">✓ 고친 글 — ${esc(dayLabel(dayKey(c.due_at || new Date().toISOString())))} ${esc((c.due_at || '').slice(11, 16))}부터 차례대로</span>` : '<span class="pill red">AI 초안 — 확인하고 [댓글 달기]를 눌러야 달려요</span>')}</div>` : ''}
+        ${(S.ctl.queue || {})[id] && !real.length ? `<div class="banner" style="margin-top:6px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span>${(() => { const L = queueList(), k = L.findIndex(x => x.id === id); return k >= 0 ? `⏳ 줄에서 ${k + 1}번째 — ${esc(L[k].eta)}쯤 달릴 예정 (하나씩 3~9분 간격(평균 6분), 9~22시)` : '⏳ 줄에 올림 — 차례대로 달려요 (하나씩 3~9분 간격(평균 6분), 9~22시)'; })()}<br><span class="muted">${esc(edits[id] || c.reply || '')}</span></span><button class="btn sm" data-unqueue="${esc(id)}">줄에서 빼기</button></div>` : !real.length ? `${draft ? `<div class="muted">${c.status === 'check' ? `<span class="pill red">확인 필요 · ${esc(c.why || '')}</span>` : skip.has(id) ? '<span class="pill">건너뜀</span>' : ((S.ctl.auto_media || {})[c.media] && (S.ctl.edits || {})[id] ? `<span class="pill">✓ 고친 글 — ${esc(dayLabel(dayKey(c.due_at || new Date().toISOString())))} ${esc((c.due_at || '').slice(11, 16))}부터 차례대로</span>` : '<span class="pill red">AI 초안 — 확인하고 [댓글 달기]를 눌러야 달려요</span>')}</div>` : ''}
           ${autoOff(c) ? '<div class="muted"><span class="pill red">🙅 자동 제외(메모) — 직접 달기</span></div>' : ''}
           <textarea rows="2" data-edit="${esc(id)}" placeholder="답글 쓰기 (@${esc(c.user)}는 자동으로 붙어요)">${esc(edits[id] || (draft ? c.reply : '') || '')}</textarea>
           <div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn" data-skip="${esc(id)}">건너뛰기</button>${draft ? `<button class="btn" data-save="${esc(id)}">수정 저장</button>` : ''}<button class="btn pri" data-postnow="${esc(id)}" title="줄에 올려 자동과 같이 차례대로 달아요">댓글 달기</button></div>` : ''}
@@ -693,13 +693,13 @@ function render() {
   }
   document.querySelectorAll('[data-selclear]').forEach(b => b.onclick = () => { S.sel.clear(); render(); });
   document.querySelectorAll('[data-autostart]').forEach(b => b.onclick = async () => {
-    const ids = [...S.sel]; if (!confirm(`게시물 ${ids.length}개의 맞팔 댓글에 대댓글을 자동으로 달까요?\n(10~40분 간격, 9~22시, 초안은 10분 안에 만들어져요)`)) return;
+    const ids = [...S.sel]; if (!confirm(`게시물 ${ids.length}개의 맞팔 댓글에 대댓글을 자동으로 달까요?\n(3~9분 간격(평균 6분), 9~22시, 초안은 10분 안에 만들어져요)`)) return;
     b.disabled = true;
     try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { d.auto_media ||= {}; ids.forEach(m => d.auto_media[m] = kstNow()); if (d.mode === 'paused') { d.mode = 'on'; d.mode_at = kstNow(); } }, 'ig(admin): 대댓글 자동 시작'); S.sel.clear(); render(); toast('자동 시작 — 진행 중으로 옮겼어요'); }
     catch (e) { alert(e.message); b.disabled = false; }
   });
   $('#main').querySelectorAll('[data-autoone]').forEach(b => b.onclick = async () => {
-    const m = b.dataset.autoone; if (!confirm('이 게시물의 맞팔 댓글에 대댓글을 자동으로 달까요?\n(10~40분 간격, 9~22시, 초안은 10분 안에 만들어져요)')) return;
+    const m = b.dataset.autoone; if (!confirm('이 게시물의 맞팔 댓글에 대댓글을 자동으로 달까요?\n(3~9분 간격(평균 6분), 9~22시, 초안은 10분 안에 만들어져요)')) return;
     b.disabled = true;
     try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { d.auto_media ||= {}; d.auto_media[m] = kstNow(); if (d.mode === 'paused') { d.mode = 'on'; d.mode_at = kstNow(); } }, 'ig(admin): 대댓글 자동 시작'); render(); toast('자동 시작'); }
     catch (e) { alert(e.message); b.disabled = false; }
@@ -744,7 +744,7 @@ function render() {
     b.disabled = true;
     try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { (d.edits ||= {})[id] = t; d.skip = (d.skip || []).filter(x => x !== id); autoOn(d, id); }, 'ig(admin): 대댓글 수정'); b.textContent = '저장됨'; } catch (e) { alert(e.message); b.disabled = false; }
   });
-  // [댓글 달기] = 줄에 올림 (사용자 261126 '바로 달지 말고 큐에 쌓아 지금 자동으로 돌리는 거에 같이') — 봇이 10~40분 간격으로, 줄에 올린 것 먼저
+  // [댓글 달기] = 줄에 올림 (사용자 261126 '바로 달지 말고 큐에 쌓아 지금 자동으로 돌리는 거에 같이') — 봇이 3~9분 간격(평균 6분)으로, 줄에 올린 것 먼저
   $('#main').querySelectorAll('[data-postnow]').forEach(b => b.onclick = async () => {
     const id = b.dataset.postnow, t = $(`[data-edit="${id}"]`).value.trim(); if (!t) { alert('답글을 써 주세요'); return; }
     b.disabled = true;
