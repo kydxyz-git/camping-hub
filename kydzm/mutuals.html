@@ -107,25 +107,29 @@
   .kpi.red .v { color:var(--danger); }
   .chart { width:100%; height:150px; display:block; }
   .chart text { fill:var(--muted); font-size:10px; }
-  .igrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
+  .igrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(118px,1fr)); gap:8px; }   /* PC 한 줄 8개쯤 (사용자 261126) */
   .ic { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; cursor:pointer; transition:border-color .12s, transform .08s; }
   .ic:hover { border-color:var(--line-strong); } .ic:active { transform:scale(.99); }
   .ic.open { border-color:var(--danger); } .ic.going { border-color:var(--success, var(--ok)); } .ic.sel { outline:3px solid var(--brand); }
   .ic-img { position:relative; aspect-ratio:1/1; background:var(--soft); }
   .ic-img img { width:100%; height:100%; object-fit:cover; display:block; }
-  .ic-ck { position:absolute; left:0; top:0; padding:10px; cursor:pointer; }
-  .ic-ck input { width:22px; height:22px; pointer-events:none; accent-color:var(--danger); }
-  .ic-badge { position:absolute; right:8px; bottom:8px; font-size:12px; font-weight:700; padding:2px 8px; border-radius:99px; background:rgba(0,0,0,.65); color:#fff; }
+  .ic-ck { position:absolute; left:0; top:0; padding:6px; cursor:pointer; }
+  .ic-ck input { width:19px; height:19px; pointer-events:none; accent-color:var(--danger); }
+  .ic-badge { position:absolute; right:5px; bottom:5px; font-size:10.5px; font-weight:700; padding:1px 6px; border-radius:99px; background:rgba(0,0,0,.65); color:#fff; }
   .ic-badge.red { background:var(--danger); } .ic-badge.go { background:var(--success, var(--ok)); }
-  .ic-b { padding:9px 11px 11px; }
-  .ic-t { font-weight:600; font-size:14px; line-height:1.35; height:2.7em; overflow:hidden; }
+  .ic-b { padding:6px 7px 8px; }
+  .ic-m { display:flex; gap:4px; align-items:center; font-size:11px; color:var(--muted); margin:2px 0 4px; white-space:nowrap; overflow:hidden; }
+  .ic-m .r { margin-left:auto; } .ic-m .tag { font-size:10px; padding:0 5px; }
+  .ic .rb { margin-top:4px; } .ic .rb-t { font-size:11px; margin-bottom:3px; } .ic .rb-t b { font-size:12px; } .ic .rb-k { height:6px; }
+  .ic-stop { width:100%; margin-top:6px; font-size:12px; padding:4px 6px; }
+  .ic-t { font-weight:600; font-size:12.5px; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }   /* 제목 한 줄 (사용자 261126) */
   .tags { display:flex; gap:5px; flex-wrap:wrap; margin:4px 0 6px; }
   .tag { font-size:11px; padding:1px 7px; border-radius:9px; background:var(--soft); color:var(--muted); font-weight:600; }
   .tag.red { background:var(--danger-soft); color:var(--danger); } .tag.or { background:var(--warning-soft); color:var(--warning); }
   .nums { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; font-size:12px; color:var(--muted); }
   .nums b { display:block; font-size:15px; color:var(--text); font-variant-numeric:tabular-nums; } .nums b.red { color:var(--danger); }
   .rb { margin-top:8px; }
-  @media (max-width:600px) { .igrid { grid-template-columns:1fr 1fr; gap:8px; } .ic-t { font-size:12.5px; } .ic-b { padding:7px 8px 9px; } .nums b { font-size:13px; } .kpi .v { font-size:19px; } }
+  @media (max-width:600px) { .igrid { grid-template-columns:repeat(3,1fr); gap:6px; } .ic-m .r { display:none; } .kpi .v { font-size:19px; } }
   /* 메모 바로 입력 (사용자 261126 '카드 안에서 바로 입력') */
   .nedit { display:flex; gap:6px; align-items:center; margin-top:6px; }
   .nedit input { flex:1; min-width:0; border:1px solid var(--brand); border-radius:8px; padding:6px 8px; font:inherit; font-size:13px; background:var(--card); color:var(--text); }
@@ -271,11 +275,10 @@ function renderPosts() {
       <div class="ic-img">${shotImg(m, `onerror="this.style.visibility='hidden'"`)}
         ${kind === 'open' ? `<label class="ic-ck" data-sel="${esc(mid)}" title="골라서 자동 시작"><input type="checkbox" ${sel ? 'checked' : ''} tabindex="-1"></label>` : ''}
         ${kind === 'going' ? '<span class="ic-badge go">🔄 진행 중</span>' : nd ? `<span class="ic-badge red">답 필요 ${nd}</span>` : '<span class="ic-badge ok">✅ 다 답함</span>'}</div>
-      <div class="ic-b"><div class="ic-t">${esc(title)}</div>
-        <div class="tags"><span class="tag">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)}</span>${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}</div>
-        <div class="nums"><div>댓글<b>${n(m.cc)}</b></div><div>맞팔<b>${cs.length}</b></div><div>${kind === 'going' ? '자동으로 단' : '답 필요'}<b class="${kind !== 'going' && nd ? 'red' : ''}">${kind === 'going' ? auto1 : nd}</b></div></div>
-        <div class="rb"><div class="rb-t"><span>내 답</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${pct}%"></i></div></div>
-        ${kind === 'going' ? `<div class="row" style="justify-content:space-between;margin-top:8px"><span class="muted">남은 ${nd}</span><button class="btn red sm" data-stop="${esc(mid)}">멈춤</button></div>` : ''}
+      <div class="ic-b"><div class="ic-t" title="${esc(title)}">${esc(title)}</div>
+        <div class="ic-m"><span>${esc(dayLabel(dayKey(m.at)))}</span>${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}<span class="r">💬${n(m.cc)}</span></div>
+        <div class="rb"><div class="rb-t"><span>${kind === 'going' ? `자동 ${auto1}` : '내 답'}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${pct}%"></i></div></div>
+        ${kind === 'going' ? `<button class="btn red sm ic-stop" data-stop="${esc(mid)}">멈춤 · 남은 ${nd}</button>` : ''}
       </div></div>`;
   };
   const grid = (list, kind) => `<div class="igrid">${list.map(x => card(x, kind)).join('')}</div>`;
