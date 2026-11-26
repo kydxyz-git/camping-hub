@@ -98,6 +98,39 @@
   .pcap { white-space:pre-line; font-size:13.5px; line-height:1.55; max-height:190px; overflow-y:auto; padding:8px 10px; background:var(--soft); border-radius:8px; }
   .pill.ok { color:var(--ok); }
   @media (max-width:600px) { .phead { flex-direction:column; } .pthumb { width:60%; max-width:240px; margin:0 auto; } .pcap { max-height:160px; } }
+  /* 유튜브식 (261126) */
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; }
+  .kpi { background:var(--soft); border-radius:10px; padding:10px 12px; min-width:0; }
+  .kpi .l { font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .kpi .v { font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .kpi .s { font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .kpi.red .v { color:var(--danger); }
+  .chart { width:100%; height:150px; display:block; }
+  .chart text { fill:var(--muted); font-size:10px; }
+  .igrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
+  .ic { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; cursor:pointer; transition:border-color .12s, transform .08s; }
+  .ic:hover { border-color:var(--line-strong); } .ic:active { transform:scale(.99); }
+  .ic.open { border-color:var(--danger); } .ic.going { border-color:var(--success, var(--ok)); } .ic.sel { outline:3px solid var(--brand); }
+  .ic-img { position:relative; aspect-ratio:1/1; background:var(--soft); }
+  .ic-img img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ic-ck { position:absolute; left:0; top:0; padding:10px; cursor:pointer; }
+  .ic-ck input { width:22px; height:22px; pointer-events:none; accent-color:var(--danger); }
+  .ic-badge { position:absolute; right:8px; bottom:8px; font-size:12px; font-weight:700; padding:2px 8px; border-radius:99px; background:rgba(0,0,0,.65); color:#fff; }
+  .ic-badge.red { background:var(--danger); } .ic-badge.go { background:var(--success, var(--ok)); }
+  .ic-b { padding:9px 11px 11px; }
+  .ic-t { font-weight:600; font-size:14px; line-height:1.35; height:2.7em; overflow:hidden; }
+  .tags { display:flex; gap:5px; flex-wrap:wrap; margin:4px 0 6px; }
+  .tag { font-size:11px; padding:1px 7px; border-radius:9px; background:var(--soft); color:var(--muted); font-weight:600; }
+  .tag.red { background:var(--danger-soft); color:var(--danger); } .tag.or { background:var(--warning-soft); color:var(--warning); }
+  .nums { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; font-size:12px; color:var(--muted); }
+  .nums b { display:block; font-size:15px; color:var(--text); font-variant-numeric:tabular-nums; } .nums b.red { color:var(--danger); }
+  .rb { margin-top:8px; }
+  @media (max-width:600px) { .igrid { grid-template-columns:1fr 1fr; gap:8px; } .ic-t { font-size:12.5px; } .ic-b { padding:7px 8px 9px; } .nums b { font-size:13px; } .kpi .v { font-size:19px; } }
+  /* 메모 바로 입력 (사용자 261126 '카드 안에서 바로 입력') */
+  .nedit { display:flex; gap:6px; align-items:center; margin-top:6px; }
+  .nedit input { flex:1; min-width:0; border:1px solid var(--brand); border-radius:8px; padding:6px 8px; font:inherit; font-size:13px; background:var(--card); color:var(--text); }
+  .npop { position:fixed; z-index:9300; background:var(--card); border:1px solid var(--line); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.25); padding:8px; width:min(300px, calc(100vw - 16px)); }
+  .npop .u { font-size:12px; margin-bottom:4px; }
 </style>
 <link rel="stylesheet" href="lib/theme.css?v=261126i">
 <script src="lib/nav.js?v=261126l"></script>
@@ -165,7 +198,7 @@ function renderMode() {   // 위 상태 줄 (사용자 261126: 큰 '자동 시�
   const next = (st.pace || {}).next_at;
   $('#mode').innerHTML = paused
     ? `<div class="banner err"><div class="row" style="justify-content:space-between"><b>⛔ 대댓글 멈춤 — 인스타가 거절</b><button class="btn pri" data-resume>다시 켜기</button></div><div class="muted">${esc(st.paused_reason || '')}</div></div>`
-    : `<div class="sbar"><span>🔄 진행 중 <b>${on}</b>개</span><span>오늘 단 답글 <b>${todayPosted()}</b></span>${on && next ? `<span class="muted">다음 ${esc(hm(next))} 이후</span>` : ''}<span class="muted">확인 ${esc(hm((st.pace || {}).fetched_at || ''))}</span></div>`;
+    : (S.tab === 'posts' && !S.post) ? '' : `<div class="sbar"><span>🔄 진행 중 <b>${on}</b>개</span><span>오늘 단 답글 <b>${todayPosted()}</b></span>${on && next ? `<span class="muted">다음 ${esc(hm(next))} 이후</span>` : ''}<span class="muted">확인 ${esc(hm((st.pace || {}).fetched_at || ''))}</span></div>`;
   $('#mode').querySelectorAll('[data-resume]').forEach(b => b.onclick = async () => {
     b.disabled = true;
     S.ctl = await writeJson('state/ig_comments_ctl.json', d => { d.mode = 'on'; d.mode_at = kstNow(); }, 'ig(admin): 맞팔 대댓글 다시 켬');
@@ -201,26 +234,67 @@ function renderPosts() {
   const auto = S.ctl.auto_media || {};
   const ms = Object.entries(S.st.media || {}).sort((a, b) => (b[1].at > a[1].at ? 1 : -1)).slice(0, 40);
   const going = ms.filter(([mid]) => auto[mid]), open = ms.filter(([mid]) => !auto[mid] && need(mid)), done = ms.filter(([mid]) => !auto[mid] && !need(mid));
-  const row = ([mid, m], kind) => {
+  // 유튜브 화면처럼 (사용자 261126 '인스타 화면도 유튜브처럼'): 위 숫자 칸 → 날짜별 막대 → 게시물 카드
+  const card = ([mid, m], kind) => {
     const cs = by[mid] || [], nd = need(mid);
     const got = cs.filter(([, c]) => myReplies(c).length).length;
     const auto1 = cs.filter(([, c]) => c.status === 'posted').length, chk = cs.filter(([, c]) => c.status === 'check').length;
-    const title = (m.cap || '').replace(/^\((협찬|광고)\)\s*/, '').split('\n')[0].slice(0, 40) || '(글 없음)';
-    const sel = S.sel.has(mid);
-    return `<div class="card pc ${kind === 'open' ? 'open' : kind === 'going' ? 'going' : ''} ${sel ? 'sel' : ''}" data-post="${esc(mid)}"><div class="prow">
-      ${kind === 'open' ? `<label class="ck2" data-sel="${esc(mid)}"><input type="checkbox" ${sel ? 'checked' : ''} tabindex="-1"></label>` : ''}
-      ${m.thumb ? `<img class="th" src="${esc(m.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<div class="th"></div>'}
-      <div class="pmid"><div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)} · 💬${m.cc} · 맞팔 ${cs.length}</div><div class="ptitle">${esc(title)}</div>
-        <div class="muted">${kind === 'going' ? (nd ? `남은 <b style="color:var(--text)">${nd}</b> · 자동으로 단 ${auto1}` : '✅ 다 달았어요') : nd ? `<span style="color:var(--danger);font-weight:600">답 필요 ${nd}</span>` : '다 답함'}${chk ? ` · <span style="color:var(--danger)">확인 ${chk}</span>` : ''}</div></div>
-      ${cs.length ? `<div class="rbar" title="내 답 ${got}/${cs.length}"><div class="rb-t"><span>내 답</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${Math.round(got / cs.length * 100)}%"></i></div></div>` : ''}
-      ${kind === 'going' ? `<button class="btn red sm" data-stop="${esc(mid)}">멈춤</button>` : ''}</div></div>`;
+    const sp = ((m.cap || '').match(/^\((협찬|광고)\)/) || [])[1];
+    const title = (m.cap || '').replace(/^\((협찬|광고)\)\s*/, '').split('\n')[0] || '(글 없음)';
+    const sel = S.sel.has(mid), pct = cs.length ? Math.round(got / cs.length * 100) : 100;
+    return `<div class="ic ${kind} ${sel ? 'sel' : ''}" data-post="${esc(mid)}">
+      <div class="ic-img">${m.thumb ? `<img src="${esc(m.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : ''}
+        ${kind === 'open' ? `<label class="ic-ck" data-sel="${esc(mid)}" title="골라서 자동 시작"><input type="checkbox" ${sel ? 'checked' : ''} tabindex="-1"></label>` : ''}
+        ${kind === 'going' ? '<span class="ic-badge go">🔄 진행 중</span>' : nd ? `<span class="ic-badge red">답 필요 ${nd}</span>` : '<span class="ic-badge ok">✅ 다 답함</span>'}</div>
+      <div class="ic-b"><div class="ic-t">${esc(title)}</div>
+        <div class="tags"><span class="tag">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)}</span>${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}</div>
+        <div class="nums"><div>댓글<b>${n(m.cc)}</b></div><div>맞팔<b>${cs.length}</b></div><div>${kind === 'going' ? '자동으로 단' : '답 필요'}<b class="${kind !== 'going' && nd ? 'red' : ''}">${kind === 'going' ? auto1 : nd}</b></div></div>
+        <div class="rb"><div class="rb-t"><span>내 답</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${pct}%"></i></div></div>
+        ${kind === 'going' ? `<div class="row" style="justify-content:space-between;margin-top:8px"><span class="muted">남은 ${nd}</span><button class="btn red sm" data-stop="${esc(mid)}">멈춤</button></div>` : ''}
+      </div></div>`;
   };
-  const sec = (t, list, kind, cls = '') => list.length ? `<div class="gh ${cls}">${t} <span class="muted">${list.length}</span></div>` + list.map(x => row(x, kind)).join('') : '';
-  return sec('🔄 대댓글 진행 중', going, 'going') +
-    (open.length ? `<div class="gh red">🔴 답 필요 <span class="muted">${open.length} · 골라서 자동 시작</span></div>` + open.map(x => row(x, 'open')).join('') : '') +
-    sec('✅ 다 답함', done, 'done') +
-    '';
+  const grid = (list, kind) => `<div class="igrid">${list.map(x => card(x, kind)).join('')}</div>`;
+  return renderKpis(by, need, going.length) + renderDaily() +
+    (going.length ? `<div class="gh">🔄 대댓글 진행 중 <span class="muted">${going.length} · 오래된 댓글부터 하나씩</span></div>` + grid(going, 'going') : '') +
+    (open.length ? `<div class="gh red">🔴 답 필요 <span class="muted">${open.length} · 체크해서 위 [자동 시작]</span></div>` + grid(open, 'open') : '') +
+    (done.length ? `<div class="gh">✅ 다 답함 <span class="muted">${done.length}</span></div>` + grid(done, 'done') : '');
 }
+function renderKpis(by, need, goingN) {
+  const cs = Object.entries(S.st.comments || {}), lt = S.st.latest || {};
+  const d30 = new Date(Date.now() - 30 * 864e5).toISOString();
+  const needC = cs.filter(([id, c]) => !myReplies(c).length && !skipWhy(id, c) && ((S.st.media || {})[c.media] || {}).at >= d30).length;   // 대시보드 요약과 같은 기준(30일 안 게시물)
+  const d7 = new Date(Date.now() - 7 * 864e5).toISOString(), d3 = new Date(Date.now() - 3 * 864e5).toISOString();
+  const c7 = cs.filter(([, c]) => c.at >= d7);
+  const r7 = c7.filter(([, c]) => myReplies(c).length).length;
+  const m30 = counts(30), visit = Object.keys(m30).filter(u => lt[u] && lt[u].at >= d3 && !opened(u, lt[u].at)).length;
+  const next = (S.st.pace || {}).next_at;
+  const k = (l, v, sub = '', cls = '') => `<div class="kpi ${cls}"><div class="l">${l}</div><div class="v">${v}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>`;
+  return `<div class="kpis">
+    ${k('답 필요 댓글', n(needC), '30일 안 게시물 · 내 답 없음', needC ? 'red' : '')}
+    ${k('진행 중', goingN, goingN && next ? `다음 ${esc(hm(next))} 이후` : '자동 켠 게시물')}
+    ${k('오늘 단 답글', todayPosted(), '자동·수동')}
+    ${k('7일 맞팔 댓글', n(c7.length), `내 답 ${c7.length ? Math.round(r7 / c7.length * 100) : 0}%`)}
+    ${k('다녀올 맞팔', visit, '3일 안 새 글·안 엶')}
+    ${k('30일 댓글 단 맞팔', Object.keys(m30).length, `맞팔 ${n(S.mut.length)}명 중`)}
+  </div>`;
+}
+function renderDaily() {   // 날짜별 맞팔 댓글 — 초록 = 내가 답함, 빨강 = 아직 (14일)
+  const days = [];
+  for (let i = 13; i >= 0; i--) days.push(dayKey(new Date(Date.now() - i * 864e5).toISOString()));
+  const agg = Object.fromEntries(days.map(d => [d, { a: 0, r: 0 }]));
+  for (const c of Object.values(S.st.comments || {})) { const x = agg[dayKey(c.at)]; if (x) { x.a++; if (myReplies(c).length) x.r++; } }
+  const W = 700, H = 150, P = 14, bw = (W - P * 2) / days.length, mx = Math.max(1, ...days.map(d => agg[d].a));
+  const bars = days.map((d, i) => {
+    const { a, r } = agg[d], X = P + i * bw + 3, w = Math.max(2, bw - 6), hA = Math.round(a / mx * (H - 46)), hR = Math.round(r / mx * (H - 46)), base = H - 20;
+    return `<rect x="${X}" y="${base - hA}" width="${w}" height="${hA - hR}" rx="2" fill="var(--danger)" opacity=".75"><title>${md(d)} 맞팔 댓글 ${a} · 내 답 ${r}</title></rect>`
+      + `<rect x="${X}" y="${base - hR}" width="${w}" height="${hR}" rx="2" fill="var(--success, var(--ok))" opacity=".85"><title>${md(d)} 맞팔 댓글 ${a} · 내 답 ${r}</title></rect>`
+      + (a ? `<text x="${X + w / 2}" y="${base - hA - 4}" text-anchor="middle">${r}/${a}</text>` : '')
+      + ((i % 2 === 1 || i === days.length - 1) ? `<text x="${X + w / 2}" y="${H - 5}" text-anchor="middle">${md(d)}</text>` : '');
+  }).join('');
+  return `<div class="card" style="margin-top:10px"><div class="row" style="justify-content:space-between"><b>📊 날짜별 맞팔 댓글 · 14일</b><span class="muted"><span style="color:var(--success, var(--ok))">■</span> 답함 <span style="color:var(--danger)">■</span> 아직 · 숫자 = 답함/전체</span></div>
+    <svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${bars}</svg></div>`;
+}
+function md(k) { return `${+k.slice(5, 7)}/${+k.slice(8, 10)}`; }
 function renderPost(mid, cs) {
   const m = S.st.media[mid] || {}, edits = S.ctl.edits || {}, skip = new Set(S.ctl.skip || []);
   cs.sort((a, b) => (b[1].at > a[1].at ? 1 : -1));
@@ -411,13 +485,7 @@ function render() {
   };
   $('#main').querySelectorAll('[data-qsort]').forEach(b => b.onclick = () => { S.quietOld = !S.quietOld; render(); });
   $('#main').querySelectorAll('[data-more]').forEach(b => b.onclick = () => { S.statsAll = !S.statsAll; render(); });
-  $('#main').querySelectorAll('[data-note]').forEach(b => b.onclick = async e => {
-    e.preventDefault(); e.stopPropagation();
-    const u = b.dataset.note, t = prompt(`@${u} 메모 (비우면 지움)`, S.notes[u] || '');
-    if (t === null) return;
-    const v = t.trim(); if (v) S.notes[u] = v; else delete S.notes[u]; render();
-    try { await writeJson('state/ig_notes.json', d => { d.notes ||= {}; if (v) d.notes[u] = v; else delete d.notes[u]; }, 'ig(admin): 맞팔 메모'); } catch (er) { alert(er.message); }
-  });
+  $('#main').querySelectorAll('[data-note]').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); noteEdit(b, b.dataset.note); });
   $('#main').querySelectorAll('[data-undo]').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); mark(b.dataset.undo, ''); });
   $('#main').querySelectorAll('[data-open]').forEach(a => a.addEventListener('click', e => { if (e.target.dataset.undo || e.target.dataset.note) return; mark(a.dataset.open, kstNow()); }));
   $('#main').querySelectorAll('[data-save]').forEach(b => b.onclick = async () => {
@@ -446,6 +514,35 @@ function render() {
   });
 }
 
+// 메모 바로 입력 (사용자 261126 '입력칸이 왜 이걸로' → '카드 안에서 바로 입력'): 댓글 카드는 그 자리에서, 작은 카드(✎)는 그 옆에 작은 칸
+function noteEdit(el, u) {
+  document.querySelectorAll('.npop').forEach(x => x.remove());
+  const form = document.createElement('div'); form.className = 'nedit';
+  form.innerHTML = `<input type="text" placeholder="메모 ('제외' 넣으면 자동 안 함) · 비우면 지움" value="${esc(S.notes[u] || '')}"><button class="btn sm pri">저장</button><button class="btn sm">취소</button>`;
+  let host;
+  if (el.classList.contains('note')) { host = el; el.replaceChildren(form); el.onclick = null; el.removeAttribute('data-note'); }
+  else {
+    host = document.createElement('div'); host.className = 'npop'; host.innerHTML = `<div class="u">@${esc(u)} 메모</div>`; host.appendChild(form); form.style.marginTop = '0';
+    document.body.appendChild(host);
+    const r = el.getBoundingClientRect(), w = host.offsetWidth;
+    host.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px';
+    host.style.top = Math.min(innerHeight - host.offsetHeight - 8, r.bottom + 6) + 'px';
+  }
+  const inp = form.querySelector('input'), [ok, no] = form.querySelectorAll('button');
+  ['click', 'pointerdown'].forEach(t => form.addEventListener(t, ev => ev.stopPropagation()));
+  const close = () => { if (host.classList.contains('npop')) host.remove(); else render(); };
+  const save = async () => {
+    const v = inp.value.trim();
+    if (v) S.notes[u] = v; else delete S.notes[u];
+    ok.disabled = true;
+    try { await writeJson('state/ig_notes.json', d => { d.notes ||= {}; if (v) d.notes[u] = v; else delete d.notes[u]; }, 'ig(admin): 맞팔 메모'); } catch (er) { alert(er.message); }
+    if (host.classList.contains('npop')) host.remove();
+    render(); toast(v ? '메모 저장' : '메모 지움');
+  };
+  ok.onclick = save; no.onclick = close;
+  inp.addEventListener('keydown', ev => { if (ev.key === 'Enter' && !ev.isComposing) save(); else if (ev.key === 'Escape') close(); });
+  inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length);
+}
 async function start() {
   $('#app').style.display = 'block';
   if (!tok()) { $('#main').innerHTML = '<div class="banner err">cupas 토큰이 없어요 — <a href="threads.html">스레드 관리</a>에서 넣어 주세요</div>'; return; }
