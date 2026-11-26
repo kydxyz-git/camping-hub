@@ -62,6 +62,15 @@
   .kn-dd{position:fixed;z-index:9200;min-width:170px;max-width:calc(100vw - 16px);max-height:70vh;overflow:auto;background:var(--kn-card);border:1px solid var(--kn-line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:4px}
   .kn-dd a,.kn-dd button{display:flex;gap:8px;align-items:center;width:100%;text-align:left;padding:9px 10px;border-radius:7px;border:0;background:none;color:inherit;font:inherit;text-decoration:none;cursor:pointer;box-sizing:border-box}
   .kn-dd a:hover,.kn-dd button:hover{background:var(--kn-soft)} .kn-dd .cur{background:var(--kn-hi);font-weight:700}
+  /* 폰: 위 메뉴 줄 고정 (사용자 261126) — 각 화면의 위에 붙는 줄은 그 아래로 */
+  @media (max-width:759px){
+    .kn-bar{position:sticky;top:0}
+    .topbar{top:44px!important}
+    .dash-nav{top:103px!important}
+    .tabs{top:44px!important}
+    .content-tabs,.save-bar{top:92px!important}
+    .savebar{top:94px!important}
+  }
   .kn-hide{display:none!important}`;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
