@@ -463,7 +463,7 @@
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
 <link rel="stylesheet" href="lib/theme.css?v=261126n">
-<script src="lib/nav.js?v=261126s"></script>
+<script src="lib/nav.js?v=261126t"></script>
 </head>
 <body class="kn-wide">
 
@@ -2417,7 +2417,7 @@ function isAuthed() { try { return sessionStorage.getItem(AUTH_KEY) === '1'; } c
 async function start() {
   $('#app').classList.add('is-active');
   $('#today-label').textContent = todayLabel();
-  try { S.tab = new URLSearchParams(location.search).get('tab') || (isPc() ? 'tasks' : localStorage.getItem(TAB_KEY)) || 'today'; /* PC는 주소대로(탭 기억 안 씀) */ S.pf = localStorage.getItem('kydz_board_pf') || ''; S.postsPf = localStorage.getItem('kydz_posts_pf') || ''; } catch (e) {}
+  try { S.tab = new URLSearchParams(location.search).get('tab') || (isPc() ? 'tasks' : localStorage.getItem(TAB_KEY)) || 'today'; /* PC는 주소대로(탭 기억 안 씀) */ S.pf = EMBED ? '' : (localStorage.getItem('kydz_board_pf') || '');   /* 대시보드 할일 장(embed)은 운영판에서 고른 프로젝트와 상관없이 전체 (사용자 261126 '협찬은 왜 0건') */ S.postsPf = localStorage.getItem('kydz_posts_pf') || ''; } catch (e) {}
   if (window.kydzNav) kydzNav.onView(v => { if (!v) return; closeSheet(true); S.tab = v.tab; S.project = null; setPf(v.pf, true); window.scrollTo(0, 0); }, { tab: S.tab, pf: S.pf });
   if (!getToken()) { render(); return; }
   $('#main').innerHTML = '<div class="card muted">불러오는 중...</div>';

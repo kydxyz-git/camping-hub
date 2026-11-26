@@ -278,27 +278,27 @@
     .dash-top { gap: 10px; margin-bottom: 0; }
     .dash-page .stats-summary { grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; }
     .dash-page .stats-card { padding: 8px 4px; }
-    .dash-page .stats-card-label { font-size: 10.5px; margin-bottom: 2px; white-space: nowrap; }
+    .dash-page .stats-card-label { font-size: 12px; margin-bottom: 2px; white-space: nowrap; }
     .dash-page .stats-trend { display: none; }
-    .dash-page .stats-card-value { font-size: 15px; }
+    .dash-page .stats-card-value { font-size: 17px; }
     .dash-page .today-card { padding: 10px 12px; margin-bottom: 0; }
     .dash-page .today-card .stats-section-title { margin-bottom: 6px; font-size: 13px; }
     .dash-page .today-grid { gap: 6px; }
     .dash-page .today-item { padding: 6px 4px; }
-    .dash-page .today-value { font-size: 15px; }
+    .dash-page .today-value { font-size: 17px; }
     .dash-page .today-top { margin-top: 4px; padding: 4px 8px; }
     .dash-page .dash-more { margin-top: 4px; }
     .dash-page #money-container .card { padding: 12px 14px; }
     .dash-page .money-v { font-size: 18px; }
     .dash-page #money-container .help { display: none; }
-    .dash-page .money-s { font-size: 11.5px; }
+    .dash-page .money-s { font-size: 13px; }
     .dash-page .money-s, .dash-page .deal-meta, .dash-page .today-top-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .dash-page .money-col { min-width: 0; }
     .dash-page .deal-sub { display: none !important; }
     .dash-page #deal-top-card { margin-bottom: 14px; }
     .dash-page #deal-top-card a > b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .dash-page .stats-card-value, .dash-page .today-value { white-space: nowrap; }
-    .dash-page #stats-container > .card:not(.today-card) { font-size: 11px !important; padding: 6px 10px !important; margin-bottom: 6px !important; }
+    .dash-page #stats-container > .card:not(.today-card) { font-size: 12.5px !important; padding: 6px 10px !important; margin-bottom: 6px !important; }
   }
   .money-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .ig-ks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
@@ -321,7 +321,7 @@
   .ig-p .g b { color: var(--text); }
   .ig-vs2 { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; }   /* 작게 더 많이 (사용자 261126) — 8칸 × 3줄 */
   @media (min-width: 760px) and (max-width: 1199px) { .ig-vs2 { grid-template-columns: repeat(6, minmax(0, 1fr)); } .ig-v2:nth-child(n+19) { display: none; } }
-  @media (max-width: 759px) { .ig-vs2 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; } .ig-v2 span { font-size: 10px; } .ig-v2:nth-child(n+6) { display: none; } }
+  @media (max-width: 759px) { .ig-vs2 { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; } .ig-v2 span { font-size: 12px; } .ig-k span { font-size: 12.5px; } .ig-p .t { font-size: 14px; } .ig-v2:nth-child(n+6) { display: none; } }
   .ig-v2 { display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: inherit; min-width: 0; }
   .ig-v2 img, .ig-v2 i { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: var(--soft); display: block; }
   .ig-v2 span { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1938,7 +1938,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <script src="lib/passkey.js?v=261103c"></script>
 <link rel="stylesheet" href="lib/theme.css?v=261126n">
-<script src="lib/nav.js?v=261126s"></script>
+<script src="lib/nav.js?v=261126t"></script>
 </head>
 <body>
 
@@ -2971,13 +2971,13 @@ function fitDashPages() {
   box.style.setProperty('--dash-h', Math.max(300, h) + 'px');
   box.querySelectorAll('.dash-fit').forEach(fitDashPage);
 }
-// 한 장이 화면보다 길면 내용을 줄여서 딱 맞춤 (실제 데이터가 길어도 장마다 한 화면, 사용자 요청 261103). 너무 작아지면 0.72에서 멈추고 안에서 스크롤
+// 한 장이 화면보다 길면 내용을 줄여서 딱 맞춤 (사용자 261103) — 261126 사용자 '글자가 너무 작아'로 줄이는 건 0.94까지만, 넘치면 장 안에서 스크롤
 function fitDashPage(fit) {
   const page = fit.parentElement;
   if (!document.body.classList.contains('dash-lock')) { fit.style.zoom = ''; return; }
   fit.style.zoom = 1;
   const need = fit.scrollHeight, have = page.clientHeight - 2;
-  fit.style.zoom = need > have ? Math.max(0.72, have / need).toFixed(3) : '';
+  fit.style.zoom = need > have ? Math.max(0.94, have / need).toFixed(3) : '';
 }
 const _dashRO = window.ResizeObserver ? new ResizeObserver(es => es.forEach(e => fitDashPage(e.target))) : null;
 window.addEventListener('resize', () => { if (document.getElementById('dash-pages')) fitDashPages(); });

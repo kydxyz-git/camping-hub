@@ -148,6 +148,7 @@
   /* 위 줄 하나로 (사용자 261126 '2번도 해'): 각 화면의 제목 줄은 숨기고 그 버튼은 위 줄 오른쪽으로. 위 줄은 늘 고정 → 각 화면의 붙는 줄은 그 아래 */
   .kn-act{margin-left:auto;display:flex;align-items:center;gap:6px;flex:none;padding-left:8px}
   .kn-act>*{flex:none}
+  .kn-side-foot{display:flex;gap:8px;margin:18px 4px 0;padding-top:12px;border-top:1px solid var(--kn-line)} .kn-side-foot>*{flex:1;padding:9px 10px;border:1px solid var(--kn-line);border-radius:8px;background:transparent;color:var(--kn-text);font:inherit;font-size:14px;cursor:pointer}
   .kn-page-act{display:flex;align-items:center;gap:6px}
   @media (max-width:759px){.kn-act{position:sticky;right:-8px;margin-right:-8px;padding-right:8px;background:var(--kn-bg);box-shadow:-10px 0 10px -4px var(--kn-bg)}}
   .kn-page-act .sel{font-size:13px;font-weight:700;white-space:nowrap}
@@ -178,7 +179,20 @@
       MENU.map(([gi, g, items], i) => `<div class="kn-g">${esc(g)}</div><div class="kn-grp">` + items.map(it =>
         `<a href="${esc(it[0])}" class="${w && w[1] === it ? 'cur' : ''}"><span class="ic">${it[1]}</span>${esc(it[2])}</a>`).join('') + '</div>').join('');
     side.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { layer = null; side.classList.remove('on'); shade.classList.remove('on'); }));
+    if (foot.children.length) side.appendChild(foot);
   }
+  // 폰: '← 사이트'·'로그아웃'은 위 줄 대신 ☰ 메뉴 맨 아래로 (사용자 261126 '오른쪽 위 사이트·로그아웃 버튼 이상해')
+  const foot = document.createElement('div'); foot.className = 'kn-side-foot';
+  const phoneQ = matchMedia('(max-width: 759px)');
+  function placeFoot() {
+    const act = bar.querySelector('.kn-act');
+    const els = [...document.querySelectorAll('#topbar-back, #topbar-logout')];
+    if (!els.length) return;
+    if (phoneQ.matches) { els.forEach(x => foot.appendChild(x)); side.appendChild(foot); }
+    else if (act) { els.forEach(x => act.appendChild(x)); foot.remove(); }
+    if (act) act.style.display = act.children.length ? '' : 'none';
+  }
+  phoneQ.addEventListener && phoneQ.addEventListener('change', placeFoot);
   function renderBar() {
     const w = where();
     let h = `<button class="kn-burger" data-burger aria-label="메뉴">☰</button>`;
@@ -250,7 +264,7 @@
       if ((h === './' || h === 'index.html' || h === '/kydzm/') && /관리자|대시보드/.test(t) && t.length < 12) a.classList.add('kn-hide');
     });
     document.querySelectorAll('button[onclick*="index.html"]').forEach(b => { if (/관리자|대시보드/.test(b.textContent) && b.textContent.trim().length < 12) b.classList.add('kn-hide'); });
-    absorbTopbar();
+    absorbTopbar(); placeFoot();
   };
   if (document.body) mount(); else document.addEventListener('DOMContentLoaded', mount);
   // 안드로이드에서 인스타 링크는 인스타 앱으로 (사용자 261126 '링크 누르면 인스타 앱으로 연결이 안 되네') — 메인 홈페이지와 같은 intent:// 방식, 앱 없으면 웹
