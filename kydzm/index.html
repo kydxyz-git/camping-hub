@@ -213,7 +213,12 @@
     /* 칸을 한 격자로: 왼쪽 오늘 홈페이지 | 오른쪽 수익화 + 최근 바뀐 것, 그 아래 가로 전체 인스타 → 캠핑딜 TOP7 → 토큰 */
     #dash-pages { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); grid-template-areas: "stats money" "stats recent" "ig ig" "deal deal" "token token"; gap: 18px; align-items: start; }
     #dash-pages > .dash-page, #dash-pages .dash-fit, #dash-pages .dash-top { display: contents; }
-    #dash-pages .dash-top > div:first-child { grid-area: stats; min-width: 0; }
+    #dash-pages .dash-top > div:first-child { grid-area: stats; min-width: 0; align-self: stretch; display: flex; flex-direction: column; }
+    /* 왼쪽이 오른쪽(수익화+최근 바뀐 것)보다 짧아 인스타 위에 빈 칸이 생김 → 왼쪽 맨 아래 7일 방문 칸이 남는 높이를 채움 (사용자 261126 '인스타 위 공간 여백 이상해') */
+    #dash-pages #stats-container { flex: 1; display: flex; flex-direction: column; }
+    #dash-pages #stats-container > .dash-chart7 { flex: 1; display: flex; flex-direction: column; }
+    #dash-pages #stats-container > .dash-chart7 .stats-bar-chart { flex: 1; height: auto; min-height: 64px; }
+    #dash-pages .dash-recent { align-self: stretch; }
     #dash-pages .dash-top > div:nth-child(2) { grid-area: money; min-width: 0; }
     #dash-pages .dash-ig { grid-area: ig; margin: 0; min-width: 0; }
     #dash-pages .dash-recent { grid-area: recent; margin: 0; }
