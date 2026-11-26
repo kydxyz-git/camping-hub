@@ -253,4 +253,13 @@
     absorbTopbar();
   };
   if (document.body) mount(); else document.addEventListener('DOMContentLoaded', mount);
+  // 안드로이드에서 인스타 링크는 인스타 앱으로 (사용자 261126 '링크 누르면 인스타 앱으로 연결이 안 되네') — 메인 홈페이지와 같은 intent:// 방식, 앱 없으면 웹
+  if (/Android/i.test(navigator.userAgent)) document.addEventListener('click', e => {
+    const a = e.target.closest && e.target.closest('a[href]'); if (!a) return;
+    const href = a.getAttribute('href') || '';
+    if (!/^https?:\/\/(www\.)?instagram\.com\//i.test(href)) return;
+    const url = href.split('?')[0].replace(/\/(reel|tv)\//, '/p/');
+    e.preventDefault();
+    location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.instagram.android;S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+  }, true);
 })();
