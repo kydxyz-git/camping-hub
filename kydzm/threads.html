@@ -139,6 +139,13 @@
   .err-box { background: var(--danger-soft); color: var(--danger); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; margin-bottom: 8px; white-space: pre-wrap; word-break: break-all; }
   .done-row { background: var(--bg); border-radius: 12px; padding: 10px 14px; display: flex; gap: 10px; align-items: center; font-size: 13.5px; }
   /* 게시 완료 목록은 촘촘하게 한 덩어리 (사용자 261126 '줄간격 공백 왜 이래 많아') */
+  .best { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-bottom: 14px; }
+  .best-c { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .best-r { font-size: 16px; line-height: 1; }
+  .best-t { font-weight: 700; font-size: 13.5px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .best-n { font-size: 12px; color: var(--muted); } .best-n b { color: var(--text); font-size: 13px; }
+  .best-f { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-size: 12px; margin-top: auto; }
+  .best-f .tm { color: var(--muted); } .best-f a.go { font-weight: 700; color: var(--info); text-decoration: none; white-space: nowrap; }
   .posts.done-list { gap: 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
   .done-list .done-row { background: transparent; border-radius: 0; padding: 6px 12px; border-bottom: 1px solid var(--line); }
   .done-list .done-row:last-child { border-bottom: 0; }
@@ -801,6 +808,7 @@ function renderList() {
       <span class="row">${drafts ? `<button class="btn small ghost" id="confirm-drafts">초안 ${drafts}개 모두 대기로</button>` : ''}${waitingN ? `<button class="btn small ghost" id="to-drafts">대기 ${waitingN}개 모두 초안으로</button>` : ''}<button class="btn small" id="add-post">+ 글 추가</button></span>
     </div>
     ${reportHtml()}
+    ${bestHtml(done)}
     ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">게시 완료 ${done.length}개
         ${done.length > 3 ? `<button class="btn small ghost" id="toggle-done">${S.showDone ? '최근 3개만' : '모두 보기'}</button>` : ''}</div>
       <div class="posts done-list" style="margin-bottom:16px">${(S.showDone ? done : done.slice(0, 3)).map(doneHtml).join('')}</div>` : ''}
@@ -926,6 +934,19 @@ function reportHtml() {
         <div class="small muted" style="margin-top:8px">잘된 글엔 다른 첫 문장이 만들어져 있어요 — '다시 올리기'를 누르면 바꿔 끼워 넣어요.</div>`
       : S.showReport ? '<div class="small muted" style="margin-top:6px">주간 리포트는 월요일 아침에 만들어져요.</div>' : ''}
     </div>`;
+}
+// 🏆 잘된 글 (사용자 261126 '게시 완료 리스트 위에 성과 좋은 건 몇 개'): 최근 30일 게시 글 중 조회 많은 순 5개
+function bestHtml(done) {
+  const cut = new Date(Date.now() - 30 * 864e5).toISOString();
+  const ins = S.insights || {};
+  const top = done.filter(p => p.posted_at && new Date(p.posted_at).toISOString() >= cut && ins[p.id] && ins[p.id].views != null)
+    .sort((a, b) => (ins[b.id].views || 0) - (ins[a.id].views || 0)).slice(0, 5);
+  if (!top.length) return '';
+  return `<div class="section-title" style="margin-top:4px">🏆 잘된 글 <span class="muted" style="font-weight:400;font-size:12px">최근 30일 · 조회 많은 순</span></div>
+    <div class="best">${top.map((p, i) => { const st = ins[p.id], cp = ((S.cpReport || {}).posts || {})[p.id];
+      return `<div class="best-c"><div class="best-r">${['🥇', '🥈', '🥉'][i] || i + 1}</div><div class="best-t">${esc(String(p.body || '').trim().split('\n')[0] || p.name || '')}</div>
+        <div class="best-n"><b>👁 ${Number(st.views || 0).toLocaleString()}</b> · ❤ ${st.likes ?? 0} · 💬 ${st.replies ?? 0}${cp && cp.click ? ` · 🖱 ${cp.click}` : ''}</div>
+        <div class="best-f"><span class="tm">${esc(fmtDT(p.posted_at).slice(5))}</span>${p.permalink ? thLink(p.permalink, 'go') : ''}</div></div>`; }).join('')}</div>`;
 }
 function doneHtml(p) {
   const first = String(p.body || '').trim().split('\n')[0];
