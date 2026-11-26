@@ -1024,6 +1024,11 @@
     }
   }
   .list { display: flex; flex-direction: column; gap: 6px; }
+  .cpc { display: flex; align-items: flex-end; gap: 3px; height: 170px; border-bottom: 1px solid var(--line); }
+  .cpc-c { flex: 1; min-width: 0; height: 100%; display: flex; align-items: flex-end; cursor: default; }
+  .cpc-c .cp-bar { width: 100%; background: var(--success); opacity: .75; border-radius: 3px 3px 0 0; transition: opacity .1s; }
+  .cpc-x { display: flex; gap: 3px; margin-top: 4px; }
+  .cpc-x span { flex: 1; min-width: 0; font-size: 10.5px; color: var(--muted); text-align: center; white-space: nowrap; overflow: visible; }
   /* 261126 사용자 '시리즈·캠핑장·음식·장비 화면 가로로 더 채우기 · 위 ← 대시보드·메뉴 줄 없애기' */
   .page-back { display: none !important; }
   @media (min-width: 760px) { .content-tabs { display: none !important; } }
@@ -2794,7 +2799,8 @@ async function router() {
 // 데이터: 비공개 cupas state/link_report.json (report.py가 매일 06:10) — 수익 숫자라 공개 저장소엔 없음
 // ════════════════════════════════════════════════════════════════════
 let _cpFilter = 'all', _cpOpen = new Set(), _cpData = null;
-let _cpPeriod = '7d', _cpFrom = '', _cpTo = '', _cpMetric = 'commission', _cpOrder = 'commission';
+let _cpPeriod = (window.matchMedia && matchMedia('(min-width: 760px)').matches) ? '30d' : '7d',   // PC는 최근 30일 (사용자 261126)
+   _cpFrom = '', _cpTo = '', _cpMetric = 'commission', _cpOrder = 'commission';
 const CP_THREADS = 'thread0sshdPemf', CP_HOME = 'kydzhome';   // 쿠팡 채널 아이디 (cupas deals.THREADS_CHANNEL / report.HOME_SUB)
 const cpChannel = sub => sub === CP_THREADS ? '스레드' : sub === CP_HOME ? '홈페이지' : !sub ? '채널 없음'
   : (/^p[0-9a-f]{10}$/.test(sub) ? '스레드(예전 글별)' : sub);
@@ -2852,10 +2858,10 @@ const cpHomeKind = r => { const ks = r.where.filter(w => w.type === 'home').map(
 // 그래프: 기간 날짜별(62일 넘으면 월별) 막대 — 지표(수익·클릭·주문)는 버튼으로
 function cpTip(e, box) {
   const tip = box.querySelector('.cp-tip');
-  box.querySelectorAll('.cp-bar').forEach(r => r.setAttribute('opacity', '.8'));
+  box.querySelectorAll('.cp-bar').forEach(r => r.style.opacity = '');
   const g = e && e.target.closest && e.target.closest('[data-tip]');
   if (!g) { tip.style.display = 'none'; return; }
-  g.querySelector('.cp-bar').setAttribute('opacity', '1');
+  g.querySelector('.cp-bar').style.opacity = '1';
   const bar = g.querySelector('.cp-bar').getBoundingClientRect(), b = box.getBoundingClientRect();
   tip.textContent = g.dataset.tip;
   tip.style.display = 'block';
@@ -2876,18 +2882,15 @@ function cpChart(rows, from, to, metric) {
   const keys = monthly ? [...new Set(days.map(d => d.slice(0, 6)))] : days;
   const series = keys.map(k => monthly ? days.filter(d => d.startsWith(k)).reduce((a, d) => a + (val[d] || 0), 0) : (val[k] || 0));
   const max = Math.max(1, ...series.map(v => Math.abs(v)));
-  const W = Math.max(keys.length * 18, 300), H = 120, bw = W / keys.length;
   const fmt = v => metric === 'commission' ? `${Math.round(v).toLocaleString()}원` : `${v.toLocaleString()}${metric === 'order' ? '건' : ''}`;
   const lab = k => monthly ? `${+k.slice(4, 6)}월` : `${+k.slice(4, 6)}/${+k.slice(6)}`;
-  const every = Math.ceil(keys.length / 10);
-  // 막대에 마우스를 올리거나(모바일은 탭) 하면 바로 말풍선 (SVG title은 늦게 뜨고 모바일에선 안 떠서, 261028)
-  return `<div style="overflow-x:auto;position:relative;padding-top:26px" onpointermove="cpTip(event,this)" onpointerdown="cpTip(event,this)" onpointerleave="cpTip(null,this)"><svg viewBox="0 0 ${W} ${H + 22}" width="100%" style="min-width:${Math.min(W, 640)}px;max-height:180px" role="img" aria-label="기간 ${metric} 그래프">
-    ${series.map((v, i) => { const h = Math.round(Math.max(0, v) / max * H); return `<g data-tip="${lab(keys[i])} · ${fmt(v)}">
-      <rect x="${i * bw}" y="0" width="${bw}" height="${H}" fill="transparent"></rect>
-      <rect class="cp-bar" x="${i * bw + bw * 0.15}" y="${H - h}" width="${bw * 0.7}" height="${Math.max(h, v ? 1 : 0)}" rx="2" fill="#0b5e2e" opacity=".8"></rect></g>`; }).join('')}
-    <line x1="0" y1="${H}" x2="${W}" y2="${H}" stroke="#ddd"></line>
-    ${keys.map((k, i) => i % every === 0 || i === keys.length - 1 ? `<text x="${i * bw + bw / 2}" y="${H + 15}" font-size="10" text-anchor="middle" fill="#888">${lab(k)}</text>` : '').join('')}
-  </svg><div class="cp-tip" style="display:none;position:absolute;pointer-events:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-100%)"></div></div><div class="help">최고 ${fmt(Math.max(...series))} · 합계 ${fmt(series.reduce((a, b) => a + b, 0))}</div>`;
+  const every = Math.ceil(keys.length / (window.innerWidth < 760 ? 7 : 15));
+  // 막대는 HTML로 폭을 꽉 채움 (사용자 261126 '쿠팡 실적 그래프 더 보여줘' — SVG가 비율 유지하며 작게 나왔음)
+  // 막대에 마우스를 올리거나(모바일은 탭) 하면 바로 말풍선 (261028)
+  return `<div class="cpc-wrap" style="position:relative;padding-top:26px" onpointermove="cpTip(event,this)" onpointerdown="cpTip(event,this)" onpointerleave="cpTip(null,this)">
+    <div class="cpc" role="img" aria-label="기간 ${metric} 그래프">${series.map((v, i) => `<div class="cpc-c" data-tip="${lab(keys[i])} · ${fmt(v)}"><div class="cp-bar" style="height:${Math.max(0, v) / max * 100}%;${v ? 'min-height:2px' : ''}"></div></div>`).join('')}</div>
+    <div class="cpc-x">${keys.map((k, i) => `<span>${i % every === 0 || i === keys.length - 1 ? lab(k) : ''}</span>`).join('')}</div>
+    <div class="cp-tip" style="display:none;position:absolute;pointer-events:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-100%)"></div></div><div class="help">최고 ${fmt(Math.max(...series))} · 합계 ${fmt(series.reduce((a, b) => a + b, 0))}</div>`;
 }
 // 폰 대시보드 가로 페이지: 위 버튼 ↔ 가로 스크롤 맞추기 (마지막 페이지 기억)
 let _dashPage = 0;
