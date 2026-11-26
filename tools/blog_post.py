@@ -140,7 +140,20 @@ SENT_END = re.compile(r'(?<=[가-힣)\]"\'”’][.!?])[ \t]+(?=\S)')
 def one_sentence_per_line(p):
     """문단 안 문장은 한 줄에 하나씩 (폰에서 읽기 편하게, 261124 사장님 수정본 기준).
     한글 뒤 . ! ? 다음 띄어쓰기에서만 끊는다 — 3.5kg·1. 같은 숫자 점은 그대로."""
-    return '\n'.join(SENT_END.sub('\n', l) for l in p.split('\n'))
+    out = []
+    for l in p.split('\n'):
+        lines = []
+        for s in SENT_END.sub('\n', l).split('\n'):
+            # 12자 이하 짧은 문장이 문단 중간·끝에 오면 앞 줄에 붙임 — '운이 좋았습니다.'만 한 줄로 떨어지지 않게 (261126 사장님 "ㅇㅇ 그래봐")
+            if lines and len(s.strip()) <= SHORT_JOIN and len(lines[-1]) + 1 + len(s) <= 50:
+                lines[-1] += ' ' + s
+            else:
+                lines.append(s)
+        out.append('\n'.join(lines))
+    return '\n'.join(out)
+
+
+SHORT_JOIN = 12
 
 
 def pieces(spec, out):
