@@ -12,7 +12,7 @@
   const MENU = [
     ['📌', '업무 관리', [['board.html', '📋', '운영판'], ['board.html?tab=posts', '📅', '올린 글 달력'], ['board.html?tab=autos', '⏰', '자동화'], ['board.html?tab=conns', '🔌', '연결']]],
     ['🎬', '콘텐츠 관리', [['./#series', '🎬', '시리즈 EP'], ['./#camps', '🏕', '캠핑장'], ['./#foods', '🍖', '음식'], ['./#items', '🛠', '장비']]],
-    ['📱', 'SNS 관리', [['mutuals.html', '📸', '인스타'], ['threads.html', '🧵', '스레드']]],
+    ['📱', 'SNS 관리', [['mutuals.html', '📸', '인스타'], ['threads.html', '🧵', '스레드'], ['youtube.html', '📺', '유튜브']]],
     ['🔥', '딜보드 관리', [['deals.html', '🔥', '딜 보드']]],
     ['📈', '성과 분석', [['insights.html', '📈', '성과 분석'], ['./#coupang', '🛒', '쿠팡 실적'], ['./#stats', '📊', '홈페이지 통계']]],
     ['🗂', '기타', [['pipeline.html', '🗺️', '운영 지도'], ['camp-live.html', '🏕️', '캠핑사이트'], ['conti.html', '🎞', '콘티 보드']]],
