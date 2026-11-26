@@ -8,38 +8,55 @@
 (function () {
   const api = { setSub() {} };
   window.kydzNav = api;
-  // 로딩 표시 (사용자 261126 '전체적으로 로딩 아이콘 — 막 빨리 누를 거 같아'): 모든 fetch를 셈
-  //  - 무언가 받는 동안 맨 위에 노란 줄이 흐름
-  //  - 버튼을 누르자마자 시작된 요청이면 그 버튼에 빙글 아이콘 + 끝날 때까지 다시 못 누름(두 번 저장 막기). 읽고→쓰는 연달은 요청도 이어서 잡음
+  // 로딩 표시 (사용자 261126 '로딩 아이콘 — 막 빨리 누를 거 같아' → '정중앙에 눈에 잘 보이게, 로딩 중엔 다른 거 클릭 못 하게')
+  //  - 버튼을 누르자마자 시작된 요청(읽고→쓰는 연달은 요청 포함)이 끝날 때까지: 화면 가운데 빙글 + 화면 전체 클릭 막음
+  //  - 화면이 알아서 하는 요청(처음 불러오기·주기적 새로고침)은 막지 않음 — 맨 위 얇은 줄만
   (function () {
     const css = `.kn-load{position:fixed;left:0;right:0;top:0;height:3px;z-index:9500;pointer-events:none;opacity:0;transition:opacity .2s;background:linear-gradient(90deg,transparent,var(--brand,#FFE873),transparent) no-repeat;background-size:40% 100%;animation:knl 1s linear infinite}
     .kn-load.on{opacity:1}
     @keyframes knl{from{background-position:-60% 0}to{background-position:160% 0}}
-    .kn-busy{pointer-events:none!important;opacity:.7}
-    .kn-busy::after{content:'';display:inline-block;width:.85em;height:.85em;margin-left:6px;vertical-align:-2px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:knspin .7s linear infinite}
+    .kn-wait{position:fixed;inset:0;z-index:9800;display:none;align-items:center;justify-content:center;background:transparent;cursor:progress}
+    .kn-wait.on{display:flex}
+    .kn-wait.show{background:rgba(0,0,0,.28)}
+    .kn-wait .box{display:none;flex-direction:column;align-items:center;gap:10px;padding:20px 26px;border-radius:16px;background:var(--card,#fff);color:var(--text,#1a1a1a);box-shadow:0 10px 30px rgba(0,0,0,.3);font-size:14px;font-weight:700}
+    .kn-wait.show .box{display:flex}
+    .kn-wait .sp{width:38px;height:38px;border:4px solid var(--line,#e5e5e5);border-top-color:var(--brand,#FFE873);border-radius:50%;animation:knspin .7s linear infinite}
     @keyframes knspin{to{transform:rotate(360deg)}}`;
     const stl = document.createElement('style'); stl.textContent = css; document.head.appendChild(stl);
     const line = document.createElement('div'); line.className = 'kn-load';
-    let n = 0, lastBtn = null, lastAt = 0, tShow = 0;
+    const wait = document.createElement('div'); wait.className = 'kn-wait';
+    wait.innerHTML = '<div class="box"><div class="sp"></div><div class="tx">불러오는 중…</div></div>';
+    let n = 0, nb = 0, lastBtn = null, lastAt = 0, tShow = 0, tWait = 0, tSafe = 0, saving = false;
+    const mountUi = () => { if (document.body) { if (!line.isConnected) document.body.appendChild(line); if (!wait.isConnected) document.body.appendChild(wait); } };
     const upd = () => {
-      if (!line.isConnected && document.body) document.body.appendChild(line);
+      mountUi();
       clearTimeout(tShow);
-      if (n > 0) tShow = setTimeout(() => line.classList.add('on'), 150); else line.classList.remove('on');
+      if (n > nb) tShow = setTimeout(() => line.classList.add('on'), 150); else line.classList.remove('on');
+      if (nb > 0) {
+        if (!wait.classList.contains('on')) {
+          wait.classList.add('on');   // 클릭은 바로 막고, 보이는 건 0.15초 뒤(깜빡임 방지)
+          clearTimeout(tWait); tWait = setTimeout(() => wait.classList.add('show'), 150);
+          clearTimeout(tSafe); tSafe = setTimeout(() => { nb = 0; upd(); }, 25000);   // 응답이 안 와도 25초 뒤엔 풀어 줌
+        }
+        wait.querySelector('.tx').textContent = saving ? '저장 중…' : '불러오는 중…';
+      } else { clearTimeout(tWait); clearTimeout(tSafe); wait.classList.remove('on', 'show'); saving = false; }
     };
     document.addEventListener('click', e => {
       const b = e.target.closest && e.target.closest('button,.btn,[role=button]');
-      if (b && !b.closest('.kn-side,.kn-dd')) { lastBtn = b; lastAt = performance.now(); }
+      if (b && !b.closest('.kn-side,.kn-dd,.kn-wait')) { lastBtn = b; lastAt = performance.now(); }
     }, true);
     const of = window.fetch;
     if (!of) return;
     window.fetch = function (...a) {
-      const b = lastBtn && performance.now() - lastAt < 500 ? lastBtn : null;
-      n++; upd();
-      if (b) { b._kn = (b._kn || 0) + 1; b.classList.add('kn-busy'); }
+      const byBtn = lastBtn && performance.now() - lastAt < 500;
+      const m = ((a[1] && a[1].method) || (a[0] && a[0].method) || 'GET').toUpperCase();
+      n++; if (byBtn) { nb++; if (m !== 'GET') saving = true; }
+      upd();
       const done = () => {
-        n = Math.max(0, n - 1); upd();
-        if (b) { lastBtn = b; lastAt = performance.now();   // 바로 이어지는 요청(읽고→쓰기)도 같은 버튼으로
-          setTimeout(() => { if (--b._kn <= 0) { b._kn = 0; b.classList.remove('kn-busy'); } }, 200); }
+        n = Math.max(0, n - 1);
+        if (byBtn) { lastAt = performance.now();   // 바로 이어지는 요청(읽고→쓰기)도 같은 동작으로
+          setTimeout(() => { nb = Math.max(0, nb - 1); upd(); }, 200); }
+        upd();
       };
       return of.apply(this, a).then(r => { done(); return r; }, e => { done(); throw e; });
     };
