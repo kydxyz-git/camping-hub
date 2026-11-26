@@ -353,7 +353,7 @@ function renderPosts() {
         ${kind === 'going' ? `<span class="igc-badges">${nSk ? `<span class="igc-b2">⏭ 건너뜀 ${nSk}</span>` : ''}${wt ? `<span class="igc-b2 wait">⏳ 대기 ${wt}</span>` : ''}${nd ? `<span class="igc-b2 red">답 필요 ${nd}</span>` : ''}${!wt && !nd ? '<span class="igc-b2 go">🔄 진행 중</span>' : ''}</span>` : nd ? `<span class="igc-badge red">답 필요 ${nd}</span>` : '<span class="igc-badge ok">✅ 다 답함</span>'}</div>
       <div class="igc-b"><div class="igc-t" title="${esc(title)}">${esc(title)}</div>
         <div class="igc-m"><span>${esc(dayLabel(dayKey(m.at)))}</span>${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}<span class="r">💬${n(m.cc)}</span></div>
-        <div class="rb"><div class="rb-t"><span>${kind === 'going' && on ? `자동 ${auto1}` : '내 답'}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${pct}%"></i></div></div>
+        <div class="rb"><div class="rb-t"><span>${kind === 'going' && on ? `자동 ${auto1}` : '내 답'}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i style="width:${pct}%;background:hsl(${Math.round(pct * 1.2)},78%,47%)"></i></div></div>
         ${kind === 'going' ? `<button class="btn red sm igc-stop" data-stop="${esc(mid)}">⏸ 자동 멈추기</button>` : ''}
       </div></div>`;
   };
@@ -466,7 +466,7 @@ function renderToday() {
       ${x.thumb ? `<img src="${esc(x.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<div class="ph"></div>'}
       <div class="pu">@${esc(u.user)}</div><div class="pn"><span>${hoursAgo(x.at)} 새 글</span><span>${u.posts.size}번 옴</span></div>${noteMini(u.user)}</a>`; }).join('')}</div>`
       : `<div class="muted" style="padding:6px 0">${doneN ? `오늘 다 다녀왔어요 ✅ (${doneN}명)` : '최근 3일 새 글 올린 맞팔이 아직 없어요'}</div>`}
-    <div class="muted" style="margin-top:6px">${todo.length > 10 ? `외 ${todo.length - 10}명 · ` : ''}최근 30일 나한테 온 맞팔 ${Object.keys(m).length}명 중 ${checked}명 새 글 확인됨(30분마다 10명씩, 개인 계정은 안 보임)</div></div>`;
+    <div class="muted" style="margin-top:6px">${todo.length > 10 ? `외 ${todo.length - 10}명 · ` : ''}최근 30일 나한테 온 맞팔 ${Object.keys(m).length}명 중 ${checked}명 새 글 확인됨(10분마다 10명씩, 개인 계정은 안 보임)</div></div>`;
 }
 
 // ── 맞팔 후보 (사용자 261126 '4번 좋아'): 맞팔 아닌데 내 게시물에 자주 오는 사람 ──
