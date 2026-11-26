@@ -150,7 +150,7 @@
   .kn-act>*{flex:none}
   .kn-side-foot{display:flex;gap:8px;margin:18px 4px 0;padding-top:12px;border-top:1px solid var(--kn-line)} .kn-side-foot>*{flex:1;padding:9px 10px;border:1px solid var(--kn-line);border-radius:8px;background:transparent;color:var(--kn-text);font:inherit;font-size:14px;cursor:pointer}
   .kn-page-act{display:flex;align-items:center;gap:6px}
-  @media (max-width:759px){.kn-act{position:sticky;right:-8px;margin-right:-8px;padding-right:8px;background:var(--kn-bg);box-shadow:-10px 0 10px -4px var(--kn-bg)}}
+  @media (max-width:759px){.kn-act{position:sticky;right:-8px;margin-right:-8px;padding-right:8px;background:transparent}}   /* 폰: 왼쪽 그림자(빛 비치는 느낌) 뺌 (사용자 261126) */
   .kn-page-act .sel{font-size:13px;font-weight:700;white-space:nowrap}
   .kn-act .btn.pri,.kn-act button.pri{background:var(--brand,#FFE873)!important;color:#1a1a1a!important;border-color:var(--brand,#FFE873)!important;font-weight:700}
   .kn-act .topbar-btn,.kn-act .topbar-link,.kn-act button{padding:5px 10px!important;font-size:12.5px!important;border:1px solid var(--kn-line)!important;border-radius:8px!important;background:transparent!important;color:var(--kn-text)!important}
