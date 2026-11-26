@@ -234,7 +234,7 @@
   .more-menu .menu-pop .small { font-size: 12px; color: var(--muted); line-height: 1.5; }
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
-<link rel="stylesheet" href="lib/theme.css?v=261126m">
+<link rel="stylesheet" href="lib/theme.css?v=261126n">
 <script src="lib/nav.js?v=261126s"></script>
 </head>
 <body>
@@ -242,13 +242,11 @@
 <!-- 로그인 -->
 <div class="login-screen" id="login-screen" style="display:none;">
   <div class="card login-card">
-    <div class="login-title">스레드 예약</div>
-    <div class="login-sub">kydz.kr 관리자 전용</div>
-    <div class="row" style="flex-wrap:nowrap">
-      <input type="password" id="login-password" class="input" placeholder="비밀번호">
-      <button class="btn" id="login-submit">입장</button>
-    </div>
-    <div class="login-error" id="login-error">비밀번호가 올바르지 않습니다</div>
+    <div class="login-title">🧵 스레드</div>
+    <div class="login-sub">kydz.kr 관리자 전용 · 비밀번호를 넣어 주세요</div>
+    <input type="password" id="login-password" class="input" placeholder="비밀번호" autocomplete="current-password">
+    <button class="btn" id="login-submit">로그인</button>
+    <div class="login-error" id="login-error">비밀번호가 맞지 않아요</div>
   </div>
 </div>
 

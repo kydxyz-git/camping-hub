@@ -93,3 +93,14 @@ body.kn-wide .wrap, body.kn-wide .container { max-width: none; }
 
 /* 폰에선 긴 설명 숨김 (사용자 261126 '모바일에서는 잡다한 설명 빼, 어차피 잘 안 보여') — 설명 글에 class="m-hide" */
 @media (max-width: 759px) { .m-hide { display: none !important; } }
+
+/* 로그인 화면 하나로 (사용자 261126 '로그인 화면도 통일') — 모든 관리 화면이 같은 마크업:
+   .login-screen > .card.login-card > .login-title · .login-sub · #login-password · #login-submit · .login-error (+ passkey.js가 #login-passkey) */
+.login-screen { min-height: calc(100vh - 60px); display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+.login-screen .login-card { width: 100%; max-width: 380px; padding: 30px 24px; box-sizing: border-box; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
+.login-screen .login-title { font-size: 20px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 4px; color: var(--text); }
+.login-screen .login-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.login-screen #login-password { display: block; width: 100%; box-sizing: border-box; min-height: 46px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--text); font: inherit; font-size: 15px; }
+.login-screen #login-submit { display: block; width: 100%; min-height: 46px; margin-top: 10px; border-radius: 10px; border: 0; background: var(--pri-bg); color: var(--pri-fg); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
+.login-screen #login-passkey { background: var(--soft) !important; color: var(--text) !important; border: 1px solid var(--line) !important; font-size: 15px !important; }
+.login-screen .login-error { font-size: 13px; color: var(--danger); margin-top: 10px; display: none; }

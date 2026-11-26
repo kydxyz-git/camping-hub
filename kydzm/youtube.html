@@ -59,15 +59,17 @@
   .hb-d { font-size:10.5px; color:var(--muted); height:15px; margin-top:4px; white-space:nowrap; }
   @media (max-width:600px) { .hbars { gap:2px; height:140px; } .hb-v, .hb-s { font-size:8.5px; } .hb-d { font-size:9px; } }
 </style>
-<link rel="stylesheet" href="lib/theme.css?v=261126m">
+<link rel="stylesheet" href="lib/theme.css?v=261126n">
 <script src="lib/nav.js?v=261126s"></script>
 </head>
 <body>
-<div class="login" id="login" style="display:none">
-  <div class="card" style="width:300px">
-    <div style="font-weight:700;margin-bottom:8px">유튜브 · 관리자 전용</div>
-    <div class="row" style="flex-wrap:nowrap"><input type="password" class="pw" id="pw" placeholder="비밀번호"><button class="btn" id="pw-go">입장</button></div>
-    <div class="muted" id="pw-err" style="display:none;color:var(--danger)">비밀번호가 올바르지 않습니다</div>
+<div class="login-screen" id="login-screen" style="display:none;">
+  <div class="card login-card">
+    <div class="login-title">📺 유튜브</div>
+    <div class="login-sub">kydz.kr 관리자 전용 · 비밀번호를 넣어 주세요</div>
+    <input type="password" id="login-password" class="input" placeholder="비밀번호" autocomplete="current-password">
+    <button class="btn" id="login-submit">로그인</button>
+    <div class="login-error" id="login-error">비밀번호가 맞지 않아요</div>
   </div>
 </div>
 <div class="wrap" id="app" style="display:none"><div id="main"><div class="card muted">불러오는 중...</div></div></div>
@@ -181,10 +183,10 @@ async function start() {
 }
 (function boot() {
   try { if (sessionStorage.getItem(AUTH_KEY) === '1') return start(); } catch (e) {}
-  $('#login').style.display = 'flex';
-  const go = async () => { if (await sha256($('#pw').value) === PASSWORD_HASH) { try { sessionStorage.setItem(AUTH_KEY, '1'); } catch (e) {} $('#login').style.display = 'none'; start(); kydzPasskey.offer(); } else $('#pw-err').style.display = 'block'; };
-  $('#pw-go').onclick = go; $('#pw').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) go(); });
-  kydzPasskey.mountLogin(() => { $('#login').style.display = 'none'; start(); });
+  $('#login-screen').style.display = 'flex';
+  const go = async () => { if (await sha256($('#login-password').value) === PASSWORD_HASH) { try { sessionStorage.setItem(AUTH_KEY, '1'); } catch (e) {} $('#login-screen').style.display = 'none'; start(); kydzPasskey.offer(); } else $('#login-error').style.display = 'block'; };
+  $('#login-submit').onclick = go; $('#login-password').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) go(); });
+  kydzPasskey.mountLogin(() => { $('#login-screen').style.display = 'none'; start(); });
 })();
 </script>
 </body>
