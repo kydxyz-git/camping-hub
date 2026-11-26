@@ -267,19 +267,20 @@ function b64ToUtf8(b) { const bin = atob(b.replace(/\n/g, '')); const a = new Ui
 async function gh(url, opts = {}) {
   const r = await fetch(url, { method: opts.method || 'GET', cache: 'no-store', headers: { Authorization: 'Bearer ' + tok(), Accept: opts.raw ? 'application/vnd.github.raw' : 'application/vnd.github+json', ...(opts.body ? { 'Content-Type': 'application/json' } : {}) }, body: opts.body ? JSON.stringify(opts.body) : undefined });
   if (r.status === 404 && opts.ok404) return null;
-  if (!r.ok) throw new Error(`깃허브 오류 ${r.status} — 토큰을 스레드 관리 화면에서 확인해 주세요`);
+  if (r.status === 409 || r.status === 422) { const e = new Error(`깃허브 오류 ${r.status} — 저장이 겹쳤어요(봇이 같은 파일을 막 고침). 잠시 뒤 다시 눌러 주세요`); e.conflict = true; throw e; }
+  if (!r.ok) throw new Error(`깃허브 오류 ${r.status} — ${r.status === 401 || r.status === 403 ? '토큰을 스레드 관리 화면에서 확인해 주세요' : '잠시 뒤 다시 해 주세요'}`);
   if (r.status === 204) return null;
   return opts.raw ? r.text() : r.json();
 }
 async function readJson(path) {   // 작은 파일: sha 같이
-  const d = await gh(`${RP}/contents/${path}?ref=main`, { ok404: true });
+  const d = await gh(`${RP}/contents/${path}?ref=main&t=${Date.now()}`, { ok404: true });   // t: 캐시된 옛 sha로 저장하다 409 나지 않게 (사용자 261127 '댓글 달기 누르니 오류')
   return d ? { data: JSON.parse(b64ToUtf8(d.content)), sha: d.sha } : { data: {}, sha: '' };
 }
-async function writeJson(path, mutate, msg) {   // 최신본 위에 고쳐 저장 (충돌 나면 한 번 더)
-  for (let i = 0; i < 3; i++) {
+async function writeJson(path, mutate, msg) {   // 최신본 위에 고쳐 저장 — 봇 저장과 겹치면(409) 조금 기다렸다 최신본 다시 받아 5번까지
+  for (let i = 0; i < 5; i++) {
     const f = await readJson(path); mutate(f.data);
     try { await gh(`${RP}/contents/${path}`, { method: 'PUT', body: { message: msg, content: utf8ToB64(JSON.stringify(f.data, null, 2) + '\n'), branch: 'main', ...(f.sha ? { sha: f.sha } : {}) } }); return f.data; }
-    catch (e) { if (i === 2) throw e; }
+    catch (e) { if (!e.conflict || i === 4) throw e; await new Promise(r => setTimeout(r, 800 + i * 1200 + Math.random() * 600)); }
   }
 }
 
