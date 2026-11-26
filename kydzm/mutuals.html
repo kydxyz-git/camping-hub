@@ -542,17 +542,18 @@ function opened(u, since) { return !!S.visits[u] && S.visits[u] >= since; }
 
 // ── 오늘 다녀올 사람 (2번 기준으로 1번, 사용자 261126): 나한테 자주 오는 맞팔 중 새 글 올렸는데 아직 안 연 사람 ──
 function renderToday() {
-  const m = counts(30), lt = S.st.latest || {}, cut = new Date(Date.now() - 3 * 864e5).toISOString();
+  // 3일 안에 나한테 댓글 단 맞팔 (사용자 261126 '최근에 나에게 댓글 단 사람, 3일 이내' — 예전 30일은 너무 넓음)
+  const m = counts(3), lt = S.st.latest || {}, cut = new Date(Date.now() - 3 * 864e5).toISOString();
   const all = Object.values(m).filter(u => lt[u.user] && lt[u.user].at && lt[u.user].at >= cut);
   const todo = all.filter(u => !opened(u.user, lt[u.user].at)).sort((a, b) => (b.posts.size - a.posts.size) || (lt[b.user].at > lt[a.user].at ? 1 : -1));
   const doneN = all.length - todo.length;
   const checked = Object.values(lt).filter(x => x.checked).length;
-  return `<div class="card"><div class="row" style="justify-content:space-between"><b>🚶 오늘 다녀올 맞팔</b><span class="muted">새 글 올렸는데 아직 안 연 사람 · 나한테 자주 오는 순</span></div>
+  return `<div class="card"><div class="row" style="justify-content:space-between"><b>🚶 오늘 다녀올 맞팔</b><span class="muted">3일 안 나한테 댓글 단 맞팔 중 새 글 올리고 아직 안 연 사람 · 자주 오는 순</span></div>
     ${todo.length ? `<div class="tgrid" data-n="${todo.length}">${todo.slice(0, 24).map(u => { const x = lt[u.user]; return `<a class="pcard tc" href="${esc(x.permalink)}" target="_blank" rel="noopener" data-open="${esc(u.user)}">
       ${x.thumb ? `<img src="${esc(x.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<div class="ph"></div>'}
       <div class="pu">@${esc(u.user)}</div><div class="pn"><span>${hoursAgo(x.at)} 새 글</span><span>${u.posts.size}번 옴</span></div>${noteMini(u.user)}</a>`; }).join('')}</div>`
       : `<div class="muted" style="padding:6px 0">${doneN ? `오늘 다 다녀왔어요 ✅ (${doneN}명)` : '최근 3일 새 글 올린 맞팔이 아직 없어요'}</div>`}
-    <div class="muted" style="margin-top:6px"><span class="tmore"></span>최근 30일 나한테 온 맞팔 ${Object.keys(m).length}명 중 ${checked}명 새 글 확인됨(10분마다 10명씩, 개인 계정은 안 보임)</div></div>`;
+    <div class="muted" style="margin-top:6px"><span class="tmore"></span>3일 안에 나한테 댓글 단 맞팔 ${Object.keys(m).length}명 중 새 글 올리고 아직 안 연 사람 · 새 글은 4시간마다 확인(개인 계정은 안 보임)</div></div>`;
 }
 
 // ── 맞팔 후보 (사용자 261126 '4번 좋아'): 맞팔 아닌데 내 게시물에 자주 오는 사람 ──
