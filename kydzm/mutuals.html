@@ -194,6 +194,8 @@
   .hb-col i { display:block; min-height:2px; } .hb-col .ok { background:var(--success, var(--ok)); } .hb-col .no { background:var(--danger); opacity:.8; }
   .hb-d { font-size:11px; color:var(--muted); height:16px; margin-top:4px; white-space:nowrap; }
   @media (max-width:600px) { .hbars { gap:3px; height:130px; } .hb-v { font-size:9px; } .hb-d { font-size:9.5px; } }
+  .tgrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(112px, 1fr)); gap:8px; margin-top:8px; }
+  @media (max-width:760px) { .tgrid { grid-template-columns:repeat(4, 1fr); gap:5px; } }
   .qline { display:flex; align-items:center; gap:8px; margin:2px 0 12px; padding:6px 8px; border:1px solid var(--line); border-radius:12px; background:var(--card); }
   .qline .qh { flex:none; font-weight:800; font-size:13px; white-space:nowrap; }
   .qline .qh small { font-weight:700; color:var(--muted); font-size:11.5px; }
@@ -419,6 +421,15 @@ function renderQueue() {
   // 가로 한 줄을 꽉 채움 (사용자 261126 '진행 중 밑에 · 가로줄 맞춰 꽉 채워서'): 알약을 다 넣고 fitQline()이 넘치는 것만 숨기고 +N을 맞춤
   return `<div class="qline" title="하나씩 10~40분 간격(무작위), 9~22시만 — 시각은 대략"><span class="qh">⏳ 다음 답글 <small>${L.length}</small></span><div class="qps">${L.slice(0, 20).map(pill).join('')}</div><button class="qmore" data-qmore data-n="${L.length}">${S.openQueue ? '접기 ▴' : '전체 ▸'}</button></div>${more}`;
 }
+// 오늘 다녀올 맞팔: 가로 한 줄(폰은 두 줄)을 꽉 채우는 만큼만 — 사용자 261126 '오른쪽 꽉 채울 만큼'
+function fitToday() {
+  const g = document.querySelector('.tgrid'); if (!g) return;
+  const cols = getComputedStyle(g).gridTemplateColumns.split(' ').filter(Boolean).length, rows = innerWidth < 760 ? 2 : 1;
+  const n = +g.dataset.n, shown = Math.min(n, cols * rows, g.children.length);
+  [...g.children].forEach((c, i) => { c.style.display = i < shown ? '' : 'none'; });
+  const t = document.querySelector('.tmore'); if (t) t.textContent = n > shown ? `외 ${n - shown}명 · ` : '';
+}
+addEventListener('resize', () => fitToday());
 function fitQline() {
   const box = document.querySelector('.qline .qps'); if (!box) return;
   const ps = [...box.children]; ps.forEach(p => { p.style.display = ''; });
@@ -532,11 +543,11 @@ function renderToday() {
   const doneN = all.length - todo.length;
   const checked = Object.values(lt).filter(x => x.checked).length;
   return `<div class="card"><div class="row" style="justify-content:space-between"><b>🚶 오늘 다녀올 맞팔</b><span class="muted">새 글 올렸는데 아직 안 연 사람 · 나한테 자주 오는 순</span></div>
-    ${todo.length ? `<div class="grid g2">${todo.slice(0, 10).map(u => { const x = lt[u.user]; return `<a class="pcard tc" href="${esc(x.permalink)}" target="_blank" rel="noopener" data-open="${esc(u.user)}">
+    ${todo.length ? `<div class="tgrid" data-n="${todo.length}">${todo.slice(0, 24).map(u => { const x = lt[u.user]; return `<a class="pcard tc" href="${esc(x.permalink)}" target="_blank" rel="noopener" data-open="${esc(u.user)}">
       ${x.thumb ? `<img src="${esc(x.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<div class="ph"></div>'}
       <div class="pu">@${esc(u.user)}</div><div class="pn"><span>${hoursAgo(x.at)} 새 글</span><span>${u.posts.size}번 옴</span></div>${noteMini(u.user)}</a>`; }).join('')}</div>`
       : `<div class="muted" style="padding:6px 0">${doneN ? `오늘 다 다녀왔어요 ✅ (${doneN}명)` : '최근 3일 새 글 올린 맞팔이 아직 없어요'}</div>`}
-    <div class="muted" style="margin-top:6px">${todo.length > 10 ? `외 ${todo.length - 10}명 · ` : ''}최근 30일 나한테 온 맞팔 ${Object.keys(m).length}명 중 ${checked}명 새 글 확인됨(10분마다 10명씩, 개인 계정은 안 보임)</div></div>`;
+    <div class="muted" style="margin-top:6px"><span class="tmore"></span>최근 30일 나한테 온 맞팔 ${Object.keys(m).length}명 중 ${checked}명 새 글 확인됨(10분마다 10명씩, 개인 계정은 안 보임)</div></div>`;
 }
 
 // ── 맞팔 후보 (사용자 261126 '4번 좋아'): 맞팔 아닌데 내 게시물에 자주 오는 사람 ──
@@ -682,7 +693,7 @@ function render() {
     try { await writeJson('state/ig_visits.json', d => { d.visits ||= {}; if (val) d.visits[u] = val; else delete d.visits[u]; }, 'ig(admin): 맞팔 열어 봄'); } catch (e) { alert(e.message); }
   };
   $('#main').querySelectorAll('[data-qmore]').forEach(b => b.onclick = () => { S.openQueue = !S.openQueue; render(); });
-  fitQline();
+  fitQline(); fitToday();
   $('#main').querySelectorAll('[data-qpost]').forEach(a => a.onclick = e => { e.preventDefault(); go('posts', a.dataset.qpost); });
   $('#main').querySelectorAll('[data-donetg]').forEach(b => b.onclick = () => { S.openDoneP = !S.openDoneP; render(); });
   $('#main').querySelectorAll('[data-qsort]').forEach(b => b.onclick = () => { S.quietOld = !S.quietOld; render(); });
