@@ -1182,6 +1182,7 @@
   .series-group.is-open .series-group-arrow { transform: rotate(90deg); }
   .series-group-arrow { transition: transform 0.18s; font-size: 12px; }
   .series-ep-thumb { display: none; }
+  .series-ep-date { flex: none; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
   .series-ep-item {
     background: var(--bg);
     border: 1px solid var(--line);
@@ -6368,6 +6369,14 @@ let _seriesDragOrder = null; // 드래그로 변경된 시리즈 순서 (null이
 let _epDragOrder = null;     // EP 수동 정렬 변경 상태 { si: number, newOrder: number[] }
 
 let _seriesSiteSort = false;   // 시리즈 EP '홈페이지 클릭 많은 순' (시리즈 안에서만, 보기 전용)
+// 인스타 게시물 주소(/p/·/reel/ 코드)에 들어 있는 올린 시각 → 'YY.MM.DD' (사용자 261126 '실제 인스타에 등록한 날짜'). 코드 앞 11자 = 게시물 id, id 위쪽 비트 = 2011-08-24부터 ms
+function igPostDate(url) {
+  const m = String(url || '').match(/instagram\.com\/(?:[^/]+\/)?(?:p|reel|tv)\/([A-Za-z0-9_-]{11})/); if (!m) return '';
+  const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  let n = 0n; for (const ch of m[1]) n = n * 64n + BigInt(A.indexOf(ch));
+  const d = new Date(Number(n >> 23n) + 1314220021721 + 9 * 3600e3);
+  return isNaN(d) || d.getUTCFullYear() < 2015 ? '' : d.toISOString().slice(2, 10).replace(/-/g, '.');
+}
 function renderSeriesList() {
   document.getElementById('topbar-title').innerHTML = '🎬 시리즈 EP';
   const c = document.getElementById('app-content');
@@ -6416,7 +6425,7 @@ function renderSeriesList() {
                   <a class="series-ep-link" href="#series/${si}/${ei}">
                     ${ep.thumb ? `<img class="series-ep-thumb" src="../${escapeHtml(ep.thumb.replace(/^\.\//, ''))}" alt="" loading="lazy">` : '<span class="series-ep-thumb"></span>'}
                     <span class="series-ep-num">${epLabelOf(ep)}</span>
-                    <span class="series-ep-title">${escapeHtml(ep.title)}</span>${s.id && ep.id ? siteChip(siteStatOf([`/series/${s.id}/${ep.id}`])) : ''}
+                    <span class="series-ep-title">${escapeHtml(ep.title)}</span>${igPostDate(ep.url) ? `<span class="series-ep-date" title="인스타에 올린 날 (게시물 주소로 계산)">${igPostDate(ep.url)}</span>` : ''}${s.id && ep.id ? siteChip(siteStatOf([`/series/${s.id}/${ep.id}`])) : ''}
                   </a>
                   ${toggleHtml(epPub, `data-ep-toggle="${si}-${ei}"`)}
                   <a class="series-ep-arrow" href="#series/${si}/${ei}">›</a>
