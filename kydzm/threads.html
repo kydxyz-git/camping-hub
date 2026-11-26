@@ -210,7 +210,7 @@
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
 <link rel="stylesheet" href="lib/theme.css?v=261126l">
-<script src="lib/nav.js?v=261126n"></script>
+<script src="lib/nav.js?v=261126o"></script>
 </head>
 <body>
 
@@ -649,6 +649,7 @@ function render() {
     if (S.tab === 'list' && b.dataset.tab !== 'list' && hasChanges() && !confirm('저장하지 않은 변경이 있어요. 그래도 이동할까요? (이동해도 이 창을 닫기 전까진 남아 있어요)')) return;
     S.tab = b.dataset.tab;
     try { localStorage.setItem(TAB_KEY, S.tab); } catch (e) {}
+    if (window.kydzNav) kydzNav.pushView(S.tab);   // 뒤로 가기 = 전 탭 (사용자 261126)
     render();
   });
   ({ list: renderList, comments: renderComments, cycle: renderCycle, settings: renderSettings }[S.tab] || renderList)();
@@ -662,7 +663,7 @@ function bannersHtml() {
     const left = Math.floor((new Date(tk.expires_at) - new Date()) / 86400e3);
     if (left < 10) out.push(`<div class="banner err">Threads 토큰이 ${Math.max(left, 0)}일 뒤 만료돼요 (${tk.expires_at.slice(0, 10)}). <a href="#" data-goto="settings">토큰·실행</a>에서 확인해 주세요.</div>`);
   }
-  setTimeout(() => document.querySelectorAll('[data-goto]').forEach(a => a.onclick = e => { e.preventDefault(); S.tab = a.dataset.goto; render(); }));
+  setTimeout(() => document.querySelectorAll('[data-goto]').forEach(a => a.onclick = e => { e.preventDefault(); S.tab = a.dataset.goto; if (window.kydzNav) kydzNav.pushView(S.tab); render(); }));
   return out.join('');
 }
 function updateSaveBar() {
@@ -1389,6 +1390,7 @@ function isAuthed() { try { return sessionStorage.getItem(AUTH_KEY) === '1'; } c
 async function start() {
   $('#app').classList.add('is-active');
   try { S.tab = localStorage.getItem(TAB_KEY) || 'list'; } catch (e) {}
+  if (window.kydzNav) kydzNav.onView(v => { if (v) { S.tab = v; render(); window.scrollTo(0, 0); } }, S.tab);
   if (!getToken()) { render(); return; }
   $('#main').innerHTML = '<div class="card muted">불러오는 중...</div>';
   try { await loadAll(); render(); }

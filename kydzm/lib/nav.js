@@ -6,7 +6,12 @@
  * 메뉴를 바꾸면 여기 MENU와 index.html 대시보드 grp 두 곳. iframe·?embed=1에선 안 보임.
  */
 (function () {
-  const api = { setSub() {} };
+  // 뒤로 가기 공통 (사용자 261126 '뒤로가기는 전체 다 있어야지'):
+  //  - kydzNav.openLayer(close): 창(시트·모달)을 열 때 — 뒤로 가기를 누르면 페이지를 떠나지 않고 close()만 부름
+  //  - kydzNav.closeLayer(): 창을 버튼으로 닫았을 때 — 남겨 둔 기록 한 칸을 같이 지움
+  //  - kydzNav.onView(fn, 처음 view) + kydzNav.pushView(view): 탭·화면 바꿀 때 기록 — 뒤로 가기면 fn(전 view)
+  //  iframe·?embed=1에선 기록을 안 남기고 그냥 닫기만
+  const api = { setSub() {}, openLayer() {}, closeLayer() {}, pushView() {}, onView() {} };
   window.kydzNav = api;
   // 로딩 표시 (사용자 261126 '로딩 아이콘 — 막 빨리 누를 거 같아' → '정중앙에 눈에 잘 보이게, 로딩 중엔 다른 거 클릭 못 하게')
   //  - 버튼을 누르자마자 시작된 요청(읽고→쓰는 연달은 요청 포함)이 끝날 때까지: 화면 가운데 빙글 + 화면 전체 클릭 막음
@@ -62,6 +67,27 @@
     };
   })();
   if (window.top !== window || /[?&]embed=1/.test(location.search)) return;
+  (function () {
+    const stack = []; let seq = 0, skip = 0, viewFn = null;
+    let pend = null;   // 닫고 바로 다른 창을 여는 경우(닫기→열기)엔 기록 한 칸을 그대로 다시 씀
+    api.openLayer = close => {
+      const id = ++seq; stack.push({ id, close });
+      if (pend) { clearTimeout(pend); pend = null; history.replaceState({ ...(history.state || {}), knPage: id }, ''); return; }
+      history.pushState({ ...(history.state || {}), knPage: id, knView: (history.state || {}).knView }, '');
+    };
+    api.closeLayer = () => {
+      const top = stack.pop();
+      if (top && history.state && history.state.knPage === top.id) { clearTimeout(pend); pend = setTimeout(() => { pend = null; skip++; history.back(); }, 0); }
+    };
+    api.pushView = view => { if (JSON.stringify((history.state || {}).knView) !== JSON.stringify(view)) history.pushState({ knView: view }, ''); };
+    api.onView = (fn, init) => { viewFn = fn; if (!history.state || history.state.knView === undefined) history.replaceState({ ...(history.state || {}), knView: init }, ''); };
+    addEventListener('popstate', () => {
+      if (skip) { skip--; return; }
+      const st = history.state || {};
+      if (stack.length && st.knPage !== stack[stack.length - 1].id) { const top = stack.pop(); try { top.close(); } catch (e) {} return; }
+      if (viewFn && !st.knLayer && !st.knPage && st.knView !== undefined) viewFn(st.knView);
+    });
+  })();
   const MENU = [
     ['📌', '업무 관리', [['board.html', '📋', '운영판'], ['board.html?tab=posts', '📅', '올린 글 달력'], ['board.html?tab=autos', '⏰', '자동화'], ['board.html?tab=conns', '🔌', '연결']]],
     ['🎬', '콘텐츠 관리', [['./#series', '🎬', '시리즈 EP'], ['./#camps', '🏕', '캠핑장'], ['./#foods', '🍖', '음식'], ['./#items', '🛠', '장비']]],

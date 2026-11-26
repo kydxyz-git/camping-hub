@@ -446,7 +446,7 @@
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
 <link rel="stylesheet" href="lib/theme.css?v=261126l">
-<script src="lib/nav.js?v=261126n"></script>
+<script src="lib/nav.js?v=261126o"></script>
 </head>
 <body class="kn-wide">
 
@@ -1766,7 +1766,7 @@ function pfHtml() {
   }).join('')}<button class="pf add" data-act="new-project">+ 프로젝트</button></div>`;
 }
 function curPf() { return S.pf && projOf(S.pf) ? S.pf : ''; }
-function setPf(id) { S.pf = id || ''; try { localStorage.setItem('kydz_board_pf', S.pf); } catch (e) {} render(); }
+function setPf(id, fromBack) { S.pf = id || ''; try { localStorage.setItem('kydz_board_pf', S.pf); } catch (e) {} if (!fromBack && window.kydzNav) kydzNav.pushView({ tab: S.tab, pf: S.pf }); render(); }
 // 프로젝트를 고르면 위에 그 프로젝트 정보(상태·방향·결정 기록) — 펼쳐서 고침
 function projectPanelHtml(id) {
   const p = projOf(id); if (!p) return '';
@@ -1896,17 +1896,19 @@ function projectDetailHtml(id) {
 // 시트 · 확인창 (confirm() 안 씀)
 // ════════════════════════════════════════════════════════════════════
 function sheet(html, onMount) {
-  closeSheet();
+  const prev = document.querySelector('.sheet-bg');
+  if (prev) prev.remove();   // 창을 바꿔 띄울 때는 뒤로 가기 기록을 그대로 씀
+  else if (window.kydzNav) kydzNav.openLayer(() => closeSheet(true));   // 뒤로 가기 = 창 닫기 (사용자 261126)
   const bg = document.createElement('div'); bg.className = 'sheet-bg';
   bg.innerHTML = `<div class="sheet" role="dialog">${html}</div>`;
   bg.addEventListener('click', e => { if (e.target === bg) closeSheet(); });
   document.body.appendChild(bg);
-  bg.querySelectorAll('[data-close]').forEach(b => b.onclick = closeSheet);
+  bg.querySelectorAll('[data-close]').forEach(b => b.onclick = () => closeSheet());
   onMount && onMount(bg);
   return bg;
 }
-function closeSheet() {
-  const s = document.querySelector('.sheet-bg'); if (s) s.remove();
+function closeSheet(fromBack) {
+  const s = document.querySelector('.sheet-bg'); if (s) { s.remove(); if (!fromBack && window.kydzNav) kydzNav.closeLayer(); }
   if (S.needRender) { S.needRender = false; render(); }
 }
 function askConfirm(msg, okLabel, onOk) {
@@ -2163,6 +2165,7 @@ function bind() {
     if (tabBtn) {
       S.tab = tabBtn.dataset.tab; S.project = null;
       try { localStorage.setItem(TAB_KEY, S.tab); } catch (_) {}
+      if (window.kydzNav) kydzNav.pushView({ tab: S.tab, pf: S.pf });   // 뒤로 가기 = 전 탭
       render(); window.scrollTo(0, 0); return;
     }
     const el = e.target.closest('[data-act]'); if (!el) return;
@@ -2395,6 +2398,7 @@ async function start() {
   $('#app').classList.add('is-active');
   $('#today-label').textContent = todayLabel();
   try { S.tab = new URLSearchParams(location.search).get('tab') || localStorage.getItem(TAB_KEY) || 'today'; S.pf = localStorage.getItem('kydz_board_pf') || ''; S.postsPf = localStorage.getItem('kydz_posts_pf') || ''; } catch (e) {}
+  if (window.kydzNav) kydzNav.onView(v => { if (!v) return; closeSheet(true); S.tab = v.tab; S.project = null; setPf(v.pf, true); window.scrollTo(0, 0); }, { tab: S.tab, pf: S.pf });
   if (!getToken()) { render(); return; }
   $('#main').innerHTML = '<div class="card muted">불러오는 중...</div>';
   pushButton();

@@ -140,7 +140,7 @@
   }
 </style>
 <link rel="stylesheet" href="lib/theme.css?v=261126l">
-<script src="lib/nav.js?v=261126n"></script>
+<script src="lib/nav.js?v=261126o"></script>
 </head>
 <body>
 
@@ -275,12 +275,14 @@ function mdLite(t){
 }
 async function openTune(){
   $('tune-modal').style.display = 'block';
+  if (window.kydzNav) kydzNav.openLayer(() => { $('tune-modal').style.display = 'none'; });   // 뒤로 가기 = 닫기 (사용자 261126)
   try { if (!TUNE) await loadTune(); $('tune-body').innerHTML = TUNE.length ? TUNE.map(mdLite).join('<hr style="border:none;border-top:1px solid rgba(128,128,128,.25);margin:12px 0">') : '아직 기록이 없어요.'; }
   catch(e){ $('tune-body').textContent = e.message; }
 }
 $('tune-btn').onclick = openTune;
-$('tune-close').onclick = () => { $('tune-modal').style.display = 'none'; };
-$('tune-modal').onclick = ev => { if (ev.target.id === 'tune-modal') $('tune-modal').style.display = 'none'; };
+const closeTune = () => { $('tune-modal').style.display = 'none'; if (window.kydzNav) kydzNav.closeLayer(); };
+$('tune-close').onclick = closeTune;
+$('tune-modal').onclick = ev => { if (ev.target.id === 'tune-modal') closeTune(); };
 loadTune().catch(()=>{});
 
 async function loadLabels(){
