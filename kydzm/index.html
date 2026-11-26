@@ -1062,6 +1062,15 @@
 .cp-src-r.sub{color:var(--muted)}.cp-src-r.sub>span:first-child{padding-left:10px}
 .cp-src-r:hover{background:var(--soft)}
 .cp-src-r.on{background:var(--pri-bg);color:var(--pri-fg)}
+/* 폰 (사용자 261126 '모바일 기준도 검토') */
+.cp-per{display:flex;gap:6px;flex-wrap:wrap}
+.nv-k4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;text-align:center}
+@media (max-width:759px){
+  .cp-per{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -4px;padding:0 4px}.cp-per::-webkit-scrollbar{display:none}.cp-per .btn{flex:none}
+  .cp-src-h,.cp-src-r{grid-template-columns:1fr 44px 36px 78px;padding:6px 10px;gap:4px}.cp-src-tip{display:none}
+  .nv-k4{grid-template-columns:1fr 1fr;row-gap:10px}
+  .nv-row .help{line-height:1.5}
+}
   .cpc-c { flex: 1; min-width: 0; height: 100%; display: flex; align-items: flex-end; cursor: default; }
   .cpc-c .cp-bar { width: 100%; background: var(--success); opacity: .75; border-radius: 3px 3px 0 0; transition: opacity .12s, filter .12s, transform .12s; transform-origin: bottom; }
   /* 막대 눌러 그 칸만 아래 목록에 (사용자 261126) — 올리면 밝게, 누르면 살짝 눌림, 고른 칸 말고는 흐리게. 칸 전체 회색 바탕은 막대 높이처럼 보여서 뺌 */
@@ -1928,8 +1937,8 @@
 <!-- Leaflet CSS (좌표 피커용) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <script src="lib/passkey.js?v=261103c"></script>
-<link rel="stylesheet" href="lib/theme.css?v=261126l">
-<script src="lib/nav.js?v=261126r"></script>
+<link rel="stylesheet" href="lib/theme.css?v=261126m">
+<script src="lib/nav.js?v=261126s"></script>
 </head>
 <body>
 
@@ -2950,7 +2959,7 @@ function cpChart(rows, from, to, metric, sel) {
   return `<div class="cpc-wrap" style="position:relative;padding-top:26px" onpointermove="cpTip(event,this)" onpointerdown="cpTip(event,this)" onpointerleave="cpTip(null,this)">
     <div class="cpc${sel && keys.includes(sel) ? ' has-sel' : ''}" role="img" aria-label="기간 ${metric} 그래프">${series.map((v, i) => `<div class="cpc-c${keys[i] === sel ? ' sel' : ''}" data-k="${keys[i]}" data-kl="${lab(keys[i])}" data-tip="${lab(keys[i])} · ${fmt(v)}${showLine ? ` · 클릭 ${clicks[i]}` : ''}"><div class="cp-bar" style="height:${Math.max(0, v) / max * 100}%;${v ? 'min-height:2px' : ''}"></div></div>`).join('')}${line}</div>
     <div class="cpc-x">${keys.map((k, i) => `<span>${i % every === 0 || i === keys.length - 1 ? lab(k) : ''}</span>`).join('')}</div>
-    <div class="cp-tip" style="display:none;position:absolute;pointer-events:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-100%)"></div></div><div class="help">최고 ${fmt(Math.max(...series))} · 합계 ${fmt(series.reduce((a, b) => a + b, 0))}${showLine ? ` · <span style="color:var(--info, #4a90d9);font-weight:700">─ 클릭</span> (선은 클릭끼리의 높낮이, 최고 ${cmax}번)` : ''}</div>`;
+    <div class="cp-tip" style="display:none;position:absolute;pointer-events:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-100%)"></div></div><div class="help">최고 ${fmt(Math.max(...series))} · 합계 ${fmt(series.reduce((a, b) => a + b, 0))}${showLine ? ` · <span style="color:var(--info, #4a90d9);font-weight:700">─ 클릭</span> <span class="m-hide">(선은 클릭끼리의 높낮이, 최고 ${cmax}번)</span>` : ''}</div>`;
 }
 // 폰 대시보드 가로 페이지: 위 버튼 ↔ 가로 스크롤 맞추기 (마지막 페이지 기억)
 let _dashPage = 0;
@@ -3032,7 +3041,7 @@ async function renderMoneySummary() {
       <div class="money-s">홈 ${won(v.home)} · 스레드 ${won(v.threads)}</div></div>`;
     box.innerHTML = `<div class="card" style="margin:0"><div class="money-grid">${col('최근 7일', w)}${col('이번 달', m)}</div>
       <div class="money-chart"><div class="today-label" style="margin:10px 0 4px">최근 7일 수익 (원)</div>${renderBarChart(d7, v7, Math.max(1, ...v7))}</div>
-      <div class="help" style="margin-top:8px">쿠팡 · ${escapeHtml(md2(last))}까지 반영 (전날 실적은 오후 4시 전후)</div>
+      <div class="help" style="margin-top:8px">쿠팡 · ${escapeHtml(md2(last))}까지 반영<span class="m-hide"> (전날 실적은 오후 4시 전후)</span></div>
       <a class="dash-more" href="#coupang">쿠팡 자세히 →</a></div>`;
     dashCacheSet('money', box.innerHTML);
   } catch (e) {
@@ -3126,7 +3135,7 @@ function renderStatsPage() {
 }
 // ── 🟢 네이버 실적 (사용자 261126 '쿠팡 실적처럼, API가 없어 금액은 모르니 홈페이지의 네이버 브랜드 커넥트 링크가 얼마나 눌렸는지 · 일·주 단위 · 어제 오늘')
 // 데이터: 통계 Worker의 날짜별 클릭(daily[날짜].clicks '경로::라벨') 중 홈페이지 장비·먹거리 카드의 네이버 링크(naver.me·브랜드 커넥트·스마트스토어). 수익·주문은 없음(네이버 API 없음)
-let _nvPeriod = '30d', _nvFilter = 'all', _nvUnit = 'day', _nvOrder = 'click', _nvEv = {}, _nvSel = '';   // _nvSel: 그래프에서 누른 칸 (h9 / YYYY-MM-DD / wYYYY-MM-DD)   // 쿠팡 실적처럼 최근 30일이 기본 (사용자 261126)
+let _nvPeriod = '30d', _nvFilter = 'all', _nvUnit = 'day', _nvOrder = 'click', _nvEv = {}, _nvSel = '', _nvShowZero = false;   // _nvSel: 그래프에서 누른 칸 (h9 / YYYY-MM-DD / wYYYY-MM-DD)   // 쿠팡 실적처럼 최근 30일이 기본 (사용자 261126)
 const NV_RE = /naver\.me|brandconnect|smartstore\.naver|brand\.naver|shopping\.naver/i;
 async function renderNaverReport() {
   hideContentTabs();
@@ -3192,12 +3201,15 @@ async function renderNaverReport() {
     <div class="cpc${_nvSel ? ' has-sel' : ''}" role="img" aria-label="네이버 링크 클릭 그래프">${vals.map((v, i) => `<div class="cpc-c${keys[i] === _nvSel ? ' sel' : ''}" data-k="${keys[i]}" data-tip="${labs[i]} · ${v}번"><div class="cp-bar" style="height:${v / max * 100}%;${v ? 'min-height:2px' : ''}"></div></div>`).join('')}</div>
     <div class="cpc-x">${labs.map((l, i) => `<span>${i % every === 0 || i === labs.length - 1 ? l : ''}</span>`).join('')}</div>
     <div class="cp-tip" style="display:none;position:absolute;pointer-events:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-100%)"></div></div>
-    <div class="help">최고 ${Math.max(...vals)}번 · 합계 ${vals.reduce((a, b) => a + b, 0)}번${oneDay && !hourly ? ' · 시간별 기록을 못 불러와 최근 14일 일별로 보여요' : ''}${hourly ? ' · 시간별은 누른 기록 하나하나로 세서 위 숫자(5분 안 다시 누름 1번)와 조금 다를 수 있어요' : ''}</div>`;
+    <div class="help">최고 ${Math.max(...vals)}번 · 합계 ${vals.reduce((a, b) => a + b, 0)}번${oneDay && !hourly ? ' · 시간별 기록을 못 불러와 최근 14일 일별로 보여요' : ''}${hourly ? '<span class="m-hide"> · 시간별은 누른 기록 하나하나로 세서 위 숫자(5분 안 다시 누름 1번)와 조금 다를 수 있어요</span>' : ''}</div>`;
   // 링크별
   const rows = shownLinks.map(l => { const p2 = `/${l.kind}/${l.id}`; let last = ''; for (const [d, m] of Object.entries(perDay)) if (m[p2] && d > last) last = d;
     return { ...l, n: span(from, to, p2), today: span(today, today, p2), yest: span(yest, yest, p2), d7: span(addD(today, -6), today, p2), d30: span(addD(today, -29), today, p2), last }; });
   const ORD = { click: (a, b) => b.n - a.n || b.d30 - a.d30, recent: (a, b) => b.last.localeCompare(a.last) || b.n - a.n };
   rows.sort(ORD[_nvOrder] || ORD.click);
+  // 이 기간 클릭 없는 링크는 접어 둠 (폰에서 목록이 너무 길어서, 261126)
+  const zeroN = !oneDay && !_nvSel && !_nvShowZero ? rows.filter(l => l.n === 0).length : 0;
+  if (zeroN) rows.splice(0, rows.length, ...rows.filter(l => l.n > 0));
   if (oneDay && !_nvSel) rows.splice(0, rows.length, ...rows.filter(l => l.n > 0));   // 어제·오늘은 그날 눌린 것만 (사용자 261126)
   if (_nvSel) { rows.forEach(l => l.b = bucketN(`/${l.kind}/${l.id}`)); rows.splice(0, rows.length, ...rows.filter(l => l.b > 0).sort((a, b) => b.b - a.b || b.n - a.n)); }   // 막대 누른 칸에 눌린 것만 (사용자 261126)
   const badge = l => `<span style="font-size:11px;color:#fff;background:${l.kind === 'foods' ? '#c2570c' : '#0b5e2e'};border-radius:4px;padding:1px 6px;margin-right:6px">홈페이지·${l.kind === 'foods' ? '음식' : '장비'}</span>`;
@@ -3206,9 +3218,9 @@ async function renderNaverReport() {
   c.innerHTML = `
     <div class="page-header"><div class="page-count">홈페이지 네이버 링크 ${links.length}개 · 통계 ${escapeHtml(String(_statsCache.updated_at || '').slice(5, 16).replace('T', ' '))} 기준</div></div>
     <div class="card" style="margin-bottom:10px">
-      <div style="display:flex;gap:6px;flex-wrap:wrap">${Object.entries(P).map(([k, [l]]) => `<button type="button" class="btn btn-sm ${_nvPeriod === k ? '' : 'btn-ghost'}" data-nvp="${k}">${l}</button>`).join('')}</div>
+      <div class="cp-per">${Object.entries(P).map(([k, [l]]) => `<button type="button" class="btn btn-sm ${_nvPeriod === k ? '' : 'btn-ghost'}" data-nvp="${k}">${l}</button>`).join('')}</div>
       <div style="font-size:13px;color:var(--muted);margin-top:10px">${escapeHtml(from)}${from !== to ? ' ~ ' + escapeHtml(to) : ''} · ${escapeHtml(F.find(f => f[0] === _nvFilter)[1])}</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;text-align:center">
+      <div class="nv-k4">
         <div><div class="help">이 기간 클릭</div><div style="font-size:20px;font-weight:800">${total.toLocaleString()}</div></div>
         <div><div class="help">어제</div><div style="font-size:20px;font-weight:800">${tYest}</div></div>
         <div><div class="help">오늘</div><div style="font-size:20px;font-weight:800">${tToday}</div></div>
@@ -3217,15 +3229,17 @@ async function renderNaverReport() {
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><b style="font-size:14px">${hourly ? '시간별' : _nvUnit === 'week' ? '주별' : '일별'} 클릭</b>
         <span${hourly ? ' style="display:none"' : ''}>${[['day', '일별'], ['week', '주별']].map(([k, l]) => `<button type="button" class="btn btn-sm ${_nvUnit === k ? '' : 'btn-ghost'}" data-nvu="${k}">${l}</button>`).join(' ')}</span></div>
       ${chart}
-      <div class="help" style="margin-top:6px">홈페이지 장비·먹거리 카드에서 네이버 링크(브랜드 커넥트·스마트스토어)를 <b>누른 횟수</b>예요(같은 사람이 5분 안에 또 누르면 1번). 네이버는 판매·수익을 알려 주는 API가 없어서 주문·금액은 브랜드 커넥트 관리자 화면에서 확인해요.</div>
+      <div class="help m-hide" style="margin-top:6px">홈페이지 장비·먹거리 카드에서 네이버 링크(브랜드 커넥트·스마트스토어)를 <b>누른 횟수</b>예요(같은 사람이 5분 안에 또 누르면 1번). 네이버는 판매·수익을 알려 주는 API가 없어서 주문·금액은 브랜드 커넥트 관리자 화면에서 확인해요.</div>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 8px"><span class="help">정렬</span>${[['click', '클릭'], ['recent', '최근 클릭']].map(([k, l]) => `<button type="button" class="btn btn-sm ${_nvOrder === k ? '' : 'btn-ghost'}" data-nvo="${k}">${l}</button>`).join('')}</div>
     ${_nvSel ? `<div class="cp-selbar"><span>📍 <b>${selLab}</b>에 눌린 링크만 ${rows.length}개</span><button type="button" class="btn btn-sm btn-ghost" id="nv-selx">전체 보기</button></div>` : ''}
     <div class="list">${rows.length ? rows.map(l => `<a class="list-item" href="#${l.kind}/${l.i}" style="display:flex;gap:10px;align-items:center;padding:10px 12px;text-decoration:none;color:inherit">
         ${l.thumb ? `<img src="../${escapeHtml(String(l.thumb).replace(/^\.\//, ''))}" alt="" loading="lazy" style="width:40px;height:40px;border-radius:6px;object-fit:cover;flex:none;background:var(--soft)">` : ''}
         <div style="min-width:0;flex:1">${badge(l)}<b>${escapeHtml(l.name)}</b>${l.bc ? '' : ' <span class="help">스마트스토어</span>'}
-          <div class="help" style="margin-top:2px">${_nvSel ? `<b>${selLab}</b> 🖱 <b>${l.b}</b> · ` : ''}🖱 <b>${l.n}</b> (이 기간) · 어제 ${l.yest} · 오늘 ${l.today} · 7일 ${l.d7} · 30일 ${l.d30}${l.last ? ` · 최근 클릭 ${+l.last.slice(4, 6)}/${+l.last.slice(6)}` : ' · 아직 클릭 없음'}</div></div></a>`).join('') : `<div class="list-empty">${_nvSel ? `${selLab}엔 눌린 링크가 없어요` : oneDay && links.length ? '이날 눌린 네이버 링크가 없어요' : '홈페이지에 네이버 링크가 없어요'}</div>`}</div>`;
+          <div class="help" style="margin-top:2px">${_nvSel ? `<b>${selLab}</b> 🖱 <b>${l.b}</b> · ` : ''}🖱 <b>${l.n}</b> (이 기간) · 어제 ${l.yest} · 오늘 ${l.today} · 7일 ${l.d7} · 30일 ${l.d30}${l.last ? ` · 최근 클릭 ${+l.last.slice(4, 6)}/${+l.last.slice(6)}` : ' · 아직 클릭 없음'}</div></div></a>`).join('') : `<div class="list-empty">${_nvSel ? `${selLab}엔 눌린 링크가 없어요` : (oneDay || zeroN) && links.length ? '이날 눌린 네이버 링크가 없어요' : '홈페이지에 네이버 링크가 없어요'}</div>`}</div>
+    ${zeroN ? `<div style="text-align:center;margin:10px 0"><button type="button" class="btn btn-sm btn-ghost" id="nv-zero">이 기간 클릭 없는 링크 ${zeroN}개 보기</button></div>` : _nvShowZero && !oneDay && !_nvSel ? `<div style="text-align:center;margin:10px 0"><button type="button" class="btn btn-sm btn-ghost" id="nv-zero">클릭 없는 링크 접기</button></div>` : ''}`;
   c.querySelectorAll('.cpc-c[data-k]').forEach(el => el.onclick = () => { _nvSel = _nvSel === el.dataset.k ? '' : el.dataset.k; renderNaverReport(); });
+  const nvz = document.getElementById('nv-zero'); if (nvz) nvz.onclick = () => { _nvShowZero = !_nvShowZero; renderNaverReport(); };
   const nvx = document.getElementById('nv-selx'); if (nvx) nvx.onclick = () => { _nvSel = ''; renderNaverReport(); };
   c.querySelectorAll('[data-nvp]').forEach(b => b.onclick = () => { _nvSel = ''; _nvPeriod = b.dataset.nvp; renderNaverReport(); });
   c.querySelectorAll('[data-nvf]').forEach(b => b.onclick = () => { _nvFilter = b.dataset.nvf; renderNaverReport(); });
@@ -3290,7 +3304,7 @@ async function renderCoupangReport() {
     <div class="page-header"><button class="page-back" id="back-btn">← 대시보드</button>
       <div class="page-count">데이터 ${escapeHtml(dash(daily.from || ''))} ~ ${escapeHtml(last)} · ${escapeHtml(String(daily.updated_at || '').slice(5, 16).replace('T', ' '))} 갱신</div></div>
     <div class="card" style="margin-bottom:10px">
-      <div style="display:flex;gap:6px;flex-wrap:wrap">${P.map(([k, l]) => `<button type="button" class="btn btn-sm ${_cpPeriod === k ? '' : 'btn-ghost'}" data-cpp="${k}">${l}</button>`).join('')}</div>
+      <div class="cp-per">${P.map(([k, l]) => `<button type="button" class="btn btn-sm ${_cpPeriod === k ? '' : 'btn-ghost'}" data-cpp="${k}">${l}</button>`).join('')}</div>
       ${_cpPeriod === 'custom' ? `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px">
         <input class="input" type="date" id="cp-from" value="${escapeHtml(_cpFrom || from)}" min="${escapeHtml(dash(daily.from || ''))}" max="${escapeHtml(last)}" style="width:auto">
         ~ <input class="input" type="date" id="cp-to" value="${escapeHtml(_cpTo || to)}" min="${escapeHtml(dash(daily.from || ''))}" max="${escapeHtml(last)}" style="width:auto">
@@ -3300,13 +3314,13 @@ async function renderCoupangReport() {
         <div><div class="help">클릭</div><div style="font-size:20px;font-weight:800">${t.click.toLocaleString()}</div></div>
         <div><div class="help">주문</div><div style="font-size:20px;font-weight:800">${t.order}건</div></div>
         <div><div class="help">수익 (취소 뺌)</div><div style="font-size:20px;font-weight:800">${won(t.commission)}</div></div></div>
-      <div class="cp-src"><div class="cp-src-h"><span>어디서 들어왔나 · 줄 누르면 그것만</span><span>클릭</span><span>주문</span><span>수익</span></div>${Object.entries(G).map(([k, [label, l]]) => { const s2 = sum(l); if (k !== 'all' && k !== _cpFilter && !l.length) return '';   /* 어디서 들어왔나 (사용자 261126 스레드 성과 리포트에 있던 것 → 여기로): 줄 누르면 그것만 */
+      <div class="cp-src"><div class="cp-src-h"><span>어디서 들어왔나 <span class="cp-src-tip">· 줄 누르면 그것만</span></span><span>클릭</span><span>주문</span><span>수익</span></div>${Object.entries(G).map(([k, [label, l]]) => { const s2 = sum(l); if (k !== 'all' && k !== _cpFilter && !l.length) return '';   /* 어디서 들어왔나 (사용자 261126 스레드 성과 리포트에 있던 것 → 여기로): 줄 누르면 그것만 */
         return `<button type="button" class="cp-src-r${_cpFilter === k ? ' on' : ''}${label.startsWith('ㄴ') ? ' sub' : ''}" data-cpf="${k}"><span>${label}</span><span>${s2.click.toLocaleString()}</span><span>${s2.order}</span><b>${won(s2.commission)}</b></button>`; }).join('')}
 </div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><b style="font-size:14px">기간 그래프</b>
         <span>${[['commission', '수익'], ['click', '클릭'], ['order', '주문']].map(([k, l]) => `<button type="button" class="btn btn-sm ${_cpMetric === k ? '' : 'btn-ghost'}" data-cpm="${k}">${l}</button>`).join(' ')}</span></div>
       ${cpChart(list, from, to, _cpMetric, _cpSel)}
-      <div class="help" style="margin-top:6px">아래 한 줄 = 사람이 <b>눌러서 들어온 링크</b>. 그 링크로 들어와서 다른 걸 사도 그 링크 몫이에요(쿠팡 24시간). 줄을 누르면 실제로 산 물건이 보여요. 클릭은 파트너스 웹이 일부 걸러서 웹이 조금 적게 나와요.</div>
+      <div class="help m-hide" style="margin-top:6px">아래 한 줄 = 사람이 <b>눌러서 들어온 링크</b>. 그 링크로 들어와서 다른 걸 사도 그 링크 몫이에요(쿠팡 24시간). 줄을 누르면 실제로 산 물건이 보여요. 클릭은 파트너스 웹이 일부 걸러서 웹이 조금 적게 나와요.</div>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 8px"><span class="help">정렬</span>${[['commission', '수익'], ['order', '주문'], ['click', '클릭'], ['recent', '최근 구매']].map(([k, l]) => `<button type="button" class="btn btn-sm ${_cpOrder === k ? '' : 'btn-ghost'}" data-cpord="${k}">${l}</button>`).join('')}</div>
     ${_cpSel ? `<div class="cp-selbar"><span>📍 <b>${selLab}</b>에 클릭·주문이 있었던 것만 ${shown.length}개 · 숫자도 ${selLab} 몫</span><button type="button" class="btn btn-sm btn-ghost" id="cp-selx">전체 보기</button></div>` : ''}
@@ -3316,7 +3330,7 @@ async function renderCoupangReport() {
         <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;cursor:pointer" data-cpo="${escapeHtml(r.key)}">
           <div style="min-width:0">${badge(r)}<b>${escapeHtml(nameOf(r))}</b>
             <div class="help" style="margin-top:2px">${_cpSel ? `<b>${selLab}</b> 🖱 ${r._b.click} · 주문 ${r._b.order}건 · <b>${won(r._b.commission)}</b> <span style="opacity:.7">(기간 🖱 ${r.click} · ${won(r.commission)})</span>` : `🖱 ${r.click} · 주문 ${r.order}건 · <b>${won(r.commission)}</b>`}${r.lastBuy ? ` · 최근 구매 ${+r.lastBuy.slice(4, 6)}/${+r.lastBuy.slice(6)}` : ''}${r.channel !== '채널 없음' ? ` · 채널 ${escapeHtml(r.channel)}` : ''}</div></div>
-          <span class="help">${open ? '▴' : '▾ 산 것'}</span></div>
+          <span class="help" style="white-space:nowrap;flex:none">${open ? '▴' : '▾ 산 것'}</span></div>
         ${open ? `<div style="margin-top:8px;font-size:13px">
           ${r.where.length ? `<div><b>링크가 걸린 곳</b> ${r.where.map(w => w.type === 'home'
             ? (idxOf(w) >= 0 ? `<a href="#${w.kind}/${idxOf(w)}">${escapeHtml(w.name)}</a>` : escapeHtml(w.name)) + ' (홈페이지)'
@@ -3537,7 +3551,7 @@ ${dashPhone ? `    <section class="dash-page dash-todo-page">
         ['#coupang', '🛒', '쿠팡', '클릭·주문·수익'],
         ['#naver', '🟢', '네이버', '네이버 링크 클릭'],
         ['insights.html', '📈', '분석 카드', '채널별 주간 분석']])}
-      ${grp('🗂 기타', [
+      ${grp('🧰 기타', [
         ['pipeline.html', '🗺️', '운영 지도', '채널·자동화 한눈에'],
         ['camp-live.html', '🏕️', '캠핑사이트', '작업 실시간 보기'],
         ['conti.html', '🎞', '콘티 보드', '촬영 콘티']])}

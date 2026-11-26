@@ -143,6 +143,7 @@
   .done-row { background: var(--bg); border-radius: 12px; padding: 10px 14px; display: flex; gap: 10px; align-items: center; font-size: 13.5px; }
   /* 게시 완료 목록은 촘촘하게 한 덩어리 (사용자 261126 '줄간격 공백 왜 이래 많아') */
   .best { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-bottom: 14px; }
+  @media (max-width: 759px) { .best { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; } .best::-webkit-scrollbar { display: none; } .best .best-c { flex: 0 0 72%; scroll-snap-align: start; } .home-day [data-repost] { display: none; } }   /* 폰: 잘된 글은 옆으로 넘김, 요약 탭에선 '다시 올리기' 숨김(글 목록 탭에 있음) */
   .best-c { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .best-r { font-size: 16px; line-height: 1; }
   .best-t { font-weight: 700; font-size: 13.5px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -233,8 +234,8 @@
   .more-menu .menu-pop .small { font-size: 12px; color: var(--muted); line-height: 1.5; }
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
-<link rel="stylesheet" href="lib/theme.css?v=261126l">
-<script src="lib/nav.js?v=261126r"></script>
+<link rel="stylesheet" href="lib/theme.css?v=261126m">
+<script src="lib/nav.js?v=261126s"></script>
 </head>
 <body>
 
@@ -876,7 +877,7 @@ function renderList() {
   // 탭별로 보여 줄 부분만 (대기 글 HTML은 위에서 만든 것 그대로)
   const view = $('#view');
   if (S.tab === 'home') view.innerHTML = `${saveBarHtml()}${bestHtml(done)}
-    ${homeDayHtml(done, pending, sched, firstLine)}
+    <div class="home-day">${homeDayHtml(done, pending, sched, firstLine)}</div>
     ${reportHtml()}`;
   view.querySelectorAll('[data-goto2]').forEach(b => b.onclick = () => { const toDone = b.dataset.goto2 === 'done'; if (toDone) S.showDone = true; S.tab = 'list'; try { localStorage.setItem(TAB_KEY, S.tab); } catch (e) {} if (window.kydzNav) kydzNav.pushView(S.tab); render(); const el = toDone && document.getElementById('done-sec'); if (el) el.scrollIntoView(); else window.scrollTo(0, 0); });
   document.querySelectorAll('[data-openp]').forEach(r => r.onclick = () => { const id = r.dataset.openp, p = S.posts.find(x => x.id === id); if (S.openPost.has(id)) S.openPost.delete(id); else if (p && !dirty(p)) S.openPost.add(id); else S.openPost.add(id); if (p && dirty(p) && !S.openPost.has(id)) toast('저장 안 한 글은 열어 둬요', false); renderList(); });

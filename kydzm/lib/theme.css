@@ -90,3 +90,6 @@ body.kn-wide .wrap, body.kn-wide .container { max-width: none; }
   * { scrollbar-width: none; }
   *::-webkit-scrollbar { height: 0; }
 }
+
+/* 폰에선 긴 설명 숨김 (사용자 261126 '모바일에서는 잡다한 설명 빼, 어차피 잘 안 보여') — 설명 글에 class="m-hide" */
+@media (max-width: 759px) { .m-hide { display: none !important; } }

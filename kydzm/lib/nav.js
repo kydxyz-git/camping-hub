@@ -94,7 +94,7 @@
     ['📱', 'SNS 관리', [['mutuals.html', '📸', '인스타'], ['threads.html', '🧵', '스레드'], ['youtube.html', '📺', '유튜브']]],
     ['🔥', '딜보드 관리', [['deals.html', '🔥', '딜 보드']]],
     ['📈', '성과 분석', [['./#stats', '📊', '홈페이지 통계'], ['./#coupang', '🛒', '쿠팡'], ['./#naver', '🟢', '네이버'], ['insights.html', '📈', '분석 카드']]],   // 순서 (사용자 261126)
-    ['🗂', '기타', [['pipeline.html', '🗺️', '운영 지도'], ['camp-live.html', '🏕️', '캠핑사이트'], ['conti.html', '🎞', '콘티 보드']]],
+    ['🧰', '기타', [['pipeline.html', '🗺️', '운영 지도'], ['camp-live.html', '🏕️', '캠핑사이트'], ['conti.html', '🎞', '콘티 보드']]],
   ];
   const norm = h => h.replace(/^\.\//, '').replace(/^index\.html/, '');
   function where() {   // [그룹 index, 항목] 또는 null(대시보드)
@@ -144,7 +144,7 @@
   .kn-bar .car{font-size:10px;color:var(--kn-muted);margin-left:3px}
   .kn-dd{position:fixed;z-index:9200;min-width:170px;max-width:calc(100vw - 16px);max-height:70vh;overflow:auto;background:var(--kn-card);border:1px solid var(--kn-line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:4px}
   .kn-dd a,.kn-dd button{display:flex;gap:8px;align-items:center;width:100%;text-align:left;padding:9px 10px;border-radius:7px;border:0;background:none;color:inherit;font:inherit;text-decoration:none;cursor:pointer;box-sizing:border-box}
-  .kn-dd a:hover,.kn-dd button:hover{background:var(--kn-soft)} .kn-dd .cur{background:var(--kn-hi);font-weight:700}
+  .kn-dd a:hover,.kn-dd button:hover{background:var(--kn-soft)} .kn-ic{font-style:normal;width:20px;flex:none;text-align:center;font-size:15px;line-height:1} .kn-dd .cur{background:var(--kn-hi);font-weight:700}
   /* 위 줄 하나로 (사용자 261126 '2번도 해'): 각 화면의 제목 줄은 숨기고 그 버튼은 위 줄 오른쪽으로. 위 줄은 늘 고정 → 각 화면의 붙는 줄은 그 아래 */
   .kn-act{margin-left:auto;display:flex;align-items:center;gap:6px;flex:none;padding-left:8px}
   .kn-act>*{flex:none}
@@ -200,8 +200,8 @@
   function dropdown(btn, lv) {
     const was = btn.classList.contains('open'); closeDD(); if (was) return;
     const w = where(); let html = '';
-    if (lv === 0 || lv === 1) html = MENU.map((g, i) => `<a href="${esc(g[2][0][0])}" class="${w && w[0] === i ? 'cur' : ''}">${g[0]} ${esc(g[1])}</a>`).join('') + (lv === 1 ? '<a href="./">🏠 대시보드</a>' : '');
-    else if (lv === 2) html = MENU[w[0]][2].map(it => `<a href="${esc(it[0])}" class="${w[1] === it ? 'cur' : ''}">${it[1]} ${esc(it[2])}</a>`).join('');
+    if (lv === 0 || lv === 1) html = MENU.map((g, i) => `<a href="${esc(g[2][0][0])}" class="${w && w[0] === i ? 'cur' : ''}"><i class="kn-ic">${g[0]}</i>${esc(g[1])}</a>`).join('') + (lv === 1 ? '<a href="./"><i class="kn-ic">🏠</i>대시보드</a>' : '');
+    else if (lv === 2) html = MENU[w[0]][2].map(it => `<a href="${esc(it[0])}" class="${w[1] === it ? 'cur' : ''}"><i class="kn-ic">${it[1]}</i>${esc(it[2])}</a>`).join('');
     else if (lv === 3 && sub) html = sub.items.map(x => `<button data-k="${esc(x.key)}" class="${x.key === sub.cur ? 'cur' : ''}">${esc(x.label)}</button>`).join('');
     dd = document.createElement('div'); dd.className = 'kn-dd'; dd.innerHTML = html; pushLayer('dd');
     document.body.appendChild(dd); btn.classList.add('open');

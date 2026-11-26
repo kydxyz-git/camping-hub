@@ -225,8 +225,8 @@
   .apibat .bat::after { content: ''; position: absolute; right: -4px; top: 4px; width: 2.5px; height: 5px; background: var(--muted); border-radius: 0 2px 2px 0; }
   .apibat .bat > i { display: block; height: 100%; border-radius: 2px; }
 </style>
-<link rel="stylesheet" href="lib/theme.css?v=261126l">
-<script src="lib/nav.js?v=261126r"></script>
+<link rel="stylesheet" href="lib/theme.css?v=261126m">
+<script src="lib/nav.js?v=261126s"></script>
 </head>
 <body>
 <div class="login" id="login" style="display:none">
@@ -399,8 +399,8 @@ function renderPosts() {
   };
   const grid = (list, kind) => `<div class="igrid">${list.map(x => card(x, kind)).join('')}</div>`;
   return renderKpis(by, need, going.length) + renderDaily() + renderToday() +   // 오늘 다녀올 맞팔은 진행 중 위 (사용자 261126)
-    (going.length ? `<div class="gh">🔄 진행 중 <span class="muted">${going.length} · 달릴 답글(줄에 올림·고친 글)이 남은 게시물 — 줄에 올린 순서대로, 다 달리면 답 필요·다 답함으로</span></div>` + renderQueue() + grid(going, 'going') : renderQueue()) +
-    (open.length ? `<div class="gh red">🔴 답 필요 <span class="muted">${open.length} · 체크해서 위 [자동 시작]</span></div>` + grid(open, 'open') : '') +
+    (going.length ? `<div class="gh">🔄 진행 중 <span class="muted">${going.length}<span class="m-hide"> · 달릴 답글(줄에 올림·고친 글)이 남은 게시물 — 줄에 올린 순서대로, 다 달리면 답 필요·다 답함으로</span></span></div>` + renderQueue() + grid(going, 'going') : renderQueue()) +
+    (open.length ? `<div class="gh red">🔴 답 필요 <span class="muted">${open.length}<span class="m-hide"> · 체크해서 위 [자동 시작]</span></span></div>` + grid(open, 'open') : '') +
     (done.length ? `<button class="gh gh-tg" data-donetg>✅ 다 답함 <span class="muted">${done.length} · ${S.openDoneP ? '접기 ▴' : '펼치기 ▾'}</span></button>` + (S.openDoneP ? grid(done, 'done') : '') : '');   // 기본 접힘 (사용자 261126)
 }
 // 인스타 API 남은 양을 배터리처럼 — 탭 줄 오른쪽 (사용자 261126 '사용량 저렇게 하지 말고 조용한 맞팔 오른쪽에 배터리 게이지로'). 사용률은 응답 헤더 기준, 댓글·DM 중 큰 쪽
@@ -443,7 +443,7 @@ function fitToday() {
   const cols = getComputedStyle(g).gridTemplateColumns.split(' ').filter(Boolean).length, rows = innerWidth < 760 ? 2 : 1;
   const n = +g.dataset.n, shown = Math.min(n, cols * rows, g.children.length);
   [...g.children].forEach((c, i) => { c.style.display = i < shown ? '' : 'none'; });
-  const t = document.querySelector('.tmore'); if (t) t.textContent = n > shown ? `외 ${n - shown}명 · ` : '';
+  const t = document.querySelector('.tmore'); if (t) t.textContent = n > shown ? `외 ${n - shown}명` : '';
 }
 addEventListener('resize', () => fitToday());
 function fitQline() {
@@ -565,12 +565,12 @@ function renderToday() {
   const todo = all.filter(u => !opened(u.user, lt[u.user].at)).sort((a, b) => (a.tier - b.tier) || (b.often - a.often) || (lt[b.user].at > lt[a.user].at ? 1 : -1));
   const doneN = all.length - todo.length;
   const n1 = Object.keys(m3).length, n2 = Object.values(m30).filter(u => u.posts.size >= half).length;
-  return `<div class="card"><div class="row" style="justify-content:space-between"><b>🚶 오늘 다녀올 맞팔</b><span class="muted">① 3일 안 나한테 댓글 단 맞팔 → ② 자주 오는 맞팔(30일 내 게시물 ${n30}개 중 ${half}개+) · 새 글 올리고 아직 안 연 사람</span></div>
+  return `<div class="card"><div class="row" style="justify-content:space-between"><b>🚶 오늘 다녀올 맞팔</b><span class="muted m-hide">① 3일 안 나한테 댓글 단 맞팔 → ② 자주 오는 맞팔(30일 내 게시물 ${n30}개 중 ${half}개+) · 새 글 올리고 아직 안 연 사람</span></div>
     ${todo.length ? `<div class="tgrid" data-n="${todo.length}">${todo.slice(0, 24).map(u => { const x = lt[u.user]; return `<a class="pcard tc" href="${esc(x.permalink)}" target="_blank" rel="noopener" data-open="${esc(u.user)}">
       ${x.thumb ? `<img src="${esc(x.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<div class="ph"></div>'}
       <div class="pu">@${esc(u.user)}</div><div class="pn"><span>${hoursAgo(x.at)} 새 글</span><span>${u.tier === 2 ? '<b class="often">자주 옴</b> ' : ''}30일 ${u.often}개에 옴</span></div>${noteMini(u.user)}</a>`; }).join('')}</div>`
       : `<div class="muted" style="padding:6px 0">${doneN ? `오늘 다 다녀왔어요 ✅ (${doneN}명)` : '최근 3일 새 글 올린 맞팔이 아직 없어요'}</div>`}
-    <div class="muted" style="margin-top:6px"><span class="tmore"></span>대상 ① ${n1}명 · ② ${n2}명 중 새 글 올리고 아직 안 연 사람 · 새 글은 4시간마다 확인(개인 계정은 안 보임) · 인스타 앱에서 직접 다녀온 건 몰라서 또 뜰 수 있어요 — 'N시간 전 새 글'로 확인</div></div>`;
+    <div class="muted" style="margin-top:6px"><span class="tmore"></span><span class="m-hide"> · 대상 ① ${n1}명 · ② ${n2}명 중 새 글 올리고 아직 안 연 사람 · 새 글은 4시간마다 확인(개인 계정은 안 보임) · 인스타 앱에서 직접 다녀온 건 몰라서 또 뜰 수 있어요 — 'N시간 전 새 글'로 확인</span></div></div>`;
 }
 
 // ── 맞팔 후보 (사용자 261126 '4번 좋아'): 맞팔 아닌데 내 게시물에 자주 오는 사람 ──
@@ -584,7 +584,7 @@ function renderCands() {
   const cs = Object.entries(S.st.others || {}).filter(([u, o]) => !mut.has(u) && o.last >= cut && talk(o).posts >= 2 && !snoozed(u, o))
     .map(([u, o]) => ({ user: u, ...talk(o), last: o.last })).sort((a, b) => (b.posts - a.posts) || (b.n - a.n));
   if (!cs.length) return '';   // 없으면 숨김 (맞팔 탭 맨 위라)
-  return `<div class="gh" style="margin-top:4px">🌱 맞팔 후보 <span class="muted">${cs.length}명 · 맞팔은 아닌데 최근 30일 내 게시물 2개 이상에 소통 댓글(DM 키워드 말고) 단 사람 · 눌러 보면 7일 숨김</span></div>` +
+  return `<div class="gh" style="margin-top:4px">🌱 맞팔 후보 <span class="muted">${cs.length}명<span class="m-hide"> · 맞팔은 아닌데 최근 30일 내 게시물 2개 이상에 소통 댓글(DM 키워드 말고) 단 사람 · 눌러 보면 7일 숨김</span></span></div>` +
     (cs.length ? `<div class="grid" style="margin-bottom:16px">${cs.map(u => `<a class="pcard ${opened(u.user, u.last) ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}">
       <div class="pu">@${esc(u.user)}</div><div class="pn"><span>게시물 ${u.posts}개 · 소통 ${u.n}${u.kw ? ` · 키워드 ${u.kw}` : ''}</span></div><div class="pn"><span>${ago(u.last)}</span><span class="nb" data-note="${esc(u.user)}">✎</span></div>${noteMini(u.user)}</a>`).join('')}</div>` : '<div class="card muted">아직 없어요 — 며칠 쌓이면 나와요</div>');
 }
@@ -603,7 +603,7 @@ function renderStats() {
     <div class="ubs">${top.map((u, i) => `<a class="ub ${i < 3 ? 'ub-top' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}">${avatar(u.user)}
       <span class="ub-n">${i < 3 ? ['🥇', '🥈', '🥉'][i] : `<i>${i + 1}</i>`}@${esc(u.user)}</span><span class="ub-c">${u.posts.size}개 · 💬${u.n}</span><span class="ub-c2">${u.posts.size}개</span></a>`).join('')}</div>
     ${ranked.length > 10 ? `<button class="btn" data-more style="width:100%;margin-top:8px">${S.statsAll ? '접기' : `더보기 (${ranked.length}명 전부)`}</button>` : ''}
-    <div class="muted" style="margin-top:6px">맞팔 ${S.mut.length}명 중 30일 안에 댓글 단 사람 ${Object.keys(m).length}명 · 사진은 비즈니스·크리에이터 계정만(개인 계정은 첫 글자)</div></div>`;
+    <div class="muted m-hide" style="margin-top:6px">맞팔 ${S.mut.length}명 중 30일 안에 댓글 단 사람 ${Object.keys(m).length}명 · 사진은 비즈니스·크리에이터 계정만(개인 계정은 첫 글자)</div></div>`;
 }
 // 프로필 동그라미 (사용자 261126): 봇이 보관한 사진(state/ig_thumbs/u_*.jpg), 없으면 첫 글자
 function avatar(u) {

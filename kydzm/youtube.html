@@ -59,8 +59,8 @@
   .hb-d { font-size:10.5px; color:var(--muted); height:15px; margin-top:4px; white-space:nowrap; }
   @media (max-width:600px) { .hbars { gap:2px; height:140px; } .hb-v, .hb-s { font-size:8.5px; } .hb-d { font-size:9px; } }
 </style>
-<link rel="stylesheet" href="lib/theme.css?v=261126l">
-<script src="lib/nav.js?v=261126r"></script>
+<link rel="stylesheet" href="lib/theme.css?v=261126m">
+<script src="lib/nav.js?v=261126s"></script>
 </head>
 <body>
 <div class="login" id="login" style="display:none">
@@ -120,7 +120,7 @@ function chart(daily) {
       <div class="hb-col" style="height:${Math.round((x.views || 0) / mx * 100)}%"></div>
       <span class="hb-d">${i % step === 0 || i === ds.length - 1 ? md(x.day) : ''}</span></div>`; }).join('');
   return `<div class="hbars">${cols}</div>
-    <div class="muted">막대 = 하루 조회 · 위 숫자 = 그날 구독 변화 · 분석 숫자는 1~2일 늦게 들어와요</div>`;
+    <div class="muted m-hide">막대 = 하루 조회 · 위 숫자 = 그날 구독 변화 · 분석 숫자는 1~2일 늦게 들어와요</div>`;
 }
 
 function video(v, pv) {
@@ -169,7 +169,7 @@ function render({ cur, prev, board }) {
     <div class="gh">📊 날짜별 조회·구독</div><div class="card">${chart(cur.daily)}</div>
     ${tasks.length ? `<div class="gh">🗓 공개·작업 일정 (운영판 유튜브, 14일 안)</div><div class="card">${tasks.map(t => `<div class="sched"><span class="dt">${md(t.when)}</span><span>${esc(t.title)}</span></div>`).join('')}</div>` : ''}
     ${hidden.length ? `<div class="gh">🔒 비공개·예약 <span class="muted">${hidden.length} · 곧 공개할 영상</span></div><div class="vgrid">${hidden.map(v => video(v, pv[v.id])).join('')}</div>` : ''}
-    <div class="gh">🎬 공개 영상 <span class="muted">${pub.length} · 빨간 테두리 = 롱폼 0:30에서 절반 아래</span></div>
+    <div class="gh">🎬 공개 영상 <span class="muted">${pub.length}<span class="m-hide"> · 빨간 테두리 = 롱폼 0:30에서 절반 아래</span></span></div>
     <div class="vgrid">${pub.map(v => video(v, pv[v.id])).join('')}</div>
 `;
 }
