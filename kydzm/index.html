@@ -316,8 +316,11 @@
   .ig-v { font-size: 12px; padding: 3px 8px; border-radius: 99px; background: var(--soft); border: 1px solid var(--line); text-decoration: none; color: inherit; }
   .ig-v.more { color: var(--muted); }
   .ig-wide { display: grid; gap: 14px; }
-  @media (min-width: 760px) { .ig-wide { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: start; } }
-  .ig-vs2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+  @media (min-width: 760px) { .ig-wide { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }   /* 반반 (사용자 261126 '다녀올 맞팔은 절반만, 왼쪽에 답 필요·진행 중') */
+  .ig-p .g { flex: none; font-size: 12px; color: var(--muted); }
+  .ig-p .g b { color: var(--text); }
+  .ig-vs2 { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+  @media (min-width: 760px) and (max-width: 1199px) { .ig-vs2 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .ig-v2:nth-child(n+9) { display: none; } }
   @media (max-width: 759px) { .ig-vs2 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; } .ig-v2 span { font-size: 10px; } .ig-v2:nth-child(n+6) { display: none; } }
   .ig-v2 { display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: inherit; min-width: 0; }
   .ig-v2 img, .ig-v2 i { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: var(--soft); display: block; }
@@ -3051,13 +3054,18 @@ async function renderIgSummary() {
     const posts = (g.need_posts || []).slice(0, 3).map(p => `<a class="ig-p" href="mutuals.html#posts/${encodeURIComponent(p.media)}">
         ${p.thumb || p.shot ? `<img ${p.shot ? `data-shot="${e(p.shot)}"` : ''} src="${e(p.thumb || '')}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="if(!this.dataset.shot)this.style.visibility='hidden'">` : '<i></i>'}
         <span class="t">${e(Array.from((p.title || '').replace(/^\((협찬|광고)\)\s*/, '')).slice(0, 30).join('') || '(글 없음)')}</span><span class="n">답 ${p.n}</span></a>`).join('');
+    // 진행 중(자동 켠) 게시물: 줄에 선 답글·단 답글 (사용자 261126 '지금 진행 중인 거 왼쪽에')
+    const going = (g.going_posts || []).slice(0, 4).map(p => `<a class="ig-p" href="mutuals.html#posts/${encodeURIComponent(p.media)}">
+        ${p.thumb || p.shot ? `<img ${p.shot ? `data-shot="${e(p.shot)}"` : ''} src="${e(p.thumb || '')}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="if(!this.dataset.shot)this.style.visibility='hidden'">` : '<i></i>'}
+        <span class="t">${e(Array.from((p.title || '').replace(/^\((협찬|광고)\)\s*/, '')).slice(0, 30).join('') || '(글 없음)')}</span><span class="g">${p.queued ? `대기 <b>${p.queued}</b> · ` : ''}단 ${p.posted}${p.need ? ` · <span style="color:var(--danger);font-weight:700">답 ${p.need}</span>` : ''}</span></a>`).join('');
     // 다녀올 맞팔: 그 사람 새 글 썸네일 + 아이디 (사용자 261126 인스타 칸 정리)
-    const vis = (g.visit || []).slice(0, 8).map(v => `<a class="ig-v2" href="${e(v.permalink || '#')}" target="_blank" rel="noopener" title="@${e(v.user)}">${v.thumb ? `<img src="${e(v.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<i></i>'}<span>@${e(v.user)}</span></a>`).join('');
+    const vis = (g.visit || []).slice(0, 12).map(v => `<a class="ig-v2" href="${e(v.permalink || '#')}" target="_blank" rel="noopener" title="@${e(v.user)}">${v.thumb ? `<img src="${e(v.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<i></i>'}<span>@${e(v.user)}</span></a>`).join('');
     box.innerHTML = `<div class="card" style="margin:0">
       ${g.mode === 'paused' ? '<div class="ig-warn">⛔ 자동 대댓글 멈춤 — 인스타 화면에서 확인</div>' : ''}
       <div class="ig-wide">
         <div class="ig-col"><div class="ig-ks">${kp('답 필요', g.need_comments, 'mutuals.html#posts', g.need_comments ? 'red' : '')}${kp('진행 중', g.going, 'mutuals.html#posts')}${kp('오늘 답글', g.posted_today, 'mutuals.html#posts')}${kp('다녀올 맞팔', g.visit_total, 'mutuals.html#posts')}</div>
-          ${posts ? `<div class="today-label" style="margin:10px 0 4px">답 필요 게시물 ${g.need_posts_total || 0}개</div><div class="ig-ps">${posts}</div>` : ''}</div>
+          ${posts ? `<div class="today-label" style="margin:10px 0 4px">🔴 답 필요 게시물 ${g.need_posts_total || 0}개</div><div class="ig-ps">${posts}</div>` : ''}
+          ${going ? `<div class="today-label" style="margin:10px 0 4px">🔄 진행 중 ${g.going || 0}개${(g.going || 0) > 4 ? ' · 최근 4개' : ''}</div><div class="ig-ps">${going}</div>` : ''}</div>
         <div class="ig-col">${vis ? `<div class="today-label" style="margin:0 0 6px">🚶 오늘 다녀올 맞팔 ${g.visit_total || 0}명</div><div class="ig-vs2">${vis}</div>` : '<div class="help">오늘 다녀올 맞팔 없음 ✅</div>'}</div>
       </div>
       ${(g.api_issues || []).length ? `<div class="ig-warn" style="margin-top:8px">${g.api_issues.map(x => `${e(x.title)} <span style="opacity:.7">${e((x.at || '').slice(11, 16))}</span>`).join('<br>')}</div>` : ''}
