@@ -288,6 +288,16 @@ async function load() {
   S.mtype = Object.fromEntries(Object.entries(S.st.media || {}).filter(([, m]) => m.type).map(([id, m]) => [id, m.type]));   // 릴스 표시용
 }
 
+// 띄워 두면 3분마다 조용히 새로 받음 (사용자 261126 '화면 띄워 두면 자동 새로고침 되지?' — 봇은 10분마다 돎). 쓰는 중(입력 칸에 커서·고친 글)이면 건너뜀
+async function autoRefresh() {
+  if (document.hidden || !S.st) return;
+  const ae = document.activeElement;
+  if (ae && /^(TEXTAREA|INPUT)$/.test(ae.tagName)) return;
+  if ([...document.querySelectorAll('#main textarea')].some(t => t.value !== t.defaultValue)) return;
+  try { const y = scrollY; await load(); render(); scrollTo(0, y); S.refreshedAt = new Date(); } catch (e) { console.warn('자동 새로고침 실패', e); }
+}
+setInterval(autoRefresh, 3 * 60e3);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.refreshedAt && Date.now() - S.refreshedAt > 60e3) autoRefresh(); });
 function todayPosted() { const t = dayKey(new Date().toISOString()); return Object.values(S.st.comments || {}).filter(c => c.status === 'posted' && c.posted_at && dayKey(c.posted_at) === t).length; }
 function renderMode() {   // 위 상태 줄 (사용자 261126: 큰 '자동 시작' 버튼 없애고 게시물별로)
   const st = S.st, on = Object.keys(S.ctl.auto_media || {}).length, paused = st.mode === 'paused' && !(S.ctl.mode === 'on' && S.ctl.mode_at > (st.mode_at || ''));
@@ -447,7 +457,7 @@ function fitQline() {
 addEventListener('resize', () => fitQline());
 function apiBattery() {
   const pc = (S.st && S.st.pace) || {}, u = Math.max(+pc.usage || 0, +pc.usage_dm || 0), left = Math.max(0, 100 - u);
-  const col = u >= 80 ? 'var(--danger)' : u >= 50 ? 'var(--warning)' : 'var(--success)';
+  const col = `hsl(${Math.round(left * 1.2)},78%,47%)`;   // 남은 양 따라 녹→노→주→빨 (사용자 261126, 카드 막대와 같은 색)
   return `<span class="apibat" title="인스타 API 남은 양 ${left}% (사용 ${u}% — 댓글 ${+pc.usage || 0}% · DM ${+pc.usage_dm || 0}%)\n50% 넘게 쓰면 폰 알림, 80% 넘으면 댓글 확인을 쉬어요">API <i class="bat"><i style="width:${left}%;background:${col}"></i></i> ${left}%</span>`;
 }
 function renderKpis(by, need, goingN) {
@@ -791,7 +801,7 @@ async function start() {
   $('#app').style.display = 'block';
   if (!tok()) { $('#main').innerHTML = '<div class="banner err">cupas 토큰이 없어요 — <a href="threads.html">스레드 관리</a>에서 넣어 주세요</div>'; return; }
   fromHash(); if (!location.hash) history.replaceState({ kd: 0 }, '', '#' + S.tab);
-  try { await load(); render(); } catch (e) { $('#main').innerHTML = `<div class="banner err">${esc(e.message)}</div>`; }
+  try { await load(); render(); S.refreshedAt = new Date(); } catch (e) { $('#main').innerHTML = `<div class="banner err">${esc(e.message)}</div>`; }
 }
 (function boot() {
   try { if (sessionStorage.getItem(AUTH_KEY) === '1') return start(); } catch (e) {}
