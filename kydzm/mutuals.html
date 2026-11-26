@@ -64,6 +64,14 @@
   .card.going { border-color:var(--ok); }
   .card.sel { background:var(--soft); }
   .prow { display:flex; align-items:center; gap:10px; }
+  /* 내 답 가로 막대 (사용자 261126 '오른쪽에 가로바 그래프, 숫자도') */
+  .rbar { flex:none; width:180px; margin-left:auto; }
+  .rb-t { display:flex; justify-content:space-between; align-items:baseline; font-size:12px; color:var(--muted); margin-bottom:4px; }
+  .rb-t b { font-size:14px; color:var(--text); } .rb-t small { font-size:11px; color:var(--muted); font-weight:500; }
+  .rb-k { height:8px; border-radius:99px; background:var(--soft); border:1px solid var(--line); overflow:hidden; }
+  .rb-k i { display:block; height:100%; background:var(--warning); border-radius:99px; }
+  .rb-k i.full { background:var(--success); }
+  @media (max-width:560px){ .rbar { width:74px; } .rb-t span { display:none; } .rb-t { justify-content:flex-end; } }
   .pmid { min-width:0; flex:1; }
   .ptitle { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .ck2 { flex:none; display:flex; align-items:center; justify-content:center; width:34px; height:52px; margin:-8px 0 -8px -6px; cursor:pointer; }
@@ -92,7 +100,7 @@
   @media (max-width:600px) { .phead { flex-direction:column; } .pthumb { width:60%; max-width:240px; margin:0 auto; } .pcap { max-height:160px; } }
 </style>
 <link rel="stylesheet" href="lib/theme.css?v=261126i">
-<script src="lib/nav.js?v=261126h"></script>
+<script src="lib/nav.js?v=261126j"></script>
 </head>
 <body>
 <div class="login" id="login" style="display:none">
@@ -203,14 +211,15 @@ function renderPosts() {
       ${kind === 'open' ? `<label class="ck2" data-sel="${esc(mid)}"><input type="checkbox" ${sel ? 'checked' : ''} tabindex="-1"></label>` : ''}
       ${m.thumb ? `<img class="th" src="${esc(m.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<div class="th"></div>'}
       <div class="pmid"><div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)} · 💬${m.cc} · 맞팔 ${cs.length}</div><div class="ptitle">${esc(title)}</div>
-        <div class="muted">${kind === 'going' ? (nd ? `남은 <b style="color:var(--text)">${nd}</b> · 자동으로 단 ${auto1}` : '✅ 다 달았어요') : nd ? `<span style="color:var(--danger);font-weight:600">답 필요 ${nd}</span> · 내 답 ${got}/${cs.length}` : `내 답 ${got}/${cs.length}`}${chk ? ` · <span style="color:var(--danger)">확인 ${chk}</span>` : ''}</div></div>
+        <div class="muted">${kind === 'going' ? (nd ? `남은 <b style="color:var(--text)">${nd}</b> · 자동으로 단 ${auto1}` : '✅ 다 달았어요') : nd ? `<span style="color:var(--danger);font-weight:600">답 필요 ${nd}</span>` : '다 답함'}${chk ? ` · <span style="color:var(--danger)">확인 ${chk}</span>` : ''}</div></div>
+      ${cs.length ? `<div class="rbar" title="내 답 ${got}/${cs.length}"><div class="rb-t"><span>내 답</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${Math.round(got / cs.length * 100)}%"></i></div></div>` : ''}
       ${kind === 'going' ? `<button class="btn red sm" data-stop="${esc(mid)}">멈춤</button>` : ''}</div></div>`;
   };
   const sec = (t, list, kind, cls = '') => list.length ? `<div class="gh ${cls}">${t} <span class="muted">${list.length}</span></div>` + list.map(x => row(x, kind)).join('') : '';
   return sec('🔄 대댓글 진행 중', going, 'going') +
     (open.length ? `<div class="gh red">🔴 답 필요 <span class="muted">${open.length} · 골라서 자동 시작</span></div>` + open.map(x => row(x, 'open')).join('') : '') +
     sec('✅ 다 답함', done, 'done') +
-    (S.sel.size ? `<div class="actbar"><span>선택 <b>${S.sel.size}</b>개</span><button class="btn" data-selclear>취소</button><button class="btn pri" data-autostart>자동 시작</button></div><div style="height:64px"></div>` : '');
+    '';
 }
 function renderPost(mid, cs) {
   const m = S.st.media[mid] || {}, edits = S.ctl.edits || {}, skip = new Set(S.ctl.skip || []);
@@ -368,8 +377,16 @@ function render() {
   $('#main').innerHTML = S.tab === 'posts' ? renderPosts() : S.tab === 'people' ? renderPeople() : S.tab === 'quiet' ? renderQuiet() : renderCands();
   $('#main').querySelectorAll('[data-post]').forEach(b => b.onclick = e => { if (e.target.closest('[data-sel],[data-stop]')) return; go('posts', b.dataset.post); });
   $('#main').querySelectorAll('[data-sel]').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); const m = b.dataset.sel; S.sel.has(m) ? S.sel.delete(m) : S.sel.add(m); render(); });
-  $('#main').querySelectorAll('[data-selclear]').forEach(b => b.onclick = () => { S.sel.clear(); render(); });
-  $('#main').querySelectorAll('[data-autostart]').forEach(b => b.onclick = async () => {
+  // 선택 줄은 위 메뉴 줄 오른쪽 끝에 (사용자 261126)
+  if (window.kydzNav && kydzNav.setActions) {
+    if (S.sel.size && S.tab === 'posts' && !S.post) {
+      const box = document.createElement('span'); box.style.cssText = 'display:flex;gap:6px;align-items:center';
+      box.innerHTML = `<span class="sel">${S.sel.size}개</span><button class="btn" data-selclear>취소</button><button class="btn pri" data-autostart>자동 시작</button>`;
+      kydzNav.setActions(box);
+    } else kydzNav.setActions(null);
+  }
+  document.querySelectorAll('[data-selclear]').forEach(b => b.onclick = () => { S.sel.clear(); render(); });
+  document.querySelectorAll('[data-autostart]').forEach(b => b.onclick = async () => {
     const ids = [...S.sel]; if (!confirm(`게시물 ${ids.length}개의 맞팔 댓글에 대댓글을 자동으로 달까요?\n(10~40분 간격, 9~22시, 초안은 10분 안에 만들어져요)`)) return;
     b.disabled = true;
     try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { d.auto_media ||= {}; ids.forEach(m => d.auto_media[m] = kstNow()); if (d.mode === 'paused') { d.mode = 'on'; d.mode_at = kstNow(); } }, 'ig(admin): 대댓글 자동 시작'); S.sel.clear(); render(); toast('자동 시작 — 진행 중으로 옮겼어요'); }

@@ -69,6 +69,10 @@
   /* 위 줄 하나로 (사용자 261126 '2번도 해'): 각 화면의 제목 줄은 숨기고 그 버튼은 위 줄 오른쪽으로. 위 줄은 늘 고정 → 각 화면의 붙는 줄은 그 아래 */
   .kn-act{margin-left:auto;display:flex;align-items:center;gap:6px;flex:none;padding-left:8px}
   .kn-act>*{flex:none}
+  .kn-page-act{display:flex;align-items:center;gap:6px}
+  @media (max-width:759px){.kn-act{position:sticky;right:-8px;margin-right:-8px;padding-right:8px;background:var(--kn-bg);box-shadow:-10px 0 10px -4px var(--kn-bg)}}
+  .kn-page-act .sel{font-size:13px;font-weight:700;white-space:nowrap}
+  .kn-act .btn.pri,.kn-act button.pri{background:var(--brand,#FFE873)!important;color:#1a1a1a!important;border-color:var(--brand,#FFE873)!important;font-weight:700}
   .kn-act .topbar-btn,.kn-act .topbar-link,.kn-act button{padding:5px 10px!important;font-size:12.5px!important;border:1px solid var(--kn-line)!important;border-radius:8px!important;background:transparent!important;color:var(--kn-text)!important}
   .kn-topbar-gone{display:none!important}
   .dash-nav,.tabs,.content-tabs,.save-bar,.savebar,.topbar{top:44px!important}
@@ -134,6 +138,14 @@
   addEventListener('hashchange', () => { const f = location.pathname.split('/').pop(); if (f === '' || f === 'index.html') { sub = null; renderSide(); renderBar(); } });
 
   api.setSub = (items, cur, on) => { sub = items && items.length ? { items, cur, on } : null; renderBar(); };
+  // 화면별 버튼을 위 줄 오른쪽 끝에 (사용자 261126 '버튼은 오른쪽 상단에') — node 하나 또는 null
+  api.setActions = node => {
+    let slot = bar.querySelector('.kn-act');
+    if (!slot) { slot = document.createElement('div'); slot.className = 'kn-act'; bar.appendChild(slot); }
+    let page = slot.querySelector('.kn-page-act');
+    if (!page) { page = document.createElement('span'); page.className = 'kn-page-act'; slot.prepend(page); }
+    page.replaceChildren(...(node ? [node] : []));
+  };
 
   function absorbTopbar() {   // 각 화면 제목 줄의 버튼을 위 줄로 옮기고 제목 줄은 숨김
     const tb = document.querySelector('body > .topbar, .app > .topbar, #app > .topbar, body > div > .topbar');
