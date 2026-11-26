@@ -1041,6 +1041,8 @@
     #series-sortable > .series-group.is-open { grid-column: 1 / -1; }
     #series-sortable .series-group.is-open .ep-sortable { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 14px; }
     #series-sortable .series-ep-item { min-width: 0; }
+    /* EP 썸네일은 PC만 (사용자 261126 '시리즈 EP에도 썸네일·PC 기준으로만') */
+    #series-sortable .series-ep-thumb { display: inline-block; flex: none; width: 36px; height: 45px; border-radius: 6px; object-fit: cover; background: var(--soft); margin-right: 4px; }
   }
   .list-empty {
     padding: 40px 20px; text-align: center;
@@ -1179,6 +1181,7 @@
   .series-group.is-open .series-group-eps { display: flex; flex-direction: column; gap: 4px; }
   .series-group.is-open .series-group-arrow { transform: rotate(90deg); }
   .series-group-arrow { transition: transform 0.18s; font-size: 12px; }
+  .series-ep-thumb { display: none; }
   .series-ep-item {
     background: var(--bg);
     border: 1px solid var(--line);
@@ -6411,6 +6414,7 @@ function renderSeriesList() {
                 <div class="series-ep-item ${epPub ? '' : 'is-unpublished'}" data-ei="${ei}">
                   ${isManual ? `<span class="drag-handle drag-handle--ep" title="드래그해서 순서 변경">⋮⋮</span>` : ''}
                   <a class="series-ep-link" href="#series/${si}/${ei}">
+                    ${ep.thumb ? `<img class="series-ep-thumb" src="../${escapeHtml(ep.thumb.replace(/^\.\//, ''))}" alt="" loading="lazy">` : '<span class="series-ep-thumb"></span>'}
                     <span class="series-ep-num">${epLabelOf(ep)}</span>
                     <span class="series-ep-title">${escapeHtml(ep.title)}</span>${s.id && ep.id ? siteChip(siteStatOf([`/series/${s.id}/${ep.id}`])) : ''}
                   </a>

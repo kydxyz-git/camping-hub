@@ -1017,7 +1017,7 @@ function render() {
   // 할 일·프로젝트 탭을 합침: 위의 프로젝트 고르기로 그 프로젝트 일만 + 프로젝트 정보 (사용자 요청 261103)
   if (tab === 'projects') tab = pc ? 'tasks' : 'today';
   const tabs = pc
-    ? [['tasks', '할 일'], ['posts', '올린 글'], ['autos', '⏰ 자동화'], ['conns', '🧰 연결·도구']]
+    ? []   // PC는 위 탭 없앰 — 왼쪽 메뉴 운영판·올린 글 달력·자동화·연결이 각각 페이지(?tab=) (사용자 261126 '상단 메뉴 필요 없을 거 같아, 페이지 분리해 각각')
     : [...(tasksIn('overdue').length || tab === 'overdue' ? [['overdue', '지난 일정']] : []), ['today', '오늘'], ['week', '7일'], ['inbox', '받은함'], ['deals', '협찬']];   // 폰 탭 한 줄 (사용자 261126 '모바일에서 개판') — 30일·30일 뒤는 7일 칸 아래 '8일 뒤'로, 올린 글·자동화·연결은 왼쪽 메뉴(☰)
   const overN = tasksIn('overdue').length;
   let h = '';
@@ -1697,7 +1697,7 @@ function autoBad() {
 function autoBadHtml(embed) {
   const bad = autoBad();
   if (!bad.length) return '';
-  const go = embed ? `<a class="btn small" href="board.html?tab=autos" target="_top">보기</a>` : `<button class="btn small" data-tab="autos">보기</button>`;
+  const go = embed ? `<a class="btn small" href="board.html?tab=autos" target="_top">보기</a>` : isPc() ? `<a class="btn small" href="board.html?tab=autos">보기</a>` : `<button class="btn small" data-tab="autos">보기</button>`;
   return `<div class="banner err" style="display:flex;gap:8px;align-items:center;justify-content:space-between"><span>⚠️ 자동화 문제 ${bad.length}개 — ${bad.map(a => esc(a.name)).join(' · ')}</span>${go}</div>`;
 }
 function staleWarnHtml() {
@@ -2419,7 +2419,7 @@ function isAuthed() { try { return sessionStorage.getItem(AUTH_KEY) === '1'; } c
 async function start() {
   $('#app').classList.add('is-active');
   $('#today-label').textContent = todayLabel();
-  try { S.tab = new URLSearchParams(location.search).get('tab') || localStorage.getItem(TAB_KEY) || 'today'; S.pf = localStorage.getItem('kydz_board_pf') || ''; S.postsPf = localStorage.getItem('kydz_posts_pf') || ''; } catch (e) {}
+  try { S.tab = new URLSearchParams(location.search).get('tab') || (isPc() ? 'tasks' : localStorage.getItem(TAB_KEY)) || 'today'; /* PC는 주소대로(탭 기억 안 씀) */ S.pf = localStorage.getItem('kydz_board_pf') || ''; S.postsPf = localStorage.getItem('kydz_posts_pf') || ''; } catch (e) {}
   if (window.kydzNav) kydzNav.onView(v => { if (!v) return; closeSheet(true); S.tab = v.tab; S.project = null; setPf(v.pf, true); window.scrollTo(0, 0); }, { tab: S.tab, pf: S.pf });
   if (!getToken()) { render(); return; }
   $('#main').innerHTML = '<div class="card muted">불러오는 중...</div>';
