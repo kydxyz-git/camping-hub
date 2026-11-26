@@ -74,6 +74,7 @@
   .actbar .btn { padding:9px 14px; font-size:14px; }
   .toast { position:fixed; left:50%; bottom:84px; transform:translateX(-50%); z-index:9500; background:#1a1a1a; color:#fff; padding:9px 14px; border-radius:20px; font-size:13px; }
   @media (max-width:600px) { .wrap { padding:8px 12px 60px; } .card { padding:10px; } .th { width:46px; height:46px; } }
+  .card.sk { opacity:.7; }
 </style>
 <link rel="stylesheet" href="lib/theme.css?v=261126f">
 <script src="lib/nav.js?v=261126f"></script>
@@ -154,6 +155,12 @@ function dayLabel(k) { const t = dayKey(new Date().toISOString()); const y = day
 function hm(iso) { return iso ? new Date(new Date(iso).getTime() + 9 * 3600e3).toISOString().slice(11, 16) : ''; }
 function postLink(mid) { return (S.st.media[mid] || {}).permalink || '#'; }
 function norm(t, u) { let s = String(t || ''); if (u) s = s.split(u).join(''); return s.replace(/@[\w.]+/g, '').replace(/[^\p{L}\p{N}_]/gu, '').toLowerCase(); }
+function skipWhy(id, c) {   // 건너뜀: 화면에서 [건너뛰기] 누름 또는 메모에 '제외' (사용자 261126)
+  if ((S.ctl.skip || []).includes(id)) return '화면에서 건너뜀';
+  const n = (S.notes || {})[c.user]; if (n && n.includes('제외')) return '메모: 제외';
+  if (c.status === 'skip' && c.why !== '화면에서 건너뜀' && c.why !== '메모: 제외') return c.why || '건너뜀';
+  return '';
+}
 function myReplies(c, withSb) {   // 내가 단 답글(직접·자동). 소셜비즈 자동 DM 답글은 withSb일 때만
   if (!S.tpl) S.tpl = new Set(S.st.tpl || []);
   const out = (c.mine || []).map(r => ({ t: r.text, k: (S.tpl.has(norm(r.text)) || S.tpl.has(norm(r.text, c.user))) ? '소셜비즈' : '직접' })).filter(r => withSb || r.k !== '소셜비즈');
@@ -166,7 +173,7 @@ function renderPosts() {
   const by = {};
   for (const [id, c] of Object.entries(S.st.comments || {})) (by[c.media] ||= []).push([id, c]);
   if (S.post) return renderPost(S.post, by[S.post] || []);
-  const need = mid => (by[mid] || []).filter(([, c]) => !myReplies(c).length).length;
+  const need = mid => (by[mid] || []).filter(([id, c]) => !myReplies(c).length && !skipWhy(id, c)).length;
   const auto = S.ctl.auto_media || {};
   const ms = Object.entries(S.st.media || {}).sort((a, b) => (b[1].at > a[1].at ? 1 : -1)).slice(0, 40);
   const going = ms.filter(([mid]) => auto[mid]), open = ms.filter(([mid]) => !auto[mid] && need(mid)), done = ms.filter(([mid]) => !auto[mid] && !need(mid));
@@ -195,9 +202,11 @@ function renderPost(mid, cs) {
   return `<div class="row" style="justify-content:space-between;margin-bottom:8px"><button class="btn" data-back>← 게시물</button><a class="btn" href="${esc(m.permalink || '#')}" target="_blank" rel="noopener">인스타에서 보기</a></div>
     <div class="card">${m.thumb ? `<img src="${esc(m.thumb)}" alt="" referrerpolicy="no-referrer" style="width:100%;max-height:320px;object-fit:cover;border-radius:8px;margin-bottom:8px" onerror="this.remove()">` : ''}<div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)} · 전체 댓글 ${m.cc} · 맞팔 ${cs.length}</div><div style="white-space:pre-line;max-height:4.5em;overflow:hidden">${esc((m.cap || '').slice(0, 200))}</div></div>` +
     (cs.length ? (() => {
-      const isOpen = ([, c]) => !myReplies(c).length;
-      const open = cs.filter(isOpen), done = cs.filter(x => !isOpen(x));
+      const replied = ([, c]) => myReplies(c).length > 0;
+      const skipped = cs.filter(x => !replied(x) && skipWhy(x[0], x[1]));
+      const open = cs.filter(x => !replied(x) && !skipWhy(x[0], x[1])), done = cs.filter(replied);
       return (open.length ? `<div class="gh" style="color:var(--danger)">🔴 아직 답 안 단 댓글 ${open.length}</div>` + open.map(card).join('') : '<div class="gh">✅ 맞팔 댓글에 다 답했어요</div>')
+        + (skipped.length ? `<div class="gh">⏭ 건너뜀 ${skipped.length}</div>` + skipped.map(([id, c]) => `<div class="card sk"><div class="row" style="justify-content:space-between"><span class="row"><a class="u" href="https://www.instagram.com/${esc(c.user)}/" target="_blank" rel="noopener">@${esc(c.user)}</a><span class="pill">${esc(skipWhy(id, c))}</span></span>${skipWhy(id, c) === '화면에서 건너뜀' ? `<button class="btn sm" data-unskip="${esc(id)}">되돌리기</button>` : ''}</div><div class="cm">${esc(c.text)}</div>${noteLine(c.user)}</div>`).join('') : '')
         + (done.length ? `<div class="gh">답한 댓글 ${done.length}</div>` + done.map(card).join('') : '');
     })() : '<div class="card muted">이 게시물엔 맞팔 댓글이 없어요</div>');
   function card([id, c]) {
@@ -352,6 +361,10 @@ function render() {
   $('#main').querySelectorAll('[data-skip]').forEach(b => b.onclick = async () => {
     const id = b.dataset.skip; b.disabled = true;
     try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { d.skip = [...new Set([...(d.skip || []), id])]; }, 'ig(admin): 대댓글 건너뜀'); render(); } catch (e) { alert(e.message); b.disabled = false; }
+  });
+  $('#main').querySelectorAll('[data-unskip]').forEach(b => b.onclick = async () => {
+    const id = b.dataset.unskip; b.disabled = true;
+    try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { d.skip = (d.skip || []).filter(x => x !== id); }, 'ig(admin): 건너뜀 되돌림'); render(); } catch (e) { alert(e.message); b.disabled = false; }
   });
 }
 
