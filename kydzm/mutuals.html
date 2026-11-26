@@ -469,7 +469,7 @@ function renderKpis(by, need, goingN) {
   const d7 = new Date(Date.now() - 7 * 864e5).toISOString(), d3 = new Date(Date.now() - 3 * 864e5).toISOString();
   const c7 = cs.filter(([, c]) => c.at >= d7);
   const r7 = c7.filter(([, c]) => myReplies(c).length).length;
-  const m30 = counts(30), visit = Object.keys(m30).filter(u => lt[u] && lt[u].at >= d3 && !opened(u, lt[u].at)).length;
+  const m30 = counts(30), visit = visitTodo().length;   // 아래 '오늘 다녀올 맞팔'과 같은 기준 (예전엔 30일 안 맞팔 전부로 세서 숫자가 달랐음)
   const next = (S.st.pace || {}).next_at;
   const k = (l, v, sub = '', cls = '') => `<div class="kpi ${cls}"><div class="l">${l}</div><div class="v">${v}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>`;
   return `<div class="kpis">
@@ -477,7 +477,7 @@ function renderKpis(by, need, goingN) {
     ${k('진행 중', goingN, goingN && next ? `다음 ${esc(hm(next))} 이후` : '자동 켠 게시물')}
     ${k('오늘 단 답글', todayPosted(), '자동·수동')}
     ${k('7일 맞팔 댓글', n(c7.length), `내 답 ${c7.length ? Math.round(r7 / c7.length * 100) : 0}%`)}
-    ${k('다녀올 맞팔', visit, '3일 안 새 글·안 엶')}
+    ${k('다녀올 맞팔', visit, '새 글·안 엶')}
     ${k('30일 댓글 단 맞팔', Object.keys(m30).length, `맞팔 ${n(S.mut.length)}명 중`)}
   </div>`;
 }
@@ -554,6 +554,17 @@ function hoursAgo(iso) { const h = (Date.now() - new Date(iso)) / 36e5; return h
 function opened(u, since) { return !!S.visits[u] && S.visits[u] >= since; }
 
 // ── 오늘 다녀올 사람 (2번 기준으로 1번, 사용자 261126): 나한테 자주 오는 맞팔 중 새 글 올렸는데 아직 안 연 사람 ──
+// 오늘 다녀올 맞팔 목록 — 위 숫자 칸·대시보드 요약(봇 ig_summary.json)과 같은 기준 (사용자 261126 '실제 인스타 메뉴 데이터랑 달라')
+function visitTodo() {
+  const lt = S.st.latest || {}, cut = new Date(Date.now() - 3 * 864e5).toISOString(), d30 = new Date(Date.now() - 30 * 864e5).toISOString();
+  const m3 = counts(3), m30 = counts(30);
+  const n30 = Object.values(S.st.media || {}).filter(x => (x.at || '') >= d30).length, half = Math.max(2, Math.ceil(n30 / 2));
+  const pool = {};
+  for (const u of Object.values(m3)) pool[u.user] = { ...u, tier: 1, often: (m30[u.user] || u).posts.size };
+  for (const u of Object.values(m30)) if (!pool[u.user] && u.posts.size >= half) pool[u.user] = { ...u, tier: 2, often: u.posts.size };
+  const all = Object.values(pool).filter(u => lt[u.user] && lt[u.user].at && lt[u.user].at >= cut);
+  return all.filter(u => !opened(u.user, lt[u.user].at));
+}
 function renderToday() {
   // 품앗이 (사용자 261126): 1순위 = 3일 안에 내 글에 댓글 단 맞팔이 새 글을 올림, 2순위 = 자주 오는 맞팔(30일 내 게시물의 절반 이상에 댓글)이 새 글을 올림
   // 새 글 = 3일 안 글 중 이 화면에서 아직 안 연 글 — 한 글에 한 번만 뜸
