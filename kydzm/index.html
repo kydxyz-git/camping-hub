@@ -1024,6 +1024,15 @@
     }
   }
   .list { display: flex; flex-direction: column; gap: 6px; }
+  /* 261126 사용자 '시리즈·캠핑장·음식·장비 화면 가로로 더 채우기 · 위 ← 대시보드·메뉴 줄 없애기' */
+  .page-back { display: none !important; }
+  @media (min-width: 760px) { .content-tabs { display: none !important; } }
+  @media (min-width: 1200px) {
+    body:has(.wide2) .container, body:has(#series-sortable) .container { max-width: 1400px; }
+    .list.wide2, .list.wide2 .cat-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px 10px; }
+    .list.wide2 .list-item { min-width: 0; }
+    .list.wide2 > :not(.list-item), .list.wide2 .cat-body > :not(.list-item) { grid-column: 1 / -1; }
+  }
   .list-empty {
     padding: 40px 20px; text-align: center;
     color: var(--muted); font-size: 13px;
@@ -4759,7 +4768,7 @@ function renderCampList() {
     </div>
     ${cache.siteStats ? `<div class="series-sort-note" style="background:var(--info-soft);border-color:#c5d8f2;color:var(--info);margin-bottom:10px">${siteNote()}
       <button type="button" class="btn btn-sm btn-ghost" id="camp-site-sort-btn" style="margin-left:6px">${_campSiteSort ? '원래 순서' : '홈페이지 클릭 많은 순'}</button></div>` : ''}
-    <div class="list">
+    <div class="list wide2">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>' : arr.map(camp => {
         const visits = camp.visits || 0;
         const seasons = (camp.seasons || []).filter(Boolean);
@@ -7919,7 +7928,7 @@ function renderProductList(dataArr, searchVar, opts) {
     ${badN ? `<div class="series-sort-note" style="background:var(--danger-soft);border-color:#f5c2c0;color:var(--danger);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
         <span>🔎 링크 점검(쿠팡·컬리 ${escapeHtml(String((lc && lc.checked_at) || '').slice(5, 10))}${cache.cpChrome ? ` · PC 크롬 ${escapeHtml(String(cache.cpChrome.checked_at || '').slice(5, 10))}` : ''}): 손볼 링크 <b>${badN}</b>개 — 파트너스에서 새 링크를 만들어 바꿔 주세요 (빨간 ⚠ 배지에 손가락을 대면 이유)</span>
         <button type="button" class="btn btn-sm ${linkOnly ? '' : 'btn-ghost'}" id="link-only-btn">${linkOnly ? '전체 보기' : '문제만 보기'}</button></div>` : ''}
-    <div class="list" id="prod-list">
+    <div class="list wide2" id="prod-list">
       ${arr.length === 0 ? '<div class="list-empty">검색 결과가 없어요</div>'
         : (opts.type === 'items' && !isSearchActive && !linkOnly && !_cpSort && !_siteSort && !pfOn)
           ? groupedItemsHtml(arr, opts, isManual)
