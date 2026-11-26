@@ -65,7 +65,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); }
 * { scrollbar-color: var(--line-strong) transparent; }
 
 /* 내용 폭 통일 (261126): 보통 화면 최대 1100px, 운영판은 넓게(자기 1400 유지) */
-.wrap, .container { max-width: 1100px; }
+.wrap, .container { max-width: 1440px; }   /* 261126 사용자 "모든 페이지 가로폭 넓게" — 1100 → 1440 */
 body.kn-wide .wrap, body.kn-wide .container { max-width: none; }
 
 /* 버튼 손맛 (261126 사용자 '마우스오버·클릭 효과가 없네') — 모든 관리 화면 */

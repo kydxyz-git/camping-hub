@@ -1032,6 +1032,11 @@
     .list.wide2, .list.wide2 .cat-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px 10px; }
     .list.wide2 .list-item { min-width: 0; }
     .list.wide2 > :not(.list-item), .list.wide2 .cat-body > :not(.list-item) { grid-column: 1 / -1; }
+    /* 시리즈 (사용자 261126 '시리즈 쪽도'): 닫힌 시리즈는 두 줄, 연 시리즈는 한 줄 전체 + EP 두 줄 */
+    #series-sortable { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 10px; align-items: start; }
+    #series-sortable > .series-group.is-open { grid-column: 1 / -1; }
+    #series-sortable .series-group.is-open .ep-sortable { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 14px; }
+    #series-sortable .series-ep-item { min-width: 0; }
   }
   .list-empty {
     padding: 40px 20px; text-align: center;
@@ -1871,8 +1876,8 @@
 <!-- Leaflet CSS (좌표 피커용) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <script src="lib/passkey.js?v=261103c"></script>
-<link rel="stylesheet" href="lib/theme.css?v=261126j">
-<script src="lib/nav.js?v=261126m"></script>
+<link rel="stylesheet" href="lib/theme.css?v=261126k">
+<script src="lib/nav.js?v=261126n"></script>
 </head>
 <body>
 

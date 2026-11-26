@@ -90,7 +90,7 @@
   :root{--kn-w:0px;--kn-bg:#fff;--kn-side:#f7f7f5;--kn-text:#1a1a1a;--kn-muted:#6e6e6e;--kn-line:#e5e5e5;--kn-soft:#ececea;--kn-hi:#fff3b0;--kn-card:#fff}
   @media (prefers-color-scheme: dark){:root{--kn-bg:#1d1f1d;--kn-side:#181a18;--kn-text:#ececea;--kn-muted:#9a9e98;--kn-line:#343834;--kn-soft:#2c302c;--kn-hi:#3d3816;--kn-card:#262926}}
   /* 틀 (사용자 261126 '화면에 따라 메뉴가 왼쪽에 붙어 불편'): 메뉴+내용을 한 덩어리(최대 1440px)로 창 가운데 */
-  :root{--kn-shell:1440px;--kn-gut:0px}
+  :root{--kn-shell:1680px;--kn-gut:0px}   /* 261126 사용자 "모든 페이지 가로폭 넓게" — 1440 → 1680 */
   @media (min-width:760px){:root{--kn-w:200px;--kn-gut:max(0px,calc((100vw - var(--kn-shell)) / 2))}
     body{padding-left:calc(var(--kn-gut) + var(--kn-w))!important;padding-right:var(--kn-gut)!important;box-sizing:border-box}
     .kn-side{left:var(--kn-gut)!important}}

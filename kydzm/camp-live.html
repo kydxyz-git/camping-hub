@@ -30,6 +30,9 @@ body {
   padding-block: max(12px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-bottom, 0px));
 }
 .wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 14px; }
+/* 공통 메뉴 안에서 (사용자 261126 '캠핑사이트 너무 메뉴랑 붙어있는 거 같고'): 메뉴 쪽 여백·위 줄이 맨 위에 */
+@media (min-width:760px) { html body:not(.fixed) { padding-top: 0; } body:not(.fixed) .wrap { padding: 16px 24px 0; } }
+@media (max-width:759px) { html body:not(.fixed) { padding-top: 0; } body:not(.fixed) .wrap { padding-top: 12px; } }
 header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 h1 { font: 700 clamp(22px, 4vw, 30px)/1.2 var(--display); margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
 h1 small { display: block; font: 400 13px var(--body); color: var(--muted); margin-top: 4px; letter-spacing: 0; }
@@ -95,7 +98,7 @@ body.fixed .row .t, body.fixed .log { font-size: 11px; }
 #gate button { padding: 10px; font-size: 14px; }
 #gate .err { color: var(--ember); font-size: 12px; min-height: 1em; margin: 0; }
 </style>
-<script src="lib/nav.js?v=261126m"></script>
+<script src="lib/nav.js?v=261126n"></script>
 </head>
 <body>
 <div id="gate" hidden>

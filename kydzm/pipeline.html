@@ -20,10 +20,12 @@ h1{font-size:16px;margin:0}
 #status.dirty{color:var(--warn);font-weight:600}
 #status.ok{color:var(--accent)}
 iframe{flex:1;width:100%;border:0;background:#fff}
+/* 왼쪽 메뉴에 붙지 않게 (사용자 261126 '운영지도 너무 메뉴랑 붙어있는 거 같고') */
+@media (min-width:760px){header{padding:10px 20px}iframe{width:calc(100% - 32px);margin:12px 16px 16px;border:1px solid var(--line);border-radius:10px}}
 .msg{margin:24px auto;max-width:560px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:10px;line-height:1.6}
 </style>
-<link rel="stylesheet" href="lib/theme.css?v=261126j">
-<script src="lib/nav.js?v=261126m"></script>
+<link rel="stylesheet" href="lib/theme.css?v=261126k">
+<script src="lib/nav.js?v=261126n"></script>
 </head>
 <body class="kn-wide">
 <header>
