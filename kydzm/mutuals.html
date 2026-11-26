@@ -194,6 +194,11 @@
   .hb-col i { display:block; min-height:2px; } .hb-col .ok { background:var(--success, var(--ok)); } .hb-col .no { background:var(--danger); opacity:.8; }
   .hb-d { font-size:11px; color:var(--muted); height:16px; margin-top:4px; white-space:nowrap; }
   @media (max-width:600px) { .hbars { gap:3px; height:130px; } .hb-v { font-size:9px; } .hb-d { font-size:9.5px; } }
+  #qpop { position:fixed; z-index:9500; width:260px; padding:8px; border-radius:12px; background:var(--card); border:1px solid var(--line); box-shadow:0 10px 30px rgba(0,0,0,.35); pointer-events:none; opacity:0; transition:opacity .1s; }
+  #qpop.on { opacity:1; }
+  #qpop img { width:100%; aspect-ratio:4/5; object-fit:cover; border-radius:8px; display:block; margin-bottom:6px; background:var(--soft); }
+  #qpop .qpt { font-size:12.5px; font-weight:700; line-height:1.4; }
+  #qpop .qpr { font-size:12px; color:var(--muted); line-height:1.4; margin-top:3px; }
   .tgrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(112px, 1fr)); gap:8px; margin-top:8px; }
   @media (max-width:760px) { .tgrid { grid-template-columns:repeat(4, 1fr); gap:5px; } }
   .qline { display:flex; align-items:center; gap:8px; margin:2px 0 12px; padding:6px 8px; border:1px solid var(--line); border-radius:12px; background:var(--card); }
@@ -411,7 +416,7 @@ function renderQueue() {
   const L = queueList(); if (!L.length) return '';
   // 어느 게시물인지도 (사용자 261126 '어느 게시글 것인지도 중한디'): 시간 · 게시물 썸네일 · 프로필 · 아이디, 마우스 올리면 게시물 제목 + 답글
   const pill = x => { const m = (S.st.media || {})[x.c.media] || {}, t = (capBody(m.cap || '').split('\n')[0] || '').slice(0, 40);
-    return `<a class="qp" href="#posts/${esc(x.c.media)}" data-qpost="${esc(x.c.media)}" title="${esc(`📝 ${t}\n↳ ${x.text}`)}"><b>${esc(x.hm)}</b><i class="qth">${shotImg(m, `onerror="this.style.visibility='hidden'"`)}</i>${avatar(x.c.user)}<span>@${esc(x.c.user)}</span></a>`; };
+    return `<a class="qp" href="#posts/${esc(x.c.media)}" data-qpost="${esc(x.c.media)}" data-qt="${esc(t)}" data-qr="${esc(x.text)}"><b>${esc(x.hm)}</b><i class="qth">${shotImg(m, `onerror="this.style.visibility='hidden'"`)}</i>${avatar(x.c.user)}<span>@${esc(x.c.user)}</span></a>`; };
   let more = '';
   if (S.openQueue) {
     const g = new Map();
@@ -694,6 +699,21 @@ function render() {
   };
   $('#main').querySelectorAll('[data-qmore]').forEach(b => b.onclick = () => { S.openQueue = !S.openQueue; render(); });
   fitQline(); fitToday();
+  // 마우스 올리면 게시물 썸네일 크게 + 제목·답글 (사용자 261126 '마우스 오버 시 게시물 썸네일 크게') — 한 줄이 넘침 숨김이라 화면 위에 띄움
+  let pop = document.getElementById('qpop');
+  if (!pop) { pop = document.createElement('div'); pop.id = 'qpop'; document.body.appendChild(pop); }
+  $('#main').querySelectorAll('.qp').forEach(a => {
+    a.onmouseenter = () => {
+      const img = a.querySelector('.qth img');
+      pop.innerHTML = `${img && img.src ? `<img src="${esc(img.src)}" alt="">` : ''}<div class="qpt">📝 ${esc(a.dataset.qt || '')}</div><div class="qpr">↳ ${esc(a.dataset.qr || '')}</div>`;
+      const r = a.getBoundingClientRect(), W = 260;
+      pop.style.left = Math.max(8, Math.min(innerWidth - W - 8, r.left)) + 'px';
+      pop.style.top = (r.bottom + 6 + 330 > innerHeight ? Math.max(8, r.top - 6 - pop.offsetHeight) : r.bottom + 6) + 'px';
+      pop.classList.add('on');
+      if (r.bottom + 6 + pop.offsetHeight > innerHeight) pop.style.top = Math.max(8, r.top - 6 - pop.offsetHeight) + 'px';
+    };
+    a.onmouseleave = () => pop.classList.remove('on');
+  });
   $('#main').querySelectorAll('[data-qpost]').forEach(a => a.onclick = e => { e.preventDefault(); go('posts', a.dataset.qpost); });
   $('#main').querySelectorAll('[data-donetg]').forEach(b => b.onclick = () => { S.openDoneP = !S.openDoneP; render(); });
   $('#main').querySelectorAll('[data-qsort]').forEach(b => b.onclick = () => { S.quietOld = !S.quietOld; render(); });
