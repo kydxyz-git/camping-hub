@@ -194,15 +194,21 @@
   .hb-col i { display:block; min-height:2px; } .hb-col .ok { background:var(--success, var(--ok)); } .hb-col .no { background:var(--danger); opacity:.8; }
   .hb-d { font-size:11px; color:var(--muted); height:16px; margin-top:4px; white-space:nowrap; }
   @media (max-width:600px) { .hbars { gap:3px; height:130px; } .hb-v { font-size:9px; } .hb-d { font-size:9.5px; } }
-  .qlist { border:1px solid var(--line); border-radius:10px; overflow:hidden; margin-bottom:14px; background:var(--card); }
-  .qrow { display:flex; align-items:center; gap:10px; padding:6px 12px; border-bottom:1px solid var(--line); font-size:13px; color:var(--text); text-decoration:none; min-width:0; }
-  .qrow:hover { background:var(--soft); }
-  .qrow .qn { flex:none; width:18px; color:var(--muted); font-size:11.5px; text-align:right; }
-  .qrow .qt { flex:none; width:78px; color:var(--muted); font-variant-numeric:tabular-nums; font-size:12px; }
-  .qrow .qu { flex:none; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:700; }
-  .qrow .qx { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--muted); }
-  .qmore { display:block; width:100%; padding:6px; border:0; background:transparent; color:var(--muted); font-size:12.5px; cursor:pointer; }
-  @media (max-width:760px) { .qrow .qu { max-width:96px; } .qrow .qt { width:64px; } }
+  .qline { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:2px 0 14px; }
+  .qline .qh { font-weight:800; font-size:13.5px; margin-right:4px; }
+  .qp { display:inline-flex; align-items:center; gap:6px; padding:3px 10px 3px 4px; border-radius:99px; border:1px solid var(--line); background:var(--soft); color:inherit; text-decoration:none; font-size:12.5px; max-width:220px; min-width:0; }
+  .qp:hover { border-color:var(--text); }
+  .qp b { font-variant-numeric:tabular-nums; font-size:12px; padding-left:6px; }
+  .qp .av { width:22px; height:22px; font-size:10px; }
+  .qp span:last-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+  .qline .qa { color:var(--muted); }
+  .qmore { border:1px dashed var(--line); background:transparent; color:var(--muted); border-radius:99px; padding:4px 10px; font-size:12.5px; cursor:pointer; }
+  .qline .qnote { margin-left:auto; color:var(--muted); font-size:11.5px; }
+  .qgrid { display:grid; gap:6px; margin:-6px 0 16px; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:var(--card); }
+  .qg { display:flex; gap:10px; align-items:flex-start; }
+  .qgk { flex:none; width:92px; color:var(--muted); font-size:12px; padding-top:6px; }
+  .qgv { display:flex; flex-wrap:wrap; gap:6px; min-width:0; }
+  @media (max-width:760px) { .qline .qnote { display:none; } .qp { max-width:160px; } .qgk { width:70px; } }
   .apibat { margin-left: auto; align-self: center; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); white-space: nowrap; }
   .apibat .bat { position: relative; display: inline-block; width: 34px; height: 15px; border: 1.5px solid var(--muted); border-radius: 4px; padding: 1.5px; box-sizing: border-box; }
   .apibat .bat::after { content: ''; position: absolute; right: -4px; top: 4px; width: 2.5px; height: 5px; background: var(--muted); border-radius: 0 2px 2px 0; }
@@ -391,15 +397,21 @@ function queueList() {
     const eta = new Date(t + 9 * 3600e3), today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
     const lab = (eta.toISOString().slice(0, 10) === today ? '' : eta.toISOString().slice(0, 10) === new Date(Date.now() + 33 * 3600e3).toISOString().slice(0, 10) ? '내일 ' : eta.toISOString().slice(5, 10).replace('-', '/') + ' ') + eta.toISOString().slice(11, 16);
     t += 25 * 60e3;
-    return { id, c, text: ed[id] || c.reply || '', eta: lab };
+    const hm = eta.toISOString().slice(11, 16);
+    return { id, c, text: ed[id] || c.reply || '', eta: lab, day: lab.slice(0, -5).trim() || '오늘', hm };
   });
 }
 function renderQueue() {
+  // 한 줄 타임라인 (사용자 261126 '주르륵 나오면 못생겼어' → 추천안): 다음 3개만 알약으로, +N 누르면 날짜·시간대별로 묶어 펼침
   const L = queueList(); if (!L.length) return '';
-  const show = S.openQueue ? L : L.slice(0, 5);
-  return `<div class="gh" style="margin-top:2px">⏳ 달릴 차례 <span class="muted">${L.length}개 · 하나씩 10~40분 간격, 9~22시 · 시각은 대략</span></div>
-    <div class="qlist">${show.map((x, i) => `<a class="qrow" href="#posts/${esc(x.c.media)}" data-qpost="${esc(x.c.media)}"><span class="qn">${i + 1}</span><span class="qt">${esc(x.eta)}쯤</span><span class="qu">@${esc(x.c.user)}</span><span class="qx">${esc(x.text.replace(/^@[\w.]+\s*/, ''))}</span></a>`).join('')}
-    ${L.length > 5 ? `<button class="qmore" data-qmore>${S.openQueue ? '접기 ▴' : `${L.length - 5}개 더 보기 ▾`}</button>` : ''}</div>`;
+  const pill = x => `<a class="qp" href="#posts/${esc(x.c.media)}" data-qpost="${esc(x.c.media)}" title="${esc(x.text)}"><b>${esc(x.hm)}</b>${avatar(x.c.user)}<span>@${esc(x.c.user)}</span></a>`;
+  let more = '';
+  if (S.openQueue) {
+    const g = new Map();
+    for (const x of L) { const k = `${x.day} ${x.hm.slice(0, 2)}시대`; if (!g.has(k)) g.set(k, []); g.get(k).push(x); }
+    more = `<div class="qgrid">${[...g].map(([k, xs]) => `<div class="qg"><span class="qgk">${esc(k)}</span><div class="qgv">${xs.map(pill).join('')}</div></div>`).join('')}</div>`;
+  }
+  return `<div class="qline"><span class="qh">⏳ 다음 답글</span>${L.slice(0, 3).map(pill).join('<span class="qa">›</span>')}${L.length > 3 ? `<button class="qmore" data-qmore>${S.openQueue ? '접기 ▴' : `+${L.length - 3} ▸`}</button>` : ''}<span class="qnote" title="하나씩 10~40분 간격(무작위), 9~22시만 — 시각은 대략">${L.length}개 · 시각은 대략</span></div>${more}`;
 }
 function apiBattery() {
   const pc = (S.st && S.st.pace) || {}, u = Math.max(+pc.usage || 0, +pc.usage_dm || 0), left = Math.max(0, 100 - u);
