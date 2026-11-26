@@ -16,6 +16,7 @@
   --warning: #f59e0b; --warn: #f59e0b; --warning-soft: #fff4e0;
   --info: #4a7ba6; --info-soft: #eaf1f8;
   --shade: rgba(0, 0, 0, .4);
+  --surface-2: var(--soft); --border: var(--line); --point: #4a7c4e; --point-soft: var(--success-soft);   /* 대시보드에서 쓰던 이름 (261126 다크모드 '최근 7일 트렌딩' 흰 칸) */
   --radius: 12px;
   color-scheme: light;
 }
@@ -32,6 +33,7 @@
     --warning: #f5a524; --warn: #f5a524; --warning-soft: #3a2c12;
     --info: #7aa7d6; --info-soft: #1c2a38;
     --shade: rgba(0, 0, 0, .6);
+    --point: #6fbf73;
     color-scheme: dark;
   }
 }
