@@ -53,6 +53,10 @@
   .g2 { grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); margin-top:8px; }
   .tc .pn { flex-direction:column; }
   .tc img, .tc .ph { width:100%; aspect-ratio:1; object-fit:cover; border-radius:6px; background:var(--soft); display:block; margin-bottom:4px; }
+  .pcard.ty, .lg.y { background:rgba(250,204,21,.16); border-color:rgba(250,204,21,.55); }
+  .pcard.to, .lg.o { background:rgba(249,115,22,.16); border-color:rgba(249,115,22,.55); }
+  .pcard.tr, .lg.r { background:rgba(230,57,70,.14); border-color:rgba(230,57,70,.5); }
+  .lg { font-size:12px; padding:2px 8px; border-radius:10px; border:1px solid; }
 </style>
 </head>
 <body>
@@ -235,9 +239,16 @@ function renderStats() {
 }
 function renderQuiet() {
   const m = counts(30), all = counts(3650);
-  const q = S.mut.filter(u => !m[u]).map(u => ({ user: u, last: (all[u] || {}).last || '' })).sort((a, b) => (b.last > a.last ? 1 : -1) || (a.user > b.user ? 1 : -1));
-  return `<div class="muted" style="margin:0 2px 8px">맞팔 ${S.mut.length}명 중 최근 30일 동안 내 게시물에 댓글이 없는 ${q.length}명 · 위쪽이 예전엔 오던 사람(마지막 댓글 최근 순) · 맞팔 목록은 ${esc(S.mutAt)} 기준</div><div class="grid">` +
-    q.map(u => `<a class="pcard ${S.visits[u.user] ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}"><div class="pu">@${esc(u.user)}</div>
+  const dir = S.quietOld ? -1 : 1;   // 최근순(기본) ↔ 오래된순 (사용자 261126)
+  const q = S.mut.filter(u => !m[u]).map(u => ({ user: u, last: (all[u] || {}).last || '' }))
+    .sort((a, b) => (a.last === b.last ? (a.user > b.user ? 1 : -1) : !a.last ? 1 : !b.last ? -1 : (b.last > a.last ? dir : -dir)));
+  const age = l => l ? (Date.now() - new Date(l)) / 864e5 : 9999;
+  const tone = l => { const d = age(l); return d < 60 ? 'y' : d < 90 ? 'o' : 'r'; };   // 1~2달 노랑 · 2~3달 주황 · 그 뒤·기록 없음 빨강
+  const cnt = { y: 0, o: 0, r: 0 }; q.forEach(u => cnt[tone(u.last)]++);
+  return `<div class="row" style="justify-content:space-between;margin:0 2px 8px"><span class="muted">맞팔 ${S.mut.length}명 중 30일 동안 댓글 없는 ${q.length}명 · 맞팔 목록 ${esc(S.mutAt)} 기준</span>
+    <button class="btn" data-qsort>${S.quietOld ? '오래된 순 ↓' : '최근 순 ↓'}</button></div>
+    <div class="row" style="margin:0 2px 8px;gap:6px"><span class="lg y">1~2달 ${cnt.y}</span><span class="lg o">2~3달 ${cnt.o}</span><span class="lg r">3달 넘음·기록 없음 ${cnt.r}</span></div><div class="grid">` +
+    q.map(u => `<a class="pcard t${tone(u.last)} ${S.visits[u.user] ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}"><div class="pu">@${esc(u.user)}</div>
       <div class="pn"><span>${u.last ? `마지막 ${ago(u.last)}` : '댓글 기록 없음'}</span><span><span class="nb" data-note="${esc(u.user)}">✎</span>${S.visits[u.user] ? '<span class="ck" data-undo="' + esc(u.user) + '">✓</span>' : ''}</span></div>${noteMini(u.user)}</a>`).join('') + '</div>';
 }
 function renderPeople() {
@@ -273,6 +284,7 @@ function render() {
     render();
     try { await writeJson('state/ig_visits.json', d => { d.visits ||= {}; if (val) d.visits[u] = val; else delete d.visits[u]; }, 'ig(admin): 맞팔 열어 봄'); } catch (e) { alert(e.message); }
   };
+  $('#main').querySelectorAll('[data-qsort]').forEach(b => b.onclick = () => { S.quietOld = !S.quietOld; render(); });
   $('#main').querySelectorAll('[data-more]').forEach(b => b.onclick = () => { S.statsAll = !S.statsAll; render(); });
   $('#main').querySelectorAll('[data-note]').forEach(b => b.onclick = async e => {
     e.preventDefault(); e.stopPropagation();
