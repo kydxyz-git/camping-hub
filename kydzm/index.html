@@ -3262,13 +3262,13 @@ ${dashPhone ? `    <section class="dash-page dash-todo-page">
     <section class="dash-page"><div class="dash-fit">
     <!-- 메뉴 (묶음) -->
     <div class="dash-groups">
-      ${grp('📌 업무 관리', [['board.html', '📋', '운영판', '오늘·이번 주·이번 달 할 일'], ['board.html?tab=posts', '📅', '올린 글 달력', '인스타·유튜브 날짜별'], ['board.html?tab=autos', '⏰', '자동화', '예약 목록·문제 있으면 ⚠️'], ['board.html?tab=conns', '🔌', '연결', '연결된 API·토큰 현황'], ['mutuals.html', '🤝', '맞팔', '방문할 맞팔·대댓글']])}
+      ${grp('📌 업무 관리', [['board.html', '📋', '운영판', '오늘·이번 주·이번 달 할 일'], ['board.html?tab=posts', '📅', '올린 글 달력', '인스타·유튜브 날짜별'], ['board.html?tab=autos', '⏰', '자동화', '예약 목록·문제 있으면 ⚠️'], ['board.html?tab=conns', '🔌', '연결', '연결된 API·토큰 현황']])}
       ${grp('🎬 콘텐츠 관리', [
         ['#series', '🎬', '시리즈 EP', cnt(cache.series.reduce((s, x) => s + x.eps.length, 0), '편')],
         ['#camps', '🏕', '캠핑장', cnt(cache.camps.length, '곳')],
         ['#foods', '🍖', '음식', cnt(cache.foods.length, '개')],
         ['#items', '🛠', '장비', cnt(cache.items.length, '개')]])}
-      ${grp('🧵 스레드 관리', [['threads.html', '🧵', '스레드 예약', '쿠파스 글·아이템·게시주기']])}
+      ${grp('📱 SNS 관리', [['mutuals.html', '📸', '인스타', '맞팔 방문·대댓글'], ['threads.html', '🧵', '스레드', '쿠파스 글·아이템·게시주기']])}
       ${grp('🔥 딜보드 관리', [['deals.html', '🔥', '딜 보드', '카페 할인정보 수집·라벨']])}
       ${grp('📈 성과 분석', [
         ['insights.html', '📈', '성과 분석', '인스타 분석 리포트'],
