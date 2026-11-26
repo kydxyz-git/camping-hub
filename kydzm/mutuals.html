@@ -46,6 +46,13 @@
   .bu { width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:none; font-weight:600; }
   .bb { flex:1; height:8px; background:var(--soft); border-radius:4px; overflow:hidden; } .bb i { display:block; height:100%; background:var(--brand); }
   .bc { flex:none; color:var(--muted); font-size:12px; }
+  .card.open { border-color:var(--danger); }
+  .note { font-size:12px; margin-top:6px; cursor:pointer; }
+  .nm { font-size:11px; background:#fff6c7; color:#5a4a00; border-radius:4px; padding:1px 4px; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .nb { color:var(--muted); padding:0 3px; cursor:pointer; }
+  .g2 { grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); margin-top:8px; }
+  .tc .pn { flex-direction:column; }
+  .tc img, .tc .ph { width:100%; aspect-ratio:1; object-fit:cover; border-radius:6px; background:var(--soft); display:block; margin-bottom:4px; }
 </style>
 </head>
 <body>
@@ -100,8 +107,8 @@ async function writeJson(path, mutate, msg) {   // 최신본 위에 고쳐 저�
 }
 
 async function load() {
-  const [st, v, c, mu] = await Promise.all([gh(`${RP}/contents/state/ig_comments.json?ref=main`, { raw: true }), readJson('state/ig_visits.json'), readJson('state/ig_comments_ctl.json'), readJson('state/ig_mutuals.json')]);
-  S.st = JSON.parse(st); S.visits = v.data.visits || {}; S.ctl = c.data; S.mut = mu.data.mutual || []; S.mutAt = mu.data.at || '';
+  const [st, v, c, mu, no] = await Promise.all([gh(`${RP}/contents/state/ig_comments.json?ref=main`, { raw: true }), readJson('state/ig_visits.json'), readJson('state/ig_comments_ctl.json'), readJson('state/ig_mutuals.json'), readJson('state/ig_notes.json')]);
+  S.st = JSON.parse(st); S.visits = v.data.visits || {}; S.ctl = c.data; S.mut = mu.data.mutual || []; S.mutAt = mu.data.at || ''; S.notes = no.data.notes || {};
 }
 
 function renderMode() {
@@ -154,16 +161,53 @@ function renderPost(mid, cs) {
   cs.sort((a, b) => (b[1].at > a[1].at ? 1 : -1));
   return `<div class="row" style="justify-content:space-between;margin-bottom:8px"><button class="btn" data-back>← 게시물</button><a class="btn" href="${esc(m.permalink || '#')}" target="_blank" rel="noopener">인스타에서 보기</a></div>
     <div class="card">${m.thumb ? `<img src="${esc(m.thumb)}" alt="" referrerpolicy="no-referrer" style="width:100%;max-height:320px;object-fit:cover;border-radius:8px;margin-bottom:8px" onerror="this.remove()">` : ''}<div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)} · 전체 댓글 ${m.cc} · 맞팔 ${cs.length}</div><div style="white-space:pre-line;max-height:4.5em;overflow:hidden">${esc((m.cap || '').slice(0, 200))}</div></div>` +
-    (cs.length ? cs.map(([id, c]) => {
+    (cs.length ? (() => {
+      const isOpen = ([, c]) => !myReplies(c).length;
+      const open = cs.filter(isOpen), done = cs.filter(x => !isOpen(x));
+      return (open.length ? `<div class="gh" style="color:var(--danger)">🔴 아직 답 안 단 댓글 ${open.length}</div>` + open.map(card).join('') : '<div class="gh">✅ 맞팔 댓글에 다 답했어요</div>')
+        + (done.length ? `<div class="gh">답한 댓글 ${done.length}</div>` + done.map(card).join('') : '');
+    })() : '<div class="card muted">이 게시물엔 맞팔 댓글이 없어요</div>');
+  function card([id, c]) {
       const mine = myReplies(c, true), real = mine.filter(r => r.k !== '소셜비즈');
       const draft = ['ready', 'check'].includes(c.status) && !real.length;
-      return `<div class="card"><div class="row" style="justify-content:space-between"><a class="u" href="https://www.instagram.com/${esc(c.user)}/" target="_blank" rel="noopener">@${esc(c.user)}</a><span class="muted">${esc(dayLabel(dayKey(c.at)))} ${hm(c.at)}</span></div>
+      return `<div class="card ${real.length ? '' : 'open'}"><div class="row" style="justify-content:space-between"><a class="u" href="https://www.instagram.com/${esc(c.user)}/" target="_blank" rel="noopener">@${esc(c.user)}</a><span class="muted">${esc(dayLabel(dayKey(c.at)))} ${hm(c.at)}</span></div>
         <div class="cm">${esc(c.text)}</div>
         ${mine.map(r => `<div class="muted">↳ <span class="pill ${r.k === '자동' ? 'ok' : ''}">${r.k}</span> ${esc(r.t)}</div>`).join('')}
-        ${draft ? `<div class="muted">${c.status === 'check' ? `<span class="pill red">확인 필요 · ${esc(c.why || '')}</span>` : skip.has(id) ? '<span class="pill">건너뜀</span>' : `<span class="pill">대기 · ${esc((c.due_at || '').slice(11, 16))} 뒤</span>`}</div>
+        ${draft ? `<div class="muted">${c.status === 'check' ? `<span class="pill red">확인 필요 · ${esc(c.why || '')}</span>` : skip.has(id) ? '<span class="pill">건너뜀</span>' : `<span class="pill">${esc(dayLabel(dayKey(c.due_at || new Date().toISOString())))} ${esc((c.due_at || '').slice(11, 16))}부터 달 예정</span>`}</div>
           <textarea rows="2" data-edit="${esc(id)}" placeholder="${c.status === 'check' ? '직접 쓸 답글 (비우면 안 담)' : ''}">${esc(edits[id] || c.reply || '')}</textarea>
-          <div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn" data-skip="${esc(id)}">건너뛰기</button><button class="btn pri" data-save="${esc(id)}">${c.status === 'check' ? '이 답글로 달기' : '수정 저장'}</button></div>` : (!real.length ? '<div class="muted">↳ 아직 없음</div>' : '')}</div>`;
-    }).join('') : '<div class="card muted">이 게시물엔 맞팔 댓글이 없어요</div>');
+          <div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn" data-skip="${esc(id)}">건너뛰기</button><button class="btn pri" data-save="${esc(id)}">${c.status === 'check' ? '이 답글로 달기' : '수정 저장'}</button></div>` : (!real.length ? '<div class="muted">↳ 아직 없음</div>' : '')}${noteLine(c.user)}</div>`;
+  }
+}
+
+// ── 메모 (사용자 261126 '8번 좋다') — state/ig_notes.json ──
+function noteLine(u) { const n = (S.notes || {})[u]; return `<div class="note" data-note="${esc(u)}">${n ? '📝 ' + esc(n) : '<span class="muted">＋ 메모</span>'}</div>`; }
+function noteMini(u) { const n = (S.notes || {})[u]; return n ? `<div class="nm">📝 ${esc(n)}</div>` : ''; }
+function hoursAgo(iso) { const h = (Date.now() - new Date(iso)) / 36e5; return h < 1 ? '방금' : h < 24 ? `${Math.floor(h)}시간 전` : `${Math.floor(h / 24)}일 전`; }
+function opened(u, since) { return !!S.visits[u] && S.visits[u] >= since; }
+
+// ── 오늘 다녀올 사람 (2번 기준으로 1번, 사용자 261126): 나한테 자주 오는 맞팔 중 새 글 올렸는데 아직 안 연 사람 ──
+function renderToday() {
+  const m = counts(30), lt = S.st.latest || {}, cut = new Date(Date.now() - 3 * 864e5).toISOString();
+  const all = Object.values(m).filter(u => lt[u.user] && lt[u.user].at && lt[u.user].at >= cut);
+  const todo = all.filter(u => !opened(u.user, lt[u.user].at)).sort((a, b) => (b.posts.size - a.posts.size) || (lt[b.user].at > lt[a.user].at ? 1 : -1));
+  const doneN = all.length - todo.length;
+  const checked = Object.values(lt).filter(x => x.checked).length;
+  return `<div class="card"><div class="row" style="justify-content:space-between"><b>🚶 오늘 다녀올 맞팔</b><span class="muted">새 글 올렸는데 아직 안 연 사람 · 나한테 자주 오는 순</span></div>
+    ${todo.length ? `<div class="grid g2">${todo.slice(0, 10).map(u => { const x = lt[u.user]; return `<a class="pcard tc" href="${esc(x.permalink)}" target="_blank" rel="noopener" data-open="${esc(u.user)}">
+      ${x.thumb ? `<img src="${esc(x.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<div class="ph"></div>'}
+      <div class="pu">@${esc(u.user)}</div><div class="pn"><span>${hoursAgo(x.at)} 새 글</span><span>${u.posts.size}번 옴</span></div>${noteMini(u.user)}</a>`; }).join('')}</div>`
+      : `<div class="muted" style="padding:6px 0">${doneN ? `오늘 다 다녀왔어요 ✅ (${doneN}명)` : '최근 3일 새 글 올린 맞팔이 아직 없어요'}</div>`}
+    <div class="muted" style="margin-top:6px">${todo.length > 10 ? `외 ${todo.length - 10}명 · ` : ''}최근 30일 나한테 온 맞팔 ${Object.keys(m).length}명 중 ${checked}명 새 글 확인됨(30분마다 10명씩, 개인 계정은 안 보임)</div></div>`;
+}
+
+// ── 맞팔 후보 (사용자 261126 '4번 좋아'): 맞팔 아닌데 내 게시물에 자주 오는 사람 ──
+function renderCands() {
+  const cut = new Date(Date.now() - 30 * 864e5).toISOString(), mut = new Set(S.mut);
+  const cs = Object.entries(S.st.others || {}).filter(([u, o]) => !mut.has(u) && o.last >= cut && o.posts.length >= 2)
+    .map(([u, o]) => ({ user: u, posts: o.posts.length, n: o.c.length, last: o.last })).sort((a, b) => (b.posts - a.posts) || (b.n - a.n));
+  return `<div class="muted" style="margin:0 2px 8px">맞팔은 아닌데 최근 30일 내 게시물 2개 이상에 댓글 단 사람 ${cs.length}명 · 26.11.26부터 쌓는 중(일주일 안 게시물 댓글로) — 맞팔 목록(${esc(S.mutAt)})에 없으면 여기 나와요</div>` +
+    (cs.length ? `<div class="grid">${cs.map(u => `<a class="pcard ${opened(u.user, u.last) ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}">
+      <div class="pu">@${esc(u.user)}</div><div class="pn"><span>게시물 ${u.posts}개 · 댓글 ${u.n}</span></div><div class="pn"><span>${ago(u.last)}</span><span class="nb" data-note="${esc(u.user)}">✎</span></div>${noteMini(u.user)}</a>`).join('')}</div>` : '<div class="card muted">아직 없어요 — 며칠 쌓이면 나와요</div>');
 }
 
 // ── 2번 탭: 최근 나에게 댓글 단 맞팔 (날짜별 묶음, 작은 카드) ──
@@ -186,7 +230,7 @@ function renderQuiet() {
   const q = S.mut.filter(u => !m[u]).map(u => ({ user: u, last: (all[u] || {}).last || '' })).sort((a, b) => (b.last > a.last ? 1 : -1) || (a.user > b.user ? 1 : -1));
   return `<div class="muted" style="margin:0 2px 8px">맞팔 ${S.mut.length}명 중 최근 30일 동안 내 게시물에 댓글이 없는 ${q.length}명 · 위쪽이 예전엔 오던 사람(마지막 댓글 최근 순) · 맞팔 목록은 ${esc(S.mutAt)} 기준</div><div class="grid">` +
     q.map(u => `<a class="pcard ${S.visits[u.user] ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}"><div class="pu">@${esc(u.user)}</div>
-      <div class="pn">${u.last ? `마지막 ${ago(u.last)}` : '댓글 기록 없음'}${S.visits[u.user] ? '<span class="ck" data-undo="' + esc(u.user) + '">✓</span>' : ''}</div></a>`).join('') + '</div>';
+      <div class="pn"><span>${u.last ? `마지막 ${ago(u.last)}` : '댓글 기록 없음'}</span><span><span class="nb" data-note="${esc(u.user)}">✎</span>${S.visits[u.user] ? '<span class="ck" data-undo="' + esc(u.user) + '">✓</span>' : ''}</span></div>${noteMini(u.user)}</a>`).join('') + '</div>';
 }
 function renderPeople() {
   const cut = new Date(Date.now() - 7 * 864e5).toISOString(), m = {};
@@ -199,21 +243,21 @@ function renderPeople() {
   Object.values(m).forEach(u => (groups[dayKey(u.last)] ||= []).push(u));
   const days = Object.keys(groups).sort().reverse();
   if (!days.length) return '<div class="card muted">최근 7일 맞팔 댓글이 없어요</div>';
-  return renderStats() + `<div class="gh" style="margin-top:4px">💬 최근 7일 나한테 댓글 단 맞팔</div><div class="muted" style="margin:0 2px 8px">누르면 프로필이 열리고 ✓(열어 봄)가 붙어요 — 실제로 댓글 달았는지는 인스타가 알려 주지 않아서 확인 못 해요</div>` +
+  return renderToday() + renderStats() + `<div class="gh" style="margin-top:4px">💬 최근 7일 나한테 댓글 단 맞팔</div><div class="muted" style="margin:0 2px 8px">누르면 프로필이 열리고 ✓(열어 봄)가 붙어요 — 실제로 댓글 달았는지는 인스타가 알려 주지 않아서 확인 못 해요</div>` +
     days.map(d => {
       const us = groups[d].sort((a, b) => (+!!S.visits[a.user] - +!!S.visits[b.user]) || (b.n - a.n));
       return `<div class="gh">${esc(dayLabel(d))} <span class="muted">${us.length}명</span></div><div class="grid">` +
         us.map(u => { const v = S.visits[u.user] >= u.last; return `<a class="pcard ${v ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}">
-          <div class="pu">@${esc(u.user)}</div><div class="pt">${esc(u.text)}</div><div class="pn">${u.n > 1 ? `댓글 ${u.n}` : ''}${v ? '<span class="ck" data-undo="' + esc(u.user) + '">✓</span>' : ''}</div></a>`; }).join('') + '</div>';
+          <div class="pu">@${esc(u.user)}</div><div class="pt">${esc(u.text)}</div><div class="pn"><span>${u.n > 1 ? `댓글 ${u.n}` : ''}${(S.st.latest || {})[u.user] && S.st.latest[u.user].at >= new Date(Date.now() - 864e5).toISOString() ? ' · 🆕새 글' : ''}</span><span><span class="nb" data-note="${esc(u.user)}">✎</span>${v ? '<span class="ck" data-undo="' + esc(u.user) + '">✓</span>' : ''}</span></div>${noteMini(u.user)}</a>`; }).join('') + '</div>';
     }).join('');
 }
 
 function render() {
   renderMode();
-  $('#tabs').innerHTML = [['posts', '📝 내 게시물'], ['people', '💬 댓글 단 맞팔'], ['quiet', '💤 한 달 조용한 맞팔']].map(([k, t]) => `<button class="btn ${S.tab === k ? 'on' : ''}" data-tab="${k}">${t}</button>`).join('');
+  $('#tabs').innerHTML = [['posts', '📝 내 게시물'], ['people', '💬 댓글 단 맞팔'], ['quiet', '💤 한 달 조용한 맞팔'], ['cands', '🌱 맞팔 후보']].map(([k, t]) => `<button class="btn ${S.tab === k ? 'on' : ''}" data-tab="${k}">${t}</button>`).join('');
   $('#tabs').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { S.tab = b.dataset.tab; S.post = null; try { localStorage.setItem('kydz_mutuals_tab', S.tab); } catch (e) {} render(); });
-  if (!['posts', 'people', 'quiet'].includes(S.tab)) S.tab = 'posts';
-  $('#main').innerHTML = S.tab === 'posts' ? renderPosts() : S.tab === 'people' ? renderPeople() : renderQuiet();
+  if (!['posts', 'people', 'quiet', 'cands'].includes(S.tab)) S.tab = 'posts';
+  $('#main').innerHTML = S.tab === 'posts' ? renderPosts() : S.tab === 'people' ? renderPeople() : S.tab === 'quiet' ? renderQuiet() : renderCands();
   $('#main').querySelectorAll('[data-post]').forEach(b => b.onclick = () => { S.post = b.dataset.post; render(); scrollTo(0, 0); });
   $('#main').querySelectorAll('[data-back]').forEach(b => b.onclick = () => { S.post = null; render(); });
   const mark = async (u, val) => {
@@ -221,8 +265,15 @@ function render() {
     render();
     try { await writeJson('state/ig_visits.json', d => { d.visits ||= {}; if (val) d.visits[u] = val; else delete d.visits[u]; }, 'ig(admin): 맞팔 열어 봄'); } catch (e) { alert(e.message); }
   };
+  $('#main').querySelectorAll('[data-note]').forEach(b => b.onclick = async e => {
+    e.preventDefault(); e.stopPropagation();
+    const u = b.dataset.note, t = prompt(`@${u} 메모 (비우면 지움)`, S.notes[u] || '');
+    if (t === null) return;
+    const v = t.trim(); if (v) S.notes[u] = v; else delete S.notes[u]; render();
+    try { await writeJson('state/ig_notes.json', d => { d.notes ||= {}; if (v) d.notes[u] = v; else delete d.notes[u]; }, 'ig(admin): 맞팔 메모'); } catch (er) { alert(er.message); }
+  });
   $('#main').querySelectorAll('[data-undo]').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); mark(b.dataset.undo, ''); });
-  $('#main').querySelectorAll('[data-open]').forEach(a => a.addEventListener('click', e => { if (e.target.dataset.undo) return; mark(a.dataset.open, kstNow()); }));
+  $('#main').querySelectorAll('[data-open]').forEach(a => a.addEventListener('click', e => { if (e.target.dataset.undo || e.target.dataset.note) return; mark(a.dataset.open, kstNow()); }));
   $('#main').querySelectorAll('[data-save]').forEach(b => b.onclick = async () => {
     const id = b.dataset.save, t = $(`[data-edit="${id}"]`).value.trim(); if (!t) return;
     b.disabled = true;
