@@ -288,8 +288,9 @@
   @media (min-width: 900px) {
     .pc-only { display: block; }
     .phone-only { display: none !important; }
-    .cols.board { grid-template-columns: 1fr 1fr 1fr 1fr; align-items: start; gap: 12px; }
-    .cols.board.five { grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    /* 261126 사용자 '30일 안은 없애고 가로폭을 넓히자': 받은함 · (지난 일정) · 오늘 · 7일 안 — 오늘·7일을 넓게 */
+    .cols.board { grid-template-columns: 1fr 1.4fr 1.4fr; align-items: start; gap: 12px; }
+    .cols.board.five { grid-template-columns: 1fr 1fr 1.4fr 1.4fr; gap: 12px; }
     /* PC: 글자·버튼을 줄여 제목이 한두 줄에 들어가게 (사용자 요청 261103) */
     .cols.board .col { padding: 12px 10px; }
     .cols.board .t-title { font-size: 13.5px; line-height: 1.45; }
@@ -1726,12 +1727,16 @@ function taskRowHtml(t, opts = {}) {
 }
 
 function colHtml(view, opts = {}) {
-  const list = tasksIn(view, opts.project);
+  const list = tasksIn(view, opts.project).filter(t => !(opts.noRepeat && t.repeat));   // 7일 안엔 반복 일정 빼기 — 그날 되면 '오늘'에 (사용자 261126)
   const over = view === 'today' && list.length > TODAY_LIMIT ? `<span class="over">${TODAY_LIMIT}개 넘음</span>` : '';
   let later = '';
   if (view === 'month' && opts.withLater) {
     const l = tasksIn('later', opts.project);
     if (l.length) later = `<details class="later"${S.openLater ? ' open' : ''}><summary>30일 뒤 ${l.length}개</summary>${l.map(t => taskRowHtml(t, opts)).join('')}</details>`;
+  }
+  if (opts.withAfter) {   // 30일 안 칸 없앰(사용자 261126) → 8일 뒤부터는 7일 칸 아래 접어서 (반복 빼고)
+    const l = [...tasksIn('month', opts.project), ...tasksIn('later', opts.project)].filter(t => !t.repeat);
+    if (l.length) later = `<details class="later"${S.openLater ? ' open' : ''}><summary>8일 뒤 ${l.length}개</summary>${l.map(t => taskRowHtml(t, opts)).join('')}</details>`;
   }
   const empty = view === 'inbox' ? '던져 둔 게 없어요' : '비어 있어요';
   return `<div class="col${view === 'overdue' ? ' overdue' : ''}"${view === 'overdue' ? '' : ` data-drop="${view}"`}><div class="col-h"><h2>${VIEW_LABEL[view]}${view === 'today' ? ` <span class="ymd">(${kstToday()})</span>` : ''}${view === 'inbox' && list.length ? ` <span class="badge">${list.length}</span>` : ''} ${over}</h2><span class="n">${list.length}개</span></div>
@@ -1827,7 +1832,7 @@ function tasksHtml(onlyView) {
     </div>`;
     h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
     const od = tasksIn('overdue', po.project).length;
-    h += `<div class="cols board${od ? ' five' : ''}">${colHtml('inbox', { ...po, scroll: true })}${od ? colHtml('overdue', { ...po, scroll: true }) : ''}${colHtml('today', { ...po, scroll: true })}${colHtml('week', { ...po, scroll: true })}${colHtml('month', { ...po, withLater: true, scroll: true })}</div>`;
+    h += `<div class="cols board${od ? ' five' : ''}">${colHtml('inbox', { ...po, scroll: true })}${od ? colHtml('overdue', { ...po, scroll: true }) : ''}${colHtml('today', { ...po, scroll: true })}${colHtml('week', { ...po, scroll: true, noRepeat: true, withAfter: true })}</div>`;
     if (!pf || pf === DEAL_PROJECT) h += dealsHtml();   // 협찬은 할 일 탭 안에, 광고영상 프로젝트를 고르면 그 건만 (261103)
   } else {
     if (onlyView === 'week') h += `<button class="btn ghost small upload-btn" data-act="upload">⬆ 업로드 등록</button>`;
