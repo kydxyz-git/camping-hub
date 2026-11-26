@@ -47,6 +47,13 @@
   .login { min-height:90vh; display:flex; align-items:center; justify-content:center; }
   input.pw { border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit; background:var(--bg); color:var(--text); }
   @media (max-width:600px) { .wrap { padding:10px 12px 60px; } .kpi .v { font-size:19px; } .vgrid { grid-template-columns:1fr 1fr; gap:8px; } .vc .t { font-size:12.5px; } .nums { grid-template-columns:1fr 1fr; } .nums b { font-size:13px; } .vc .b { padding:7px 8px 9px; } }
+  .hbars { display:flex; gap:5px; align-items:flex-end; height:160px; margin:10px 0 6px; }
+  .hb { flex:1; min-width:0; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; }
+  .hb-v { font-size:10.5px; color:var(--muted); white-space:nowrap; margin-bottom:3px; font-variant-numeric:tabular-nums; }
+  .hb-s { font-size:10.5px; font-weight:700; white-space:nowrap; } .hb-s.up { color:var(--ok); } .hb-s.dn { color:var(--danger); }
+  .hb-col { width:100%; max-width:48px; background:var(--ok); opacity:.85; border-radius:3px 3px 1px 1px; min-height:2px; }
+  .hb-d { font-size:10.5px; color:var(--muted); height:15px; margin-top:4px; white-space:nowrap; }
+  @media (max-width:600px) { .hbars { gap:2px; height:140px; } .hb-v, .hb-s { font-size:8.5px; } .hb-d { font-size:9px; } }
 </style>
 <link rel="stylesheet" href="lib/theme.css?v=261126k">
 <script src="lib/nav.js?v=261126n"></script>
@@ -101,17 +108,14 @@ async function load() {
 function chart(daily) {
   const ds = (daily || []).slice(-21);
   if (!ds.length) return '<div class="muted">날짜별 숫자가 아직 없어요</div>';
-  const W = 700, H = 150, P = 18, bw = (W - P * 2) / ds.length;
-  const mx = Math.max(1, ...ds.map(x => x.views || 0));
-  const bars = ds.map((x, i) => {
-    const h = Math.round((x.views || 0) / mx * (H - 52)), X = P + i * bw + 2, Y = H - 22 - h;
-    const subs = (x.subscribersGained || 0) - (x.subscribersLost || 0);
-    return `<rect x="${X}" y="${Y}" width="${Math.max(2, bw - 4)}" height="${h}" rx="2" fill="var(--ok)" opacity=".8"><title>${md(x.day)} 조회 ${n(x.views)} · 구독 ${subs >= 0 ? '+' : ''}${subs}</title></rect>`
-      + `<text x="${X + (bw - 4) / 2}" y="${Y - 3}" text-anchor="middle">${x.views || 0}</text>`
-      + (subs ? `<text x="${X + (bw - 4) / 2}" y="${Y - 14}" text-anchor="middle" style="fill:${subs > 0 ? 'var(--ok)' : 'var(--danger)'};font-weight:700">${subs > 0 ? '+' : ''}${subs}</text>` : '')
-      + ((i % Math.ceil(ds.length / 10) === 0 || i === ds.length - 1) ? `<text x="${X + (bw - 4) / 2}" y="${H - 6}" text-anchor="middle">${md(x.day)}</text>` : '');
-  }).join('');
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${bars}</svg>
+  const mx = Math.max(1, ...ds.map(x => x.views || 0)), step = Math.ceil(ds.length / 10);
+  // 막대는 HTML로 (사용자 261126 '글자가 가로로 늘어나' — SVG를 폭에 맞춰 늘리면 글자도 늘어남)
+  const cols = ds.map((x, i) => { const subs = (x.subscribersGained || 0) - (x.subscribersLost || 0);
+    return `<div class="hb" title="${md(x.day)} 조회 ${n(x.views)} · 구독 ${subs >= 0 ? '+' : ''}${subs}">
+      ${subs ? `<span class="hb-s ${subs > 0 ? 'up' : 'dn'}">${subs > 0 ? '+' : ''}${subs}</span>` : ''}<span class="hb-v">${n(x.views || 0)}</span>
+      <div class="hb-col" style="height:${Math.round((x.views || 0) / mx * 100)}%"></div>
+      <span class="hb-d">${i % step === 0 || i === ds.length - 1 ? md(x.day) : ''}</span></div>`; }).join('');
+  return `<div class="hbars">${cols}</div>
     <div class="muted">막대 = 하루 조회 · 위 숫자 = 그날 구독 변화 · 분석 숫자는 1~2일 늦게 들어와요</div>`;
 }
 

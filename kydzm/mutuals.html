@@ -135,6 +135,23 @@
   .nedit input { flex:1; min-width:0; border:1px solid var(--brand); border-radius:8px; padding:6px 8px; font:inherit; font-size:13px; background:var(--card); color:var(--text); }
   .npop { position:fixed; z-index:9300; background:var(--card); border:1px solid var(--line); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.25); padding:8px; width:min(300px, calc(100vw - 16px)); }
   .npop .u { font-size:12px; margin-bottom:4px; }
+  /* 자주 오는 맞팔 뱃지 (사용자 261126 '그래프 없이 프로필·뱃지 가로줄·횟수') */
+  .ubs { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .ub { display:inline-flex; align-items:center; gap:7px; padding:4px 12px 4px 4px; border-radius:99px; border:1px solid var(--line); background:var(--soft); text-decoration:none; color:inherit; transition:border-color .12s, transform .08s; }
+  .ub:hover { border-color:var(--line-strong); } .ub:active { transform:scale(.97); }
+  .ub.top { border-color:var(--brand); background:var(--brand-soft); }
+  .av { position:relative; flex:none; width:32px; height:32px; border-radius:50%; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:13px; }
+  .av img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .ub-n { font-size:13px; font-weight:600; white-space:nowrap; }
+  .ub-n i { font-style:normal; color:var(--muted); font-size:11px; margin-right:3px; }
+  .ub-c { font-size:11.5px; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .hbars { display:flex; gap:6px; align-items:flex-end; height:150px; margin-top:10px; }
+  .hb { flex:1; min-width:0; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; }
+  .hb-v { font-size:11px; color:var(--muted); white-space:nowrap; margin-bottom:3px; font-variant-numeric:tabular-nums; }
+  .hb-col { width:100%; max-width:56px; display:flex; flex-direction:column; border-radius:4px 4px 2px 2px; overflow:hidden; min-height:3px; }
+  .hb-col i { display:block; min-height:2px; } .hb-col .ok { background:var(--success, var(--ok)); } .hb-col .no { background:var(--danger); opacity:.8; }
+  .hb-d { font-size:11px; color:var(--muted); height:16px; margin-top:4px; white-space:nowrap; }
+  @media (max-width:600px) { .hbars { gap:3px; height:130px; } .hb-v { font-size:9px; } .hb-d { font-size:9.5px; } }
 </style>
 <link rel="stylesheet" href="lib/theme.css?v=261126k">
 <script src="lib/nav.js?v=261126n"></script>
@@ -278,7 +295,7 @@ function renderPosts() {
       <div class="ic-b"><div class="ic-t" title="${esc(title)}">${esc(title)}</div>
         <div class="ic-m"><span>${esc(dayLabel(dayKey(m.at)))}</span>${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}<span class="r">💬${n(m.cc)}</span></div>
         <div class="rb"><div class="rb-t"><span>${kind === 'going' ? `자동 ${auto1}` : '내 답'}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${pct}%"></i></div></div>
-        ${kind === 'going' ? `<button class="btn red sm ic-stop" data-stop="${esc(mid)}">멈춤 · 남은 ${nd}</button>` : ''}
+        ${kind === 'going' ? `<button class="btn red sm ic-stop" data-stop="${esc(mid)}">⏸ 멈추기</button><div class="muted" style="text-align:center;font-size:11px;margin-top:3px">남은 ${nd}</div>` : ''}
       </div></div>`;
   };
   const grid = (list, kind) => `<div class="igrid">${list.map(x => card(x, kind)).join('')}</div>`;
@@ -311,16 +328,14 @@ function renderDaily() {   // 날짜별 맞팔 댓글 — 초록 = 내가 답함
   for (let i = 13; i >= 0; i--) days.push(dayKey(new Date(Date.now() - i * 864e5).toISOString()));
   const agg = Object.fromEntries(days.map(d => [d, { a: 0, r: 0 }]));
   for (const c of Object.values(S.st.comments || {})) { const x = agg[dayKey(c.at)]; if (x) { x.a++; if (myReplies(c).length) x.r++; } }
-  const W = 700, H = 150, P = 14, bw = (W - P * 2) / days.length, mx = Math.max(1, ...days.map(d => agg[d].a));
-  const bars = days.map((d, i) => {
-    const { a, r } = agg[d], X = P + i * bw + 3, w = Math.max(2, bw - 6), hA = Math.round(a / mx * (H - 46)), hR = Math.round(r / mx * (H - 46)), base = H - 20;
-    return `<rect x="${X}" y="${base - hA}" width="${w}" height="${hA - hR}" rx="2" fill="var(--danger)" opacity=".75"><title>${md(d)} 맞팔 댓글 ${a} · 내 답 ${r}</title></rect>`
-      + `<rect x="${X}" y="${base - hR}" width="${w}" height="${hR}" rx="2" fill="var(--success, var(--ok))" opacity=".85"><title>${md(d)} 맞팔 댓글 ${a} · 내 답 ${r}</title></rect>`
-      + (a ? `<text x="${X + w / 2}" y="${base - hA - 4}" text-anchor="middle">${r}/${a}</text>` : '')
-      + ((i % 2 === 1 || i === days.length - 1) ? `<text x="${X + w / 2}" y="${H - 5}" text-anchor="middle">${md(d)}</text>` : '');
-  }).join('');
+  const mx = Math.max(1, ...days.map(d => agg[d].a));
+  // 막대는 HTML로 (사용자 261126 '글자가 이미지니? 왜 가로로 늘어나' — SVG를 폭에 맞춰 늘리면 글자도 늘어남)
+  const cols = days.map((d, i) => { const { a, r } = agg[d];
+    return `<div class="hb" title="${md(d)} 맞팔 댓글 ${a} · 내 답 ${r}"><span class="hb-v">${a ? `${r}/${a}` : ''}</span>
+      <div class="hb-col" style="height:${Math.round(a / mx * 100)}%">${a - r ? `<i class="no" style="flex:${a - r}"></i>` : ''}${r ? `<i class="ok" style="flex:${r}"></i>` : ''}</div>
+      <span class="hb-d">${i % 2 === 1 || i === days.length - 1 ? md(d) : ''}</span></div>`; }).join('');
   return `<div class="card" style="margin-top:10px"><div class="row" style="justify-content:space-between"><b>📊 날짜별 맞팔 댓글 · 14일</b><span class="muted"><span style="color:var(--success, var(--ok))">■</span> 답함 <span style="color:var(--danger)">■</span> 아직 · 숫자 = 답함/전체</span></div>
-    <svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${bars}</svg></div>`;
+    <div class="hbars">${cols}</div></div>`;
 }
 function md(k) { return `${+k.slice(5, 7)}/${+k.slice(8, 10)}`; }
 function renderPost(mid, cs) {
@@ -346,7 +361,7 @@ function renderPost(mid, cs) {
           <div><span>건너뜀</span><b>${nSkip}</b></div>
         </div>
         <div class="row pact">
-          ${on ? `<span class="pill ok">🔄 자동 대댓글 진행 중</span><button class="btn red sm" data-stop="${esc(mid)}">멈춤</button>` : (nNeed ? `<button class="btn pri sm" data-autoone="${esc(mid)}">이 게시물 자동 시작</button>` : '<span class="pill ok">✅ 맞팔 댓글 다 답함</span>')}
+          ${on ? `<span class="pill ok">🔄 자동 대댓글 진행 중</span><button class="btn red sm" data-stop="${esc(mid)}">⏸ 멈추기</button>` : (nNeed ? `<button class="btn pri sm" data-autoone="${esc(mid)}">이 게시물 자동 시작</button>` : '<span class="pill ok">✅ 맞팔 댓글 다 답함</span>')}
           <a class="btn sm" href="${esc(m.permalink || '#')}" target="_blank" rel="noopener">인스타에서 보기</a>
         </div>
         <div class="pcap">${esc(ttl)}</div>
@@ -416,10 +431,15 @@ function renderStats() {
   if (!top.length) return '';
   const mx = top[0].posts.size, posts30 = Object.values(S.st.media || {}).filter(x => x.at >= new Date(Date.now() - 30 * 864e5).toISOString()).length;
   return `<div class="card"><div class="row" style="justify-content:space-between"><b>🏆 자주 오는 맞팔 · 최근 30일${S.statsAll ? '' : ' TOP 10'}</b><span class="muted">내 게시물 ${posts30}개 중 몇 개에 왔는지</span></div>
-    ${top.map((u, i) => `<a class="bar" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener"><span class="bn">${i + 1}</span><span class="bu">@${esc(u.user)}</span>
-      <span class="bb"><i style="width:${Math.round(u.posts.size / mx * 100)}%"></i></span><span class="bc n">${u.posts.size}개 · 댓글 ${u.n}</span></a>`).join('')}
-    ${ranked.length > 10 ? `<button class="btn" data-more style="width:100%;margin-top:6px">${S.statsAll ? '접기' : `더보기 (${ranked.length}명 전부)`}</button>` : ''}
-    <div class="muted" style="margin-top:6px">맞팔 ${S.mut.length}명 중 30일 안에 댓글 단 사람 ${Object.keys(m).length}명</div></div>`;
+    <div class="ubs">${top.map((u, i) => `<a class="ub ${i < 3 ? 'top' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}">${avatar(u.user)}
+      <span class="ub-n">${i < 3 ? ['🥇', '🥈', '🥉'][i] : `<i>${i + 1}</i>`}@${esc(u.user)}</span><span class="ub-c">${u.posts.size}개 · 💬${u.n}</span></a>`).join('')}</div>
+    ${ranked.length > 10 ? `<button class="btn" data-more style="width:100%;margin-top:8px">${S.statsAll ? '접기' : `더보기 (${ranked.length}명 전부)`}</button>` : ''}
+    <div class="muted" style="margin-top:6px">맞팔 ${S.mut.length}명 중 30일 안에 댓글 단 사람 ${Object.keys(m).length}명 · 사진은 비즈니스·크리에이터 계정만(개인 계정은 첫 글자)</div></div>`;
+}
+// 프로필 동그라미 (사용자 261126): 봇이 보관한 사진(state/ig_thumbs/u_*.jpg), 없으면 첫 글자
+function avatar(u) {
+  const x = (S.st.latest || {})[u] || {}, h = [...u].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 360, 7);
+  return `<span class="av" style="background:hsl(${h} 45% 42%)">${esc((u.replace(/[^a-zA-Z0-9]/g, '')[0] || u[0] || '?').toUpperCase())}${x.pic ? `<img data-shot="${esc(x.pic)}" src="${esc(SHOT[x.pic] || '')}" alt="" style="${SHOT[x.pic] ? '' : 'visibility:hidden'}">` : ''}</span>`;
 }
 function renderQuiet() {
   const m = counts(30), all = counts(3650);
