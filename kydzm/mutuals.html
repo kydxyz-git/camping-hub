@@ -118,6 +118,9 @@
   .igc-reel { position:absolute; right:5px; top:5px; width:20px; height:20px; border-radius:50%; background:rgba(0,0,0,.55); color:#fff; font-size:9px; display:flex; align-items:center; justify-content:center; padding-left:2px; box-sizing:border-box; pointer-events:none; }
   .gh-tg { background:none; border:0; color:inherit; font:inherit; font-weight:700; cursor:pointer; padding:0; display:block; text-align:left; }
   .gh-tg:hover .muted { color:var(--text); }
+  .igc-badges { position:absolute; right:5px; bottom:5px; display:flex; flex-direction:column; align-items:flex-end; gap:3px; pointer-events:none; }
+  .igc-b2 { font-size:10.5px; font-weight:700; padding:1px 6px; border-radius:99px; color:#fff; white-space:nowrap; background:rgba(0,0,0,.65); }
+  .igc-b2.red { background:var(--danger); } .igc-b2.wait { background:var(--info); } .igc-b2.go { background:var(--success, var(--ok)); }
   .igc-skip { position:absolute; right:5px; bottom:25px; font-size:10.5px; font-weight:700; padding:1px 6px; border-radius:99px; background:rgba(110,110,110,.85); color:#fff; white-space:nowrap; pointer-events:none; }   /* 건너뜀은 썸네일 오른쪽 아래, 답 필요 뱃지 위  (사용자 261126 '눈에 안 띄네') */
   .rb-sk { font-style:normal; font-size:10px; color:var(--muted); opacity:.75; margin-left:5px; white-space:nowrap; }
   .igc-badge { position:absolute; right:5px; bottom:5px; font-size:10.5px; font-weight:700; padding:1px 6px; border-radius:99px; background:rgba(0,0,0,.65); color:#fff; }
@@ -317,13 +320,17 @@ function renderPosts() {
   const by = {};
   for (const [id, c] of Object.entries(S.st.comments || {})) (by[c.media] ||= []).push([id, c]);
   if (S.post) return renderPost(S.post, by[S.post] || []);
-  const need = mid => (by[mid] || []).filter(([id, c]) => !myReplies(c).length && !skipWhy(id, c)).length;
+  // 댓글 상태 셋 (사용자 261126 '제안 A'): 답 필요(손 안 댐) · ⏳ 대기(줄에 올림·수정 저장) · 다 함(답함·자동·건너뜀)
+  const waiting = (id, c) => !myReplies(c).length && !skipWhy(id, c) && !!((S.ctl.queue || {})[id] || (S.ctl.edits || {})[id]);
+  const wait = mid => (by[mid] || []).filter(([id, c]) => waiting(id, c)).length;
+  const need = mid => (by[mid] || []).filter(([id, c]) => !myReplies(c).length && !skipWhy(id, c) && !waiting(id, c)).length;
   const auto = S.ctl.auto_media || {};
   const ms = Object.entries(S.st.media || {}).sort((a, b) => (b[1].at > a[1].at ? 1 : -1)).slice(0, 40);
-  const going = ms.filter(([mid]) => auto[mid]), open = ms.filter(([mid]) => !auto[mid] && need(mid)), done = ms.filter(([mid]) => !auto[mid] && !need(mid));
+  const isGoing = mid => !!auto[mid] || wait(mid) > 0;   // 자동 켰거나 하나라도 손댄 게시물 = 진행 중
+  const going = ms.filter(([mid]) => isGoing(mid)), open = ms.filter(([mid]) => !isGoing(mid) && need(mid)), done = ms.filter(([mid]) => !isGoing(mid) && !need(mid));
   // 유튜브 화면처럼 (사용자 261126 '인스타 화면도 유튜브처럼'): 위 숫자 칸 → 날짜별 막대 → 게시물 카드
   const card = ([mid, m], kind) => {
-    const cs = by[mid] || [], nd = need(mid);
+    const cs = by[mid] || [], nd = need(mid), wt = wait(mid), on = !!auto[mid];
     const got0 = cs.filter(([, c]) => myReplies(c).length).length;
     const nSk = cs.filter(([id, c]) => !myReplies(c).length && skipWhy(id, c)).length, got = got0 + nSk;   // 건너뜀도 '다 한 것'으로 (사용자 261126)
     const auto1 = cs.filter(([, c]) => c.status === 'posted').length, chk = cs.filter(([, c]) => c.status === 'check').length;
@@ -333,25 +340,25 @@ function renderPosts() {
     return `<div class="igc ${kind} ${sel ? 'sel' : ''}" data-post="${esc(mid)}">
       <div class="igc-img">${shotImg(m, `onerror="this.style.visibility='hidden'"`)}
         ${kind === 'open' ? `<label class="igc-ck" data-sel="${esc(mid)}" title="골라서 자동 시작"><input type="checkbox" ${sel ? 'checked' : ''} tabindex="-1"></label>` : ''}
-        ${nSk ? `<span class="igc-skip" title="건너뛴 댓글 — 다 한 것으로 셈">⏭ 건너뜀 ${nSk}</span>` : ''}
+        ${nSk && kind !== 'going' ? `<span class="igc-skip" title="건너뛴 댓글 — 다 한 것으로 셈">⏭ 건너뜀 ${nSk}</span>` : ''}
         ${S.mtype[mid] === 'VIDEO' ? '<span class="igc-reel" title="릴스">▶</span>' : ''}
-        ${kind === 'going' ? '<span class="igc-badge go">🔄 진행 중</span>' : nd ? `<span class="igc-badge red">답 필요 ${nd}</span>` : '<span class="igc-badge ok">✅ 다 답함</span>'}</div>
+        ${kind === 'going' ? `<span class="igc-badges">${nSk ? `<span class="igc-b2">⏭ 건너뜀 ${nSk}</span>` : ''}${wt ? `<span class="igc-b2 wait">⏳ 대기 ${wt}</span>` : ''}${nd ? `<span class="igc-b2 red">답 필요 ${nd}</span>` : ''}${!wt && !nd ? '<span class="igc-b2 go">🔄 진행 중</span>' : ''}</span>` : nd ? `<span class="igc-badge red">답 필요 ${nd}</span>` : '<span class="igc-badge ok">✅ 다 답함</span>'}</div>
       <div class="igc-b"><div class="igc-t" title="${esc(title)}">${esc(title)}</div>
         <div class="igc-m"><span>${esc(dayLabel(dayKey(m.at)))}</span>${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}<span class="r">💬${n(m.cc)}</span></div>
-        <div class="rb"><div class="rb-t"><span>${kind === 'going' ? `자동 ${auto1}` : '내 답'}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${pct}%"></i></div></div>
-        ${kind === 'going' ? `<button class="btn red sm igc-stop" data-stop="${esc(mid)}">⏸ 멈추기</button><div class="muted" style="text-align:center;font-size:11px;margin-top:3px">남은 ${nd}</div>` : ''}
+        <div class="rb"><div class="rb-t"><span>${kind === 'going' && on ? `자동 ${auto1}` : '내 답'}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${pct}%"></i></div></div>
+        ${kind === 'going' && on ? `<button class="btn red sm igc-stop" data-stop="${esc(mid)}">⏸ 자동 멈추기</button>` : ''}
       </div></div>`;
   };
   const grid = (list, kind) => `<div class="igrid">${list.map(x => card(x, kind)).join('')}</div>`;
   return renderKpis(by, need, going.length) + renderDaily() +
-    (going.length ? `<div class="gh">🔄 대댓글 진행 중 <span class="muted">${going.length} · 오래된 댓글부터 하나씩</span></div>` + grid(going, 'going') : '') +
+    (going.length ? `<div class="gh">🔄 진행 중 <span class="muted">${going.length} · 자동 켰거나 손댄 게시물 · ⏳ 대기는 줄에 올린 것부터 차례대로</span></div>` + grid(going, 'going') : '') +
     (open.length ? `<div class="gh red">🔴 답 필요 <span class="muted">${open.length} · 체크해서 위 [자동 시작]</span></div>` + grid(open, 'open') : '') +
     (done.length ? `<button class="gh gh-tg" data-donetg>✅ 다 답함 <span class="muted">${done.length} · ${S.openDoneP ? '접기 ▴' : '펼치기 ▾'}</span></button>` + (S.openDoneP ? grid(done, 'done') : '') : '');   // 기본 접힘 (사용자 261126)
 }
 function renderKpis(by, need, goingN) {
   const cs = Object.entries(S.st.comments || {}), lt = S.st.latest || {};
   const d30 = new Date(Date.now() - 30 * 864e5).toISOString();
-  const needC = cs.filter(([id, c]) => !myReplies(c).length && !skipWhy(id, c) && ((S.st.media || {})[c.media] || {}).at >= d30).length;   // 대시보드 요약과 같은 기준(30일 안 게시물)
+  const needC = cs.filter(([id, c]) => !myReplies(c).length && !skipWhy(id, c) && !((S.ctl.queue || {})[id] || (S.ctl.edits || {})[id]) && ((S.st.media || {})[c.media] || {}).at >= d30).length;   // 대기(줄·저장)는 뺌   // 대시보드 요약과 같은 기준(30일 안 게시물)
   const d7 = new Date(Date.now() - 7 * 864e5).toISOString(), d3 = new Date(Date.now() - 3 * 864e5).toISOString();
   const c7 = cs.filter(([, c]) => c.at >= d7);
   const r7 = c7.filter(([, c]) => myReplies(c).length).length;
@@ -359,7 +366,7 @@ function renderKpis(by, need, goingN) {
   const next = (S.st.pace || {}).next_at;
   const k = (l, v, sub = '', cls = '') => `<div class="kpi ${cls}"><div class="l">${l}</div><div class="v">${v}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>`;
   return `<div class="kpis">
-    ${k('답 필요 댓글', n(needC), '30일 안 게시물 · 내 답 없음', needC ? 'red' : '')}
+    ${k('답 필요 댓글', n(needC), '30일 안 · 손 안 댄 것', needC ? 'red' : '')}
     ${k('진행 중', goingN, goingN && next ? `다음 ${esc(hm(next))} 이후` : '자동 켠 게시물')}
     ${k('오늘 단 답글', todayPosted(), '자동·수동')}
     ${k('7일 맞팔 댓글', n(c7.length), `내 답 ${c7.length ? Math.round(r7 / c7.length * 100) : 0}%`)}
