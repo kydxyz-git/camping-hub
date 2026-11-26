@@ -283,6 +283,8 @@ function skipWhy(id, c) {   // 건너뜀: 화면에서 [건너뛰기] 누른 것
   if (c.status === 'skip' && c.why !== '화면에서 건너뜀' && c.why !== '메모: 제외') return c.why || '건너뜀';
   return '';
 }
+// 줄에 올리거나 고쳐 저장하면 그 게시물 자동도 켬 — 진행 중 = 자동 켠 게시물 (사용자 261126)
+function autoOn(d, id) { const m = ((S.st.comments || {})[id] || {}).media; if (!m) return; d.auto_media ||= {}; if (!d.auto_media[m]) d.auto_media[m] = kstNow(); if (d.mode === 'paused') { d.mode = 'on'; d.mode_at = kstNow(); } }
 function autoOff(c) { const n = (S.notes || {})[c.user]; return !!(n && n.includes('제외')); }
 function myReplies(c, withSb) {   // 내가 단 답글(직접·자동). 소셜비즈 자동 DM 답글은 withSb일 때만
   if (!S.tpl) S.tpl = new Set(S.st.tpl || []);
@@ -327,12 +329,12 @@ function renderPosts() {
   for (const [id, c] of Object.entries(S.st.comments || {})) (by[c.media] ||= []).push([id, c]);
   if (S.post) return renderPost(S.post, by[S.post] || []);
   // 댓글 상태 셋 (사용자 261126 '제안 A'): 답 필요(손 안 댐) · ⏳ 대기(줄에 올림·수정 저장) · 다 함(답함·자동·건너뜀)
-  const waiting = (id, c) => !myReplies(c).length && !skipWhy(id, c) && !!((S.ctl.queue || {})[id] || (S.ctl.edits || {})[id]);
+  const waiting = (id, c) => !myReplies(c).length && !skipWhy(id, c) && !!(S.ctl.auto_media || {})[c.media] && !!((S.ctl.queue || {})[id] || (S.ctl.edits || {})[id]);   // 대기 = 자동 켠 게시물에서 줄에 올렸거나 고쳐 둔 것
   const wait = mid => (by[mid] || []).filter(([id, c]) => waiting(id, c)).length;
   const need = mid => (by[mid] || []).filter(([id, c]) => !myReplies(c).length && !skipWhy(id, c) && !waiting(id, c)).length;
   const auto = S.ctl.auto_media || {};
   const ms = Object.entries(S.st.media || {}).sort((a, b) => (b[1].at > a[1].at ? 1 : -1)).slice(0, 40);
-  const isGoing = mid => !!auto[mid] || wait(mid) > 0;   // 자동 켰거나 하나라도 손댄 게시물 = 진행 중
+  const isGoing = mid => !!auto[mid];   // 진행 중 = 자동 켠 게시물 (사용자 261126 '진행 중인 건 다 자동 시작인 거잖아') — 줄에 올리거나 고쳐 저장하면 자동도 켜짐
   const going = ms.filter(([mid]) => isGoing(mid)), open = ms.filter(([mid]) => !isGoing(mid) && need(mid)), done = ms.filter(([mid]) => !isGoing(mid) && !need(mid));
   // 유튜브 화면처럼 (사용자 261126 '인스타 화면도 유튜브처럼'): 위 숫자 칸 → 날짜별 막대 → 게시물 카드
   const card = ([mid, m], kind) => {
@@ -352,19 +354,19 @@ function renderPosts() {
       <div class="igc-b"><div class="igc-t" title="${esc(title)}">${esc(title)}</div>
         <div class="igc-m"><span>${esc(dayLabel(dayKey(m.at)))}</span>${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}<span class="r">💬${n(m.cc)}</span></div>
         <div class="rb"><div class="rb-t"><span>${kind === 'going' && on ? `자동 ${auto1}` : '내 답'}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${pct}%"></i></div></div>
-        ${kind === 'going' && on ? `<button class="btn red sm igc-stop" data-stop="${esc(mid)}">⏸ 자동 멈추기</button>` : ''}
+        ${kind === 'going' ? `<button class="btn red sm igc-stop" data-stop="${esc(mid)}">⏸ 자동 멈추기</button>` : ''}
       </div></div>`;
   };
   const grid = (list, kind) => `<div class="igrid">${list.map(x => card(x, kind)).join('')}</div>`;
-  return renderKpis(by, need, going.length) + renderDaily() +
-    (going.length ? `<div class="gh">🔄 진행 중 <span class="muted">${going.length} · 자동 켰거나 손댄 게시물 · ⏳ 대기는 줄에 올린 것부터 차례대로</span></div>` + grid(going, 'going') : '') +
+  return renderKpis(by, need, going.length) + renderDaily() + renderToday() +   // 오늘 다녀올 맞팔은 진행 중 위 (사용자 261126)
+    (going.length ? `<div class="gh">🔄 진행 중 <span class="muted">${going.length} · 자동 켠 게시물 — 줄에 올린 것 먼저, 그다음 게시물 상관없이 오래된 댓글부터</span></div>` + grid(going, 'going') : '') +
     (open.length ? `<div class="gh red">🔴 답 필요 <span class="muted">${open.length} · 체크해서 위 [자동 시작]</span></div>` + grid(open, 'open') : '') +
     (done.length ? `<button class="gh gh-tg" data-donetg>✅ 다 답함 <span class="muted">${done.length} · ${S.openDoneP ? '접기 ▴' : '펼치기 ▾'}</span></button>` + (S.openDoneP ? grid(done, 'done') : '') : '');   // 기본 접힘 (사용자 261126)
 }
 function renderKpis(by, need, goingN) {
   const cs = Object.entries(S.st.comments || {}), lt = S.st.latest || {};
   const d30 = new Date(Date.now() - 30 * 864e5).toISOString();
-  const needC = cs.filter(([id, c]) => !myReplies(c).length && !skipWhy(id, c) && !((S.ctl.queue || {})[id] || (S.ctl.edits || {})[id]) && ((S.st.media || {})[c.media] || {}).at >= d30).length;   // 대기(줄·저장)는 뺌   // 대시보드 요약과 같은 기준(30일 안 게시물)
+  const needC = cs.filter(([id, c]) => !myReplies(c).length && !skipWhy(id, c) && !((S.ctl.auto_media || {})[c.media] && ((S.ctl.queue || {})[id] || (S.ctl.edits || {})[id])) && ((S.st.media || {})[c.media] || {}).at >= d30).length;   // 대기(줄·저장)는 뺌   // 대시보드 요약과 같은 기준(30일 안 게시물)
   const d7 = new Date(Date.now() - 7 * 864e5).toISOString(), d3 = new Date(Date.now() - 3 * 864e5).toISOString();
   const c7 = cs.filter(([, c]) => c.at >= d7);
   const r7 = c7.filter(([, c]) => myReplies(c).length).length;
@@ -472,7 +474,8 @@ function renderCands() {
   const cut = new Date(Date.now() - 30 * 864e5).toISOString(), mut = new Set(S.mut);
   const cs = Object.entries(S.st.others || {}).filter(([u, o]) => !mut.has(u) && o.last >= cut && o.posts.length >= 2)
     .map(([u, o]) => ({ user: u, posts: o.posts.length, n: o.c.length, last: o.last })).sort((a, b) => (b.posts - a.posts) || (b.n - a.n));
-  return `<div class="muted" style="margin:0 2px 8px">맞팔은 아닌데 최근 30일 내 게시물 2개 이상에 댓글 단 사람 ${cs.length}명 · 26.11.26부터 쌓는 중(일주일 안 게시물 댓글로) — 맞팔 목록(${esc(S.mutAt)})에 없으면 여기 나와요</div>` +
+  if (!cs.length) return '';   // 없으면 숨김 (맞팔 탭 맨 위라)
+  return `<div class="gh" style="margin-top:4px">🌱 맞팔 후보 <span class="muted">${cs.length}명 · 맞팔은 아닌데 최근 30일 내 게시물 2개 이상에 댓글 단 사람 (26.11.26부터 쌓는 중)</span></div>` +
     (cs.length ? `<div class="grid">${cs.map(u => `<a class="pcard ${opened(u.user, u.last) ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}">
       <div class="pu">@${esc(u.user)}</div><div class="pn"><span>게시물 ${u.posts}개 · 댓글 ${u.n}</span></div><div class="pn"><span>${ago(u.last)}</span><span class="nb" data-note="${esc(u.user)}">✎</span></div>${noteMini(u.user)}</a>`).join('')}</div>` : '<div class="card muted">아직 없어요 — 며칠 쌓이면 나와요</div>');
 }
@@ -538,7 +541,7 @@ function renderPeople() {
       <span class="avw">${avatar(u.user)}${nw ? '<i class="nd"></i>' : ''}</span><span class="ub-n">@${esc(u.user)}</span><span class="ub-c">💬${u.n}</span>
       ${note ? `<span class="pb-i" title="${esc(note)}">${note.includes('제외') ? '🙅' : '📝'}</span>` : ''}<span class="nb" data-note="${esc(u.user)}" title="메모">✎</span>${v ? `<span class="ck" data-undo="${esc(u.user)}" title="열어 봄 취소">✓</span>` : ''}</a>`;
   };
-  return renderToday() + renderStats() + `<div class="gh" style="margin-top:4px">💬 최근 7일 나한테 댓글 단 맞팔 <span class="muted">${all.length}명 · 아직 안 연 ${notOpen}명</span></div><div class="muted" style="margin:0 2px 8px">누르면 프로필이 열리고 ✓(열어 봄)가 붙어요 · 마우스를 올리면 댓글 내용 · 🟢 = 24시간 안 새 글</div>` +
+  return renderCands() + renderStats() + `<div class="gh" style="margin-top:4px">💬 최근 7일 나한테 댓글 단 맞팔 <span class="muted">${all.length}명 · 아직 안 연 ${notOpen}명</span></div><div class="muted" style="margin:0 2px 8px">누르면 프로필이 열리고 ✓(열어 봄)가 붙어요 · 마우스를 올리면 댓글 내용 · 🟢 = 24시간 안 새 글</div>` +
     days.map(d => {
       const us = groups[d].sort((a, b) => (+(S.visits[a.user] >= a.last) - +(S.visits[b.user] >= b.last)) || (b.n - a.n));
       return `<div class="gh">${esc(dayLabel(d))} <span class="muted">${us.length}명</span></div><div class="ubs">${us.map(badge).join('')}</div>`;
@@ -555,18 +558,19 @@ function go(tab, post, replace) {
 }
 function fromHash() {
   const [t, p] = (location.hash || '').slice(1).split('/');
-  if (['posts', 'people', 'quiet', 'cands'].includes(t)) { S.tab = t; S.post = p || null; return true; }
+  if (['posts', 'people', 'quiet', 'cands'].includes(t)) { S.tab = t === 'cands' ? 'people' : t; S.post = p || null; return true; }   // 예전 #cands 주소는 맞팔 탭으로
   return false;
 }
 addEventListener('popstate', () => { if (history.state && history.state.knLayer) return; if (fromHash() || !location.hash) { if (!location.hash) S.post = null; if (S.st) render(); } });
 function render() {
   renderMode();
-  const TABS = [['posts', '📝 게시물'], ['people', '💬 맞팔'], ['quiet', '💤 조용한 맞팔'], ['cands', '🌱 맞팔 후보']];
+  const TABS = [['posts', '📝 게시물'], ['people', '💬 맞팔'], ['quiet', '💤 조용한 맞팔']];   // 맞팔 후보는 맞팔 탭 맨 위로 (사용자 261126)
   if (window.kydzNav) kydzNav.setSub(TABS.map(([key, label]) => ({ key, label })), S.tab, k => go(k));
   $('#tabs').innerHTML = TABS.map(([k, t]) => `<button class="btn ${S.tab === k ? 'on' : ''}" data-tab="${k}">${t}</button>`).join('');
   $('#tabs').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => go(b.dataset.tab));
-  if (!['posts', 'people', 'quiet', 'cands'].includes(S.tab)) S.tab = 'posts';
-  $('#main').innerHTML = S.tab === 'posts' ? renderPosts() : S.tab === 'people' ? renderPeople() : S.tab === 'quiet' ? renderQuiet() : renderCands();
+  if (S.tab === 'cands') S.tab = 'people';
+  if (!['posts', 'people', 'quiet'].includes(S.tab)) S.tab = 'posts';
+  $('#main').innerHTML = S.tab === 'posts' ? renderPosts() : S.tab === 'people' ? renderPeople() : renderQuiet();
   loadShots();
   $('#main').querySelectorAll('[data-post]').forEach(b => b.onclick = e => { if (e.target.closest('[data-sel],[data-stop]')) return; go('posts', b.dataset.post); });
   $('#main').querySelectorAll('[data-sel]').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); const m = b.dataset.sel; S.sel.has(m) ? S.sel.delete(m) : S.sel.add(m); render(); });
@@ -593,7 +597,7 @@ function render() {
   });
   $('#main').querySelectorAll('[data-stop]').forEach(b => b.onclick = async e => {
     e.stopPropagation(); const m = b.dataset.stop; b.disabled = true;
-    try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { if (d.auto_media) delete d.auto_media[m]; }, 'ig(admin): 대댓글 멈춤'); render(); toast('이 게시물 자동 멈춤'); }
+    try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { if (d.auto_media) delete d.auto_media[m]; for (const id of Object.keys(d.queue || {})) if (((S.st.comments || {})[id] || {}).media === m) delete d.queue[id]; }, 'ig(admin): 대댓글 멈춤'); render(); toast('이 게시물 자동 멈춤 — 줄에 올린 것도 뺐어요 (고친 글은 남아요)'); }   // 멈추면 줄에서도 뺌 (261126)
     catch (er) { alert(er.message); b.disabled = false; }
   });
   $('#main').querySelectorAll('[data-back]').forEach(b => b.onclick = () => { if (history.state && history.state.kd) history.back(); else go('posts', null, true); });
@@ -611,14 +615,14 @@ function render() {
   $('#main').querySelectorAll('[data-save]').forEach(b => b.onclick = async () => {
     const id = b.dataset.save, t = $(`[data-edit="${id}"]`).value.trim(); if (!t) return;
     b.disabled = true;
-    try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { (d.edits ||= {})[id] = t; d.skip = (d.skip || []).filter(x => x !== id); }, 'ig(admin): 대댓글 수정'); b.textContent = '저장됨'; } catch (e) { alert(e.message); b.disabled = false; }
+    try { S.ctl = await writeJson('state/ig_comments_ctl.json', d => { (d.edits ||= {})[id] = t; d.skip = (d.skip || []).filter(x => x !== id); autoOn(d, id); }, 'ig(admin): 대댓글 수정'); b.textContent = '저장됨'; } catch (e) { alert(e.message); b.disabled = false; }
   });
   // [댓글 달기] = 줄에 올림 (사용자 261126 '바로 달지 말고 큐에 쌓아 지금 자동으로 돌리는 거에 같이') — 봇이 10~40분 간격으로, 줄에 올린 것 먼저
   $('#main').querySelectorAll('[data-postnow]').forEach(b => b.onclick = async () => {
     const id = b.dataset.postnow, t = $(`[data-edit="${id}"]`).value.trim(); if (!t) { alert('답글을 써 주세요'); return; }
     b.disabled = true;
     try {
-      S.ctl = await writeJson('state/ig_comments_ctl.json', d => { (d.edits ||= {})[id] = t; (d.queue ||= {})[id] = kstNow(); d.skip = (d.skip || []).filter(x => x !== id); }, 'ig(admin): 대댓글 줄에 올림');
+      S.ctl = await writeJson('state/ig_comments_ctl.json', d => { (d.edits ||= {})[id] = t; (d.queue ||= {})[id] = kstNow(); d.skip = (d.skip || []).filter(x => x !== id); autoOn(d, id); }, 'ig(admin): 대댓글 줄에 올림');
       render(); toast('줄에 올렸어요 — 차례대로 달려요');
     } catch (e) { alert(e.message); b.disabled = false; }
   });
