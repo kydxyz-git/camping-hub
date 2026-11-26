@@ -116,6 +116,9 @@
   .igc-ck { position:absolute; left:0; top:0; padding:6px; cursor:pointer; }
   .igc-ck input { width:19px; height:19px; pointer-events:none; accent-color:var(--danger); }
   .igc-reel { position:absolute; right:5px; top:5px; width:20px; height:20px; border-radius:50%; background:rgba(0,0,0,.55); color:#fff; font-size:9px; display:flex; align-items:center; justify-content:center; padding-left:2px; box-sizing:border-box; pointer-events:none; }
+  .gh-tg { background:none; border:0; color:inherit; font:inherit; font-weight:700; cursor:pointer; padding:0; display:block; text-align:left; }
+  .gh-tg:hover .muted { color:var(--text); }
+  .igc-skip { position:absolute; right:5px; bottom:25px; font-size:10.5px; font-weight:700; padding:1px 6px; border-radius:99px; background:rgba(110,110,110,.85); color:#fff; white-space:nowrap; pointer-events:none; }   /* 건너뜀은 썸네일 오른쪽 아래, 답 필요 뱃지 위  (사용자 261126 '눈에 안 띄네') */
   .rb-sk { font-style:normal; font-size:10px; color:var(--muted); opacity:.75; margin-left:5px; white-space:nowrap; }
   .igc-badge { position:absolute; right:5px; bottom:5px; font-size:10.5px; font-weight:700; padding:1px 6px; border-radius:99px; background:rgba(0,0,0,.65); color:#fff; }
   .igc-badge.red { background:var(--danger); } .igc-badge.go { background:var(--success, var(--ok)); }
@@ -300,11 +303,12 @@ function renderPosts() {
     return `<div class="igc ${kind} ${sel ? 'sel' : ''}" data-post="${esc(mid)}">
       <div class="igc-img">${shotImg(m, `onerror="this.style.visibility='hidden'"`)}
         ${kind === 'open' ? `<label class="igc-ck" data-sel="${esc(mid)}" title="골라서 자동 시작"><input type="checkbox" ${sel ? 'checked' : ''} tabindex="-1"></label>` : ''}
+        ${nSk ? `<span class="igc-skip" title="건너뛴 댓글 — 다 한 것으로 셈">⏭ 건너뜀 ${nSk}</span>` : ''}
         ${S.mtype[mid] === 'VIDEO' ? '<span class="igc-reel" title="릴스">▶</span>' : ''}
         ${kind === 'going' ? '<span class="igc-badge go">🔄 진행 중</span>' : nd ? `<span class="igc-badge red">답 필요 ${nd}</span>` : '<span class="igc-badge ok">✅ 다 답함</span>'}</div>
       <div class="igc-b"><div class="igc-t" title="${esc(title)}">${esc(title)}</div>
         <div class="igc-m"><span>${esc(dayLabel(dayKey(m.at)))}</span>${sp ? `<span class="tag or">${sp}</span>` : ''}${chk ? `<span class="tag red">확인 ${chk}</span>` : ''}<span class="r">💬${n(m.cc)}</span></div>
-        <div class="rb"><div class="rb-t"><span>${kind === 'going' ? `자동 ${auto1}` : '내 답'}${nSk ? `<em class="rb-sk">건너뜀 ${nSk}</em>` : ''}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${pct}%"></i></div></div>
+        <div class="rb"><div class="rb-t"><span>${kind === 'going' ? `자동 ${auto1}` : '내 답'}</span><b>${got}<small>/${cs.length}</small></b></div><div class="rb-k"><i class="${got >= cs.length ? 'full' : ''}" style="width:${pct}%"></i></div></div>
         ${kind === 'going' ? `<button class="btn red sm igc-stop" data-stop="${esc(mid)}">⏸ 멈추기</button><div class="muted" style="text-align:center;font-size:11px;margin-top:3px">남은 ${nd}</div>` : ''}
       </div></div>`;
   };
@@ -312,7 +316,7 @@ function renderPosts() {
   return renderKpis(by, need, going.length) + renderDaily() +
     (going.length ? `<div class="gh">🔄 대댓글 진행 중 <span class="muted">${going.length} · 오래된 댓글부터 하나씩</span></div>` + grid(going, 'going') : '') +
     (open.length ? `<div class="gh red">🔴 답 필요 <span class="muted">${open.length} · 체크해서 위 [자동 시작]</span></div>` + grid(open, 'open') : '') +
-    (done.length ? `<div class="gh">✅ 다 답함 <span class="muted">${done.length}</span></div>` + grid(done, 'done') : '');
+    (done.length ? `<button class="gh gh-tg" data-donetg>✅ 다 답함 <span class="muted">${done.length} · ${S.openDoneP ? '접기 ▴' : '펼치기 ▾'}</span></button>` + (S.openDoneP ? grid(done, 'done') : '') : '');   // 기본 접힘 (사용자 261126)
 }
 function renderKpis(by, need, goingN) {
   const cs = Object.entries(S.st.comments || {}), lt = S.st.latest || {};
@@ -542,6 +546,7 @@ function render() {
     render();
     try { await writeJson('state/ig_visits.json', d => { d.visits ||= {}; if (val) d.visits[u] = val; else delete d.visits[u]; }, 'ig(admin): 맞팔 열어 봄'); } catch (e) { alert(e.message); }
   };
+  $('#main').querySelectorAll('[data-donetg]').forEach(b => b.onclick = () => { S.openDoneP = !S.openDoneP; render(); });
   $('#main').querySelectorAll('[data-qsort]').forEach(b => b.onclick = () => { S.quietOld = !S.quietOld; render(); });
   $('#main').querySelectorAll('[data-more]').forEach(b => b.onclick = () => { S.statsAll = !S.statsAll; render(); });
   $('#main').querySelectorAll('[data-note]').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); noteEdit(b, b.dataset.note); });
