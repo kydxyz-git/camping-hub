@@ -1064,14 +1064,12 @@
 .cp-src-r.on{background:var(--pri-bg);color:var(--pri-fg)}
   .cpc-c { flex: 1; min-width: 0; height: 100%; display: flex; align-items: flex-end; cursor: default; }
   .cpc-c .cp-bar { width: 100%; background: var(--success); opacity: .75; border-radius: 3px 3px 0 0; transition: opacity .12s, filter .12s, transform .12s; transform-origin: bottom; }
-  /* 막대 눌러 그 칸만 아래 목록에 (사용자 261126) — 올리면 밝게, 누르면 살짝 눌림, 고른 칸 말고는 흐리게 */
+  /* 막대 눌러 그 칸만 아래 목록에 (사용자 261126) — 올리면 밝게, 누르면 살짝 눌림, 고른 칸 말고는 흐리게. 칸 전체 회색 바탕은 막대 높이처럼 보여서 뺌 */
   .cpc-c[data-k] { cursor: pointer; }
   .cpc-c[data-k]:hover .cp-bar { opacity: 1; filter: brightness(1.18); }
-  .cpc-c[data-k]:hover { background: color-mix(in srgb, var(--text) 6%, transparent); border-radius: 4px 4px 0 0; }
   .cpc-c[data-k]:active .cp-bar { transform: scaleY(.96); filter: brightness(1.3); }
   .cpc.has-sel .cpc-c:not(.sel) .cp-bar { opacity: .28; }
   .cpc-c.sel .cp-bar { opacity: 1; box-shadow: 0 0 0 2px var(--text); }
-  .cpc-c.sel { background: color-mix(in srgb, var(--text) 9%, transparent); border-radius: 4px 4px 0 0; }
   .cp-selbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 8px; padding: 8px 12px; border-radius: 10px; background: var(--soft); font-size: 13px; }
   .cpc-x { display: flex; gap: 3px; margin-top: 4px; }
   .cpc-x span { flex: 1; min-width: 0; font-size: 10.5px; color: var(--muted); text-align: center; white-space: nowrap; overflow: visible; }
