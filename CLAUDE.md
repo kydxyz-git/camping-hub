@@ -86,6 +86,7 @@ PC 코드가 관리하는 **드라이브 `☆CLAUDE/AI 공통 기억/공통기�
   - 예외: 직접 찍은 사진(네 모서리가 모두 밝지 않음)은 흰 여백 없이 가운데 정사각형으로 꽉 채움 — admin `fitProductImage`가 자동 판단 (261031)
 - 이미지 교체 시 **새 파일명**으로 저장하고 해당 JSON의 `thumb`·`updated_at` 갱신 (캐시 무효화). 참조 없어진 이전 파일은 삭제.
 - 시리즈(`images/series`)·캠핑장(`images/camps`)은 기존 파일 규격을 따른다.
+- **폰용 작은 사진 `images/m/{series,camps,products}/같은 이름.jpg`** (가로 320px, 품질 72 — 261126 사용자 '사진 용량 줄이되 PC·모바일 따로'): `tools/make_mobile_images.py`를 build-pages 작업이 사진·데이터가 바뀔 때마다 돌려 없는 것만 만들고 원본이 지워지면 같이 지움. 메인 `index.html` 폰 화면은 `mImg()`로 작은 판을 쓰고 없으면 `mImgErr()`가 원본으로 다시 받음. PC는 원본. 직접 고치지 말 것(생성물). 폰 첫 방문 8.4MB → 2.6MB.
 
 ## 검색 노출 (정적 페이지)
 

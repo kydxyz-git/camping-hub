@@ -29,6 +29,16 @@
     if (q.indexOf('p=1') > -1) isPhone = false;
     document.documentElement.className += isPhone ? ' is-mo' : ' is-pc';
   })();
+  // 폰은 작은 사진(images/m/…, 가로 320px — tools/make_mobile_images.py가 만듦), PC는 원본 (사용자 261126 '사진 용량 줄이되 PC·모바일 따로')
+  // 작은 판이 아직 없으면(방금 올린 사진 등) 원본으로 다시 받음
+  window.mImg = function (s) {
+    if (!s || !document.documentElement.classList.contains('is-mo')) return s;
+    return String(s).replace(/(^|\/)images\/(series|camps|products)\/([^\/?#]+?)\.(?:jpe?g|png|webp)(?=[?#]|$)/i, '$1images/m/$2/$3.jpg');
+  };
+  window.mImgErr = function (img, orig, rm) {
+    if (!img.dataset.f && img.src.indexOf('/images/m/') > -1) { img.dataset.f = '1'; img.src = orig; }
+    else if (rm) img.remove();
+  };
   </script>
   <link rel="canonical" href="https://kydz.kr/">
   
@@ -1779,7 +1789,7 @@ function renderSeries() {
               const trackAttrs = `data-track-path="${trackPath}" data-track-title="${trackTitle}"`;
               return `<${tag} class="ep-card" ${attr} ${trackAttrs}>
                 <div class="ep-thumb${empty?' empty':''}">
-                  ${ep.thumb ? `<img src="${ep.thumb}" loading="lazy">` : `<div class="ep-thumb-ph">${PH_SVG}</div>`}
+                  ${ep.thumb ? `<img src="${mImg(ep.thumb)}" loading="lazy" onerror="mImgErr(this,'${ep.thumb}')">` : `<div class="ep-thumb-ph">${PH_SVG}</div>`}
                   ${epBadge}
                   ${isInsta ? `<div class="ep-ig">${IG_SVG}</div>` : ''}
                 </div>
@@ -1954,7 +1964,7 @@ function productCardHtml(item, trackCategory) {
     : Number(n).toLocaleString() + '원';
   return `<${empty?'div':'a'} class="product-card${empty?' empty':''}" ${empty?`role="button" tabindex="0" data-nolink="${trackTitle}"`:`href="${item.url}" target="_blank" rel="noopener"`} ${trackAttrs}>
       <div class="product-thumb${item.thumb?'':' ph'}">
-        ${item.thumb ? `<img src="${item.thumb}${item.updated_at ? '?v=' + new Date(item.updated_at).getTime() : ''}" loading="lazy" alt="${item.name}">` : `${PH_SVG}<span>이미지</span>`}
+        ${item.thumb ? `<img src="${mImg(item.thumb)}${item.updated_at ? '?v=' + new Date(item.updated_at).getTime() : ''}" loading="lazy" alt="${item.name}" onerror="mImgErr(this,'${item.thumb}')">` : `${PH_SVG}<span>이미지</span>`}
         ${bl ? `<span class="source-badge ${bc}">${bl}</span>` : (empty && trackCategory === 'items' ? `<span class="source-badge badge-listonly">List only</span>` : '')}
         ${item.pick ? `<span class="pick-badge" title="공대남자 PICK">${
           Array.from({length: Math.min(3, Math.max(1, Number(item.pick) || 1))}, () =>
@@ -2086,7 +2096,7 @@ function renderGrid() {
   const NOIMG_GRAD = {'바다':['#ddeef7','#c8e4f2'],'강':['#d8eef0','#c2e3e6'],'계곡':['#daeee0','#c5e5cd'],'호수':['#d8ecf4','#c2e0ed'],'숲':['#dceae0','#c8e0cc'],'산':['#ebebdf','#deded0']};
   function campThumb(c) {
     const hasImg = c.imgs && c.imgs.length;
-    if (hasImg) return c.imgs.map((src,j)=>`<img src="${src}" loading="lazy" style="opacity:${j===0?1:0}" onerror="this.remove()">`).join('');
+    if (hasImg) return c.imgs.map((src,j)=>`<img src="${mImg(src)}" loading="lazy" style="opacity:${j===0?1:0}" onerror="mImgErr(this,'${src}',1)">`).join('');
     const ls = '산';
     const [g1, g2] = NOIMG_GRAD[ls] || ['#5a6040','#8a9060'];
     const nm = c.name.replace(/오토캠핑장|캠핑빌리지/g,'').replace(/펜션&|&펜션/g,'').trim();

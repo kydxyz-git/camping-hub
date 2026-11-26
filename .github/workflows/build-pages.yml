@@ -1,4 +1,4 @@
-# admin이 data/*.json을 저장하면 검색엔진용 정적 페이지·sitemap을 다시 만들어 main에 커밋한다.
+# admin이 data/*.json·사진을 저장하면 검색엔진용 정적 페이지·sitemap과 폰용 작은 사진(images/m)을 다시 만들어 main에 커밋한다.
 name: build-pages
 
 on:
@@ -11,6 +11,10 @@ on:
       - 'data/series.json'
       - 'data/config.json'
       - 'tools/build_pages.py'
+      - 'tools/make_mobile_images.py'
+      - 'images/series/**'
+      - 'images/camps/**'
+      - 'images/products/**'
       - '.github/workflows/build-pages.yml'
   workflow_dispatch:
 
@@ -34,11 +38,15 @@ jobs:
           python-version: '3.12'
       - name: Build static pages
         run: python3 tools/build_pages.py
+      - name: 폰용 작은 사진 (images/m, 사용자 261126 'PC·모바일 따로')
+        run: |
+          pip install --quiet pillow
+          python3 tools/make_mobile_images.py
       - name: Commit & push if changed
         run: |
           git config user.name "kydz-build"
           git config user.email "actions@users.noreply.github.com"
-          git add -A camps gear foods sitemap.xml index.html
+          git add -A camps gear foods sitemap.xml index.html images/m
           if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
           git commit -m "chore(build): 정적 페이지·sitemap 자동 갱신"
           # admin·통계 커밋이 그 사이 들어오면 최신 main 위에 다시 만들어 올린다
@@ -46,7 +54,8 @@ jobs:
             git push origin HEAD:main && exit 0
             git fetch origin main && git reset --hard origin/main
             python3 tools/build_pages.py
-            git add -A camps gear foods sitemap.xml index.html
+            python3 tools/make_mobile_images.py
+            git add -A camps gear foods sitemap.xml index.html images/m
             git diff --cached --quiet && exit 0
             git commit -m "chore(build): 정적 페이지·sitemap 자동 갱신"
             sleep $((i*3))
