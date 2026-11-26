@@ -409,7 +409,7 @@ function renderPosts() {
 }
 // 인스타 API 남은 양을 배터리처럼 — 탭 줄 오른쪽 (사용자 261126 '사용량 저렇게 하지 말고 조용한 맞팔 오른쪽에 배터리 게이지로'). 사용률은 응답 헤더 기준, 댓글·DM 중 큰 쪽
 // 달릴 차례 줄 (봇 post_one과 같은 순서: [댓글 달기]로 줄에 올린 것 먼저(올린 순), 그다음 자동 켠 게시물에서 고쳐 저장한 것(댓글 오래된 순))
-// 예상 시각 = 다음 차례(pace.next_at)부터 평균 6분 간격, 7~22시대만(봇과 같음, 사용자 261127 '7시부터 시작해도 돼') — 간격이 무작위라 '쯤' (사용자 261126 '올릴 것들 일괄로 · 칸 차지 말고')
+// 예상 시각 = 다음 차례(pace.next_at)부터 평균 6분 간격, 7~23시대만(봇과 같음, 사용자 261127 '7시부터 시작해도 돼'·'23시까지 해') — 간격이 무작위라 '쯤' (사용자 261126 '올릴 것들 일괄로 · 칸 차지 말고')
 function queueList() {
   const q = S.ctl.queue || {}, ed = S.ctl.edits || {}, au = S.ctl.auto_media || {}, sk = new Set(S.ctl.skip || []);
   const L = Object.entries(S.st.comments || {}).filter(([id, c]) => c.status !== 'posted' && !sk.has(id) && !myReplies(c).length && (q[id] || (ed[id] && au[c.media])))
@@ -418,7 +418,7 @@ function queueList() {
   return L.map(([id, c]) => {
     let d = new Date(t + 9 * 3600e3); const h = d.getUTCHours();
     if (h < 7) { d.setUTCHours(7, 0, 0, 0); t = d.getTime() - 9 * 3600e3; }
-    else if (h >= 23) { d.setUTCDate(d.getUTCDate() + 1); d.setUTCHours(7, 0, 0, 0); t = d.getTime() - 9 * 3600e3; }
+    else if (h >= 24) { d.setUTCDate(d.getUTCDate() + 1); d.setUTCHours(7, 0, 0, 0); t = d.getTime() - 9 * 3600e3; }
     const eta = new Date(t + 9 * 3600e3), today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
     const lab = (eta.toISOString().slice(0, 10) === today ? '' : eta.toISOString().slice(0, 10) === new Date(Date.now() + 33 * 3600e3).toISOString().slice(0, 10) ? '내일 ' : eta.toISOString().slice(5, 10).replace('-', '/') + ' ') + eta.toISOString().slice(11, 16);
     t += 6 * 60e3;   // 평균 6분 간격 (사용자 261126 시간당 10개)
