@@ -36,7 +36,11 @@
   const css = `
   :root{--kn-w:0px;--kn-bg:#fff;--kn-side:#f7f7f5;--kn-text:#1a1a1a;--kn-muted:#6e6e6e;--kn-line:#e5e5e5;--kn-soft:#ececea;--kn-hi:#fff3b0;--kn-card:#fff}
   @media (prefers-color-scheme: dark){:root{--kn-bg:#1d1f1d;--kn-side:#181a18;--kn-text:#ececea;--kn-muted:#9a9e98;--kn-line:#343834;--kn-soft:#2c302c;--kn-hi:#3d3816;--kn-card:#262926}}
-  @media (min-width:760px){:root{--kn-w:200px} body{padding-left:var(--kn-w)!important}}
+  /* 틀 (사용자 261126 '화면에 따라 메뉴가 왼쪽에 붙어 불편'): 메뉴+내용을 한 덩어리(최대 1440px)로 창 가운데 */
+  :root{--kn-shell:1440px;--kn-gut:0px}
+  @media (min-width:760px){:root{--kn-w:200px;--kn-gut:max(0px,calc((100vw - var(--kn-shell)) / 2))}
+    body{padding-left:calc(var(--kn-gut) + var(--kn-w))!important;padding-right:var(--kn-gut)!important;box-sizing:border-box}
+    .kn-side{left:var(--kn-gut)!important}}
   .kn-side,.kn-bar,.kn-dd{font:14px/1.3 -apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:var(--kn-text)}
   .kn-side{position:fixed;top:0;bottom:0;left:0;width:200px;z-index:9100;background:var(--kn-side);border-right:1px solid var(--kn-line);overflow-y:auto;padding:10px 8px 24px;padding-top:calc(10px + env(safe-area-inset-top));box-sizing:border-box}
   .kn-side a{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;color:inherit;text-decoration:none}
@@ -50,7 +54,7 @@
   .kn-side .ic{width:20px;text-align:center;flex:none}
   .kn-shade{position:fixed;inset:0;z-index:9099;background:rgba(0,0,0,.35);display:none}
   @media (max-width:759px){.kn-side{transform:translateX(-105%);transition:transform .2s;width:260px;visibility:hidden} .kn-side.on{transform:none;visibility:visible;box-shadow:4px 0 20px rgba(0,0,0,.25)} .kn-shade.on{display:block}}
-  .kn-bar{position:relative;z-index:9000;display:flex;align-items:center;gap:2px;min-height:44px;padding:0 8px;padding-top:env(safe-area-inset-top);background:var(--kn-bg);border-bottom:1px solid var(--kn-line);overflow-x:auto;scrollbar-width:none;box-sizing:border-box}
+  .kn-bar{position:sticky;top:0;z-index:9000;display:flex;align-items:center;gap:2px;min-height:44px;padding:0 8px;padding-top:env(safe-area-inset-top);background:var(--kn-bg);border-bottom:1px solid var(--kn-line);overflow-x:auto;scrollbar-width:none;box-sizing:border-box}
   .kn-bar::-webkit-scrollbar{display:none}
   .kn-bar button{flex:none;background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:6px 8px;border-radius:8px;white-space:nowrap}
   .kn-bar button:hover,.kn-bar button.open{background:var(--kn-soft)}
@@ -62,15 +66,14 @@
   .kn-dd{position:fixed;z-index:9200;min-width:170px;max-width:calc(100vw - 16px);max-height:70vh;overflow:auto;background:var(--kn-card);border:1px solid var(--kn-line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:4px}
   .kn-dd a,.kn-dd button{display:flex;gap:8px;align-items:center;width:100%;text-align:left;padding:9px 10px;border-radius:7px;border:0;background:none;color:inherit;font:inherit;text-decoration:none;cursor:pointer;box-sizing:border-box}
   .kn-dd a:hover,.kn-dd button:hover{background:var(--kn-soft)} .kn-dd .cur{background:var(--kn-hi);font-weight:700}
-  /* 폰: 위 메뉴 줄 고정 (사용자 261126) — 각 화면의 위에 붙는 줄은 그 아래로 */
-  @media (max-width:759px){
-    .kn-bar{position:sticky;top:0}
-    .topbar{top:44px!important}
-    .dash-nav{top:103px!important}
-    .tabs{top:44px!important}
-    .content-tabs,.save-bar{top:92px!important}
-    .savebar{top:94px!important}
-  }
+  /* 위 줄 하나로 (사용자 261126 '2번도 해'): 각 화면의 제목 줄은 숨기고 그 버튼은 위 줄 오른쪽으로. 위 줄은 늘 고정 → 각 화면의 붙는 줄은 그 아래 */
+  .kn-act{margin-left:auto;display:flex;align-items:center;gap:6px;flex:none;padding-left:8px}
+  .kn-act>*{flex:none}
+  .kn-act .topbar-btn,.kn-act .topbar-link,.kn-act button{padding:5px 10px!important;font-size:12.5px!important;border:1px solid var(--kn-line)!important;border-radius:8px!important;background:transparent!important;color:var(--kn-text)!important}
+  .kn-topbar-gone{display:none!important}
+  .dash-nav,.tabs,.content-tabs,.save-bar,.savebar,.topbar{top:44px!important}
+  /* 대시보드 가운데 메뉴 카드는 왼쪽 메뉴와 같아서 PC에선 뺌 (폰은 왼쪽 메뉴가 숨어 있어서 둠) */
+  @media (min-width:760px){.dash-groups{display:none!important}}
   .kn-hide{display:none!important}`;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -98,7 +101,9 @@
       h += `<button class="${sub ? '' : 'lv-last'}" data-lv="2">${esc(w[1][2])}<span class="car">▾</span></button>`;
       if (sub) { const c = sub.items.find(x => x.key === sub.cur); h += `<span class="sep">›</span><button class="lv-last" data-lv="3">${esc(c ? c.label : '')}<span class="car">▾</span></button>`; }
     }
+    const keep = bar.querySelector('.kn-act');
     bar.innerHTML = h;
+    if (keep) bar.appendChild(keep);
     bar.querySelector('[data-burger]').onclick = () => drawer(true);
     bar.querySelectorAll('[data-lv]').forEach(b => b.onclick = e => { e.stopPropagation(); dropdown(b, +b.dataset.lv); });
   }
@@ -125,6 +130,20 @@
 
   api.setSub = (items, cur, on) => { sub = items && items.length ? { items, cur, on } : null; renderBar(); };
 
+  function absorbTopbar() {   // 각 화면 제목 줄의 버튼을 위 줄로 옮기고 제목 줄은 숨김
+    const tb = document.querySelector('body > .topbar, .app > .topbar, #app > .topbar, body > div > .topbar');
+    if (!tb || tb.dataset.knDone) return;
+    tb.dataset.knDone = '1';
+    const act = document.createElement('div'); act.className = 'kn-act';
+    const dot = tb.querySelector('.save-dot'); if (dot) act.appendChild(dot);
+    [...tb.children].forEach(ch => {
+      if (ch.matches('.topbar-title, h1, h2') || ch.classList.contains('kn-hide')) return;
+      if (ch.matches('a, button')) { if (!ch.classList.contains('kn-hide')) act.appendChild(ch); return; }
+      [...ch.children].forEach(x => { if (!x.classList.contains('kn-hide')) act.appendChild(x); });
+    });
+    if (act.children.length) bar.appendChild(act);
+    tb.classList.add('kn-topbar-gone');
+  }
   const mount = () => {
     renderSide(); renderBar();
     document.body.prepend(bar); document.body.appendChild(shade); document.body.appendChild(side);
@@ -135,6 +154,7 @@
       if ((h === './' || h === 'index.html' || h === '/kydzm/') && /관리자|대시보드/.test(t) && t.length < 12) a.classList.add('kn-hide');
     });
     document.querySelectorAll('button[onclick*="index.html"]').forEach(b => { if (/관리자|대시보드/.test(b.textContent) && b.textContent.trim().length < 12) b.classList.add('kn-hide'); });
+    absorbTopbar();
   };
   if (document.body) mount(); else document.addEventListener('DOMContentLoaded', mount);
 })();

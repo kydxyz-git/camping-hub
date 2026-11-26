@@ -61,3 +61,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); }
 
 /* 스크롤바 (PC) */
 * { scrollbar-color: var(--line-strong) transparent; }
+
+/* 내용 폭 통일 (261126): 보통 화면 최대 1100px, 운영판은 넓게(자기 1400 유지) */
+.wrap, .container { max-width: 1100px; }
+body.kn-wide .wrap, body.kn-wide .container { max-width: none; }
