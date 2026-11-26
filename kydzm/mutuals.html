@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>맞팔 · kydz.kr</title>
+<title>인스타 · kydz.kr</title>
 <style>
   :root { --bg:#fff; --card:#fff; --text:#1a1a1a; --muted:#6e6e6e; --line:#e5e5e5; --soft:#f5f5f3; --danger:#e63946; --ok:#03c75a; --warn:#f59e0b; --brand:#FFE873; }
   @media (prefers-color-scheme: dark) { :root { --bg:#1d1f1d; --card:#262926; --text:#ececea; --muted:#9a9e98; --line:#343834; --soft:#2c302c; } }
@@ -31,18 +31,27 @@
   .banner.err { background:#fdecee; color:var(--danger); }
   .login { min-height:90vh; display:flex; align-items:center; justify-content:center; }
   input.pw { border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit; background:var(--bg); color:var(--text); }
+  .pc { cursor:pointer; padding:10px 12px; }
+  .gh { font-weight:700; margin:14px 2px 6px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:6px; }
+  .pcard { display:block; text-decoration:none; border:1px solid var(--line); border-radius:10px; padding:6px 7px; background:var(--card); min-width:0; }
+  .pcard.v { opacity:.45; }
+  .pu { font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pt { font-size:11px; color:var(--muted); line-height:1.3; height:2.6em; overflow:hidden; }
+  .pn { font-size:11px; color:var(--muted); display:flex; justify-content:space-between; min-height:14px; }
+  .ck { color:var(--ok); font-weight:700; padding:0 2px; }
 </style>
 </head>
 <body>
 <div class="login" id="login" style="display:none">
   <div class="card" style="width:300px">
-    <div style="font-weight:700;margin-bottom:8px">맞팔 · 관리자 전용</div>
+    <div style="font-weight:700;margin-bottom:8px">인스타 · 관리자 전용</div>
     <div class="row" style="flex-wrap:nowrap"><input type="password" class="pw" id="pw" placeholder="비밀번호"><button class="btn pri" id="pw-go">입장</button></div>
     <div class="muted" id="pw-err" style="display:none;color:var(--danger)">비밀번호가 올바르지 않습니다</div>
   </div>
 </div>
 <div class="wrap" id="app" style="display:none">
-  <div class="top"><h1>🤝 맞팔</h1><a class="btn" href="./">대시보드</a></div>
+  <div class="top"><h1>📸 인스타</h1><a class="btn" href="./">대시보드</a></div>
   <div id="mode"></div>
   <div class="tabs" id="tabs"></div>
   <div id="main"><div class="card muted">불러오는 중...</div></div>
@@ -57,8 +66,8 @@ const AUTH_KEY = 'kydz_admin_authed', TOKEN_KEY = 'kydz_cupas_gh_token';
 const RP = 'https://api.github.com/repos/kydxyz-git/cupas';
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const S = { st: null, visits: {}, vsha: '', ctl: {}, csha: '', tab: 'visit' };
-try { S.tab = localStorage.getItem('kydz_mutuals_tab') || 'visit'; } catch (e) {}
+const S = { st: null, visits: {}, ctl: {}, tab: 'posts', post: null };
+try { S.tab = localStorage.getItem('kydz_mutuals_tab') || 'posts'; } catch (e) {}
 
 function tok() { try { return localStorage.getItem(TOKEN_KEY) || localStorage.getItem('kydz_admin_gh_token') || ''; } catch (e) { return ''; } }
 async function sha256(t) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
@@ -89,22 +98,9 @@ async function load() {
   S.st = JSON.parse(st); S.visits = v.data.visits || {}; S.ctl = c.data;
 }
 
-function users() {
-  const m = {}, cut = new Date(Date.now() - 30 * 864e5).toISOString();
-  for (const [id, c] of Object.entries(S.st.comments || {})) {
-    const u = m[c.user] ||= { user: c.user, all: 0, d30: 0, last: '', lastMedia: '', pend: 0 };
-    u.all++; if (c.at >= cut) u.d30++;
-    if (c.at > u.last) { u.last = c.at; u.lastMedia = c.media; }
-    if (c.status === 'ready' || c.status === 'check') u.pend++;
-  }
-  return Object.values(m).map(u => ({ ...u, visited: S.visits[u.user] || '', todo: !(S.visits[u.user] >= u.last) }))
-    .sort((a, b) => (b.todo - a.todo) || (b.d30 - a.d30) || (b.all - a.all) || (b.last > a.last ? 1 : -1));
-}
-function postLink(mid) { return (S.st.media[mid] || {}).permalink || '#'; }
-
 function renderMode() {
   const st = S.st, m = st.mode;
-  const label = { sample: '🧪 말투 확인 중 — 아직 안 담', auto: '✅ 자동으로 다는 중', paused: '⛔ 멈춤' }[m] || m;
+  const label = { sample: '🧪 말투 확인 중 — 아직 안 담', auto: '✅ 맞팔 대댓글 자동으로 다는 중', paused: '⛔ 멈춤' }[m] || m;
   $('#mode').innerHTML = `<div class="banner ${m === 'paused' ? 'err' : ''}"><div class="row" style="justify-content:space-between"><b>${label}</b>
     <span class="row">${m !== 'auto' ? `<button class="btn pri" data-mode="auto">${m === 'paused' ? '다시 켜기' : '말투 OK — 자동 시작'}</button>` : '<button class="btn red" data-mode="paused">멈춤</button>'}</span></div>
     ${m === 'paused' && st.paused_reason ? `<div class="muted">${esc(st.paused_reason)}</div>` : ''}
@@ -117,42 +113,88 @@ function renderMode() {
   });
 }
 
-function renderVisit() {
-  const list = users();
-  const todo = list.filter(u => u.todo).length;
-  return `<div class="muted" style="margin:0 2px 8px">안 다녀온 맞팔 ${todo}명 · 위에서부터 자주 오는 순서 · 좋아요는 인스타 공식 기능이 없어 직접 눌러야 해요</div>` +
-    list.slice(0, 200).map(u => `<div class="card"><div class="row" style="justify-content:space-between">
-      <span class="row"><a class="u" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener">@${esc(u.user)}</a>
-      <span class="pill n">30일 ${u.d30} · 전체 ${u.all}</span>${u.todo ? '<span class="pill red">안 다녀옴</span>' : `<span class="pill ok">다녀옴 ${ago(u.visited)}</span>`}</span>
-      <button class="btn ${u.todo ? 'pri' : ''}" data-visit="${esc(u.user)}">${u.todo ? '다녀옴' : '다시'}</button></div>
-      <div class="muted">마지막 댓글 ${ago(u.last)} · <a href="${esc(postLink(u.lastMedia))}" target="_blank" rel="noopener">내 게시물 보기</a>${u.pend ? ` · 대댓글 대기 ${u.pend}` : ''}</div></div>`).join('');
+function dayKey(iso) { return new Date(new Date(iso).getTime() + 9 * 3600e3).toISOString().slice(0, 10); }
+function dayLabel(k) { const t = dayKey(new Date().toISOString()); const y = dayKey(new Date(Date.now() - 864e5).toISOString()); return k === t ? '오늘' : k === y ? '어제' : `${+k.slice(5, 7)}/${+k.slice(8, 10)}`; }
+function hm(iso) { return iso ? new Date(new Date(iso).getTime() + 9 * 3600e3).toISOString().slice(11, 16) : ''; }
+function postLink(mid) { return (S.st.media[mid] || {}).permalink || '#'; }
+function norm(t) { return String(t || '').replace(/@[\w.]+/g, '').replace(/[^\p{L}\p{N}_]/gu, '').toLowerCase(); }
+function myReplies(c, withSb) {   // 내가 단 답글(직접·자동). 소셜비즈 자동 DM 답글은 withSb일 때만
+  if (!S.tpl) S.tpl = new Set(S.st.tpl || []);
+  const out = (c.mine || []).map(r => ({ t: r.text, k: S.tpl.has(norm(r.text)) ? '소셜비즈' : '직접' })).filter(r => withSb || r.k !== '소셜비즈');
+  if (c.status === 'posted') out.push({ t: c.reply, k: '자동' });
+  return out;
 }
 
-function renderReplies() {
-  const cs = Object.entries(S.st.comments || {}).filter(([, c]) => ['ready', 'check', 'posted'].includes(c.status))
-    .sort((a, b) => ({ check: 0, ready: 1, posted: 2 }[a[1].status] - { check: 0, ready: 1, posted: 2 }[b[1].status]) || (b[1].at > a[1].at ? 1 : -1)).slice(0, 150);
-  if (!cs.length) return '<div class="card muted">아직 초안이 없어요</div>';
-  const edits = S.ctl.edits || {}, skip = new Set(S.ctl.skip || []);
-  return cs.map(([id, c]) => {
-    const tag = c.status === 'posted' ? `<span class="pill ok">달음 ${ago(c.posted_at)}</span>` : c.status === 'check' ? `<span class="pill red">확인 필요 · ${esc(c.why || '')}</span>` : skip.has(id) ? '<span class="pill">건너뜀 예약</span>' : `<span class="pill">대기 · ${esc((c.due_at || '').slice(5, 16).replace('T', ' '))} 뒤</span>`;
-    return `<div class="card"><div class="row" style="justify-content:space-between"><span class="row"><a class="u" href="https://www.instagram.com/${esc(c.user)}/" target="_blank" rel="noopener">@${esc(c.user)}</a>${tag}</span>
-      <a class="muted" href="${esc(postLink(c.media))}" target="_blank" rel="noopener">게시물 ${ago(c.at)}</a></div>
-      <div class="cm">${esc(c.text)}</div>
-      ${c.status === 'posted' ? `<div class="muted">↳ ${esc(c.reply)}</div>` : `<textarea rows="2" data-edit="${esc(id)}" placeholder="${c.status === 'check' ? '직접 쓸 답글 (비우면 안 담)' : ''}">${esc(edits[id] || c.reply || '')}</textarea>
-      <div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn" data-skip="${esc(id)}">건너뛰기</button><button class="btn pri" data-save="${esc(id)}">${c.status === 'check' ? '이 답글로 달기' : '수정 저장'}</button></div>`}</div>`;
+// ── 1번 탭: 내 게시물 ──
+function renderPosts() {
+  const by = {};
+  for (const [id, c] of Object.entries(S.st.comments || {})) (by[c.media] ||= []).push([id, c]);
+  const ms = Object.entries(S.st.media || {}).sort((a, b) => (b[1].at > a[1].at ? 1 : -1)).slice(0, 40);
+  if (S.post) return renderPost(S.post, by[S.post] || []);
+  return ms.map(([mid, m]) => {
+    const cs = by[mid] || [];
+    const done = cs.filter(([, c]) => myReplies(c).length).length;
+    const chk = cs.filter(([, c]) => c.status === 'check').length;
+    const title = (m.cap || '').replace(/^\((협찬|광고)\)\s*/, '').split('\n')[0].slice(0, 40) || '(글 없음)';
+    return `<div class="card pc" data-post="${esc(mid)}"><div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <div style="min-width:0"><div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)}</div><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(title)}</div></div>
+      <div style="text-align:right;flex:none"><div class="n"><b>${m.cc}</b> <span class="muted">전체</span> · <b>${cs.length}</b> <span class="muted">맞팔</span></div>
+      <div class="muted n">내 답 ${done}/${cs.length}${chk ? ` · <span style="color:var(--danger)">확인 ${chk}</span>` : ''}</div></div></div></div>`;
   }).join('');
+}
+function renderPost(mid, cs) {
+  const m = S.st.media[mid] || {}, edits = S.ctl.edits || {}, skip = new Set(S.ctl.skip || []);
+  cs.sort((a, b) => (b[1].at > a[1].at ? 1 : -1));
+  return `<div class="row" style="justify-content:space-between;margin-bottom:8px"><button class="btn" data-back>← 게시물</button><a class="btn" href="${esc(m.permalink || '#')}" target="_blank" rel="noopener">인스타에서 보기</a></div>
+    <div class="card"><div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)} · 전체 댓글 ${m.cc} · 맞팔 ${cs.length}</div><div style="white-space:pre-line;max-height:4.5em;overflow:hidden">${esc((m.cap || '').slice(0, 200))}</div></div>` +
+    (cs.length ? cs.map(([id, c]) => {
+      const mine = myReplies(c, true), real = mine.filter(r => r.k !== '소셜비즈');
+      const draft = ['ready', 'check'].includes(c.status) && !real.length;
+      return `<div class="card"><div class="row" style="justify-content:space-between"><a class="u" href="https://www.instagram.com/${esc(c.user)}/" target="_blank" rel="noopener">@${esc(c.user)}</a><span class="muted">${esc(dayLabel(dayKey(c.at)))} ${hm(c.at)}</span></div>
+        <div class="cm">${esc(c.text)}</div>
+        ${mine.map(r => `<div class="muted">↳ <span class="pill ${r.k === '자동' ? 'ok' : ''}">${r.k}</span> ${esc(r.t)}</div>`).join('')}
+        ${draft ? `<div class="muted">${c.status === 'check' ? `<span class="pill red">확인 필요 · ${esc(c.why || '')}</span>` : skip.has(id) ? '<span class="pill">건너뜀</span>' : `<span class="pill">대기 · ${esc((c.due_at || '').slice(11, 16))} 뒤</span>`}</div>
+          <textarea rows="2" data-edit="${esc(id)}" placeholder="${c.status === 'check' ? '직접 쓸 답글 (비우면 안 담)' : ''}">${esc(edits[id] || c.reply || '')}</textarea>
+          <div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn" data-skip="${esc(id)}">건너뛰기</button><button class="btn pri" data-save="${esc(id)}">${c.status === 'check' ? '이 답글로 달기' : '수정 저장'}</button></div>` : (!real.length ? '<div class="muted">↳ 아직 없음</div>' : '')}</div>`;
+    }).join('') : '<div class="card muted">이 게시물엔 맞팔 댓글이 없어요</div>');
+}
+
+// ── 2번 탭: 최근 나에게 댓글 단 맞팔 (날짜별 묶음, 작은 카드) ──
+function renderPeople() {
+  const cut = new Date(Date.now() - 7 * 864e5).toISOString(), m = {};
+  for (const c of Object.values(S.st.comments || {})) {
+    if (c.at < cut) continue;
+    const u = m[c.user] ||= { user: c.user, n: 0, last: '', text: '' };
+    u.n++; if (c.at > u.last) { u.last = c.at; u.text = c.text; }
+  }
+  const groups = {};
+  Object.values(m).forEach(u => (groups[dayKey(u.last)] ||= []).push(u));
+  const days = Object.keys(groups).sort().reverse();
+  if (!days.length) return '<div class="card muted">최근 7일 맞팔 댓글이 없어요</div>';
+  return `<div class="muted" style="margin:0 2px 8px">누르면 프로필이 열리고 ✓(열어 봄)가 붙어요 — 실제로 댓글 달았는지는 인스타가 알려 주지 않아서 확인 못 해요</div>` +
+    days.map(d => {
+      const us = groups[d].sort((a, b) => (+!!S.visits[a.user] - +!!S.visits[b.user]) || (b.n - a.n));
+      return `<div class="gh">${esc(dayLabel(d))} <span class="muted">${us.length}명</span></div><div class="grid">` +
+        us.map(u => { const v = S.visits[u.user] >= u.last; return `<a class="pcard ${v ? 'v' : ''}" href="https://www.instagram.com/${esc(u.user)}/" target="_blank" rel="noopener" data-open="${esc(u.user)}">
+          <div class="pu">@${esc(u.user)}</div><div class="pt">${esc(u.text)}</div><div class="pn">${u.n > 1 ? `댓글 ${u.n}` : ''}${v ? '<span class="ck" data-undo="' + esc(u.user) + '">✓</span>' : ''}</div></a>`; }).join('') + '</div>';
+    }).join('');
 }
 
 function render() {
   renderMode();
-  const n = Object.values(S.st.comments || {}).filter(c => c.status === 'check').length;
-  $('#tabs').innerHTML = [['visit', '🚶 맞팔 방문'], ['replies', `💬 대댓글${n ? ` (확인 ${n})` : ''}`]].map(([k, t]) => `<button class="btn ${S.tab === k ? 'on' : ''}" data-tab="${k}">${t}</button>`).join('');
-  $('#tabs').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { S.tab = b.dataset.tab; try { localStorage.setItem('kydz_mutuals_tab', S.tab); } catch (e) {} render(); });
-  $('#main').innerHTML = S.tab === 'visit' ? renderVisit() : renderReplies();
-  $('#main').querySelectorAll('[data-visit]').forEach(b => b.onclick = async () => {
-    const u = b.dataset.visit; S.visits[u] = kstNow(); render();
-    try { await writeJson('state/ig_visits.json', d => { (d.visits ||= {})[u] = S.visits[u]; }, 'ig(admin): 맞팔 다녀옴'); } catch (e) { alert(e.message); }
-  });
+  $('#tabs').innerHTML = [['posts', '📝 내 게시물'], ['people', '👥 최근 맞팔']].map(([k, t]) => `<button class="btn ${S.tab === k ? 'on' : ''}" data-tab="${k}">${t}</button>`).join('');
+  $('#tabs').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { S.tab = b.dataset.tab; S.post = null; try { localStorage.setItem('kydz_mutuals_tab', S.tab); } catch (e) {} render(); });
+  if (!['posts', 'people'].includes(S.tab)) S.tab = 'posts';
+  $('#main').innerHTML = S.tab === 'posts' ? renderPosts() : renderPeople();
+  $('#main').querySelectorAll('[data-post]').forEach(b => b.onclick = () => { S.post = b.dataset.post; render(); scrollTo(0, 0); });
+  $('#main').querySelectorAll('[data-back]').forEach(b => b.onclick = () => { S.post = null; render(); });
+  const mark = async (u, val) => {
+    if (val) S.visits[u] = val; else delete S.visits[u];
+    render();
+    try { await writeJson('state/ig_visits.json', d => { d.visits ||= {}; if (val) d.visits[u] = val; else delete d.visits[u]; }, 'ig(admin): 맞팔 열어 봄'); } catch (e) { alert(e.message); }
+  };
+  $('#main').querySelectorAll('[data-undo]').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); mark(b.dataset.undo, ''); });
+  $('#main').querySelectorAll('[data-open]').forEach(a => a.addEventListener('click', e => { if (e.target.dataset.undo) return; mark(a.dataset.open, kstNow()); }));
   $('#main').querySelectorAll('[data-save]').forEach(b => b.onclick = async () => {
     const id = b.dataset.save, t = $(`[data-edit="${id}"]`).value.trim(); if (!t) return;
     b.disabled = true;
