@@ -151,7 +151,7 @@
     "visits": 4,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-11-04T01:29:36.585Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "lat": 35.2831142,
     "lng": 127.7288518,
     "checkin": "14:00",
@@ -178,7 +178,37 @@
         "펜션"
       ],
       "notice": "방문객 출입 불가 · 과음·블루투스 스피커 금지 · 캠핑카·카라반은 파쇄존만 · 데크 사이트는 나사팩 필요"
-    }
+    },
+    "guide": [
+      {
+        "zone": "물놀이 명당",
+        "text": "위쪽 성인용 물놀이 스팟",
+        "pick": true
+      },
+      {
+        "zone": "개별데크 7·8",
+        "text": "개별데크 추천 자리 (7번 그늘 좋음)",
+        "pick": false
+      },
+      {
+        "zone": "개별파쇄 3~5",
+        "text": "개별파쇄석 추천 자리",
+        "pick": false
+      },
+      {
+        "zone": "계곡 옆 개별데크 12·13",
+        "text": "계곡별 개별데크 추천",
+        "pick": false
+      },
+      {
+        "zone": "개별 10번",
+        "text": "계곡 앞 + 지붕 있는 데크, 타프 없이 쉬기 좋음",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/unimeica-sancheong-layout-1.jpg"
+    ]
   },
   {
     "id": "camp_8e1adf57aa",
@@ -252,7 +282,7 @@
     "visits": 2,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-11-04T01:29:36.585Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "lat": 35.599826,
     "lng": 128.87045,
     "videos": [
@@ -284,7 +314,27 @@
         "가족펜션"
       ],
       "notice": "방문객 출입 불가 · 캠핑카·트레일러 입장 가능 · 사이트: A존 6, B존 9, C존 10, D존(방갈로+오토) 2"
-    }
+    },
+    "guide": [
+      {
+        "zone": "B7~B9",
+        "text": "여름 추천. 앞쪽 계곡이 가장 좋고 그늘 풍부",
+        "pick": true
+      },
+      {
+        "zone": "A2~A5",
+        "text": "여름 추천. 넓고 그늘 많고 편의시설 가까움 (A4 > A3 > A5)",
+        "pick": false
+      },
+      {
+        "zone": "C존",
+        "text": "벚꽃 시즌 추천, 벚꽃길",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/gumansanjang-layout-1.jpg"
+    ]
   },
   {
     "id": "camp_e220a217fd",
@@ -363,7 +413,7 @@
     "visits": 29,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-11-04T00:55:23.561Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "checkin": "13:00",
     "checkout": "12:00",
     "address": "경북 봉화군 소천면 구마동길 513-127",
@@ -396,7 +446,32 @@
         "드라이기"
       ],
       "notice": "노키즈(11세 미만 이용 제한) · 1년에 3번 방문하면 다음 해 선예약(단골캠퍼 제도)"
-    }
+    },
+    "guide": [
+      {
+        "zone": "단독 C",
+        "text": "울타리 있는 단독 사이트. 프라이빗하고 넓어서 비어 있으면 무조건 추천",
+        "pick": true
+      },
+      {
+        "zone": "A5·A6",
+        "text": "여름 강추 자리(A6 → A5 → A4). A1~A6 그늘 좋음, A7~A12는 넓지만 그늘 적음",
+        "pick": false
+      },
+      {
+        "zone": "B1·B7",
+        "text": "봄·가을 추천. 독립적인 자리. C가 안 되면 B-1",
+        "pick": false
+      },
+      {
+        "zone": "참고",
+        "text": "A라인은 짐 내린 뒤 차를 주차장으로 옮겨야 함. 계곡은 걸어서 30초",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/bonghwabyeol-layout-1.jpg"
+    ]
   },
   {
     "id": "camp_17e022c947",
@@ -541,7 +616,7 @@
     "visits": 3,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-11-04T00:55:23.561Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "checkin": "14:00",
     "checkout": "12:00",
     "address": "경북 고령군 덕곡면 덕운로 1109-243",
@@ -568,7 +643,32 @@
         "수영장(여름)"
       ],
       "notice": "바람이 강함 · 지정된 곳에서만 불 사용, 폭죽 금지 · 시즌별로 예약이 열리고 공사로 쉬는 기간이 있음"
-    }
+    },
+    "guide": [
+      {
+        "zone": "360사이트",
+        "text": "꼭대기 단독 초대형 사이트. 비교 불가 명당, 다만 나무가 없어 그늘이 한 점도 없음",
+        "pick": true
+      },
+      {
+        "zone": "A1~A4",
+        "text": "일출 뷰 (A3 > A1 > A2 순)",
+        "pick": false
+      },
+      {
+        "zone": "A5~A9",
+        "text": "가야산 뷰",
+        "pick": false
+      },
+      {
+        "zone": "A10·A11",
+        "text": "그늘 많은 편",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/the360-layout-1.jpg"
+    ]
   },
   {
     "name": "또바기캠핑장",
@@ -1225,7 +1325,7 @@
     "visits": 14,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-11-04T00:55:23.561Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "address": "경남 합천군 가회면 황매산공원길 331",
     "pick": true,
     "lat": 35.4818529,
@@ -1243,7 +1343,33 @@
       "manner": "22:00~07:00",
       "pets": "불가",
       "notice": "5월 철쭉축제·10월 억새축제 기간 휴장(해마다 기간이 달라 공지 확인) · 매주 월요일 10시 3주 단위 예약 오픈"
-    }
+    },
+    "guide": [
+      {
+        "zone": "D50~D57",
+        "text": "시즌과 상관없이 언제나 명당 (D50~54는 합천군민 우선 예약)",
+        "pick": true
+      },
+      {
+        "zone": "D6~D12",
+        "text": "철쭉 시즌(5월) 명당, 특히 D10은 철쭉 뷰",
+        "pick": false
+      },
+      {
+        "zone": "D37~D40",
+        "text": "제가 주로 가는 자리. D38·D40 넓음, D37 조금 좁지만 그늘 풍부",
+        "pick": false
+      },
+      {
+        "zone": "일출·일몰",
+        "text": "일출은 관리사무소 오른쪽 걸어서 5~10분, 일몰은 산불감시초소·그네자리",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/hwangmaesan-layout-1.jpg",
+      "./images/camps/hwangmaesan-layout-2.jpg"
+    ]
   },
   {
     "name": "황석산라온오토캠핑장",
@@ -1306,7 +1432,7 @@
     "visits": 5,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-11-04T01:04:16.454Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "address": "경남 거창군 북상면 송계사길 63-107",
     "pick": true,
     "lat": 35.8253455,
@@ -1322,7 +1448,37 @@
       "max_people": "사이트당 4명 · 차량 1대",
       "season": "봄~가을 (겨울 휴장)",
       "notice": "캠프파이어·폭죽 금지(화로대 사용 가능) · 개수대·화장실은 21번과 35번 사이 건물"
-    }
+    },
+    "guide": [
+      {
+        "zone": "숲속42·43",
+        "text": "산뷰가 멋지고 텐풍이 예쁨 (사이트는 작음)",
+        "pick": true
+      },
+      {
+        "zone": "숲속41",
+        "text": "단독으로 쓰는 넓은 사이트 (날벌레가 좀 있을 수 있음)",
+        "pick": false
+      },
+      {
+        "zone": "숲속29·30",
+        "text": "프라이빗한 편, 돌담 없음",
+        "pick": false
+      },
+      {
+        "zone": "숲속36",
+        "text": "바로 옆자리가 없어 나름 프라이빗",
+        "pick": false
+      },
+      {
+        "zone": "숲속37~40",
+        "text": "넓어서 여러 팀이 함께 가기 좋음",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/sanjung-layout-1.jpg"
+    ]
   },
   {
     "name": "산중오토계곡캠핑장",
@@ -1498,7 +1654,7 @@
     "visits": 4,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-11-04T01:29:36.585Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "checkin": "14:00",
     "checkout": "12:00",
     "address": "경남 산청군 단성면 호암로701번길 141",
@@ -1530,7 +1686,27 @@
         "관리동"
       ],
       "notice": "수영장·놀이터 08:00~해 질 때까지 · 3팀 이상 모임 예약·방문객 입장 불가 · 진입로와 캠핑장 안 도로가 험한 편"
-    }
+    },
+    "guide": [
+      {
+        "zone": "까망 구역",
+        "text": "8사이트, 그늘 맛집",
+        "pick": true
+      },
+      {
+        "zone": "구역 구성",
+        "text": "파랑 2 · 남색 1 · 노랑 2 · 초록 1 · 빨강 2 · 하양 2 · 까망 8 · 예비 2",
+        "pick": false
+      },
+      {
+        "zone": "참고",
+        "text": "계단식이라 위쪽 사이트일수록 청계호수 뷰가 좋음",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/byeolcheonji-layout-1.jpg"
+    ]
   },
   {
     "name": "청풍호반오토캠핑장",
@@ -1591,7 +1767,7 @@
     "visits": 3,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-11-04T01:29:36.585Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "lat": 35.2452434,
     "lng": 127.7898059,
     "videos": [
@@ -1620,7 +1796,27 @@
         "방방이"
       ],
       "notice": "2024년 6월 오픈 · 캠핑카·카라반 가능 · 사이트: A존 9×9m, B존 10×10m·9×9m, 타프존 10×10m, 두가족 16×8m, 평상"
-    }
+    },
+    "guide": [
+      {
+        "zone": "타프존 C-2~C-10",
+        "text": "다 추천. 조용히 쉬려면 C-10 쪽 (C-1은 새 길 때문에 조금 시끄러움)",
+        "pick": true
+      },
+      {
+        "zone": "A-6·A-12",
+        "text": "옆에 잔디, 관리동 가까움. A-7~11보다는 A-1~5",
+        "pick": false
+      },
+      {
+        "zone": "가족 사이트",
+        "text": "16×8m, 두 가족이라면 여기",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/sancheong-bandal-layout-1.jpg"
+    ]
   },
   {
     "name": "경남밀양솔바람캠핑장",
@@ -1928,7 +2124,7 @@
     "visits": 2,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-11-04T01:29:36.585Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "lat": 37.1007828,
     "lng": 129.1508961,
     "videos": [
@@ -1964,7 +2160,33 @@
         "한강라면 기계"
       ],
       "notice": "초대손님·캠핑카 불가 · 개수대 온수 없음 · 사이트 56개(크기 제각각) · 계곡은 지정 포인트 외 수영 금지, 구명조끼 착용 의무"
-    }
+    },
+    "guide": [
+      {
+        "zone": "123",
+        "text": "단독 느낌의 넓은 사이트",
+        "pick": true
+      },
+      {
+        "zone": "124",
+        "text": "123과 비슷하지만 조금 작음",
+        "pick": false
+      },
+      {
+        "zone": "28·29 데크",
+        "text": "그늘 좋고 데크라 편함",
+        "pick": false
+      },
+      {
+        "zone": "5·6",
+        "text": "그늘 많고 넓음, 두 가족",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/deokpung-layout-1.jpg",
+      "./images/camps/deokpung-layout-2.jpg"
+    ]
   },
   {
     "id": "camp_02c72e06a3",
@@ -1983,7 +2205,7 @@
     "visits": 2,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-11-04T01:29:36.585Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "lat": 37.07,
     "lng": 128.53,
     "videos": [
@@ -2014,7 +2236,37 @@
         "펜션"
       ],
       "notice": "샤워실 드라이기 없음(개인 지참) · 캠핑장 홈페이지에서 예약 · 사이트: 데크 23, 파쇄석 14, 정자 2, 펜션 3"
-    }
+    },
+    "guide": [
+      {
+        "zone": "B7",
+        "text": "독립 + 그늘 좋음",
+        "pick": true
+      },
+      {
+        "zone": "A14",
+        "text": "계곡뷰 + 여유 공간",
+        "pick": false
+      },
+      {
+        "zone": "C10",
+        "text": "독립적인 사이트",
+        "pick": false
+      },
+      {
+        "zone": "C1~C2",
+        "text": "두 가족 추천",
+        "pick": false
+      },
+      {
+        "zone": "계곡",
+        "text": "캠핑장 옆 1m 포인트만 해도 어른도 놀기 좋음, 2.5m·5.5m 포인트는 길이 조금 험함",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/sopung-layout-1.jpg"
+    ]
   },
   {
     "name": "경산갓바위캠핑장",
@@ -2049,7 +2301,7 @@
     "visits": 2,
     "published": true,
     "created_at": "2026-05-21T02:53:18.159759+00:00",
-    "updated_at": "2026-11-04T01:29:36.585Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "lat": 35.2886591,
     "lng": 127.7591482,
     "address": "경남 산청군 시천면 지리산대로 605",
@@ -2071,7 +2323,27 @@
         "민박하우스"
       ],
       "notice": "카라반 가능(A사이트) · 정자데크는 2026년 7월 1일부터 당일 피크닉존 · 사이트: A 파쇄석 5, 계곡 B 데크 10, 폭포뷰 데크 2, 민박하우스 3"
-    }
+    },
+    "guide": [
+      {
+        "zone": "폭포뷰 데크",
+        "text": "폭포와 텐트를 한 장에 담고 싶다면",
+        "pick": true
+      },
+      {
+        "zone": "계곡 B사이트 데크",
+        "text": "데크 앞에도 얕은 계곡",
+        "pick": false
+      },
+      {
+        "zone": "A사이트 파쇄석",
+        "text": "카라반 가능, 그늘은 별로 없음",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/jirisan365-layout-1.jpg"
+    ]
   },
   {
     "id": "camp_24560122c2",
@@ -2417,7 +2689,7 @@
     "visits": 1,
     "published": true,
     "created_at": "2026-06-04T06:52:35.693Z",
-    "updated_at": "2026-11-04T02:32:34.328Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "lat": 37.221683,
     "lng": 127.9546309,
     "videos": [
@@ -2453,7 +2725,32 @@
         "장작 판매"
       ],
       "notice": "방문객 출입 불가 · D사이트 동계 미운영 · 프리미엄 타프존 있음"
-    }
+    },
+    "guide": [
+      {
+        "zone": "스위트데크 A1",
+        "text": "계곡 끝, 공대남자 Pick 최고 명당",
+        "pick": true
+      },
+      {
+        "zone": "스위트파쇄석 B2·D2",
+        "text": "넓은 사이트, 그늘 좋음 (A1 → B2 → D2 순)",
+        "pick": false
+      },
+      {
+        "zone": "데크 D1",
+        "text": "계곡을 바로 옆에서 느끼고 싶을 때",
+        "pick": false
+      },
+      {
+        "zone": "프리미엄 타프 C6",
+        "text": "타프 치기 귀찮을 때",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/deokdonggol-layout-1.jpg"
+    ]
   },
   {
     "id": "camp_2546846375",
@@ -2509,7 +2806,7 @@
     "visits": 1,
     "published": true,
     "created_at": "2026-09-17T00:20:32.016Z",
-    "updated_at": "2026-11-04T02:32:34.328Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "checkin": "14:00",
     "checkout": "12:00",
     "address": "경남 밀양시 산외면 밀양대로 3468-7",
@@ -2573,6 +2870,9 @@
     "gear": [
       "item_8c39b51888",
       "item_bbc507958e"
+    ],
+    "layout_imgs": [
+      "./images/camps/miryang-alps-layout-1.jpg"
     ]
   },
   {
@@ -2598,7 +2898,7 @@
     "visits": 1,
     "published": true,
     "created_at": "2026-09-23T22:41:27.470Z",
-    "updated_at": "2026-11-04T01:04:16.454Z",
+    "updated_at": "2026-11-26T02:01:07.067Z",
     "pick": true,
     "main_img": "./images/camps/924a50d9ef11-4.jpg",
     "lat": 36.5928099,
@@ -2620,7 +2920,32 @@
         "캠프하우스·캐빈하우스"
       ],
       "notice": "입실 13:00~21:00 · 하우스 15:00/11:00 · 차량 출입 제한 21:00~08:00 · 전 구역 금연 · 방문객 입장 불가 · 차박은 B존만"
-    }
+    },
+    "guide": [
+      {
+        "zone": "바다 앞 대형데크",
+        "text": "더블 S7·S9·S10·S11, S20, 오션뷰 VIP. S7은 옆 선착순이 비면 양옆이 트여 최고",
+        "pick": true
+      },
+      {
+        "zone": "선착순",
+        "text": "오션뷰 VIP 옆 왼쪽 끝 네 자리가 바다와 제일 가까움",
+        "pick": false
+      },
+      {
+        "zone": "D21",
+        "text": "앞 선착순 자리가 안 차면 좋은 자리",
+        "pick": false
+      },
+      {
+        "zone": "참고",
+        "text": "S10·S11은 데크 가운데 나무(큰 리빙쉘 X), 바다 줄은 화장실이 멂 — 아이 동반이면 중앙 S존·B존",
+        "pick": false
+      }
+    ],
+    "layout_imgs": [
+      "./images/camps/gomseom-layout-1.jpg"
+    ]
   },
   {
     "id": "camp_f99d51182d",
