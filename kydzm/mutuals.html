@@ -31,7 +31,8 @@
   .banner.err { background:#fdecee; color:var(--danger); }
   .login { min-height:90vh; display:flex; align-items:center; justify-content:center; }
   input.pw { border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit; background:var(--bg); color:var(--text); }
-  .pc { cursor:pointer; padding:10px 12px; }
+  .pc { cursor:pointer; padding:8px 10px; }
+  .th { width:52px; height:52px; border-radius:8px; object-fit:cover; flex:none; background:var(--soft); }
   .gh { font-weight:700; margin:14px 2px 6px; }
   .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:6px; }
   .pcard { display:block; text-decoration:none; border:1px solid var(--line); border-radius:10px; padding:6px 7px; background:var(--card); min-width:0; }
@@ -137,7 +138,8 @@ function renderPosts() {
     const chk = cs.filter(([, c]) => c.status === 'check').length;
     const title = (m.cap || '').replace(/^\((협찬|광고)\)\s*/, '').split('\n')[0].slice(0, 40) || '(글 없음)';
     return `<div class="card pc" data-post="${esc(mid)}"><div class="row" style="justify-content:space-between;flex-wrap:nowrap">
-      <div style="min-width:0"><div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)}</div><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(title)}</div></div>
+      ${m.thumb ? `<img class="th" src="${esc(m.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<div class="th"></div>'}
+      <div style="min-width:0;flex:1"><div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)}</div><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(title)}</div></div>
       <div style="text-align:right;flex:none"><div class="n"><b>${m.cc}</b> <span class="muted">전체</span> · <b>${cs.length}</b> <span class="muted">맞팔</span></div>
       <div class="muted n">내 답 ${done}/${cs.length}${chk ? ` · <span style="color:var(--danger)">확인 ${chk}</span>` : ''}</div></div></div></div>`;
   }).join('');
@@ -146,7 +148,7 @@ function renderPost(mid, cs) {
   const m = S.st.media[mid] || {}, edits = S.ctl.edits || {}, skip = new Set(S.ctl.skip || []);
   cs.sort((a, b) => (b[1].at > a[1].at ? 1 : -1));
   return `<div class="row" style="justify-content:space-between;margin-bottom:8px"><button class="btn" data-back>← 게시물</button><a class="btn" href="${esc(m.permalink || '#')}" target="_blank" rel="noopener">인스타에서 보기</a></div>
-    <div class="card"><div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)} · 전체 댓글 ${m.cc} · 맞팔 ${cs.length}</div><div style="white-space:pre-line;max-height:4.5em;overflow:hidden">${esc((m.cap || '').slice(0, 200))}</div></div>` +
+    <div class="card">${m.thumb ? `<img src="${esc(m.thumb)}" alt="" referrerpolicy="no-referrer" style="width:100%;max-height:320px;object-fit:cover;border-radius:8px;margin-bottom:8px" onerror="this.remove()">` : ''}<div class="muted">${esc(dayLabel(dayKey(m.at)))} ${hm(m.at)} · 전체 댓글 ${m.cc} · 맞팔 ${cs.length}</div><div style="white-space:pre-line;max-height:4.5em;overflow:hidden">${esc((m.cap || '').slice(0, 200))}</div></div>` +
     (cs.length ? cs.map(([id, c]) => {
       const mine = myReplies(c, true), real = mine.filter(r => r.k !== '소셜비즈');
       const draft = ['ready', 'check'].includes(c.status) && !real.length;
