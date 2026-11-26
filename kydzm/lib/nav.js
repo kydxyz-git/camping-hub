@@ -1,6 +1,6 @@
 /* 관리 화면 공통 메뉴 (사용자 261126 '메뉴 흐름 통일, 어느 메뉴든 쉽게 이동, 모바일 중요' → '왼쪽 고정 메뉴 + 위에 대메뉴 > 소메뉴 > 소메뉴')
  * 모든 관리 화면(대시보드 index.html 포함)이 <script src="lib/nav.js"></script> 한 줄로 씀.
- *  - PC(1024px 이상): 왼쪽 고정 메뉴(항상 보임) · 폰: ☰ 누르면 왼쪽에서 밀려 나옴
+ *  - 760px 이상(PC·태블릿·노트북 확대 화면): 왼쪽 고정 메뉴(항상 보임, 사용자 261126 '왼쪽 메뉴는 고정') · 폰(760 미만): ☰ 누르면 왼쪽에서 밀려 나옴 · 위 줄은 보조 메뉴
  *  - 맨 위 한 줄: 대메뉴 › 소메뉴 › (그 화면의 탭) — 칸을 누르면 같은 단계의 다른 것 고르기
  *  - 화면 탭(3단계)은 각 화면이 kydzNav.setSub([{key,label}], 지금 key, 고르면 부를 함수)로 알려 줌
  * 메뉴를 바꾸면 여기 MENU와 index.html 대시보드 grp 두 곳. iframe·?embed=1에선 안 보임.
@@ -36,22 +36,22 @@
   const css = `
   :root{--kn-w:0px;--kn-bg:#fff;--kn-side:#f7f7f5;--kn-text:#1a1a1a;--kn-muted:#6e6e6e;--kn-line:#e5e5e5;--kn-soft:#ececea;--kn-hi:#fff3b0;--kn-card:#fff}
   @media (prefers-color-scheme: dark){:root{--kn-bg:#1d1f1d;--kn-side:#181a18;--kn-text:#ececea;--kn-muted:#9a9e98;--kn-line:#343834;--kn-soft:#2c302c;--kn-hi:#3d3816;--kn-card:#262926}}
-  @media (min-width:1024px){:root{--kn-w:208px} body{padding-left:var(--kn-w)!important}}
+  @media (min-width:760px){:root{--kn-w:200px} body{padding-left:var(--kn-w)!important}}
   .kn-side,.kn-bar,.kn-dd{font:14px/1.3 -apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:var(--kn-text)}
-  .kn-side{position:fixed;top:0;bottom:0;left:0;width:208px;z-index:9100;background:var(--kn-side);border-right:1px solid var(--kn-line);overflow-y:auto;padding:10px 8px 24px;padding-top:calc(10px + env(safe-area-inset-top));box-sizing:border-box}
+  .kn-side{position:fixed;top:0;bottom:0;left:0;width:200px;z-index:9100;background:var(--kn-side);border-right:1px solid var(--kn-line);overflow-y:auto;padding:10px 8px 24px;padding-top:calc(10px + env(safe-area-inset-top));box-sizing:border-box}
   .kn-side a{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;color:inherit;text-decoration:none}
   .kn-side a:hover{background:var(--kn-soft)} .kn-side a.cur{background:var(--kn-hi);font-weight:700}
   .kn-side .kn-home{font-weight:700;margin-bottom:6px}
   .kn-side .kn-g{font-size:11px;color:var(--kn-muted);font-weight:700;margin:12px 10px 3px;letter-spacing:.02em}
   .kn-side .ic{width:20px;text-align:center;flex:none}
   .kn-shade{position:fixed;inset:0;z-index:9099;background:rgba(0,0,0,.35);display:none}
-  @media (max-width:1023px){.kn-side{transform:translateX(-105%);transition:transform .2s;width:260px;visibility:hidden} .kn-side.on{transform:none;visibility:visible;box-shadow:4px 0 20px rgba(0,0,0,.25)} .kn-shade.on{display:block}}
+  @media (max-width:759px){.kn-side{transform:translateX(-105%);transition:transform .2s;width:260px;visibility:hidden} .kn-side.on{transform:none;visibility:visible;box-shadow:4px 0 20px rgba(0,0,0,.25)} .kn-shade.on{display:block}}
   .kn-bar{position:relative;z-index:9000;display:flex;align-items:center;gap:2px;min-height:44px;padding:0 8px;padding-top:env(safe-area-inset-top);background:var(--kn-bg);border-bottom:1px solid var(--kn-line);overflow-x:auto;scrollbar-width:none;box-sizing:border-box}
   .kn-bar::-webkit-scrollbar{display:none}
   .kn-bar button{flex:none;background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:6px 8px;border-radius:8px;white-space:nowrap}
   .kn-bar button:hover,.kn-bar button.open{background:var(--kn-soft)}
   .kn-bar .kn-burger{font-size:18px;padding:6px 10px}
-  @media (min-width:1024px){.kn-bar .kn-burger{display:none}}
+  @media (min-width:760px){.kn-bar .kn-burger{display:none}}
   .kn-bar .sep{color:var(--kn-muted);flex:none}
   .kn-bar .lv1{color:var(--kn-muted)} .kn-bar .lv-last{font-weight:700}
   .kn-bar .car{font-size:10px;color:var(--kn-muted);margin-left:3px}
