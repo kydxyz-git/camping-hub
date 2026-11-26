@@ -27,6 +27,10 @@
   .vc { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; text-decoration:none; }
   .vc.bad { border-color:var(--danger); }
   .vc img { width:100%; aspect-ratio:16/9; object-fit:cover; background:var(--soft); display:block; }
+  /* 쇼츠: 가운데 세로 화면만 또렷하게, 양옆은 더 흐리고 어둡게 (사용자 261126 '뒷부분을 흐리게 — 앞 썸네일이 눈에 안 띔') */
+  .vc .sth { position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; background:#000; }
+  .vc .sth .bg { position:absolute; inset:-12%; width:124%; height:124%; aspect-ratio:auto; object-fit:cover; filter:blur(14px) brightness(.45) saturate(.8); }
+  .vc .sth .fg { position:relative; height:100%; width:auto; aspect-ratio:9/16; margin:0 auto; object-fit:cover; object-position:center; box-shadow:0 0 18px rgba(0,0,0,.6); }
   .vc .b { padding:9px 11px 11px; }
   .vc .t { font-weight:600; font-size:14px; line-height:1.35; height:2.7em; overflow:hidden; }
   .tags { display:flex; gap:5px; flex-wrap:wrap; margin:4px 0 6px; }
@@ -130,7 +134,7 @@ function video(v, pv) {
   const ret = !isShort && v.retention ? `<div class="ret" title="구간별 남은 비율">${Object.entries(v.retention).map(([k, x]) => `<i class="${x < 0.5 ? 'low' : ''}" style="height:${Math.max(4, Math.min(100, x * 100))}%" title="${k} ${Math.round(x * 100)}%"></i>`).join('')}</div><div class="muted" style="font-size:11px">${Object.keys(v.retention).join(' · ')}</div>` : '';
   const m = Math.floor((v.seconds || 0) / 60), s = (v.seconds || 0) % 60;
   return `<a class="vc ${flags.some(f => f[0] === 'red') ? 'bad' : ''}" href="${url}" target="_blank" rel="noopener">
-    <img src="https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg" alt="" loading="lazy">
+    ${isShort ? `<div class="sth"><img class="bg" src="https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg" alt="" loading="lazy"><img class="fg" src="https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg" alt="" loading="lazy"></div>` : `<img src="https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg" alt="" loading="lazy">`}
     <div class="b"><div class="t">${esc(v.title)}</div>
       <div class="tags"><span class="tag ${isShort ? 'short' : 'long'}">${isShort ? '쇼츠' : '롱폼'} ${m}:${String(s).padStart(2, '0')}</span><span class="tag">${md(ymd(kst(v.published)))} 공개</span>${flags.map(f => `<span class="tag ${f[0]}">${esc(f[1])}</span>`).join('')}</div>
       <div class="nums"><div>조회<b>${n(v.views)}${delta(dv)}</b></div><div>평균 시청<b>${pct ? Math.round(pct) + '%' : '<span class="muted">집계 전</span>'}</b></div><div>${isShort ? '구독+' : '0:30 남음'}<b>${isShort ? (life.subscribersGained ?? '-') : (r30 != null ? Math.round(r30 * 100) + '%' : '<span class="muted">집계 전</span>')}</b></div></div>
