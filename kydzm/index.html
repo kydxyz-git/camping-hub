@@ -319,12 +319,12 @@
   @media (min-width: 760px) { .ig-wide { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }   /* 반반 (사용자 261126 '다녀올 맞팔은 절반만, 왼쪽에 답 필요·진행 중') */
   .ig-p .g { flex: none; font-size: 12px; color: var(--muted); }
   .ig-p .g b { color: var(--text); }
-  .ig-vs2 { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
-  @media (min-width: 760px) and (max-width: 1199px) { .ig-vs2 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .ig-v2:nth-child(n+9) { display: none; } }
+  .ig-vs2 { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; }   /* 작게 더 많이 (사용자 261126) — 8칸 × 3줄 */
+  @media (min-width: 760px) and (max-width: 1199px) { .ig-vs2 { grid-template-columns: repeat(6, minmax(0, 1fr)); } .ig-v2:nth-child(n+19) { display: none; } }
   @media (max-width: 759px) { .ig-vs2 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; } .ig-v2 span { font-size: 10px; } .ig-v2:nth-child(n+6) { display: none; } }
   .ig-v2 { display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: inherit; min-width: 0; }
   .ig-v2 img, .ig-v2 i { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: var(--soft); display: block; }
-  .ig-v2 span { font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ig-v2 span { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ig-v2:hover img { outline: 2px solid var(--text); }
   .ig-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
   .ig-warn { background: var(--danger-soft); color: var(--danger); font-size: 13px; font-weight: 700; padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; }
@@ -3057,7 +3057,7 @@ async function renderIgSummary() {
         ${p.thumb || p.shot ? `<img ${p.shot ? `data-shot="${e(p.shot)}"` : ''} src="${e(p.thumb || '')}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="if(!this.dataset.shot)this.style.visibility='hidden'">` : '<i></i>'}
         <span class="t">${e(Array.from((p.title || '').replace(/^\((협찬|광고)\)\s*/, '')).slice(0, 30).join('') || '(글 없음)')}</span><span class="g">${p.queued ? `대기 <b>${p.queued}</b> · ` : ''}단 ${p.posted}${p.need ? ` · <span style="color:var(--danger);font-weight:700">답 ${p.need}</span>` : ''}</span></a>`).join('');
     // 다녀올 맞팔: 그 사람 새 글 썸네일 + 아이디 (사용자 261126 인스타 칸 정리)
-    const vis = (g.visit || []).slice(0, 12).map(v => `<a class="ig-v2" href="${e(v.permalink || '#')}" target="_blank" rel="noopener" title="@${e(v.user)}">${v.thumb ? `<img src="${e(v.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<i></i>'}<span>@${e(v.user)}</span></a>`).join('');
+    const vis = (g.visit || []).slice(0, 24).map(v => `<a class="ig-v2" href="${e(v.permalink || '#')}" target="_blank" rel="noopener" title="@${e(v.user)}">${v.thumb ? `<img src="${e(v.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : '<i></i>'}<span>@${e(v.user)}</span></a>`).join('');
     box.innerHTML = `<div class="card" style="margin:0">
       ${g.mode === 'paused' ? '<div class="ig-warn">⛔ 자동 대댓글 멈춤 — 인스타 화면에서 확인</div>' : ''}
       <div class="ig-wide">
