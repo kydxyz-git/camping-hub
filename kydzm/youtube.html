@@ -159,9 +159,10 @@ function render({ cur, prev, board }) {
     </div>
     <div class="gh">📊 날짜별 조회·구독</div><div class="card">${chart(cur.daily)}</div>
     ${tasks.length ? `<div class="gh">🗓 공개·작업 일정 (운영판 유튜브, 14일 안)</div><div class="card">${tasks.map(t => `<div class="sched"><span class="dt">${md(t.when)}</span><span>${esc(t.title)}</span></div>`).join('')}</div>` : ''}
+    ${hidden.length ? `<div class="gh">🔒 비공개·예약 <span class="muted">${hidden.length} · 곧 공개할 영상</span></div><div class="vgrid">${hidden.map(v => video(v, pv[v.id])).join('')}</div>` : ''}
     <div class="gh">🎬 공개 영상 <span class="muted">${pub.length} · 빨간 테두리 = 롱폼 0:30에서 절반 아래</span></div>
     <div class="vgrid">${pub.map(v => video(v, pv[v.id])).join('')}</div>
-    ${hidden.length ? `<div class="gh">🔒 비공개·예약 <span class="muted">${hidden.length}</span></div><div class="vgrid">${hidden.map(v => video(v, pv[v.id])).join('')}</div>` : ''}`;
+`;
 }
 
 async function start() {
