@@ -138,6 +138,11 @@
   .cmt-line { font-size: 12.5px; color: var(--muted); margin-top: 6px; white-space: pre-wrap; word-break: break-all; }
   .err-box { background: var(--danger-soft); color: var(--danger); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; margin-bottom: 8px; white-space: pre-wrap; word-break: break-all; }
   .done-row { background: var(--bg); border-radius: 12px; padding: 10px 14px; display: flex; gap: 10px; align-items: center; font-size: 13.5px; }
+  /* 게시 완료 목록은 촘촘하게 한 덩어리 (사용자 261126 '줄간격 공백 왜 이래 많아') */
+  .posts.done-list { gap: 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .done-list .done-row { background: transparent; border-radius: 0; padding: 6px 12px; border-bottom: 1px solid var(--line); }
+  .done-list .done-row:last-child { border-bottom: 0; }
+  .done-list .done-row:hover { background: var(--soft); }
   .done-row .nm { flex: 1; min-width: 0; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .done-row .tm { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
   .done-row .sent-at { color: var(--text, inherit); font-weight: 600; }
@@ -798,7 +803,7 @@ function renderList() {
     ${reportHtml()}
     ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">게시 완료 ${done.length}개
         ${done.length > 3 ? `<button class="btn small ghost" id="toggle-done">${S.showDone ? '최근 3개만' : '모두 보기'}</button>` : ''}</div>
-      <div class="posts" style="margin-bottom:16px">${(S.showDone ? done : done.slice(0, 3)).map(doneHtml).join('')}</div>` : ''}
+      <div class="posts done-list" style="margin-bottom:16px">${(S.showDone ? done : done.slice(0, 3)).map(doneHtml).join('')}</div>` : ''}
     ${needLink ? `<div class="banner warn small" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><span>링크 넣어야 하는 수익화 글 ${needLink}개 — 링크가 비어 있으면 그 글은 건너뛰고 다음 글이 먼저 올라가요.</span>
       <span class="row"><button class="btn small ${S.onlyNeedLink ? 'ghost' : ''}" data-filter="all">전체 ${pending.length}</button><button class="btn small ${S.onlyNeedLink ? '' : 'ghost'}" data-filter="needlink">링크 필요 ${needLink}</button></span></div>` : ''}
     <div class="posts" id="pending">${shown.map(([p, i]) => postHtml(p, i, pending.length, sched[p.id])).join('') || '<div class="card small muted">대기 중인 글이 없어요. 상품 이미지와 링크를 채팅으로 보내주시면 글을 만들어 넣어 드려요.</div>'}</div>
@@ -915,9 +920,9 @@ function reportHtml() {
         ${w.good?.length ? `<div style="margin-top:6px"><b>잘된 글 공통점</b><ul style="margin:4px 0 0 18px">${li(w.good)}</ul></div>` : ''}
         ${w.bad?.length ? `<div style="margin-top:6px"><b>안된 글 공통점</b><ul style="margin:4px 0 0 18px">${li(w.bad)}</ul></div>` : ''}
         ${w.next?.length ? `<div style="margin-top:6px"><b>다음 주에 해볼 것</b><ul style="margin:4px 0 0 18px">${li(w.next)}</ul></div>` : ''}
-        <div style="margin-top:8px"><b>잘된 글</b></div><div class="posts">${(w.top || []).map(row).join('')}</div>
-        <div style="margin-top:8px"><b>안된 글</b></div><div class="posts">${(w.bottom || []).map(row).join('')}</div>
-        ${(w.reposts || []).length ? `<div style="margin-top:8px"><b>다시 올린 글 비교</b></div><div class="posts">${w.reposts.map(x => `<div class="done-row"><span class="nm">${esc((S.posts.find(p => p.id === x.id) || {}).name || x.id)}${x.hook_idx != null ? ` · 첫 문장 ${x.hook_idx + 1}번 버전` : ''}</span><span class="tm">👁 ${x.views} (원래 ${x.orig_views})</span></div>`).join('')}</div>` : ''}
+        <div style="margin-top:8px"><b>잘된 글</b></div><div class="posts done-list">${(w.top || []).map(row).join('')}</div>
+        <div style="margin-top:8px"><b>안된 글</b></div><div class="posts done-list">${(w.bottom || []).map(row).join('')}</div>
+        ${(w.reposts || []).length ? `<div style="margin-top:8px"><b>다시 올린 글 비교</b></div><div class="posts done-list">${w.reposts.map(x => `<div class="done-row"><span class="nm">${esc((S.posts.find(p => p.id === x.id) || {}).name || x.id)}${x.hook_idx != null ? ` · 첫 문장 ${x.hook_idx + 1}번 버전` : ''}</span><span class="tm">👁 ${x.views} (원래 ${x.orig_views})</span></div>`).join('')}</div>` : ''}
         <div class="small muted" style="margin-top:8px">잘된 글엔 다른 첫 문장이 만들어져 있어요 — '다시 올리기'를 누르면 바꿔 끼워 넣어요.</div>`
       : S.showReport ? '<div class="small muted" style="margin-top:6px">주간 리포트는 월요일 아침에 만들어져요.</div>' : ''}
     </div>`;
@@ -1131,9 +1136,9 @@ function renderComments() {
     <div class="list-head"><div class="sum">답할 댓글 <b>${fresh.length}</b>개${queued.length ? ` · 보내는 중 ${queued.length}개` : ''}</div>
       <button class="btn small ghost" id="c-fetch">지금 댓글 확인</button></div>
     <div class="posts">${fresh.map(card).join('') || '<div class="card small muted">새 댓글이 없어요.</div>'}</div>
-    ${queued.length ? `<div class="section-title">보내는 중</div><div class="posts">${queued.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)} ← ${esc(r.reply_text)}</span><span class="tm">${r.auto ? '자동 · ' + (r.send_after ? esc(fmtDT(r.send_after).slice(5)) + ' 이후' : '곧 보냄') : '대기 · 다음 차례'}</span></div>`).join('')}</div>` : ''}
+    ${queued.length ? `<div class="section-title">보내는 중</div><div class="posts done-list">${queued.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)} ← ${esc(r.reply_text)}</span><span class="tm">${r.auto ? '자동 · ' + (r.send_after ? esc(fmtDT(r.send_after).slice(5)) + ' 이후' : '곧 보냄') : '대기 · 다음 차례'}</span></div>`).join('')}</div>` : ''}
     ${done.length ? `<div class="section-title" style="display:flex;justify-content:space-between;align-items:center">지난 댓글 ${done.length}개 <button class="btn small ghost" id="c-toggle">${S.showDoneC ? '접기' : '펼치기'}</button></div>
-      ${S.showDoneC ? `<div class="posts">${done.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)}: ${esc(r.text)}</span><span class="tm">${r.status === '보냄' ? (r.auto ? '🤖 자동 ↳ ' : '↳ ') + esc(r.reply_text) + (r.sent_at ? ` <span class="sent-at">· ${esc(fmtDT(r.sent_at).slice(5))}</span>` : '') : '건너뜀'}</span></div>`).join('')}</div>` : ''}` : ''}`;
+      ${S.showDoneC ? `<div class="posts done-list">${done.map(r => `<div class="done-row"><span class="nm">@${esc(r.username)}: ${esc(r.text)}</span><span class="tm">${r.status === '보냄' ? (r.auto ? '🤖 자동 ↳ ' : '↳ ') + esc(r.reply_text) + (r.sent_at ? ` <span class="sent-at">· ${esc(fmtDT(r.sent_at).slice(5))}</span>` : '') : '건너뜀'}</span></div>`).join('')}</div>` : ''}` : ''}`;
   const t = $('#c-toggle'); if (t) t.onclick = () => { S.showDoneC = !S.showDoneC; renderComments(); };
   $('#c-fetch').onclick = async () => {
     try { await runWorkflow('replies.yml', { mode: 'all' }); toast('댓글 확인을 요청했어요. 2~3분 뒤 새로고침해 주세요.'); }
