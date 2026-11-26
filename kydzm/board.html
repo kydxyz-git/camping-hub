@@ -198,7 +198,7 @@
   .pf { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text); }
   .pf i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
   .pf b { font-weight: 600; color: var(--muted); font-size: 12px; }
-  .pf.on { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .pf.on { background: var(--pri-bg); color: var(--pri-fg); border-color: var(--pri-bg); }
   .pf.on b { color: #ccc; }
   .pf.stale:not(.on) { border-color: var(--danger); }
   .pf.add { color: var(--muted); border-style: dashed; }
@@ -247,7 +247,7 @@
   .sheet-actions { display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
   .more { font-size: 13.5px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 8px 0; text-decoration: underline; }
   .fab { position: fixed; right: max(18px, env(safe-area-inset-right)); bottom: max(22px, env(safe-area-inset-bottom)); width: 58px; height: 58px; border-radius: 50%;
-    background: #1a1a1a; color: #fff; border: none; font-size: 30px; line-height: 1; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.25); z-index: 30; }
+    background: var(--pri-bg); color: var(--pri-fg); border: none; font-size: 30px; line-height: 1; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.25); z-index: 30; }
   .toast { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 80;
     background: #1a1a1a; color: #fff; padding: 11px 16px; border-radius: 10px; font-size: 14px; max-width: 90vw; box-shadow: 0 6px 20px rgba(0,0,0,.2); }
   .toast.err { background: var(--danger); }
@@ -442,7 +442,8 @@
   .pchip.pk-yt.yt-long, .ptable .pi.pk-yt.yt-long, .mday .mi.pk-yt.yt-long { background: rgba(163,0,31,.24); }
 </style>
 <script src="lib/passkey.js?v=261103c"></script>
-<script src="lib/nav.js?v=261126"></script>
+<link rel="stylesheet" href="lib/theme.css?v=261126">
+<script src="lib/nav.js?v=261126b"></script>
 </head>
 <body>
 

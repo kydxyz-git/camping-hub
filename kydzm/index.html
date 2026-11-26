@@ -248,7 +248,7 @@
   @media (max-width: 759px) {
     .dash-nav { display: flex; gap: 4px; position: sticky; top: 59px; z-index: 5; background: var(--accent-soft); padding: 4px 0 6px; margin-top: -12px; }
     .dash-nav button { flex: 1; min-height: 34px; padding: 0 4px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); font-size: 13px; font-weight: 700; color: inherit; cursor: pointer; }
-    .dash-nav button.on { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .dash-nav button.on { background: var(--pri-bg); color: var(--pri-fg); border-color: var(--pri-bg); }
     .dash-pages { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; align-items: flex-start; gap: 16px; scrollbar-width: none; overscroll-behavior-x: contain; }
     .dash-pages::-webkit-scrollbar { display: none; }
     .dash-page { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; height: 100%; overflow-y: auto; overscroll-behavior: contain; }
@@ -304,7 +304,7 @@
     margin-bottom: 14px;
   }
   .stats-card {
-    background: #fff; border: 1px solid var(--line);
+    background: var(--card); border: 1px solid var(--line);
     border-radius: 10px; padding: 12px 8px;
     text-align: center;
   }
@@ -986,8 +986,8 @@
   .search-bar-btn {
     flex-shrink: 0;
     padding: 0 16px;
-    background: #1a1a1a;
-    color: #fff;
+    background: var(--pri-bg);
+    color: var(--pri-fg);
     border: none;
     border-radius: 8px;
     font-size: 14px;
@@ -1052,7 +1052,7 @@
     background:#FFF4D6; border:1px solid #F3D98B;
   }
   .order-savebar-msg { flex:1; min-width:150px; font-size:12.5px; font-weight:600; color:#7A5B00; }
-  .btn-ghost { background:#fff; color:#555; border:1px solid #ddd; }
+  .btn-ghost { background:var(--card); color:var(--muted); border:1px solid var(--line); }
   .pick-stars { flex:none; display:inline-flex; margin-right:4px; }
   .new-btn {
     flex:none; margin-right:4px; padding:2px 5px;
@@ -1078,7 +1078,7 @@
   .src-kurly   { background:#5D3CC7; }
   .src-ali     { background:#FF6A00; }
   .src-etc     { background:#5E6C4F; }
-  .src-none    { background:#fff; color:#9aa0a6; border:1px dashed #ccd0d5; }
+  .src-none    { background:var(--card); color:#9aa0a6; border:1px dashed #ccd0d5; }
   .link-copy-btn {
     flex:none; margin-right:6px; padding:5px 7px; border-radius:6px;
     background:#F4F5F7; border:1px solid #e2e4e8; cursor:pointer; font-size:13px; line-height:1;
@@ -1520,7 +1520,7 @@
     background:#f7f7f5; border:1px solid #e8e8e4; border-radius:10px;
     padding:11px 14px; cursor:pointer; font:inherit; text-align:left; transition:.15s; }
   .cat-toggle:hover { border-color:#d5d5cf; }
-  .cat-toggle.open { background:#1a1a1a; border-color:#1a1a1a; color:#fff; }
+  .cat-toggle.open { background:var(--pri-bg); border-color:var(--pri-bg); color:var(--pri-fg); }
   .cat-toggle-name { font-size:14px; font-weight:700; letter-spacing:-.02em; }
   .cat-toggle-cnt { font-size:12px; opacity:.6; }
   .cat-toggle-arrow { margin-left:auto; font-size:12px; opacity:.7; }
@@ -1559,9 +1559,9 @@
   /* random 모드 안내 (admin과 메인 사이트 차이 설명) */
   .pf-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 8px 0 2px; }
   .pf-lbl { font-size: 12px; font-weight: 700; color: #666; margin-right: 2px; min-width: 28px; }
-  .pf-chip { border: 1px solid #ddd; background: #fff; color: #222; border-radius: 999px; padding: 4px 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+  .pf-chip { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 999px; padding: 4px 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
   .pf-chip b { font-weight: 600; opacity: .55; margin-left: 2px; }
-  .pf-chip.on { background: #111; color: #fff; border-color: #111; } .pf-chip.on b { opacity: .8; }
+  .pf-chip.on { background: var(--pri-bg); color: var(--pri-fg); border-color: var(--pri-bg); } .pf-chip.on b { opacity: .8; }
   .series-sort-note {
     font-size: 11px;
     color: var(--muted);
@@ -1748,7 +1748,7 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.25);
   }
   .pub-toggle input:checked + .pub-toggle-track {
-    background: #1a1a1a;  /* 기본: 검정 (dark) */
+    background: var(--pri-bg);  /* 기본: 검정 (dark) */
   }
   .pub-toggle--green input:checked + .pub-toggle-track {
     background: #2dab5e;  /* 시리즈 그룹 강조: 초록 */
@@ -1824,8 +1824,8 @@
   }
   .coord-picker-toolbar button {
     padding: 6px 12px;
-    background: #1a1a1a;
-    color: #fff;
+    background: var(--pri-bg);
+    color: var(--pri-fg);
     border: none;
     border-radius: 5px;
     font-size: 12px;
@@ -1847,6 +1847,8 @@
 <!-- Leaflet CSS (좌표 피커용) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <script src="lib/passkey.js?v=261103c"></script>
+<link rel="stylesheet" href="lib/theme.css?v=261126">
+<script src="lib/nav.js?v=261126b"></script>
 </head>
 <body>
 

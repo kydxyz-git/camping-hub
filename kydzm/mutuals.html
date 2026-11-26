@@ -24,11 +24,11 @@
   .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
   .u { font-weight:600; } .n { font-variant-numeric:tabular-nums; }
   .pill { font-size:12px; padding:1px 7px; border-radius:10px; background:var(--soft); color:var(--muted); }
-  .pill.red { background:#fdecee; color:var(--danger); } .pill.ok { color:var(--ok); }
+  .pill.red { background:var(--danger-soft); color:var(--danger); } .pill.ok { color:var(--ok); }
   textarea { width:100%; border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit; background:var(--bg); color:var(--text); }
   .cm { font-size:14px; margin:4px 0; padding:6px 8px; background:var(--soft); border-radius:8px; }
   .banner { padding:10px 12px; border-radius:10px; margin-bottom:10px; background:var(--soft); }
-  .banner.err { background:#fdecee; color:var(--danger); }
+  .banner.err { background:var(--danger-soft); color:var(--danger); }
   .login { min-height:90vh; display:flex; align-items:center; justify-content:center; }
   input.pw { border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit; background:var(--bg); color:var(--text); }
   .pc { cursor:pointer; padding:8px 10px; }
@@ -48,7 +48,7 @@
   .bc { flex:none; color:var(--muted); font-size:12px; }
   .card.open { border-color:var(--danger); }
   .note { font-size:12px; margin-top:6px; cursor:pointer; }
-  .nm { font-size:11px; background:#fff6c7; color:#5a4a00; border-radius:4px; padding:1px 4px; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .nm { font-size:11px; background:var(--brand-soft); color:var(--text); border-radius:4px; padding:1px 4px; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .nb { color:var(--muted); padding:0 3px; cursor:pointer; }
   .g2 { grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); margin-top:8px; }
   .tc .pn { flex-direction:column; }
@@ -69,13 +69,14 @@
   .ck2 { flex:none; display:flex; align-items:center; justify-content:center; width:34px; height:52px; margin:-8px 0 -8px -6px; cursor:pointer; }
   .ck2 input { width:20px; height:20px; pointer-events:none; accent-color:var(--danger); }
   .btn.sm { padding:5px 9px; flex:none; }
-  .actbar { position:fixed; left:0; right:0; bottom:0; z-index:8000; display:flex; align-items:center; gap:8px; padding:10px 16px calc(10px + env(safe-area-inset-bottom)); background:var(--card); border-top:1px solid var(--line); box-shadow:0 -4px 14px rgba(0,0,0,.12); }
+  .actbar { position:fixed; left:var(--kn-w,0px); right:0; bottom:0; z-index:8000; display:flex; align-items:center; gap:8px; padding:10px 16px calc(10px + env(safe-area-inset-bottom)); background:var(--card); border-top:1px solid var(--line); box-shadow:0 -4px 14px rgba(0,0,0,.12); }
   .actbar span { flex:1; padding-left:52px; }
   .actbar .btn { padding:9px 14px; font-size:14px; }
   .toast { position:fixed; left:50%; bottom:84px; transform:translateX(-50%); z-index:9500; background:#1a1a1a; color:#fff; padding:9px 14px; border-radius:20px; font-size:13px; }
   @media (max-width:600px) { .wrap { padding:8px 12px 60px; } .card { padding:10px; } .th { width:46px; height:46px; } }
 </style>
-<script src="lib/nav.js?v=261126"></script>
+<link rel="stylesheet" href="lib/theme.css?v=261126">
+<script src="lib/nav.js?v=261126b"></script>
 </head>
 <body>
 <div class="login" id="login" style="display:none">
@@ -295,7 +296,9 @@ function renderPeople() {
 
 function render() {
   renderMode();
-  $('#tabs').innerHTML = [['posts', '📝 게시물'], ['people', '💬 맞팔'], ['quiet', '💤 조용한 맞팔'], ['cands', '🌱 맞팔 후보']].map(([k, t]) => `<button class="btn ${S.tab === k ? 'on' : ''}" data-tab="${k}">${t}</button>`).join('');
+  const TABS = [['posts', '📝 게시물'], ['people', '💬 맞팔'], ['quiet', '💤 조용한 맞팔'], ['cands', '🌱 맞팔 후보']];
+  if (window.kydzNav) kydzNav.setSub(TABS.map(([key, label]) => ({ key, label })), S.tab, k => { S.tab = k; S.post = null; try { localStorage.setItem('kydz_mutuals_tab', k); } catch (e) {} render(); scrollTo(0, 0); });
+  $('#tabs').innerHTML = TABS.map(([k, t]) => `<button class="btn ${S.tab === k ? 'on' : ''}" data-tab="${k}">${t}</button>`).join('');
   $('#tabs').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { S.tab = b.dataset.tab; S.post = null; try { localStorage.setItem('kydz_mutuals_tab', S.tab); } catch (e) {} render(); });
   if (!['posts', 'people', 'quiet', 'cands'].includes(S.tab)) S.tab = 'posts';
   $('#main').innerHTML = S.tab === 'posts' ? renderPosts() : S.tab === 'people' ? renderPeople() : S.tab === 'quiet' ? renderQuiet() : renderCands();
