@@ -18,7 +18,7 @@
   --shade: rgba(0, 0, 0, .4);
   --surface-2: var(--soft); --border: var(--line); --point: #4a7c4e; --point-soft: var(--success-soft);   /* 대시보드에서 쓰던 이름 (261126 다크모드 '최근 7일 트렌딩' 흰 칸) */
   --radius: 12px;
-  color-scheme: light;
+  color-scheme: light dark;   /* 강제 어둡게 막음 (261126) */
 }
 @media (prefers-color-scheme: dark) {
   :root {
