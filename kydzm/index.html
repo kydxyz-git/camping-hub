@@ -1051,6 +1051,14 @@
   .list { display: flex; flex-direction: column; gap: 6px; }
   .cpc { position: relative; display: flex; align-items: flex-end; gap: 3px; height: 170px; border-bottom: 1px solid var(--line); }
   .cpc-line { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.cp-src{margin-top:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.cp-src-h,.cp-src-r{display:grid;grid-template-columns:1fr 64px 52px 96px;gap:6px;align-items:center;padding:6px 12px;text-align:right;font-size:13px}
+.cp-src-h>span:first-child,.cp-src-r>span:first-child{text-align:left}
+.cp-src-h{font-size:11px;color:var(--muted);background:var(--soft)}
+.cp-src-r{background:none;border:0;border-top:1px solid var(--line);color:var(--text);cursor:pointer;font:inherit;font-size:13px;width:100%}
+.cp-src-r.sub{color:var(--muted)}.cp-src-r.sub>span:first-child{padding-left:10px}
+.cp-src-r:hover{background:var(--soft)}
+.cp-src-r.on{background:var(--pri-bg);color:var(--pri-fg)}
   .cpc-c { flex: 1; min-width: 0; height: 100%; display: flex; align-items: flex-end; cursor: default; }
   .cpc-c .cp-bar { width: 100%; background: var(--success); opacity: .75; border-radius: 3px 3px 0 0; transition: opacity .1s; }
   .cpc-x { display: flex; gap: 3px; margin-top: 4px; }
@@ -3242,7 +3250,9 @@ async function renderCoupangReport() {
         <div><div class="help">클릭</div><div style="font-size:20px;font-weight:800">${t.click.toLocaleString()}</div></div>
         <div><div class="help">주문</div><div style="font-size:20px;font-weight:800">${t.order}건</div></div>
         <div><div class="help">수익 (취소 뺌)</div><div style="font-size:20px;font-weight:800">${won(t.commission)}</div></div></div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">${Object.entries(G).map(([k, [label, l]]) => { const s2 = sum(l); return `<button type="button" class="btn btn-sm ${_cpFilter === k ? '' : 'btn-ghost'}" data-cpf="${k}">${label} · ${won(s2.commission)}</button>`; }).join('')}</div>
+      <div class="cp-src"><div class="cp-src-h"><span>어디서 들어왔나 · 줄 누르면 그것만</span><span>클릭</span><span>주문</span><span>수익</span></div>${Object.entries(G).map(([k, [label, l]]) => { const s2 = sum(l); if (k !== 'all' && k !== _cpFilter && !l.length) return '';   /* 어디서 들어왔나 (사용자 261126 스레드 성과 리포트에 있던 것 → 여기로): 줄 누르면 그것만 */
+        return `<button type="button" class="cp-src-r${_cpFilter === k ? ' on' : ''}${label.startsWith('ㄴ') ? ' sub' : ''}" data-cpf="${k}"><span>${label}</span><span>${s2.click.toLocaleString()}</span><span>${s2.order}</span><b>${won(s2.commission)}</b></button>`; }).join('')}
+</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><b style="font-size:14px">기간 그래프</b>
         <span>${[['commission', '수익'], ['click', '클릭'], ['order', '주문']].map(([k, l]) => `<button type="button" class="btn btn-sm ${_cpMetric === k ? '' : 'btn-ghost'}" data-cpm="${k}">${l}</button>`).join(' ')}</span></div>
       ${cpChart(list, from, to, _cpMetric)}
