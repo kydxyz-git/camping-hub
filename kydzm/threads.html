@@ -615,6 +615,12 @@ async function reloadAndRender(msg) {
 // ════════════════════════════════════════════════════════════════════
 // 화면
 // ════════════════════════════════════════════════════════════════════
+// '스레드에서 보기' — PC는 엣지로 열기 (사용자 261126 'PC에서 엣지로'): 윈도우의 microsoft-edge: 주소. 크롬이 처음 한 번 '엣지 열까요?' 물음
+const IS_MOBILE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+function thLink(url, cls) {
+  if (IS_MOBILE) return `<a${cls ? ` class="${cls}"` : ''} href="${esc(url)}" target="_blank" rel="noopener">스레드에서 보기 ↗</a>`;
+  return `<a${cls ? ` class="${cls}"` : ''} href="${esc('microsoft-edge:' + url)}" title="엣지로 열려요">스레드에서 보기 ↗ <span style="opacity:.6;font-size:.85em">엣지</span></a>`;
+}
 function render() {
   const main = $('#main');
   if (!getToken()) { main.innerHTML = tokenSetupHtml(); bindTokenSetup(); return; }
@@ -833,7 +839,7 @@ function postHtml(p, i, n, slotKey) {
     ${special && p.error ? `<div class="err-box">${esc(p.error)}</div>` : ''}
     ${`<div class="row small" style="margin-bottom:8px">상태
       <select class="input" data-f="status" style="width:auto;padding:6px 10px">${STATUSES.map(s => `<option${s === st ? ' selected' : ''}>${s}</option>`).join('')}</select>
-      ${p.permalink ? `<a href="${esc(p.permalink)}" target="_blank" rel="noopener">스레드에서 보기 ↗</a>` : ''}
+      ${p.permalink ? thLink(p.permalink) : ''}
       <span class="muted">${st === '초안' ? '다 쓰면 대기로 바꿔야 순서대로 올라가요.' : st === '대기' ? '초안으로 바꾸면 자동 게시에서 빠져요.' : '확인필요·게시중은 자동으로 다시 안 올려요. 올라갔으면 게시완료, 아니면 대기로.'}</span></div>`}
     <div class="pgrid3">
       <select class="input" data-f="kind">${KINDS.map(k => `<option${k === (p.kind || '') ? ' selected' : ''}>${k}</option>`).join('')}${p.kind && !KINDS.includes(p.kind) ? `<option selected>${esc(p.kind)}</option>` : ''}${p.kind ? '' : '<option value="" selected>종류</option>'}</select>
@@ -927,7 +933,7 @@ function doneHtml(p) {
     <span class="st ok" style="font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap">게시 완료</span>
     <span class="nm">${esc(first || p.name || '')}</span>
     ${nums || `<span class="tm">${esc(fmtDT(p.posted_at))}</span>`}
-    ${p.permalink ? `<a class="go" href="${esc(p.permalink)}" target="_blank" rel="noopener">스레드에서 보기 ↗</a>` : '<span class="tm">링크 없음</span>'}
+    ${p.permalink ? thLink(p.permalink, 'go') : '<span class="tm">링크 없음</span>'}
     <button class="btn small ghost" data-repost="${esc(p.id)}" title="같은 글을 초안으로 복사해서 목록 맨 위에 넣어요">다시 올리기</button>
   </div>`;
 }
@@ -1107,7 +1113,7 @@ function renderComments() {
   const card = r => {
     const p = postOf(r);
     return `<div class="cmt" data-rid="${esc(r.id)}">
-      <div class="src">내 글: ${esc(String(p.body || '').trim().split('\n')[0] || p.name || '')} ${p.permalink ? `· <a href="${esc(p.permalink)}" target="_blank" rel="noopener">스레드에서 보기 ↗</a>` : ''}</div>
+      <div class="src">내 글: ${esc(String(p.body || '').trim().split('\n')[0] || p.name || '')} ${p.permalink ? '· ' + thLink(p.permalink) : ''}</div>
       ${r.parent_text ? `<div class="parent">내 답글: ${esc(r.parent_text)}</div>` : ''}
       <div class="who">@${esc(r.username)} <span class="small muted">${esc(fmtDT(r.timestamp ? kstIso(r.timestamp) : r.created_at))}</span></div>
       <div class="said">${esc(r.text)}</div>
