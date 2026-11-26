@@ -3235,7 +3235,8 @@ async function renderCoupangReport() {
   const ORD = { commission: (a, b) => b.commission - a.commission || b.click - a.click, order: (a, b) => b.order - a.order || b.commission - a.commission,
     click: (a, b) => b.click - a.click || b.commission - a.commission, recent: (a, b) => (b.lastBuy || '').localeCompare(a.lastBuy || '') || b.commission - a.commission };
   const shown = [...list].sort(ORD[_cpOrder] || ORD.commission);
-  const P = [['yest', '어제'], ['today', '오늘'], ['7d', '최근 7일'], ['30d', '최근 30일'], ['thisMonth', '이번 달'], ['lastMonth', '지난달'], ['year', '올해'], ['custom', '직접']];
+  /* 어제·오늘 뺌 (사용자 261126 — 쿠팡은 전날 실적이 오후 4시 넘어 들어와서 오늘은 늘 비고 어제도 오후까진 빔) */
+  const P = [['7d', '최근 7일'], ['30d', '최근 30일'], ['thisMonth', '이번 달'], ['lastMonth', '지난달'], ['year', '올해'], ['custom', '직접']];
   c.innerHTML = `
     <div class="page-header"><button class="page-back" id="back-btn">← 대시보드</button>
       <div class="page-count">데이터 ${escapeHtml(dash(daily.from || ''))} ~ ${escapeHtml(last)} · ${escapeHtml(String(daily.updated_at || '').slice(5, 16).replace('T', ' '))} 갱신</div></div>
