@@ -1686,17 +1686,19 @@
     .pf-row { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; }
     .pf-row::-webkit-scrollbar { display: none; } .pf-row > * { flex: none; }
     .stat-note { font-size: 12px; padding: 8px 10px !important; margin-bottom: 8px !important; }
-    /* 장비·먹거리 줄: 두 줄 — 위 이름, 아래 판매처·별·홈페이지 숫자 (NEW·링크 복사는 PC에서) */
-    #prod-list .list-item { display: grid; grid-template-columns: 52px auto auto minmax(0, 1fr) auto auto; grid-template-areas: "th ti ti ti tg ar" "th sr st me tg ar"; column-gap: 8px; row-gap: 4px; align-items: center; }
+    /* 장비·먹거리 줄: 두 줄 — 위 이름, 아래 판매처·별·NEW·홈페이지 숫자 (링크 복사는 PC에서) */
+    #prod-list .list-item { display: grid; grid-template-columns: 52px auto auto auto minmax(0, 1fr) auto auto; grid-template-areas: "th ti ti ti ti tg ar" "th sr st nw me tg ar"; column-gap: 5px; row-gap: 4px; align-items: center; }
     #prod-list .list-item > .drag-handle { display: none; }
     #prod-list .list-item-link, #prod-list .list-item-body { display: contents; }
     #prod-list .list-item-thumb { grid-area: th; width: 52px; height: 52px; }
     #prod-list .list-item-title { grid-area: ti; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
     #prod-list .list-item-meta { grid-area: me; display: flex; flex-wrap: nowrap; overflow: hidden; min-width: 0; }
     #prod-list .list-item-meta > * { flex: none; }
+    #prod-list .list-item-meta .site-chip { font-size: 10.5px !important; padding: 1px 3px !important; margin-right: 0 !important; }
     #prod-list .pick-stars { grid-area: st; margin: 0; } #prod-list .pick-btn { font-size: 13px !important; padding: 0 1px !important; }
     #prod-list .src-btn { grid-area: sr; font-size: 11px !important; padding: 2px 7px !important; }
-    #prod-list .new-btn, #prod-list .link-copy-btn, #prod-list .li-src { display: none; }
+    #prod-list .link-copy-btn, #prod-list .li-src { display: none; }
+    #prod-list .new-btn { grid-area: nw; padding: 1px 4px !important; font-size: 13px !important; min-height: 0 !important; }   /* NEW 켜고 끄기는 폰에도 (사용자 261127 '뉴 끄는 기능이 없어졌네') */
     #prod-list .pub-toggle { grid-area: tg; } #prod-list .list-item-arrow { grid-area: ar; }
   }
   .pf-lbl { font-size: 12px; font-weight: 700; color: var(--text); margin-right: 2px; min-width: 28px; }
